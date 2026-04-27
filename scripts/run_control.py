@@ -64,7 +64,8 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     ref_states = np.stack([ref_x, ref_vx], axis=1)   # (N_total, 2)
 
     # ── 滑动窗口缓存（供PINN在线更新用）─────────────
-    t_buf, x_buf, F_buf = [], [], []
+    # xyz_buf: list of [x,y,z]   F_buf: list of [Fx,Fy,Fz]
+    t_buf, xyz_buf, F_buf = [], [], []
     t0 = time.time()
 
     # ── 主控制循环 ─────────────────────────────────────
@@ -86,31 +87,35 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             x0 = np.array([cur_pose[0], cur_vel[0]])   # 单轴
             F_vec = np.array([f_data["fx"], f_data["fy"], f_data["fz"]])
 
-            # 2. 更新PINN滑动窗口
+            # 2. 更新PINN滑动窗口（三维）
             t_now = time.time() - t0
             t_buf.append(t_now)
-            x_buf.append(cur_pose[0])
-            F_buf.append(f_data["fx"])
+            xyz_buf.append(cur_pose[:3].tolist())               # [x, y, z]
+            F_buf.append([f_data["fx"], f_data["fy"], f_data["fz"]])  # [Fx,Fy,Fz]
 
             if len(t_buf) > PINN_WINDOW:
-                t_buf.pop(0)
-                x_buf.pop(0)
-                F_buf.pop(0)
+                t_buf.pop(0); xyz_buf.pop(0); F_buf.pop(0)
 
-            # 每100步更新一次PINN（2秒）
+            # 每100步更新一次PINN
             if step % 100 == 0 and len(t_buf) >= 50:
-                online_pinn.update(t_buf, x_buf, F_buf, epochs=300)
+                online_pinn.update(t_buf, xyz_buf, F_buf, epochs=300)
                 if online_pinn.is_ready:
                     p = online_pinn.get_params()
-                    mpc.set_patient_params(p["M"], p["B"], p["K"])
-                    logger.info(f"[Step {step}] PINN更新: "
-                                f"M={p['M']:.3f} B={p['B']:.3f} K={p['K']:.3f}")
+                    mpc.set_patient_params(p["Mx"], p["Bx"], p["Kx"])  # MPC暂用x轴参数
+                    logger.info(
+                        f"[Step {step}] PINN更新 | "
+                        f"M=({p['Mx']:.2f},{p['My']:.2f},{p['Mz']:.2f}) "
+                        f"B=({p['Bx']:.2f},{p['By']:.2f},{p['Bz']:.2f}) "
+                        f"K=({p['Kx']:.2f},{p['Ky']:.2f},{p['Kz']:.2f})"
+                    )
 
-            # 3. 实时舒适度评分（每步都算）
+            # 3. 实时舒适度评分
+            # 触觉传感器到位后在此传入 tactile=tactile_array
             comfort_score = comfort_pred.predict(
-                f_data["fx"], f_data["fy"], f_data["fz"],
-                cur_pose[0], cur_pose[1], cur_pose[2],
-                cur_vel[0],  cur_vel[1],  cur_vel[2],
+                fx=f_data["fx"], fy=f_data["fy"], fz=f_data["fz"],
+                x=cur_pose[0],   y=cur_pose[1],   z=cur_pose[2],
+                vx=cur_vel[0],   vy=cur_vel[1],   vz=cur_vel[2],
+                tactile=None,    # ← 触觉传感器到位后改为 tactile=read_tactile()
             )
 
             # 4. MPC求解（只在PINN就绪后启动）

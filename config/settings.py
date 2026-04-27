@@ -39,8 +39,18 @@ EXCITATION_PARAMS = [
 ]
 EXCITATION_DURATION = 10.0          # 每段激励时长 (s)
 
+# ── 触觉传感器（未购入时保持None，接口预留）────────────
+TACTILE_IP         = None           # 购入后填写，如 "192.168.1.2"
+TACTILE_PORT       = 50000          # 按实际修改
+TACTILE_DIM        = 16            # 触觉传感器输出维度，按实际修改
+
 # ── 舒适度网络 ────────────────────────────────────────
-COMFORT_INPUT_DIM  = 9              # [Fx,Fy,Fz, x,y,z, vx,vy,vz]
+# input_mode 三选一:
+#   "force"         → 只用力传感器   输入维度 = 9  (Fx,Fy,Fz, x,y,z, vx,vy,vz)
+#   "tactile"       → 只用触觉传感器 输入维度 = 3 + TACTILE_DIM (x,y,z + tactile)
+#   "force+tactile" → 两者拼接      输入维度 = 9 + TACTILE_DIM
+COMFORT_INPUT_MODE = "force"        # 触觉传感器到位后改为 "force+tactile"
+COMFORT_INPUT_DIM  = 9              # 会被 comfort_net.py 根据mode自动计算，这里是默认值
 COMFORT_HIDDEN     = [64, 32]
 COMFORT_LR         = 1e-3
 COMFORT_EPOCHS     = 200
