@@ -7,25 +7,30 @@ import socket
 import struct
 import threading
 import time
-from typing import List, Tuple, Optional
+from typing import List, Optional
 
 
 class DobotCR5:
     """Dobot CR5 机器人控制类"""
     
-    def __init__(self, ip_address='192.168.50.102', 
-                 dashboard_port=29999, 
-                 move_port=30003, 
-                 feedback_port=30004):
+    def __init__(self, ip_address='192.168.50.102',
+                 dashboard_port=29999,
+                 move_port=30003,
+                 feedback_port=30004,
+                 ip=None):
         """
         初始化机器人连接参数
         
         Args:
             ip_address: 机器人 IP 地址
+            ip: ip_address 的别名，用于兼容 scripts 中的 DobotCR5(ip=...)
             dashboard_port: Dashboard 端口
             move_port: 运动控制端口
             feedback_port: 实时反馈端口
         """
+        if ip is not None:
+            ip_address = ip
+
         self.ip_address = ip_address
         self.dashboard_port = dashboard_port
         self.move_port = move_port
@@ -44,7 +49,10 @@ class DobotCR5:
         self.current_speed_ratio = 0
         self.joint_angles = [0.0] * 6
         self.cartesian_pose = [0.0] * 6
+        self.tcp_speed = [0.0] * 6
         self.actual_joint_speeds = [0.0] * 6
+        self._last_cartesian_pose: Optional[List[float]] = None
+        self._last_feedback_time: Optional[float] = None
         
         # 反馈数据缓冲
         self.state_data = bytearray(1440)
@@ -134,6 +142,10 @@ class DobotCR5:
         """设置速度比例 (1-100)"""
         cmd = f"SpeedFactor({ratio})"
         return self._send_dashboard_command(cmd)
+
+    def set_speed(self, ratio: int):
+        """设置速度比例，兼容采集/控制脚本中的统一接口。"""
+        return self.set_speed_ratio(ratio)
     
     def get_robot_mode(self) -> str:
         """通过 Dashboard 查询机器人模式"""
@@ -159,13 +171,42 @@ class DobotCR5:
         return list(self.actual_joint_speeds)
 
     def get_cartesian_pose(self) -> List[float]:
-        """实时反馈笛卡尔位姿 [x,y,z, rx,ry,rz]：位置 m，姿态度（与 ServoP 输入一致）。"""
+        """实时反馈笛卡尔位姿 [x,y,z, rx,ry,rz]：位置 mm，姿态度。"""
         return list(self.cartesian_pose)
+
+    def get_tcp_speed(self) -> List[float]:
+        """由反馈位姿差分得到的 TCP 速度：[vx,vy,vz, vrx,vry,vrz]，位置轴单位 mm/s。"""
+        return list(self.tcp_speed)
+
+    def get_state(self) -> dict:
+        """返回脚本层使用的统一状态快照。"""
+        return {
+            "robot_mode": self.robot_mode,
+            "speed_ratio": self.current_speed_ratio,
+            "joint_angles": self.get_joint_angles(),
+            "joint_speeds": self.get_actual_joint_speeds(),
+            "cartesian_pose": self.get_cartesian_pose(),
+            "tcp_speed": self.get_tcp_speed(),
+        }
+
+    @staticmethod
+    def _unpack_pose(pose) -> List[float]:
+        """把 list/tuple/numpy array 形式的 [x,y,z,rx,ry,rz] 转为浮点列表。"""
+        vals = list(pose)
+        if len(vals) != 6:
+            raise ValueError(f"笛卡尔位姿应包含 6 个元素，实际为 {len(vals)} 个")
+        return [float(v) for v in vals]
     
     def joint_mov_j(self, joints: List[float]):
         """关节运动（角度单位：度）"""
         cmd = f"JointMovJ({joints[0]},{joints[1]},{joints[2]},{joints[3]},{joints[4]},{joints[5]})"
-        self._send_move_command(cmd)
+        return self._send_move_command(cmd)
+
+    def move_j(self, pose):
+        """笛卡尔点到点运动，输入 [x,y,z,rx,ry,rz]，位置单位 mm。"""
+        x, y, z, rx, ry, rz = self._unpack_pose(pose)
+        cmd = f"MovJ({x},{y},{z},{rx},{ry},{rz})"
+        return self._send_move_command(cmd)
     
     def servo_j(self, joints: List[float], t: float, lookahead_time: float, gain: float):
         """
@@ -178,7 +219,7 @@ class DobotCR5:
             gain: 增益
         """
         cmd = f"ServoJ({joints[0]},{joints[1]},{joints[2]},{joints[3]},{joints[4]},{joints[5]},t={t},lookahead_time={lookahead_time},gain={gain})"
-        self._send_move_command(cmd)
+        return self._send_move_command(cmd)
     
     def mov_l(self, x: float, y: float, z: float, rx: float, ry: float, rz: float):
         """笛卡尔空间直线运动
@@ -188,7 +229,12 @@ class DobotCR5:
             rx, ry, rz: 目标姿态（度）
         """
         cmd = f"MovL({x},{y},{z},{rx},{ry},{rz})"
-        self._send_move_command(cmd)
+        return self._send_move_command(cmd)
+
+    def move_l(self, pose):
+        """笛卡尔直线运动，输入 [x,y,z,rx,ry,rz]，位置单位 mm。"""
+        x, y, z, rx, ry, rz = self._unpack_pose(pose)
+        return self.mov_l(x, y, z, rx, ry, rz)
 
     def servo_p(self, x: float, y: float, z: float, rx: float, ry: float, rz: float):
         """笛卡尔空间伺服运动
@@ -198,7 +244,7 @@ class DobotCR5:
             rx, ry, rz: 目标姿态（度）
         """
         cmd = f"ServoP({x},{y},{z},{rx},{ry},{rz})"
-        self._send_move_command(cmd)
+        return self._send_move_command(cmd)
 
     def start_drag(self):
         """进入拖拽（协作）模式"""
@@ -211,6 +257,23 @@ class DobotCR5:
     def stop_move(self):
         """停止运动"""
         return self._send_move_command("StopScript()")
+
+    def stop(self):
+        """停止当前运动，兼容 SafetyGuard 和脚本入口。"""
+        return self.stop_move()
+
+    def wait_idle(self, timeout: float = 30.0, poll_interval: float = 0.05) -> bool:
+        """等待机器人从 RUNNING 状态回到空闲状态。"""
+        start = time.time()
+        saw_running = False
+        while time.time() - start < timeout:
+            mode = self.robot_mode
+            if mode == "RUNNING":
+                saw_running = True
+            elif saw_running or time.time() - start >= poll_interval * 2:
+                return True
+            time.sleep(poll_interval)
+        raise TimeoutError(f"等待机器人空闲超时，当前模式: {self.robot_mode}")
     
     def _send_dashboard_command(self, command: str) -> str:
         """发送 Dashboard 指令"""
@@ -305,13 +368,23 @@ class DobotCR5:
                 self.joint_angles[i] = self._bytes_to_double(432 + i * 8)
             
             # 笛卡尔位姿 (字节位置 624 开始)
+            new_pose = [0.0] * 6
             for i in range(6):
                 value = self._bytes_to_double(624 + i * 8)
-                # 前3个是位置 (X, Y, Z)，从 mm 转换为 m
-                if i < 3:
-                    self.cartesian_pose[i] = value / 1000.0
-                else:
-                    self.cartesian_pose[i] = value
+                # Dobot 反馈位置单位为 mm，姿态单位为度；项目内部保持同一单位。
+                new_pose[i] = value
+
+            now = time.time()
+            if self._last_cartesian_pose is not None and self._last_feedback_time is not None:
+                dt = now - self._last_feedback_time
+                if dt > 0:
+                    self.tcp_speed = [
+                        (new_pose[i] - self._last_cartesian_pose[i]) / dt
+                        for i in range(6)
+                    ]
+            self.cartesian_pose = new_pose
+            self._last_cartesian_pose = list(new_pose)
+            self._last_feedback_time = now
             
             # 关节速度 (字节位置 480 开始)
             for i in range(6):

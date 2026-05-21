@@ -69,12 +69,12 @@ class DataCollector:
 
         self._buf.append({
             "t":   round(t_rel, 4),
-            # 笛卡尔位姿（位置单位 m，姿态单位 度）
+            # 笛卡尔位姿（位置单位 mm，姿态单位 度）
             "x":   pose[0], "y":  pose[1], "z":  pose[2],
             "rx":  pose[3], "ry": pose[4], "rz": pose[5],
-            # TCP线速度：占位，end_episode 中由 S-G 微分填充
+            # TCP线速度（mm/s）：占位，end_episode 中由 S-G 微分填充
             "vx":  0.0, "vy": 0.0, "vz": 0.0,
-            # TCP线加速度：占位，end_episode 中由 S-G 二阶微分填充
+            # TCP线加速度（mm/s^2）：占位，end_episode 中由 S-G 二阶微分填充
             "ax":  0.0, "ay": 0.0, "az": 0.0,
             # 关节角度
             "j1":  jnt[0], "j2": jnt[1], "j3": jnt[2],
@@ -103,13 +103,13 @@ class DataCollector:
             return None
 
         t_arr = np.array([r["t"] for r in self._buf])
-        # 仅对 x/y/z 做微分（单位 m），rx/ry/rz 为姿态，不用于线速度/加速度
+        # 仅对 x/y/z 做微分（单位 mm），rx/ry/rz 为姿态，不用于线速度/加速度
         pos = np.array([[r["x"], r["y"], r["z"]] for r in self._buf])  # (N, 3)
 
         # compute_acceleration 内部应先一阶微分得速度，再对速度微分得加速度
         # 如果 smooth_differentiate 支持阶数参数，也可直接调两次
-        vel   = smooth_differentiate(pos, t_arr)          # (N, 3)  m/s
-        accel = compute_acceleration(pos, t_arr)         # (N, 3)
+        vel   = smooth_differentiate(pos, t_arr)         # (N, 3)  mm/s
+        accel = compute_acceleration(pos, t_arr)         # (N, 3)  mm/s^2
 
         for i, row in enumerate(self._buf):
             row["vx"] = round(float(vel[i, 0]),   4)

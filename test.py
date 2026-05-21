@@ -15,7 +15,7 @@ def test_robot_get(robot: DobotCR5, n: int = 5):
         djnt = robot.get_actual_joint_speeds()
 
         print(f"[{i+1}]")
-        print(f"  cartesian_pose      : {[round(v,4) for v in pose]}")
+        print(f"  cartesian_pose (mm/deg): {[round(v,4) for v in pose]}")
         print(f"  joint_angles   (deg): {[round(v,4) for v in jnt]}")
         print(f"  joint_speeds (deg/s): {[round(v,4) for v in djnt]}")
 

@@ -81,8 +81,8 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             # 1. 读取当前状态
             state    = robot.get_state()
             f_data   = force.get()
-            cur_pose = state["cartesian_pose"]
-            cur_vel  = state["tcp_speed"]
+            cur_pose = np.array(state["cartesian_pose"], dtype=float)
+            cur_vel  = np.array(state["tcp_speed"], dtype=float)
 
             x0 = np.array([cur_pose[0], cur_vel[0]])   # 单轴
             F_vec = np.array([f_data["fx"], f_data["fy"], f_data["fz"]])
