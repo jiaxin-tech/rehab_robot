@@ -25,7 +25,8 @@ class DataCollector:
         "x", "y", "z", "rx", "ry", "rz",       # 末端笛卡尔位姿
         "vx", "vy", "vz",                         # 末端线速度
         "ax", "ay", "az",                         # 末端线加速度（后处理计算）
-        "j1", "j2", "j3", "j4", "j5", "j6",      # 关节角度
+        "j1", "j2", "j3", "j4", "j5", "j6",       #joint angles
+        "dj1", "dj2", "dj3", "dj4", "dj5", "dj6",  # 关节速度（直接来自反馈，无需后处理）
         "fx", "fy", "fz", "tx", "ty", "tz",      # 力/力矩
         "mode",                                    # passive / active
         "comfort",                                 # 舒适度标注，-1=未标注
@@ -60,20 +61,28 @@ class DataCollector:
     def record_sample(self):
         """采集一个时间点的样本，在主控制循环中按频率调用"""
         t_rel = time.time() - self._t0
-        state = self.robot.get_state()
+        pose = self.robot.get_cartesian_pose()
+        jnt  = self.robot.get_joint_angles()
+        djnt = self.robot.get_actual_joint_speeds()
+
         force = self.force.get()
-        pose  = state["cartesian_pose"]
-        vel   = state["tcp_speed"]
-        jnt   = state["joint_angles"]
 
         self._buf.append({
             "t":   round(t_rel, 4),
+            # 笛卡尔位姿（位置单位 m，姿态单位 度）
             "x":   pose[0], "y":  pose[1], "z":  pose[2],
             "rx":  pose[3], "ry": pose[4], "rz": pose[5],
-            "vx":  vel[0],  "vy": vel[1],  "vz": vel[2],
-            "ax":  0.0, "ay": 0.0, "az": 0.0,   # 占位，后处理填充
+            # TCP线速度：占位，end_episode 中由 S-G 微分填充
+            "vx":  0.0, "vy": 0.0, "vz": 0.0,
+            # TCP线加速度：占位，end_episode 中由 S-G 二阶微分填充
+            "ax":  0.0, "ay": 0.0, "az": 0.0,
+            # 关节角度
             "j1":  jnt[0], "j2": jnt[1], "j3": jnt[2],
             "j4":  jnt[3], "j5": jnt[4], "j6": jnt[5],
+            # 关节速度（直接来自反馈，无需后处理）
+            "dj1": djnt[0], "dj2": djnt[1], "dj3": djnt[2],
+            "dj4": djnt[3], "dj5": djnt[4], "dj6": djnt[5],
+            # 力/力矩
             "fx":  force["fx"], "fy": force["fy"], "fz": force["fz"],
             "tx":  force["tx"], "ty": force["ty"], "tz": force["tz"],
             "mode":    self.mode,
@@ -83,25 +92,32 @@ class DataCollector:
     def end_episode(self, comfort_label: int = -1) -> str | None:
         """
         结束episode：
-        1. 后处理计算加速度
-        2. 打舒适度标签
-        3. 写CSV
+        1. 对位置序列做 S-G 一阶微分 → TCP线速度
+        2. 对位置序列做 S-G 二阶微分 → TCP线加速度
+        3. 打舒适度标签
+        4. 写CSV
         Returns: 保存的文件路径，失败返回None
         """
         if len(self._buf) < 10:
             logger.warning("数据点不足10，丢弃此episode")
             return None
 
-        # 计算加速度
-        t_arr = np.array([r["t"]  for r in self._buf])
-        poses = np.array([[r["x"], r["y"], r["z"],
-                           r["rx"],r["ry"],r["rz"]] for r in self._buf])
-        accel = compute_acceleration(poses, t_arr)
+        t_arr = np.array([r["t"] for r in self._buf])
+        # 仅对 x/y/z 做微分（单位 m），rx/ry/rz 为姿态，不用于线速度/加速度
+        pos = np.array([[r["x"], r["y"], r["z"]] for r in self._buf])  # (N, 3)
+
+        # compute_acceleration 内部应先一阶微分得速度，再对速度微分得加速度
+        # 如果 smooth_differentiate 支持阶数参数，也可直接调两次
+        vel   = smooth_differentiate(pos, t_arr)          # (N, 3)  m/s
+        accel = compute_acceleration(pos, t_arr)         # (N, 3)
 
         for i, row in enumerate(self._buf):
-            row["ax"]      = round(float(accel[i, 0]), 4)
-            row["ay"]      = round(float(accel[i, 1]), 4)
-            row["az"]      = round(float(accel[i, 2]), 4)
+            row["vx"] = round(float(vel[i, 0]),   4)
+            row["vy"] = round(float(vel[i, 1]),   4)
+            row["vz"] = round(float(vel[i, 2]),   4)
+            row["ax"] = round(float(accel[i, 0]), 4)
+            row["ay"] = round(float(accel[i, 1]), 4)
+            row["az"] = round(float(accel[i, 2]), 4)
             row["comfort"] = comfort_label
 
         # 写CSV
@@ -114,7 +130,6 @@ class DataCollector:
 
         logger.info(f"Episode {self._ep_count} 已保存: {fname} ({len(self._buf)} 行)")
         return fname
-
 
 def label_episodes(data_dir: str):
     """
