@@ -38,8 +38,8 @@ class SafetyGuard:
             try:
                 f = self.fs.get_force_magnitude()
                 if f > self.threshold:
-                    logger.warning(f"⚠️  安全停止！合力={f:.1f}N > {self.threshold}N")
-                    self.robot.stop()
+                    logger.warning(f"安全停止！合力={f:.1f}N > {self.threshold}N")
+                    self._stop_robot()
                     self.triggered = True
                     self._active   = False
                     break
@@ -55,3 +55,11 @@ class SafetyGuard:
         """在运动循环内调用，触发后抛异常"""
         if self.triggered:
             raise RuntimeError("安全守卫已触发，运动已停止")
+
+    def _stop_robot(self):
+        """兼容不同机器人封装里的停止接口。"""
+        if hasattr(self.robot, "stop"):
+            return self.robot.stop()
+        if hasattr(self.robot, "stop_move"):
+            return self.robot.stop_move()
+        raise AttributeError("robot 缺少 stop/stop_move 停止接口")

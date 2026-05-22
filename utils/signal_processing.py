@@ -19,12 +19,28 @@ def smooth_differentiate(values: np.ndarray, times: np.ndarray,
     Returns:
         导数序列，与输入等长
     """
-    n = len(values)
-    # 窗口长度至少5，且不超过序列长度，且为奇数
+    values = np.asarray(values, dtype=float)
+    times = np.asarray(times, dtype=float)
+    n = len(times)
+
+    if len(values) != n:
+        raise ValueError("values 和 times 的长度必须一致")
+    if n < 2:
+        return np.zeros_like(values, dtype=float)
+
+    # 采集抖动或偶发重复时间戳会让 gradient 产生 inf/nan，这里先做保护。
+    if np.any(np.diff(times) <= 0):
+        dt = float(np.median(np.diff(np.unique(times)))) if len(np.unique(times)) > 1 else 1.0
+        times = np.arange(n, dtype=float) * max(dt, 1e-6)
+
+    # 窗口长度必须为奇数、不能超过样本数，且 polyorder < window_length。
     wl = min(window, n if n % 2 == 1 else n - 1)
-    wl = max(wl, 5)
-    smoothed = savgol_filter(values, window_length=wl, polyorder=poly)
-    return np.gradient(smoothed, times)
+    if wl < 3:
+        return np.gradient(values, times, axis=0)
+    poly = min(poly, wl - 1)
+
+    smoothed = savgol_filter(values, window_length=wl, polyorder=poly, axis=0)
+    return np.gradient(smoothed, times, axis=0)
 
 
 def lowpass_filter(values: np.ndarray, cutoff_hz: float,

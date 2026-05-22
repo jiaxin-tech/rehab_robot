@@ -2,6 +2,7 @@
 # 数据采集主逻辑：同步读传感器、存CSV、计算加速度
 
 import csv
+import glob
 import os
 import time
 import numpy as np
@@ -35,11 +36,13 @@ class DataCollector:
     def __init__(self, robot, force_sensor,
                  subject_id: str, session_id: str,
                  mode: str = "passive"):
-        self.robot    = robot
-        self.force    = force_sensor
-        self.mode     = mode
-        self._buf     = []
-        self._t0      = 0.0
+        self.robot = robot
+        self.force = force_sensor
+        self.mode = mode
+        self._buf = []
+        self._t0 = 0.0
+        self._active = False
+        self._sample_errors = 0
 
         # 创建存储目录
         self.out_dir = os.path.join(settings.DATA_DIR, subject_id, session_id)
@@ -49,45 +52,69 @@ class DataCollector:
         logger.info(f"存储路径: {self.out_dir}，已有 {self._ep_count} 个episode")
 
     def _count_existing(self) -> int:
-        files = [f for f in os.listdir(self.out_dir) if f.endswith(".csv")]
-        return len(files)
+        max_idx = 0
+        for fpath in glob.glob(os.path.join(self.out_dir, "episode_*.csv")):
+            stem = os.path.splitext(os.path.basename(fpath))[0]
+            try:
+                max_idx = max(max_idx, int(stem.rsplit("_", 1)[1]))
+            except (IndexError, ValueError):
+                continue
+        return max_idx
 
     # ── Episode控制 ──────────────────────────────────
     def start_episode(self):
         self._buf = []
-        self._t0  = time.time()
+        self._t0 = time.perf_counter()
+        self._active = True
+        self._sample_errors = 0
         logger.info(f"Episode {self._ep_count + 1} 开始")
 
-    def record_sample(self):
-        """采集一个时间点的样本，在主控制循环中按频率调用"""
-        t_rel = time.time() - self._t0
-        pose = self.robot.get_cartesian_pose()
-        jnt  = self.robot.get_joint_angles()
-        djnt = self.robot.get_actual_joint_speeds()
+    @staticmethod
+    def _as_six(values, name: str):
+        if values is None or len(values) < 6:
+            raise ValueError(f"{name} 长度不足6")
+        return [float(v) for v in values[:6]]
 
-        force = self.force.get()
+    def record_sample(self) -> bool:
+        """采集一个时间点的样本，在主控制循环中按频率调用。成功返回 True。"""
+        if not self._active:
+            raise RuntimeError("请先调用 start_episode() 再采样")
 
-        self._buf.append({
-            "t":   round(t_rel, 4),
-            # 笛卡尔位姿（位置单位 m，姿态单位 度）
-            "x":   pose[0], "y":  pose[1], "z":  pose[2],
-            "rx":  pose[3], "ry": pose[4], "rz": pose[5],
-            # TCP线速度：占位，end_episode 中由 S-G 微分填充
-            "vx":  0.0, "vy": 0.0, "vz": 0.0,
-            # TCP线加速度：占位，end_episode 中由 S-G 二阶微分填充
-            "ax":  0.0, "ay": 0.0, "az": 0.0,
-            # 关节角度
-            "j1":  jnt[0], "j2": jnt[1], "j3": jnt[2],
-            "j4":  jnt[3], "j5": jnt[4], "j6": jnt[5],
-            # 关节速度（直接来自反馈，无需后处理）
-            "dj1": djnt[0], "dj2": djnt[1], "dj3": djnt[2],
-            "dj4": djnt[3], "dj5": djnt[4], "dj6": djnt[5],
-            # 力/力矩
-            "fx":  force["fx"], "fy": force["fy"], "fz": force["fz"],
-            "tx":  force["tx"], "ty": force["ty"], "tz": force["tz"],
-            "mode":    self.mode,
-            "comfort": -1,
-        })
+        try:
+            t_rel = time.perf_counter() - self._t0
+            pose = self._as_six(self.robot.get_cartesian_pose(), "cartesian_pose")
+            jnt = self._as_six(self.robot.get_joint_angles(), "joint_angles")
+            djnt = self._as_six(self.robot.get_actual_joint_speeds(), "joint_speeds")
+            force = self.force.get()
+
+            row = {
+                "t": round(t_rel, 4),
+                # 笛卡尔位姿（位置单位 m，姿态单位 度）
+                "x": pose[0], "y": pose[1], "z": pose[2],
+                "rx": pose[3], "ry": pose[4], "rz": pose[5],
+                # TCP线速度：占位，end_episode 中由 S-G 微分填充
+                "vx": 0.0, "vy": 0.0, "vz": 0.0,
+                # TCP线加速度：占位，end_episode 中由 S-G 二阶微分填充
+                "ax": 0.0, "ay": 0.0, "az": 0.0,
+                # 关节角度
+                "j1": jnt[0], "j2": jnt[1], "j3": jnt[2],
+                "j4": jnt[3], "j5": jnt[4], "j6": jnt[5],
+                # 关节速度（直接来自反馈，无需后处理）
+                "dj1": djnt[0], "dj2": djnt[1], "dj3": djnt[2],
+                "dj4": djnt[3], "dj5": djnt[4], "dj6": djnt[5],
+                # 力/力矩
+                "fx": force["fx"], "fy": force["fy"], "fz": force["fz"],
+                "tx": force["tx"], "ty": force["ty"], "tz": force["tz"],
+                "mode": self.mode,
+                "comfort": -1,
+            }
+        except Exception as e:
+            self._sample_errors += 1
+            logger.warning(f"采样失败，已跳过本帧: {e}")
+            return False
+
+        self._buf.append(row)
+        return True
 
     def end_episode(self, comfort_label: int = -1) -> str | None:
         """
@@ -100,6 +127,7 @@ class DataCollector:
         """
         if len(self._buf) < 10:
             logger.warning("数据点不足10，丢弃此episode")
+            self._active = False
             return None
 
         t_arr = np.array([r["t"] for r in self._buf])
@@ -108,8 +136,8 @@ class DataCollector:
 
         # compute_acceleration 内部应先一阶微分得速度，再对速度微分得加速度
         # 如果 smooth_differentiate 支持阶数参数，也可直接调两次
-        vel   = smooth_differentiate(pos, t_arr)          # (N, 3)  m/s
-        accel = compute_acceleration(pos, t_arr)         # (N, 3)
+        vel = smooth_differentiate(pos, t_arr)      # (N, 3)  m/s
+        accel = compute_acceleration(pos, t_arr)    # (N, 3)  m/s^2
 
         for i, row in enumerate(self._buf):
             row["vx"] = round(float(vel[i, 0]),   4)
@@ -123,13 +151,19 @@ class DataCollector:
         # 写CSV
         self._ep_count += 1
         fname = os.path.join(self.out_dir, f"episode_{self._ep_count:04d}.csv")
-        with open(fname, "w", newline="") as f:
+        tmp_name = f"{fname}.tmp"
+        with open(tmp_name, "w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=self.FIELDNAMES)
             writer.writeheader()
             writer.writerows(self._buf)
+        os.replace(tmp_name, fname)
 
+        self._active = False
+        if self._sample_errors:
+            logger.warning(f"Episode {self._ep_count} 采样跳过 {self._sample_errors} 帧")
         logger.info(f"Episode {self._ep_count} 已保存: {fname} ({len(self._buf)} 行)")
         return fname
+
 
 def label_episodes(data_dir: str):
     """

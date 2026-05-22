@@ -2,12 +2,12 @@
 # 全局配置，所有模块从这里读参数，不要在各文件里硬编码
 
 # ── 硬件网络 ──────────────────────────────────────────
-ROBOT_IP          = "192.168.5.1"
+ROBOT_IP          = "192.168.50.102"
 ROBOT_DASH_PORT   = 29999
 ROBOT_MOVE_PORT   = 30003
 ROBOT_FEED_PORT   = 30004
 
-SENSOR_IP         = "192.168.1.1"   # ATI力传感器，按实际修改
+SENSOR_IP         = "192.168.50.200"   # ATI力传感器，按实际修改
 SENSOR_PORT       = 49152
 SENSOR_HZ         = 100             # 1000 / SPEED(=10)
 SENSOR_FILTER     = 4               # 15Hz低通
