@@ -72,7 +72,7 @@ class ComfortNet(nn.Module):
         layers = []
         prev = input_dim
         for h in hidden:
-            layers += [nn.Linear(prev, h), nn.BatchNorm1d(h), nn.ReLU()]
+            layers += [nn.Linear(prev, h), nn.ReLU()]
             prev = h
         layers += [nn.Linear(prev, 1), nn.Sigmoid()]
         self.net = nn.Sequential(*layers)
@@ -83,7 +83,8 @@ class ComfortNet(nn.Module):
 
 # ── 数据加载 ─────────────────────────────────────────
 def load_dataset(data_dir: str,
-                 mode: str = settings.COMFORT_INPUT_MODE):
+                 mode: str = settings.COMFORT_INPUT_MODE,
+                 normalize: bool = True):
     """
     从data_dir下所有CSV加载数据，根据mode选取对应列。
 
@@ -127,7 +128,13 @@ def load_dataset(data_dir: str,
             X_list.append(feat)
             y_list.append(1.0 if c == 0 else 0.0)
 
-    X = np.array(X_list, dtype=np.float32)
+    if not X_list:
+        raise ValueError(
+            "No labeled comfort samples found. Run collection with "
+            "--collect-kind comfort or label episodes before training."
+        )
+
+    X = np.vstack(X_list).astype(np.float32)
     y = np.array(y_list, dtype=np.float32)
     logger.info(
         f"[{mode}模式] 加载数据: {len(X)}行，"
@@ -135,10 +142,18 @@ def load_dataset(data_dir: str,
         f"特征维度={X.shape[1]}"
     )
 
+    labels = np.unique(y)
+    if len(labels) < 2:
+        logger.warning(
+            "Comfort labels contain only one class. Training a classifier "
+            "will not be meaningful until both comfort=0 and comfort=1/2 exist."
+        )
+
     # Z-score归一化
     mean = X.mean(axis=0)
     std  = X.std(axis=0) + 1e-8
-    X    = (X - mean) / std
+    if normalize:
+        X = (X - mean) / std
 
     return X, y, {"mean": mean, "std": std}
 
@@ -156,6 +171,11 @@ def train(data_dir:   str,
     加载时自动恢复mode，不会出现维度不匹配。
     """
     X, y, norm = load_dataset(data_dir, mode=mode)
+    if len(np.unique(y)) < 2:
+        raise ValueError(
+            "Comfort training needs both classes: comfort=0 samples and "
+            "comfort=1 or 2 samples. Current labeled data has only one class."
+        )
     input_dim  = X.shape[1]
 
     X_t = torch.tensor(X)

@@ -6,6 +6,17 @@ import time
 from config import settings
 
 
+def _resolve_tool_orientation(orientation=None) -> tuple:
+    """Return the fixed TCP orientation [rx, ry, rz] used for all waypoints."""
+    if orientation is None:
+        orientation = getattr(settings, "TOOL_DOWN_ORIENTATION", None)
+    if orientation is None:
+        orientation = [0.0, 90.0, 0.0]
+    if len(orientation) < 3:
+        raise ValueError("tool orientation must contain rx, ry, rz")
+    return tuple(float(v) for v in orientation[:3])
+
+
 def generate_excitation_trajectory(
     duration: float = None,
     dt: float = None,
@@ -14,6 +25,7 @@ def generate_excitation_trajectory(
     angle_min: float = None,
     angle_max: float = None,
     neutral: float = None,
+    orientation: list = None,
 ) -> np.ndarray:
     """
     生成持续激励轨迹（多频正弦叠加）
@@ -44,8 +56,8 @@ def generate_excitation_trajectory(
 
     # 转换为笛卡尔坐标（在xz平面内的弧线运动）
     cx, cy, cz = center
-    # 末端姿态固定（根据实际安装方式调整 rx,ry,rz）
-    rx, ry, rz = 0.0, 90.0, 0.0
+    # 末端姿态固定，保证夹爪始终保持向下。
+    rx, ry, rz = _resolve_tool_orientation(orientation)
 
     waypoints = np.zeros((len(t), 6))
     waypoints[:, 0] = cx + radius * np.cos(angle)   # x
@@ -62,7 +74,8 @@ def generate_slow_sweep(n_points: int = 100,
                         center=None,
                         radius=None,
                         angle_min=None,
-                        angle_max=None) -> np.ndarray:
+                        angle_max=None,
+                        orientation=None) -> np.ndarray:
     """
     慢速全程扫描轨迹（用于ROM探测和K辨识）
     从最小角度线性扫到最大角度，再返回
@@ -77,13 +90,14 @@ def generate_slow_sweep(n_points: int = 100,
     angles      = np.concatenate([angles_go, angles_back])
 
     cx, cy, cz = center
+    rx, ry, rz = _resolve_tool_orientation(orientation)
     waypoints = np.zeros((len(angles), 6))
     waypoints[:, 0] = cx + radius * np.cos(angles)
     waypoints[:, 1] = cy
     waypoints[:, 2] = cz + radius * np.sin(angles)
-    waypoints[:, 3] = 0.0
-    waypoints[:, 4] = 90.0
-    waypoints[:, 5] = 0.0
+    waypoints[:, 3] = rx
+    waypoints[:, 4] = ry
+    waypoints[:, 5] = rz
     return waypoints
 
 
@@ -96,6 +110,7 @@ def generate_rehab_trajectory(
     angle_max: float = None,
     range_scale: float = None,
     cycles: float = None,
+    orientation: list = None,
 ) -> np.ndarray:
     """
     生成康复训练轨迹：在标定得到的活动范围内做平滑往复运动。
@@ -118,13 +133,14 @@ def generate_rehab_trajectory(
     angle = angle_center + angle_amp * np.sin(2.0 * np.pi * cycles * t / duration)
 
     cx, cy, cz = center
+    rx, ry, rz = _resolve_tool_orientation(orientation)
     waypoints = np.zeros((len(t), 6))
     waypoints[:, 0] = cx + radius * np.cos(angle)
     waypoints[:, 1] = cy
     waypoints[:, 2] = cz + radius * np.sin(angle)
-    waypoints[:, 3] = 0.0
-    waypoints[:, 4] = 90.0
-    waypoints[:, 5] = 0.0
+    waypoints[:, 3] = rx
+    waypoints[:, 4] = ry
+    waypoints[:, 5] = rz
     return waypoints
 
 
@@ -173,7 +189,7 @@ def calibrate_joint_center(robot, use_drag: bool = True) -> tuple:
                 _stop_drag(robot)
                 time.sleep(0.3)
 
-        p = _read_cartesian_position(robot)
+        p = [float(v) for v in _read_cartesian_position(robot)]
         points.append(p)
         print(f"    记录坐标: x={p[0]:.1f}, y={p[1]:.1f}, z={p[2]:.1f}")
 
@@ -211,4 +227,10 @@ def calibrate_joint_center(robot, use_drag: bool = True) -> tuple:
     print(f"  中立位角度: {neutral:.4f} rad")
     print("  请将以上值更新到 config/settings.py 中的 JOINT_CENTER / JOINT_RADIUS / JOINT_ANGLE_*")
 
-    return [cx, cy, cz], radius, angle_min, angle_max, neutral
+    return (
+        [float(cx), float(cy), float(cz)],
+        float(radius),
+        float(angle_min),
+        float(angle_max),
+        float(neutral),
+    )

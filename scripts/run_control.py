@@ -44,6 +44,34 @@ def _move_l(robot, pose):
     return robot.mov_l(*[float(v) for v in pose[:6]])
 
 
+def _servo_p(robot, pose):
+    if hasattr(robot, "servo_p"):
+        return robot.servo_p(*[float(v) for v in pose[:6]])
+    return _move_l(robot, pose)
+
+
+def _get_tool_orientation(robot):
+    configured = getattr(settings, "TOOL_DOWN_ORIENTATION", None)
+    if configured is not None:
+        orientation = [float(v) for v in configured[:3]]
+        logger.info(
+            "使用 settings.TOOL_DOWN_ORIENTATION 锁定末端姿态: "
+            f"rx={orientation[0]:.2f}, ry={orientation[1]:.2f}, rz={orientation[2]:.2f}"
+        )
+        return orientation
+
+    pose = robot.get_cartesian_pose()
+    if pose is None or len(pose) < 6:
+        raise RuntimeError("无法读取当前末端姿态，请检查机器人反馈连接")
+
+    orientation = [float(v) for v in pose[3:6]]
+    logger.info(
+        "已将当前末端姿态锁定为夹爪向下姿态: "
+        f"rx={orientation[0]:.2f}, ry={orientation[1]:.2f}, rz={orientation[2]:.2f}"
+    )
+    return orientation
+
+
 def _stop_robot(robot):
     if hasattr(robot, "stop"):
         return robot.stop()
@@ -69,6 +97,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     time.sleep(0.5)
     force.set_bias()
     time.sleep(0.3)
+    tool_orientation = _get_tool_orientation(robot)
 
     # ── 安全守卫 ─────────────────────────────────────
     guard = SafetyGuard(force, robot)
@@ -83,7 +112,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     mpc.set_comfort_predictor(comfort_pred)
 
     # ── 生成参考轨迹 ──────────────────────────────────
-    ref_wps = generate_rehab_trajectory()   # (N_total, 6)
+    ref_wps = generate_rehab_trajectory(orientation=tool_orientation)   # (N_total, 6)
 
     # 参考轨迹转为状态序列 [position, velocity]（单轴x）
     ref_x   = ref_wps[:, 0]
@@ -157,13 +186,14 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
                 u_opt, u_warm = mpc.solve(x0, ref_horizon, F_vec, u_warm)
                 next_pose, _ = mpc.acceleration_to_pose(
                     cur_pose, cur_vel, u_opt, axis=0)
+                next_pose[3:6] = tool_orientation
             else:
                 # PINN未就绪：直接跟踪参考轨迹
-                next_pose    = ref_wps[step + 1]
+                next_pose    = ref_wps[step + 1].copy()
                 u_warm       = None
 
             # 5. 发送运动指令
-            _move_l(robot, next_pose)
+            _servo_p(robot, next_pose)
 
             prev_pose = cur_pose
             prev_time = now
@@ -194,6 +224,10 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     except RuntimeError as e:
         logger.error(f"安全停止: {e}")
     finally:
+        try:
+            _stop_robot(robot)
+        except Exception as e:
+            logger.warning(f"停止机器人失败: {e}")
         guard.stop()
         force.disconnect()
         robot.disable()

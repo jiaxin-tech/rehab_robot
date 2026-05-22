@@ -44,6 +44,34 @@ def _move_l(robot, pose):
     return robot.mov_l(*[float(v) for v in pose[:6]])
 
 
+def _servo_p(robot, pose):
+    if hasattr(robot, "servo_p"):
+        return robot.servo_p(*[float(v) for v in pose[:6]])
+    return _move_l(robot, pose)
+
+
+def _get_tool_orientation(robot):
+    configured = getattr(settings, "TOOL_DOWN_ORIENTATION", None)
+    if configured is not None:
+        orientation = [float(v) for v in configured[:3]]
+        logger.info(
+            "使用 settings.TOOL_DOWN_ORIENTATION 锁定末端姿态: "
+            f"rx={orientation[0]:.2f}, ry={orientation[1]:.2f}, rz={orientation[2]:.2f}"
+        )
+        return orientation
+
+    pose = robot.get_cartesian_pose()
+    if pose is None or len(pose) < 6:
+        raise RuntimeError("无法读取当前末端姿态，请检查机器人反馈连接")
+
+    orientation = [float(v) for v in pose[3:6]]
+    logger.info(
+        "已将当前末端姿态锁定为夹爪向下姿态: "
+        f"rx={orientation[0]:.2f}, ry={orientation[1]:.2f}, rz={orientation[2]:.2f}"
+    )
+    return orientation
+
+
 def _stop_robot(robot):
     if hasattr(robot, "stop"):
         return robot.stop()
@@ -83,7 +111,7 @@ def _run_waypoints(robot, guard, collector, waypoints, dt):
     next_tick = time.perf_counter()
     for wp in waypoints:
         guard.check()
-        _move_l(robot, wp)
+        _servo_p(robot, wp)
         collector.record_sample()
         next_tick += dt
         time.sleep(max(0.0, next_tick - time.perf_counter()))
@@ -129,6 +157,8 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         input("本次运行已使用新标定值；请也更新settings.py用于下次运行。按回车继续...")
 
     # ── 安全守卫 ─────────────────────────────────────
+    tool_orientation = _get_tool_orientation(robot)
+
     guard = SafetyGuard(force, robot)
     guard.start()
 
@@ -142,7 +172,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         # ── 阶段1：慢速扫描（ROM探测 + K辨识）─────────
         if collect_kind in ("pinn", "both"):
             logger.info(f"▶ PINN阶段1：慢速全程扫描 ({n_sweeps}次，不做舒适度标签)")
-            sweep_wps = generate_slow_sweep()
+            sweep_wps = generate_slow_sweep(orientation=tool_orientation)
             _set_speed(robot, 3)   # 极慢
 
             for rep in range(n_sweeps):
@@ -152,24 +182,14 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
                 _wait_idle(robot)
                 time.sleep(0.3)
 
-                collector.start_episode()
-                for wp in sweep_wps[1:]:
-                    guard.check()
-                    _move_l(robot, wp)
-                    # 等待运动中持续采集
-                    deadline = time.perf_counter() + 0.5  # 每段最多等0.5s
-                    next_tick = time.perf_counter()
-                    while time.perf_counter() < deadline:
-                        collector.record_sample()
-                        next_tick += dt
-                        time.sleep(max(0.0, next_tick - time.perf_counter()))
+                _run_waypoints(robot, guard, collector, sweep_wps[1:], max(dt, 0.05))
                 collector.end_episode(comfort_label=-1)
                 time.sleep(0.3)
 
         # ── 阶段2：持续激励轨迹（主力训练数据）────────
             logger.info(f"▶ PINN阶段2：持续激励轨迹 ({n_excitations}次，不做舒适度标签)")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
-            excit_wps = generate_excitation_trajectory()
+            excit_wps = generate_excitation_trajectory(orientation=tool_orientation)
 
             for rep in range(n_excitations):
                 guard.check()
@@ -188,7 +208,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         if collect_kind in ("comfort", "both"):
             logger.info(f"▶ 舒适度阶段：康复轨迹 ({n_rehab}次，需要人工标签)")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
-            rehab_wps = generate_rehab_trajectory()
+            rehab_wps = generate_rehab_trajectory(orientation=tool_orientation)
 
             for rep in range(n_rehab):
                 guard.check()
@@ -209,6 +229,10 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
     except RuntimeError as e:
         logger.error(f"安全停止: {e}")
     finally:
+        try:
+            _stop_robot(robot)
+        except Exception as e:
+            logger.warning(f"停止机器人失败: {e}")
         guard.stop()
         force.disconnect()
         robot.disable()
@@ -224,11 +248,11 @@ def main():
     parser.add_argument("--session",    default="session_01")
     parser.add_argument("--calibrate",  action="store_true", help="采集前做关节中心标定")
     parser.add_argument("--label-only", action="store_true", help="只做标注，不采集")
-    parser.add_argument("--sweeps", type=int, default=5, help="慢速扫描episode数量")
-    parser.add_argument("--excitations", type=int, default=20, help="激励轨迹episode数量")
+    parser.add_argument("--sweeps", type=int, default=0, help="慢速扫描episode数量")
+    parser.add_argument("--excitations", type=int, default=3, help="激励轨迹episode数量")
     parser.add_argument("--collect-kind", choices=("pinn", "comfort", "both"),
                         default="pinn", help="pinn=只采PINN数据，comfort=只采康复舒适度数据，both=都采")
-    parser.add_argument("--rehab-episodes", type=int, default=5, help="康复轨迹舒适度episode数量")
+    parser.add_argument("--rehab-episodes", type=int, default=1, help="康复轨迹舒适度episode数量")
     args = parser.parse_args()
 
     if args.label_only:

@@ -25,11 +25,15 @@ INIT_SPEED_RATIO  = 5               # 初始速度比例 (1~100)
 
 # ── 轨迹参数（需要标定后修改）──────────────────────────
 # 关节旋转中心坐标 (mm)，标定脚本会自动写入
-JOINT_CENTER      = [300.0, -200.0, 350.0]
-JOINT_RADIUS      = 250.0           # 末端到旋转中心距离 (mm)
-JOINT_ANGLE_MIN   = -0.6            # 关节角度下限 (rad)
-JOINT_ANGLE_MAX   =  0.6            # 关节角度上限 (rad)
-JOINT_NEUTRAL     =  0.0            # 中立位角度 (rad)
+JOINT_CENTER      = [-188.6092449524617, -698.6731523117447, 80.2381895666214]
+JOINT_RADIUS      = 319.2           # 末端到旋转中心距离 (mm)
+JOINT_ANGLE_MIN   = 0.3399            # 关节角度下限 (rad)
+JOINT_ANGLE_MAX   = 1.3218            # 关节角度上限 (rad)
+JOINT_NEUTRAL     = 0.9510            # 中立位角度 (rad)
+
+# 夹爪向下时的末端姿态 [rx, ry, rz] (deg)。
+# None 表示运行脚本启动时读取当前姿态，并在整条轨迹中锁定不变。
+TOOL_DOWN_ORIENTATION = None
 
 # 激励轨迹的正弦参数 [幅度(mm), 频率(rad/s)]
 EXCITATION_PARAMS = [
@@ -37,7 +41,7 @@ EXCITATION_PARAMS = [
     (20, 1.5),   # 中速中幅
     (10, 3.0),   # 快速小幅
 ]
-EXCITATION_DURATION = 10.0          # 每段激励时长 (s)
+EXCITATION_DURATION = 5.0          # 每段激励时长 (s)
 
 # 康复轨迹参数：用于真实康复动作和舒适度判断
 REHAB_DURATION      = 20.0          # 每段康复轨迹时长 (s)

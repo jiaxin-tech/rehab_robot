@@ -75,7 +75,10 @@ class PINN(nn.Module):
         return self.net(t)
 
     def physics_residual(self, t: torch.Tensor,
-                         F: torch.Tensor) -> torch.Tensor:
+                         F: torch.Tensor,
+                         xyz_mean=None,
+                         xyz_std=None,
+                         t_scale: float = 1.0) -> torch.Tensor:
         """
         三轴物理方程残差
         t: (N,1)  requires_grad=True
@@ -83,7 +86,15 @@ class PINN(nn.Module):
         返回: (N,3) 每轴的残差
         """
         t = t.requires_grad_(True)
-        pos = self.forward(t)   # (N,3)
+        pos_norm = self.forward(t)   # (N,3)
+        if xyz_mean is None:
+            xyz_mean = np.zeros(3, dtype=np.float32)
+        if xyz_std is None:
+            xyz_std = np.ones(3, dtype=np.float32)
+        xyz_mean_t = torch.as_tensor(xyz_mean, dtype=t.dtype, device=t.device).view(1, 3)
+        xyz_std_t = torch.as_tensor(xyz_std, dtype=t.dtype, device=t.device).view(1, 3)
+        t_scale_t = torch.as_tensor(float(t_scale), dtype=t.dtype, device=t.device)
+        pos = pos_norm * xyz_std_t + xyz_mean_t
 
         residuals = []
         M_list = [self.Mx, self.My, self.Mz]
@@ -97,12 +108,12 @@ class PINN(nn.Module):
                 xi, t,
                 grad_outputs=torch.ones_like(xi),
                 create_graph=True,
-            )[0]
+            )[0] / t_scale_t
             ai = torch.autograd.grad(
                 vi, t,
                 grad_outputs=torch.ones_like(vi),
                 create_graph=True,
-            )[0]
+            )[0] / t_scale_t
 
             res_i = M * ai + B * vi + K * xi - F[:, i:i+1]
             residuals.append(res_i)
@@ -139,20 +150,40 @@ def run_pinn(t_data: np.ndarray,
         params: dict，9个辨识参数
     """
     # ── 数据归一化 ────────────────────────────────────
-    t_scale = t_data.max() + 1e-8
-    t_norm  = t_data / t_scale                          # → [0,1]
+    t_data = np.asarray(t_data, dtype=np.float32).reshape(-1)
+    xyz_data = np.asarray(xyz_data, dtype=np.float32)
+    F_data = np.asarray(F_data, dtype=np.float32)
+    if xyz_data.ndim != 2 or xyz_data.shape[1] != 3:
+        raise ValueError(f"xyz_data shape must be (N,3), got {xyz_data.shape}")
+    if F_data.ndim != 2 or F_data.shape[1] != 3:
+        raise ValueError(f"F_data shape must be (N,3), got {F_data.shape}")
+    if len(t_data) != len(xyz_data) or len(t_data) != len(F_data):
+        raise ValueError("t_data, xyz_data, and F_data must have the same length")
+    if len(t_data) < 10:
+        raise ValueError("PINN training needs at least 10 samples")
 
-    xyz_mean = xyz_data.mean(axis=0)                    # (3,)
-    xyz_std  = xyz_data.std(axis=0) + 1e-8              # (3,)
-    xyz_norm = (xyz_data - xyz_mean) / xyz_std          # → 零均值单位方差
+    t0 = float(t_data.min())
+    t_scale = float(t_data.max() - t0)
+    if t_scale <= 1e-8:
+        raise ValueError("t_data duration is too short for PINN training")
+    t_norm  = (t_data - t0) / t_scale                   # → [0,1]
+
+    xyz_m = xyz_data / 1000.0
+    xyz_ref = xyz_m.mean(axis=0)
+    xyz_disp = xyz_m - xyz_ref
+    xyz_mean = xyz_disp.mean(axis=0)
+    xyz_std  = xyz_disp.std(axis=0) + 1e-8
+    xyz_norm = (xyz_disp - xyz_mean) / xyz_std          # → 零均值单位方差
 
     # 力不归一化，保留物理量纲，让M/B/K的量纲也保持真实
     # （若力量级差异很大可考虑归一化，但需同步调整参数初值）
 
     # ── 转Tensor ─────────────────────────────────────
+    F_dyn = F_data - F_data.mean(axis=0)
+
     t_t   = torch.tensor(t_norm,   dtype=torch.float32).unsqueeze(1)   # (N,1)
     xyz_t = torch.tensor(xyz_norm, dtype=torch.float32)                 # (N,3)
-    F_t   = torch.tensor(F_data,   dtype=torch.float32)                 # (N,3)
+    F_t   = torch.tensor(F_dyn,    dtype=torch.float32)                 # (N,3)
 
     # ── 训练 ─────────────────────────────────────────
     model     = PINN()
@@ -168,7 +199,12 @@ def run_pinn(t_data: np.ndarray,
         loss_data = ((xyz_pred - xyz_t) ** 2).mean()
 
         # 物理损失：三轴方程残差均趋近0
-        residual  = model.physics_residual(t_t.clone(), F_t)
+        residual  = model.physics_residual(
+            t_t.clone(), F_t,
+            xyz_mean=xyz_mean,
+            xyz_std=xyz_std,
+            t_scale=t_scale,
+        )
         loss_phys = (residual ** 2).mean()
 
         loss = loss_data + lam * loss_phys

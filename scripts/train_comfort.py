@@ -16,11 +16,11 @@ logger = get_logger("TrainComfort")
 
 def evaluate(model_path: str, data_dir: str):
     """训练完后评估准确率"""
-    from models.comfort_net import ComfortNet
-    import csv, glob
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"模型文件不存在，请先训练: {model_path}")
 
     predictor = ComfortPredictor(model_path)
-    X, y, _ = load_dataset(data_dir)
+    X, y, _ = load_dataset(data_dir, normalize=False)
 
     preds  = predictor.predict_batch(X)
     binary = (preds >= 0.5).astype(float)
@@ -48,17 +48,21 @@ def main():
     parser.add_argument("--eval-only",  action="store_true", help="只评估不训练")
     args = parser.parse_args()
 
-    if args.eval_only:
-        evaluate(args.model_path, args.data_dir)
-    else:
-        logger.info(f"开始训练舒适度网络，数据路径: {args.data_dir}")
-        train(
-            data_dir   = args.data_dir,
-            model_path = args.model_path,
-            epochs     = args.epochs,
-            lr         = args.lr,
-        )
-        evaluate(args.model_path, args.data_dir)
+    try:
+        if args.eval_only:
+            evaluate(args.model_path, args.data_dir)
+        else:
+            logger.info(f"开始训练舒适度网络，数据路径: {args.data_dir}")
+            train(
+                data_dir   = args.data_dir,
+                model_path = args.model_path,
+                epochs     = args.epochs,
+                lr         = args.lr,
+            )
+            evaluate(args.model_path, args.data_dir)
+    except (FileNotFoundError, ValueError) as e:
+        logger.error(str(e))
+        sys.exit(1)
 
 
 if __name__ == "__main__":

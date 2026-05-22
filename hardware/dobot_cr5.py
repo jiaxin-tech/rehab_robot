@@ -178,7 +178,7 @@ class DobotCR5:
             gain: 增益
         """
         cmd = f"ServoJ({joints[0]},{joints[1]},{joints[2]},{joints[3]},{joints[4]},{joints[5]},t={t},lookahead_time={lookahead_time},gain={gain})"
-        self._send_move_command(cmd)
+        self._send_move_command(cmd, wait_response=False)
     
     def mov_l(self, x: float, y: float, z: float, rx: float, ry: float, rz: float):
         """笛卡尔空间直线运动
@@ -198,7 +198,7 @@ class DobotCR5:
             rx, ry, rz: 目标姿态（度）
         """
         cmd = f"ServoP({x},{y},{z},{rx},{ry},{rz})"
-        self._send_move_command(cmd)
+        self._send_move_command(cmd, wait_response=False)
 
     def start_drag(self):
         """进入拖拽（协作）模式"""
@@ -234,13 +234,15 @@ class DobotCR5:
         except Exception as e:
             raise RuntimeError(f"Failed to send dashboard command '{command}': {e}")
     
-    def _send_move_command(self, command: str) -> str:
+    def _send_move_command(self, command: str, wait_response: bool = True) -> str:
         """发送运动控制指令"""
         if not self.is_connected or not self.move_client:
             raise ConnectionError("Not connected. Cannot send move command.")
         
         try:
             self.move_client.sendall(command.encode('utf-8'))
+            if not wait_response:
+                return ""
             
             response = ""
             try:
@@ -307,11 +309,8 @@ class DobotCR5:
             # 笛卡尔位姿 (字节位置 624 开始)
             for i in range(6):
                 value = self._bytes_to_double(624 + i * 8)
-                # 机器人反馈前三个位置量为 m；项目内部统一使用 mm。
-                if i < 3:
-                    self.cartesian_pose[i] = value * 1000.0
-                else:
-                    self.cartesian_pose[i] = value
+                # Dobot反馈端口的x/y/z单位已经是mm，rx/ry/rz为度。
+                self.cartesian_pose[i] = value
             
             # 关节速度 (字节位置 480 开始)
             for i in range(6):

@@ -1,79 +1,85 @@
 # scripts/train_pinn.py
-# 入口：PINN离线验证（用采集数据验证参数辨识精度）
+# Offline PINN validation on collected CSV episodes.
 
 import argparse
-import sys, os
+import csv
+import glob
+import os
+import sys
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import csv, glob
 import numpy as np
+
 from config import settings
-from models.pinn import train_offline
-from utils.signal_processing import smooth_differentiate
+from models.pinn import run_pinn
 from utils.logger import get_logger
 
 logger = get_logger("TrainPINN")
 
 
+PARAM_KEYS = ["Mx", "My", "Mz", "Bx", "By", "Bz", "Kx", "Ky", "Kz"]
+
+
 def load_episode(fpath: str):
-    """加载单个episode的CSV，返回 t, x, F"""
-    with open(fpath) as f:
+    """Load one collected episode as t, xyz, F arrays."""
+    with open(fpath, newline="") as f:
         rows = list(csv.DictReader(f))
-    t = np.array([float(r["t"])  for r in rows])
-    x = np.array([float(r["x"])  for r in rows])   # 末端x方向位置
-    F = np.array([float(r["fx"]) for r in rows])   # x方向力
-    return t, x, F
+    if len(rows) < 10:
+        raise ValueError(f"episode too short: {fpath}")
+
+    t = np.array([float(r["t"]) for r in rows], dtype=np.float32)
+    xyz = np.array(
+        [[float(r["x"]), float(r["y"]), float(r["z"])] for r in rows],
+        dtype=np.float32,
+    )
+    force = np.array(
+        [[float(r["fx"]), float(r["fy"]), float(r["fz"])] for r in rows],
+        dtype=np.float32,
+    )
+    return t, xyz, force
 
 
-def run_validation(data_dir: str, n_episodes: int = 5):
-    """
-    用多个episode验证PINN辨识精度
-    同一患者不同episode的M/B/K应该相近
-    """
-    files = sorted(glob.glob(
-        os.path.join(data_dir, "**/*.csv"), recursive=True))[:n_episodes]
-
+def run_validation(data_dir: str, n_episodes: int = 5, epochs: int = settings.PINN_EPOCHS):
+    """Run PINN on several episodes and summarize parameter consistency."""
+    files = sorted(glob.glob(os.path.join(data_dir, "**", "*.csv"), recursive=True))
     if not files:
-        logger.error(f"未找到数据: {data_dir}")
-        return
+        raise FileNotFoundError(f"No CSV files found under {data_dir}")
 
+    files = files[:n_episodes]
     results = []
-    for i, fpath in enumerate(files):
-        logger.info(f"\n── Episode {i+1}: {os.path.basename(fpath)}")
-        t, x, F = load_episode(fpath)
-
-        _, params = train_offline(
-            t_data  = t,
-            x_data  = x,
-            F_data  = F,
-            epochs  = settings.PINN_EPOCHS,
-            verbose = True,
+    for i, fpath in enumerate(files, start=1):
+        logger.info(f"Episode {i}/{len(files)}: {os.path.basename(fpath)}")
+        t, xyz, force = load_episode(fpath)
+        _, params = run_pinn(
+            t_data=t,
+            xyz_data=xyz,
+            F_data=force,
+            epochs=epochs,
+            verbose=True,
         )
         results.append(params)
 
-    # 统计辨识结果的一致性
-    if len(results) > 1:
-        Ms = [r["M"] for r in results]
-        Bs = [r["B"] for r in results]
-        Ks = [r["K"] for r in results]
-        logger.info("\n── 辨识结果汇总 ──")
-        logger.info(f"M: mean={np.mean(Ms):.3f}  std={np.std(Ms):.3f}")
-        logger.info(f"B: mean={np.mean(Bs):.3f}  std={np.std(Bs):.3f}")
-        logger.info(f"K: mean={np.mean(Ks):.3f}  std={np.std(Ks):.3f}")
-        cv_M = np.std(Ms) / (np.mean(Ms) + 1e-8)
-        if cv_M < 0.1:
-            logger.info("✓ M辨识一致性良好 (变异系数<10%)")
-        else:
-            logger.warning(f"⚠️  M辨识波动较大 (CV={cv_M:.2f})，建议增加激励轨迹多样性")
+    if len(results) <= 1:
+        return results
+
+    logger.info("PINN parameter summary:")
+    for key in PARAM_KEYS:
+        values = np.array([r[key] for r in results], dtype=float)
+        logger.info(
+            f"{key}: mean={values.mean():.4g} std={values.std():.4g} "
+            f"cv={values.std() / (abs(values.mean()) + 1e-8):.3f}"
+        )
+    return results
 
 
 def main():
-    parser = argparse.ArgumentParser(description="PINN离线验证")
-    parser.add_argument("--data-dir",   default=settings.DATA_DIR)
-    parser.add_argument("--n-episodes", type=int, default=5,
-                        help="用于验证的episode数量")
+    parser = argparse.ArgumentParser(description="Offline PINN validation")
+    parser.add_argument("--data-dir", default=settings.DATA_DIR)
+    parser.add_argument("--n-episodes", type=int, default=5)
+    parser.add_argument("--epochs", type=int, default=settings.PINN_EPOCHS)
     args = parser.parse_args()
-    run_validation(args.data_dir, args.n_episodes)
+    run_validation(args.data_dir, args.n_episodes, args.epochs)
 
 
 if __name__ == "__main__":
