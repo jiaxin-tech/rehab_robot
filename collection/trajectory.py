@@ -2,6 +2,7 @@
 # 持续激励轨迹生成：多频正弦叠加
 
 import numpy as np
+import time
 from config import settings
 
 
@@ -73,18 +74,52 @@ def generate_slow_sweep(n_points: int = 100,
     return waypoints
 
 
-def calibrate_joint_center(robot) -> tuple:
+def _read_cartesian_position(robot) -> list:
+    """读取当前末端 xyz，兼容不同机器人封装。"""
+    if hasattr(robot, "get_cartesian_pose"):
+        return list(robot.get_cartesian_pose()[:3])
+    if hasattr(robot, "get_state"):
+        return list(robot.get_state()["cartesian_pose"][:3])
+    raise AttributeError("robot 缺少 get_cartesian_pose/get_state 位姿读取接口")
+
+
+def _start_drag(robot):
+    if not hasattr(robot, "start_drag"):
+        raise AttributeError("robot 缺少 start_drag 拖拽接口")
+    return robot.start_drag()
+
+
+def _stop_drag(robot):
+    if not hasattr(robot, "stop_drag"):
+        raise AttributeError("robot 缺少 stop_drag 拖拽接口")
+    return robot.stop_drag()
+
+
+def calibrate_joint_center(robot, use_drag: bool = True) -> tuple:
     """
     标定关节旋转中心和半径
-    操作：手动将机械臂引导到3个关节角度位置，记录末端坐标，用圆拟合
+    操作：进入拖拽模式，手动将机械臂引导到3个关节角度位置，记录末端坐标，用圆拟合
     Returns: (center [x,y,z], radius float)
     """
-    print("标定模式：请将机械臂引导到以下3个位置后按回车")
+    print("标定模式：程序会自动进入拖拽模式，请拖动末端到对应人体关节位置后按回车。")
+    print("提示：这里的伸直/中立/弯曲指的是人体目标关节状态，不是机械臂自身关节。")
     points = []
     for i, desc in enumerate(["关节伸直位", "关节中立位", "关节弯曲位"]):
-        input(f"  [{i+1}/3] 调整到【{desc}】后按回车...")
-        state = robot.get_state()
-        p = state["cartesian_pose"][:3]
+        print(f"\n  [{i+1}/3] 准备记录【{desc}】")
+        drag_started = False
+        try:
+            if use_drag:
+                _start_drag(robot)
+                drag_started = True
+                time.sleep(0.3)
+                print("    已进入拖拽模式。请手动拖动机械臂末端到目标位置。")
+            input("    到位后按回车记录坐标...")
+        finally:
+            if drag_started:
+                _stop_drag(robot)
+                time.sleep(0.3)
+
+        p = _read_cartesian_position(robot)
         points.append(p)
         print(f"    记录坐标: x={p[0]:.1f}, y={p[1]:.1f}, z={p[2]:.1f}")
 
@@ -104,7 +139,10 @@ def calibrate_joint_center(robot) -> tuple:
         x2**2 - x1**2 + z2**2 - z1**2,
         x3**2 - x2**2 + z3**2 - z2**2,
     ])
-    cx, cz = np.linalg.solve(A, b)
+    try:
+        cx, cz = np.linalg.solve(A, b)
+    except np.linalg.LinAlgError as e:
+        raise RuntimeError("三个位姿过于接近或近似共线，无法拟合关节圆心，请重新标定") from e
     cy     = points[:, 1].mean()
     radius = np.mean(np.sqrt((points[:, 0]-cx)**2 + (points[:, 2]-cz)**2))
 
