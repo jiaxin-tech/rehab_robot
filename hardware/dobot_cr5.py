@@ -159,7 +159,7 @@ class DobotCR5:
         return list(self.actual_joint_speeds)
 
     def get_cartesian_pose(self) -> List[float]:
-        """实时反馈笛卡尔位姿 [x,y,z, rx,ry,rz]：位置 m，姿态度（与 ServoP 输入一致）。"""
+        """实时反馈笛卡尔位姿 [x,y,z, rx,ry,rz]：位置 mm，姿态度（与 MovL/ServoP 输入一致）。"""
         return list(self.cartesian_pose)
     
     def joint_mov_j(self, joints: List[float]):
@@ -307,9 +307,9 @@ class DobotCR5:
             # 笛卡尔位姿 (字节位置 624 开始)
             for i in range(6):
                 value = self._bytes_to_double(624 + i * 8)
-                # 前3个是位置 (X, Y, Z)，从 mm 转换为 m
+                # 机器人反馈前三个位置量为 m；项目内部统一使用 mm。
                 if i < 3:
-                    self.cartesian_pose[i] = value / 1000.0
+                    self.cartesian_pose[i] = value * 1000.0
                 else:
                     self.cartesian_pose[i] = value
             

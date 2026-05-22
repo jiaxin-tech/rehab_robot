@@ -72,9 +72,9 @@ def compute_acceleration(cartesian_poses: np.ndarray,
                          times: np.ndarray) -> np.ndarray:
     """
     从末端笛卡尔位姿序列计算加速度
-    cartesian_poses: (N, 6) 数组，列为 [x,y,z,rx,ry,rz]
+    cartesian_poses: (N, 3/6) 数组，前三列为 [x,y,z]，单位跟输入保持一致
     times:           (N,)   时间戳
-    返回:            (N, 3) 线加速度 [ax, ay, az]
+    返回:            (N, 3) 线加速度 [ax, ay, az]，单位为 输入位置单位/s^2
     """
     accel = np.zeros((len(times), 3))
     for i in range(3):   # 只对xyz做，姿态角不需要

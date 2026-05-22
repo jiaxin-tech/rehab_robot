@@ -75,7 +75,7 @@ def generate_slow_sweep(n_points: int = 100,
 
 
 def _read_cartesian_position(robot) -> list:
-    """读取当前末端 xyz，兼容不同机器人封装。"""
+    """读取当前末端 xyz，单位 mm，兼容不同机器人封装。"""
     if hasattr(robot, "get_cartesian_pose"):
         return list(robot.get_cartesian_pose()[:3])
     if hasattr(robot, "get_state"):
