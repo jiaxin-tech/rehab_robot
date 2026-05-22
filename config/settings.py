@@ -39,6 +39,11 @@ EXCITATION_PARAMS = [
 ]
 EXCITATION_DURATION = 10.0          # 每段激励时长 (s)
 
+# 康复轨迹参数：用于真实康复动作和舒适度判断
+REHAB_DURATION      = 20.0          # 每段康复轨迹时长 (s)
+REHAB_CYCLES        = 3.0           # 每段内往复次数
+REHAB_RANGE_SCALE   = 0.8           # 使用标定活动范围的比例，避免贴近极限
+
 # ── 触觉传感器（未购入时保持None，接口预留）────────────
 TACTILE_IP         = None           # 购入后填写，如 "192.168.1.2"
 TACTILE_PORT       = 50000          # 按实际修改

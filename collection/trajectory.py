@@ -7,13 +7,13 @@ from config import settings
 
 
 def generate_excitation_trajectory(
-    duration: float = settings.EXCITATION_DURATION,
-    dt: float       = settings.COLLECT_DT,
-    center: list    = settings.JOINT_CENTER,
-    radius: float   = settings.JOINT_RADIUS,
-    angle_min: float = settings.JOINT_ANGLE_MIN,
-    angle_max: float = settings.JOINT_ANGLE_MAX,
-    neutral: float  = settings.JOINT_NEUTRAL,
+    duration: float = None,
+    dt: float = None,
+    center: list = None,
+    radius: float = None,
+    angle_min: float = None,
+    angle_max: float = None,
+    neutral: float = None,
 ) -> np.ndarray:
     """
     生成持续激励轨迹（多频正弦叠加）
@@ -22,6 +22,14 @@ def generate_excitation_trajectory(
     Returns:
         waypoints: (N, 6) 笛卡尔路径点数组 [x,y,z,rx,ry,rz]
     """
+    duration = settings.EXCITATION_DURATION if duration is None else duration
+    dt = settings.COLLECT_DT if dt is None else dt
+    center = settings.JOINT_CENTER if center is None else center
+    radius = settings.JOINT_RADIUS if radius is None else radius
+    angle_min = settings.JOINT_ANGLE_MIN if angle_min is None else angle_min
+    angle_max = settings.JOINT_ANGLE_MAX if angle_max is None else angle_max
+    neutral = settings.JOINT_NEUTRAL if neutral is None else neutral
+
     t = np.arange(0, duration, dt)
 
     # 多频正弦叠加，生成关节角度变化量
@@ -51,14 +59,19 @@ def generate_excitation_trajectory(
 
 
 def generate_slow_sweep(n_points: int = 100,
-                        center=settings.JOINT_CENTER,
-                        radius=settings.JOINT_RADIUS,
-                        angle_min=settings.JOINT_ANGLE_MIN,
-                        angle_max=settings.JOINT_ANGLE_MAX) -> np.ndarray:
+                        center=None,
+                        radius=None,
+                        angle_min=None,
+                        angle_max=None) -> np.ndarray:
     """
     慢速全程扫描轨迹（用于ROM探测和K辨识）
     从最小角度线性扫到最大角度，再返回
     """
+    center = settings.JOINT_CENTER if center is None else center
+    radius = settings.JOINT_RADIUS if radius is None else radius
+    angle_min = settings.JOINT_ANGLE_MIN if angle_min is None else angle_min
+    angle_max = settings.JOINT_ANGLE_MAX if angle_max is None else angle_max
+
     angles_go   = np.linspace(angle_min, angle_max, n_points)
     angles_back = np.linspace(angle_max, angle_min, n_points)
     angles      = np.concatenate([angles_go, angles_back])
@@ -68,6 +81,47 @@ def generate_slow_sweep(n_points: int = 100,
     waypoints[:, 0] = cx + radius * np.cos(angles)
     waypoints[:, 1] = cy
     waypoints[:, 2] = cz + radius * np.sin(angles)
+    waypoints[:, 3] = 0.0
+    waypoints[:, 4] = 90.0
+    waypoints[:, 5] = 0.0
+    return waypoints
+
+
+def generate_rehab_trajectory(
+    duration: float = None,
+    dt: float = None,
+    center: list = None,
+    radius: float = None,
+    angle_min: float = None,
+    angle_max: float = None,
+    range_scale: float = None,
+    cycles: float = None,
+) -> np.ndarray:
+    """
+    生成康复训练轨迹：在标定得到的活动范围内做平滑往复运动。
+
+    与 generate_excitation_trajectory 不同，这条轨迹用于真实康复动作和舒适度判断；
+    它不会刻意叠加高频激励，也默认只使用活动范围的一部分，避免贴边。
+    """
+    duration = settings.REHAB_DURATION if duration is None else duration
+    dt = settings.COLLECT_DT if dt is None else dt
+    center = settings.JOINT_CENTER if center is None else center
+    radius = settings.JOINT_RADIUS if radius is None else radius
+    angle_min = settings.JOINT_ANGLE_MIN if angle_min is None else angle_min
+    angle_max = settings.JOINT_ANGLE_MAX if angle_max is None else angle_max
+    range_scale = settings.REHAB_RANGE_SCALE if range_scale is None else range_scale
+    cycles = settings.REHAB_CYCLES if cycles is None else cycles
+
+    t = np.arange(0, duration, dt)
+    angle_center = 0.5 * (angle_min + angle_max)
+    angle_amp = 0.5 * (angle_max - angle_min) * range_scale
+    angle = angle_center + angle_amp * np.sin(2.0 * np.pi * cycles * t / duration)
+
+    cx, cy, cz = center
+    waypoints = np.zeros((len(t), 6))
+    waypoints[:, 0] = cx + radius * np.cos(angle)
+    waypoints[:, 1] = cy
+    waypoints[:, 2] = cz + radius * np.sin(angle)
     waypoints[:, 3] = 0.0
     waypoints[:, 4] = 90.0
     waypoints[:, 5] = 0.0
@@ -99,7 +153,7 @@ def calibrate_joint_center(robot, use_drag: bool = True) -> tuple:
     """
     标定关节旋转中心和半径
     操作：进入拖拽模式，手动将机械臂引导到3个关节角度位置，记录末端坐标，用圆拟合
-    Returns: (center [x,y,z], radius float)
+    Returns: (center [x,y,z], radius, angle_min, angle_max, neutral)
     """
     print("标定模式：程序会自动进入拖拽模式，请拖动末端到对应人体关节位置后按回车。")
     print("提示：这里的伸直/中立/弯曲指的是人体目标关节状态，不是机械臂自身关节。")
@@ -145,10 +199,16 @@ def calibrate_joint_center(robot, use_drag: bool = True) -> tuple:
         raise RuntimeError("三个位姿过于接近或近似共线，无法拟合关节圆心，请重新标定") from e
     cy     = points[:, 1].mean()
     radius = np.mean(np.sqrt((points[:, 0]-cx)**2 + (points[:, 2]-cz)**2))
+    angles = np.unwrap(np.arctan2(points[:, 2] - cz, points[:, 0] - cx))
+    angle_min = min(angles[0], angles[2])
+    angle_max = max(angles[0], angles[2])
+    neutral = angles[1]
 
     print(f"\n标定结果：")
     print(f"  旋转中心: [{cx:.1f}, {cy:.1f}, {cz:.1f}] mm")
     print(f"  运动半径: {radius:.1f} mm")
-    print(f"  请将以上值更新到 config/settings.py 中的 JOINT_CENTER 和 JOINT_RADIUS")
+    print(f"  活动角度范围: [{angle_min:.4f}, {angle_max:.4f}] rad")
+    print(f"  中立位角度: {neutral:.4f} rad")
+    print("  请将以上值更新到 config/settings.py 中的 JOINT_CENTER / JOINT_RADIUS / JOINT_ANGLE_*")
 
-    return [cx, cy, cz], radius
+    return [cx, cy, cz], radius, angle_min, angle_max, neutral

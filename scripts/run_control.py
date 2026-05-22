@@ -11,7 +11,7 @@ from config import settings
 from hardware.dobot_cr5 import DobotCR5
 from hardware.force_sensor import ForceSensor
 from collection.safety_guard import SafetyGuard
-from collection.trajectory import generate_excitation_trajectory
+from collection.trajectory import generate_rehab_trajectory
 from models.comfort_net import ComfortPredictor
 from models.pinn import OnlinePINN
 from control.mpc_controller import MPCController
@@ -23,10 +23,37 @@ logger = get_logger("RunControl")
 PINN_WINDOW = 200   # 200帧 @ 50Hz = 4秒数据
 
 
+def _make_robot(robot_ip: str) -> DobotCR5:
+    return DobotCR5(
+        ip_address=robot_ip,
+        dashboard_port=settings.ROBOT_DASH_PORT,
+        move_port=settings.ROBOT_MOVE_PORT,
+        feedback_port=settings.ROBOT_FEED_PORT,
+    )
+
+
+def _set_speed(robot, ratio: int):
+    if hasattr(robot, "set_speed"):
+        return robot.set_speed(ratio)
+    return robot.set_speed_ratio(ratio)
+
+
+def _move_l(robot, pose):
+    if hasattr(robot, "move_l"):
+        return robot.move_l(pose)
+    return robot.mov_l(*[float(v) for v in pose[:6]])
+
+
+def _stop_robot(robot):
+    if hasattr(robot, "stop"):
+        return robot.stop()
+    return robot.stop_move()
+
+
 def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
     # ── 初始化硬件 ────────────────────────────────────
-    robot = DobotCR5(ip=robot_ip)
+    robot = _make_robot(robot_ip)
     force = ForceSensor(ip=sensor_ip)
     robot.connect()
     force.connect()
@@ -35,7 +62,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
     robot.clear_error()
     robot.enable(load=0.0)
-    robot.set_speed(settings.INIT_SPEED_RATIO)
+    _set_speed(robot, settings.INIT_SPEED_RATIO)
     time.sleep(1.0)
 
     force.start_streaming()
@@ -56,7 +83,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     mpc.set_comfort_predictor(comfort_pred)
 
     # ── 生成参考轨迹 ──────────────────────────────────
-    ref_wps = generate_excitation_trajectory()   # (N_total, 6)
+    ref_wps = generate_rehab_trajectory()   # (N_total, 6)
 
     # 参考轨迹转为状态序列 [position, velocity]（单轴x）
     ref_x   = ref_wps[:, 0]
@@ -72,6 +99,8 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     logger.info("=== 控制循环启动 ===")
     step        = 0
     u_warm      = None   # MPC热启动：上一次的控制序列
+    prev_pose   = None
+    prev_time   = None
 
     try:
         while step < len(ref_states) - settings.MPC_HORIZON - 1:
@@ -79,10 +108,14 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             guard.check()
 
             # 1. 读取当前状态
-            state    = robot.get_state()
-            f_data   = force.get()
-            cur_pose = state["cartesian_pose"]
-            cur_vel  = state["tcp_speed"]
+            now = time.time()
+            f_data = force.get()
+            cur_pose = np.array(robot.get_cartesian_pose(), dtype=float)
+            if prev_pose is None:
+                cur_vel = np.zeros(3, dtype=float)
+            else:
+                dt_pose = max(now - prev_time, 1e-6)
+                cur_vel = (cur_pose[:3] - prev_pose[:3]) / dt_pose
 
             x0 = np.array([cur_pose[0], cur_vel[0]])   # 单轴
             F_vec = np.array([f_data["fx"], f_data["fy"], f_data["fz"]])
@@ -90,7 +123,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             # 2. 更新PINN滑动窗口（三维）
             t_now = time.time() - t0
             t_buf.append(t_now)
-            xyz_buf.append(cur_pose[:3].tolist())               # [x, y, z]
+            xyz_buf.append(cur_pose[:3].tolist())                    # [x, y, z] mm
             F_buf.append([f_data["fx"], f_data["fy"], f_data["fz"]])  # [Fx,Fy,Fz]
 
             if len(t_buf) > PINN_WINDOW:
@@ -130,7 +163,10 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
                 u_warm       = None
 
             # 5. 发送运动指令
-            robot.move_l(next_pose)
+            _move_l(robot, next_pose)
+
+            prev_pose = cur_pose
+            prev_time = now
 
             # 6. 日志（每50步）
             if step % 50 == 0:
@@ -154,7 +190,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
     except KeyboardInterrupt:
         logger.info("用户中止控制")
-        robot.stop()
+        _stop_robot(robot)
     except RuntimeError as e:
         logger.error(f"安全停止: {e}")
     finally:

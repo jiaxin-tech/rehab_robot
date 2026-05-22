@@ -43,7 +43,12 @@ rehab_robot/
 pip install -r requirements.txt
 
 # 1. 采集数据
-python scripts/run_collection.py --subject subject_001 --session session_01
+# 只采 PINN 数据：慢扫 + 激励，不标舒适度
+python3 scripts/run_collection.py --subject subject_001 --session pinn_01 --collect-kind pinn
+# 只采舒适度数据：跑康复轨迹，每段结束后让你标舒适度
+python3 scripts/run_collection.py --subject subject_001 --session comfort_01 --collect-kind comfort --rehab-episodes 5
+# 两者都采
+python3 scripts/run_collection.py --subject subject_001 --session session_01 --collect-kind both
 
 # 2. 训练舒适度网络
 python scripts/train_comfort.py --data-dir data/subject_001
