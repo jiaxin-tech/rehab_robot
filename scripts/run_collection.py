@@ -5,6 +5,7 @@ import argparse
 import time
 import sys
 import os
+import shutil
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import settings
@@ -18,9 +19,24 @@ from collection.trajectory import (
     calibrate_joint_center,
 )
 from collection.collector import DataCollector, label_episodes
+from models.pinn import OnlinePINN
 from utils.logger import get_logger
 
 logger = get_logger("RunCollection")
+
+
+# ── 清理 __pycache__ ─────────────────────────────────
+def _clean_pycache(root: str = None):
+    if root is None:
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    removed = 0
+    for dirpath, dirnames, _ in os.walk(root):
+        for d in dirnames:
+            if d == "__pycache__":
+                full = os.path.join(dirpath, d)
+                shutil.rmtree(full, ignore_errors=True)
+                removed += 1
+    logger.info(f"已清理 {removed} 个 __pycache__ 目录")
 
 
 def _make_robot(robot_ip: str) -> DobotCR5:
@@ -107,6 +123,7 @@ def _ask_comfort_label() -> int:
 
 
 def _run_waypoints(robot, guard, collector, waypoints, dt):
+    """执行一段轨迹，同时把每帧数据存入collector缓冲区，供后续infer_mbk使用"""
     collector.start_episode()
     next_tick = time.perf_counter()
     for wp in waypoints:
@@ -117,11 +134,41 @@ def _run_waypoints(robot, guard, collector, waypoints, dt):
         time.sleep(max(0.0, next_tick - time.perf_counter()))
 
 
+def _infer_and_write_mbk(collector, pinn: OnlinePINN, epochs: int = 300):
+    """
+    从collector的当前episode缓冲区取数据，调用PINN推M/B/K，
+    然后把结果写回collector的最后一个episode（追加列）。
+    """
+    buf = collector.get_current_episode_buffer()
+    if buf is None or len(buf["t"]) < 30:
+        logger.warning("infer_mbk: 当前episode数据不足30帧，跳过M/B/K推理")
+        return
+
+    params = pinn.infer_mbk(
+        t_buf=buf["t"],
+        xyz_buf=buf["xyz"],
+        F_buf=buf["F"],
+        epochs=epochs,
+    )
+    if params is None:
+        return
+
+    collector.write_mbk_to_episode(params)
+    logger.info(
+        f"M/B/K已写入episode | "
+        f"M=({params['Mx']:.3f},{params['My']:.3f},{params['Mz']:.3f}) | "
+        f"B=({params['Bx']:.3f},{params['By']:.3f},{params['Bz']:.3f}) | "
+        f"K=({params['Kx']:.3f},{params['Ky']:.3f},{params['Kz']:.3f})"
+    )
+
+
 def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         n_sweeps: int = 5, n_excitations: int = 20,
         collect_kind: str = "pinn", n_rehab: int = 5):
+
     robot = _make_robot(robot_ip)
     force = ForceSensor(ip=sensor_ip)
+    pinn  = OnlinePINN()
 
     # ── 连接 ─────────────────────────────────────────
     robot.connect()
@@ -158,7 +205,6 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
 
     # ── 安全守卫 ─────────────────────────────────────
     tool_orientation = _get_tool_orientation(robot)
-
     guard = SafetyGuard(force, robot)
     guard.start()
 
@@ -173,7 +219,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         if collect_kind in ("pinn", "both"):
             logger.info(f"▶ PINN阶段1：慢速全程扫描 ({n_sweeps}次，不做舒适度标签)")
             sweep_wps = generate_slow_sweep(orientation=tool_orientation)
-            _set_speed(robot, 3)   # 极慢
+            _set_speed(robot, 3)
 
             for rep in range(n_sweeps):
                 guard.check()
@@ -186,7 +232,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
                 collector.end_episode(comfort_label=-1)
                 time.sleep(0.3)
 
-        # ── 阶段2：持续激励轨迹（主力训练数据）────────
+        # ── 阶段2：持续激励轨迹（PINN主力训练数据）────
             logger.info(f"▶ PINN阶段2：持续激励轨迹 ({n_excitations}次，不做舒适度标签)")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
             excit_wps = generate_excitation_trajectory(orientation=tool_orientation)
@@ -194,8 +240,6 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
             for rep in range(n_excitations):
                 guard.check()
                 logger.info(f"  激励轨迹 {rep+1}/{n_excitations}")
-
-                # 先回起点
                 _move_l(robot, excit_wps[0])
                 _wait_idle(robot)
                 time.sleep(0.3)
@@ -204,7 +248,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
                 collector.end_episode(comfort_label=-1)
                 time.sleep(0.3)
 
-        # ── 阶段3：康复轨迹（用于舒适度标签）───────────
+        # ── 阶段3：康复轨迹（舒适度标签 + M/B/K推理）──
         if collect_kind in ("comfort", "both"):
             logger.info(f"▶ 舒适度阶段：康复轨迹 ({n_rehab}次，需要人工标签)")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
@@ -213,12 +257,17 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
             for rep in range(n_rehab):
                 guard.check()
                 logger.info(f"  康复轨迹 {rep+1}/{n_rehab}")
-
                 _move_l(robot, rehab_wps[0])
                 _wait_idle(robot)
                 time.sleep(0.3)
 
                 _run_waypoints(robot, guard, collector, rehab_wps, dt)
+
+                # 先推M/B/K，写入CSV，再打comfort标签
+                # 顺序很重要：infer_mbk在end_episode之前，这样数据还在缓冲区
+                logger.info("  正在推理M/B/K参数...")
+                _infer_and_write_mbk(collector, pinn, epochs=300)
+
                 comfort_label = _ask_comfort_label()
                 collector.end_episode(comfort_label=comfort_label)
                 time.sleep(0.3)
@@ -238,6 +287,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         robot.disable()
         robot.disconnect()
         logger.info("=== 采集结束 ===")
+        _clean_pycache()
 
 
 def main():
@@ -248,8 +298,8 @@ def main():
     parser.add_argument("--session",    default="session_01")
     parser.add_argument("--calibrate",  action="store_true", help="采集前做关节中心标定")
     parser.add_argument("--label-only", action="store_true", help="只做标注，不采集")
-    parser.add_argument("--sweeps", type=int, default=0, help="慢速扫描episode数量")
-    parser.add_argument("--excitations", type=int, default=3, help="激励轨迹episode数量")
+    parser.add_argument("--sweeps",     type=int, default=0,  help="慢速扫描episode数量")
+    parser.add_argument("--excitations",type=int, default=3,  help="激励轨迹episode数量")
     parser.add_argument("--collect-kind", choices=("pinn", "comfort", "both"),
                         default="pinn", help="pinn=只采PINN数据，comfort=只采康复舒适度数据，both=都采")
     parser.add_argument("--rehab-episodes", type=int, default=1, help="康复轨迹舒适度episode数量")

@@ -1,9 +1,12 @@
 # models/comfort_net.py
 # 舒适度神经网络：离线训练，在线推理
-# 支持三种输入模式（通过 settings.COMFORT_INPUT_MODE 切换）：
-#   "force"         → [Fx,Fy,Fz, x,y,z, vx,vy,vz]            维度=9
-#   "tactile"       → [x,y,z, tactile_0...tactile_N]           维度=3+TACTILE_DIM
-#   "force+tactile" → [Fx,Fy,Fz, x,y,z, vx,vy,vz, tactile...] 维度=9+TACTILE_DIM
+#
+# 输入模式（settings.COMFORT_INPUT_MODE）：
+#   "force"         → [Fx,Fy,Fz, x,y,z, vx,vy,vz]              维度=9
+#   "mbk"           → [Mx,My,Mz, Bx,By,Bz, Kx,Ky,Kz]           维度=9   ← 新增
+#   "mbk+force"     → [Mx..Kz, Fx,Fy,Fz, x,y,z, vx,vy,vz]      维度=18  ← 新增
+#   "tactile"       → [x,y,z, tactile_0...tactile_N]             维度=3+TACTILE_DIM
+#   "force+tactile" → [Fx,Fy,Fz, x,y,z, vx,vy,vz, tactile...]   维度=9+TACTILE_DIM
 
 import os
 import numpy as np
@@ -18,33 +21,47 @@ logger = get_logger("ComfortNet")
 
 # ── 输入维度计算 ──────────────────────────────────────
 def get_input_dim(mode: str = settings.COMFORT_INPUT_MODE) -> int:
-    """根据输入模式返回特征维度"""
     if mode == "force":
-        return 9                                    # Fx,Fy,Fz + x,y,z + vx,vy,vz
+        return 9
+    elif mode == "mbk":
+        return 9                                    # Mx,My,Mz,Bx,By,Bz,Kx,Ky,Kz
+    elif mode == "mbk+force":
+        return 18                                   # mbk(9) + force特征(9)
     elif mode == "tactile":
-        return 3 + settings.TACTILE_DIM            # x,y,z + tactile向量
+        return 3 + settings.TACTILE_DIM
     elif mode == "force+tactile":
-        return 9 + settings.TACTILE_DIM            # force特征 + tactile向量
+        return 9 + settings.TACTILE_DIM
     else:
-        raise ValueError(f"未知的input_mode: {mode}，可选: force / tactile / force+tactile")
+        raise ValueError(f"未知input_mode: {mode}，可选: force/mbk/mbk+force/tactile/force+tactile")
 
 
 def build_feature(fx=0., fy=0., fz=0.,
                   x=0.,  y=0.,  z=0.,
                   vx=0., vy=0., vz=0.,
+                  Mx=0., My=0., Mz=0.,
+                  Bx=0., By=0., Bz=0.,
+                  Kx=0., Ky=0., Kz=0.,
                   tactile: np.ndarray = None,
                   mode: str = settings.COMFORT_INPUT_MODE) -> np.ndarray:
     """
-    根据mode把各传感器数据拼成特征向量，供推理时调用。
-    tactile: (TACTILE_DIM,) 触觉向量，mode含tactile时必须传入
+    根据mode拼接特征向量。
+
+    mbk模式：需要传入PINN推出的M/B/K参数
+    mbk+force模式：M/B/K + 原始力/位置/速度，信息最全
+    触觉传感器到位后再用含tactile的模式，做消融实验对比
     """
     force_feat   = np.array([fx, fy, fz, x, y, z, vx, vy, vz], dtype=np.float32)
+    mbk_feat     = np.array([Mx, My, Mz, Bx, By, Bz, Kx, Ky, Kz], dtype=np.float32)
     tactile_feat = np.array(tactile, dtype=np.float32) if tactile is not None \
                    else np.zeros(settings.TACTILE_DIM, dtype=np.float32)
     pos_feat     = np.array([x, y, z], dtype=np.float32)
 
     if mode == "force":
         return force_feat
+    elif mode == "mbk":
+        return mbk_feat
+    elif mode == "mbk+force":
+        return np.concatenate([mbk_feat, force_feat])
     elif mode == "tactile":
         return np.concatenate([pos_feat, tactile_feat])
     elif mode == "force+tactile":
@@ -55,11 +72,6 @@ def build_feature(fx=0., fy=0., fz=0.,
 
 # ── 网络定义 ─────────────────────────────────────────
 class ComfortNet(nn.Module):
-    """
-    输入维度由 mode 决定（见 get_input_dim）
-    输出: 舒适度概率 (0~1)，越大越舒适
-    """
-
     def __init__(self,
                  input_dim: int = None,
                  hidden: list   = settings.COMFORT_HIDDEN,
@@ -86,19 +98,20 @@ def load_dataset(data_dir: str,
                  mode: str = settings.COMFORT_INPUT_MODE,
                  normalize: bool = True):
     """
-    从data_dir下所有CSV加载数据，根据mode选取对应列。
+    从data_dir下所有CSV加载数据。
 
-    CSV必须包含的列（force模式）：
+    CSV必须包含的列：
         fx,fy,fz, x,y,z, vx,vy,vz, comfort
 
-    CSV可选列（触觉模式）：
-        tactile_0, tactile_1, ..., tactile_{TACTILE_DIM-1}
-        （触觉传感器到位前这些列不存在，tactile模式下会用0填充）
+    mbk/mbk+force模式额外需要：
+        Mx,My,Mz, Bx,By,Bz, Kx,Ky,Kz
+        （由采集时调用 OnlinePINN.infer_mbk() 写入CSV，列不存在时用0填充并警告）
 
     comfort: 0=舒适→label=1，1/2=不适→label=0，-1=跳过
     """
     import csv, glob
     X_list, y_list = [], []
+    mbk_missing_warned = False
 
     files = sorted(glob.glob(os.path.join(data_dir, "**/*.csv"), recursive=True))
     if not files:
@@ -112,7 +125,21 @@ def load_dataset(data_dir: str,
             if c == -1:
                 continue
 
-            # 读取触觉数据（列不存在时用0填充）
+            # 读取M/B/K（列不存在时填0并警告一次）
+            mbk_keys = ["Mx","My","Mz","Bx","By","Bz","Kx","Ky","Kz"]
+            if mode in ("mbk", "mbk+force") and not mbk_missing_warned:
+                missing = [k for k in mbk_keys if k not in r]
+                if missing:
+                    logger.warning(
+                        f"CSV缺少M/B/K列 {missing}，将用0填充。"
+                        f"请在采集时调用 OnlinePINN.infer_mbk() 写入这些列。"
+                    )
+                    mbk_missing_warned = True
+
+            Mx = float(r.get("Mx", 0.0)); My = float(r.get("My", 0.0)); Mz = float(r.get("Mz", 0.0))
+            Bx = float(r.get("Bx", 0.0)); By = float(r.get("By", 0.0)); Bz = float(r.get("Bz", 0.0))
+            Kx = float(r.get("Kx", 0.0)); Ky = float(r.get("Ky", 0.0)); Kz = float(r.get("Kz", 0.0))
+
             tactile = np.array([
                 float(r.get(f"tactile_{i}", 0.0))
                 for i in range(settings.TACTILE_DIM)
@@ -122,6 +149,9 @@ def load_dataset(data_dir: str,
                 fx=float(r["fx"]), fy=float(r["fy"]), fz=float(r["fz"]),
                 x =float(r["x"]),  y =float(r["y"]),  z =float(r["z"]),
                 vx=float(r["vx"]), vy=float(r["vy"]), vz=float(r["vz"]),
+                Mx=Mx, My=My, Mz=Mz,
+                Bx=Bx, By=By, Bz=Bz,
+                Kx=Kx, Ky=Ky, Kz=Kz,
                 tactile=tactile,
                 mode=mode,
             )
@@ -130,8 +160,7 @@ def load_dataset(data_dir: str,
 
     if not X_list:
         raise ValueError(
-            "No labeled comfort samples found. Run collection with "
-            "--collect-kind comfort or label episodes before training."
+            "没有找到有效的comfort标注样本。请先采集数据并打分。"
         )
 
     X = np.vstack(X_list).astype(np.float32)
@@ -142,14 +171,9 @@ def load_dataset(data_dir: str,
         f"特征维度={X.shape[1]}"
     )
 
-    labels = np.unique(y)
-    if len(labels) < 2:
-        logger.warning(
-            "Comfort labels contain only one class. Training a classifier "
-            "will not be meaningful until both comfort=0 and comfort=1/2 exist."
-        )
+    if len(np.unique(y)) < 2:
+        logger.warning("comfort标注只有一类，训练前请补充另一类样本。")
 
-    # Z-score归一化
     mean = X.mean(axis=0)
     std  = X.std(axis=0) + 1e-8
     if normalize:
@@ -165,18 +189,12 @@ def train(data_dir:   str,
           epochs:     int   = settings.COMFORT_EPOCHS,
           lr:         float = settings.COMFORT_LR,
           batch:      int   = settings.COMFORT_BATCH):
-    """
-    离线训练舒适度网络。
-    model_path 中会同时保存：模型权重、归一化参数、input_mode。
-    加载时自动恢复mode，不会出现维度不匹配。
-    """
     X, y, norm = load_dataset(data_dir, mode=mode)
     if len(np.unique(y)) < 2:
         raise ValueError(
-            "Comfort training needs both classes: comfort=0 samples and "
-            "comfort=1 or 2 samples. Current labeled data has only one class."
+            "需要两类样本才能训练：comfort=0（舒适）和comfort=1/2（不适）。"
         )
-    input_dim  = X.shape[1]
+    input_dim = X.shape[1]
 
     X_t = torch.tensor(X)
     y_t = torch.tensor(y).unsqueeze(1)
@@ -191,8 +209,7 @@ def train(data_dir:   str,
     model     = ComfortNet(input_dim=input_dim, mode=mode)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     criterion = nn.BCELoss()
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer, patience=20, factor=0.5)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=20, factor=0.5)
 
     best_val_loss = float("inf")
     for ep in range(1, epochs + 1):
@@ -224,7 +241,7 @@ def train(data_dir:   str,
                 "model_state": model.state_dict(),
                 "norm_mean":   norm["mean"],
                 "norm_std":    norm["std"],
-                "input_mode":  mode,          # ← 保存mode，加载时自动恢复
+                "input_mode":  mode,
                 "input_dim":   input_dim,
             }, model_path)
 
@@ -234,11 +251,6 @@ def train(data_dir:   str,
 
 # ── 推理封装 ─────────────────────────────────────────
 class ComfortPredictor:
-    """
-    在线推理封装。
-    加载时自动读取训练时的mode，无需手动指定。
-    """
-
     def __init__(self, model_path: str = settings.COMFORT_MODEL_PATH):
         ckpt       = torch.load(model_path, map_location="cpu")
         self.mode  = ckpt["input_mode"]
@@ -254,33 +266,44 @@ class ComfortPredictor:
                 fx=0., fy=0., fz=0.,
                 x=0.,  y=0.,  z=0.,
                 vx=0., vy=0., vz=0.,
+                Mx=0., My=0., Mz=0.,
+                Bx=0., By=0., Bz=0.,
+                Kx=0., Ky=0., Kz=0.,
                 tactile: np.ndarray = None) -> float:
         """
         返回舒适度分数 (0~1)。
-        tactile 参数在 mode 含 "tactile" 时传入，否则忽略。
 
         示例：
-            # 只用力传感器（mode="force"）
-            score = predictor.predict(fx=2.1, fy=0.3, fz=5.0,
+            # mbk模式（推荐，触觉传感器到位前）
+            score = predictor.predict(Mx=1.2, My=1.1, Mz=0.9,
+                                      Bx=0.3, By=0.3, Bz=0.2,
+                                      Kx=5.1, Ky=4.8, Kz=4.9)
+
+            # mbk+force模式（信息最全）
+            score = predictor.predict(Mx=1.2, ..., fx=2.1, fy=0.3, fz=5.0,
                                       x=301., y=-200., z=350.,
                                       vx=10., vy=0., vz=5.)
 
-            # 力+触觉（mode="force+tactile"）
+            # 触觉传感器到位后（消融实验对比用）
             score = predictor.predict(fx=2.1, ..., tactile=tactile_array)
         """
-        feat = build_feature(fx, fy, fz, x, y, z, vx, vy, vz,
-                             tactile=tactile, mode=self.mode)
+        feat = build_feature(
+            fx=fx, fy=fy, fz=fz,
+            x=x,   y=y,   z=z,
+            vx=vx, vy=vy, vz=vz,
+            Mx=Mx, My=My, Mz=Mz,
+            Bx=Bx, By=By, Bz=Bz,
+            Kx=Kx, Ky=Ky, Kz=Kz,
+            tactile=tactile,
+            mode=self.mode,
+        )
         feat_norm = (feat - self.mean) / self.std
         with torch.no_grad():
-            score = self.model(
+            return self.model(
                 torch.tensor(feat_norm, dtype=torch.float32).unsqueeze(0)
             ).item()
-        return score
 
     def predict_batch(self, X: np.ndarray) -> np.ndarray:
-        """
-        批量推理，X形状 (N, input_dim)，列顺序与训练时一致。
-        """
         X_norm = (X.astype(np.float32) - self.mean) / self.std
         with torch.no_grad():
             return self.model(torch.tensor(X_norm)).numpy().squeeze()

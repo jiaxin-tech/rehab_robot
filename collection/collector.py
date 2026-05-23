@@ -14,23 +14,18 @@ logger = get_logger("Collector")
 
 
 class DataCollector:
-    """
-    采集器
-    - 按 COLLECT_HZ 节奏同步读取机械臂状态 + 力传感器
-    - 按 episode 存储 CSV
-    - episode 结束后统一计算加速度（S-G滤波微分）
-    """
-
     FIELDNAMES = [
         "t",
-        "x", "y", "z", "rx", "ry", "rz",       # 末端笛卡尔位姿
-        "vx", "vy", "vz",                         # 末端线速度
-        "ax", "ay", "az",                         # 末端线加速度（后处理计算）
-        "j1", "j2", "j3", "j4", "j5", "j6",       #joint angles
-        "dj1", "dj2", "dj3", "dj4", "dj5", "dj6",  # 关节速度（直接来自反馈，无需后处理）
-        "fx", "fy", "fz", "tx", "ty", "tz",      # 力/力矩
-        "mode",                                    # passive / active
-        "comfort",                                 # 舒适度标注，-1=未标注
+        "trajectory_type",
+        "x", "y", "z", "rx", "ry", "rz",
+        "vx", "vy", "vz",
+        "ax", "ay", "az",
+        "j1", "j2", "j3", "j4", "j5", "j6",
+        "dj1", "dj2", "dj3", "dj4", "dj5", "dj6",
+        "fx", "fy", "fz", "tx", "ty", "tz",
+        "Mx", "My", "Mz", "Bx", "By", "Bz", "Kx", "Ky", "Kz",
+        "mode",
+        "comfort",
     ]
 
     def __init__(self, robot, force_sensor,
@@ -43,8 +38,8 @@ class DataCollector:
         self._t0 = 0.0
         self._active = False
         self._sample_errors = 0
+        self.trajectory_type = "unknown"
 
-        # 创建存储目录
         self.out_dir = os.path.join(settings.DATA_DIR, subject_id, session_id)
         os.makedirs(self.out_dir, exist_ok=True)
 
@@ -69,61 +64,105 @@ class DataCollector:
         self._sample_errors = 0
         logger.info(f"Episode {self._ep_count + 1} 开始")
 
+    def set_trajectory_type(self, trajectory_type: str):
+        self.trajectory_type = trajectory_type
+
     @staticmethod
     def _as_six(values, name: str):
         if values is None or len(values) < 6:
             raise ValueError(f"{name} 长度不足6")
         return [float(v) for v in values[:6]]
 
-    def record_sample(self) -> bool:
-        """采集一个时间点的样本，在主控制循环中按频率调用。成功返回 True。"""
+    @staticmethod
+    def _pinn_params_or_default(pinn_params=None) -> dict:
+        params = {
+            "Mx": settings.PINN_M_INIT, "My": settings.PINN_M_INIT, "Mz": settings.PINN_M_INIT,
+            "Bx": settings.PINN_B_INIT, "By": settings.PINN_B_INIT, "Bz": settings.PINN_B_INIT,
+            "Kx": settings.PINN_K_INIT, "Ky": settings.PINN_K_INIT, "Kz": settings.PINN_K_INIT,
+        }
+        if pinn_params:
+            for key in params:
+                if key in pinn_params:
+                    params[key] = float(pinn_params[key])
+        return params
+
+    def record_sample(self, pinn_params=None) -> dict | None:
         if not self._active:
             raise RuntimeError("请先调用 start_episode() 再采样")
 
         try:
             t_rel = time.perf_counter() - self._t0
-            pose = self._as_six(self.robot.get_cartesian_pose(), "cartesian_pose")
-            jnt = self._as_six(self.robot.get_joint_angles(), "joint_angles")
-            djnt = self._as_six(self.robot.get_actual_joint_speeds(), "joint_speeds")
+            pose  = self._as_six(self.robot.get_cartesian_pose(), "cartesian_pose")
+            jnt   = self._as_six(self.robot.get_joint_angles(), "joint_angles")
+            djnt  = self._as_six(self.robot.get_actual_joint_speeds(), "joint_speeds")
             force = self.force.get()
+            params = self._pinn_params_or_default(pinn_params)
 
             row = {
                 "t": round(t_rel, 4),
-                # 笛卡尔位姿（位置单位 mm，姿态单位 度）
+                "trajectory_type": self.trajectory_type,
                 "x": pose[0], "y": pose[1], "z": pose[2],
                 "rx": pose[3], "ry": pose[4], "rz": pose[5],
-                # TCP线速度：占位，end_episode 中由 S-G 微分填充
                 "vx": 0.0, "vy": 0.0, "vz": 0.0,
-                # TCP线加速度：占位，end_episode 中由 S-G 二阶微分填充
                 "ax": 0.0, "ay": 0.0, "az": 0.0,
-                # 关节角度
                 "j1": jnt[0], "j2": jnt[1], "j3": jnt[2],
                 "j4": jnt[3], "j5": jnt[4], "j6": jnt[5],
-                # 关节速度（直接来自反馈，无需后处理）
                 "dj1": djnt[0], "dj2": djnt[1], "dj3": djnt[2],
                 "dj4": djnt[3], "dj5": djnt[4], "dj6": djnt[5],
-                # 力/力矩
                 "fx": force["fx"], "fy": force["fy"], "fz": force["fz"],
                 "tx": force["tx"], "ty": force["ty"], "tz": force["tz"],
+                "Mx": params["Mx"], "My": params["My"], "Mz": params["Mz"],
+                "Bx": params["Bx"], "By": params["By"], "Bz": params["Bz"],
+                "Kx": params["Kx"], "Ky": params["Ky"], "Kz": params["Kz"],
                 "mode": self.mode,
                 "comfort": -1,
             }
         except Exception as e:
             self._sample_errors += 1
             logger.warning(f"采样失败，已跳过本帧: {e}")
-            return False
+            return None
 
         self._buf.append(row)
-        return True
+        return row
 
+    # ── M/B/K推理支持 ────────────────────────────────
+    def get_current_episode_buffer(self) -> dict | None:
+        """
+        返回当前episode缓冲区中的t/xyz/F数据，供OnlinePINN.infer_mbk()调用。
+        必须在end_episode()之前调用，否则缓冲区已清空。
+        返回 None 表示数据不足。
+        """
+        if len(self._buf) < 30:
+            return None
+        return {
+            "t":   [r["t"] for r in self._buf],
+            "xyz": [[r["x"], r["y"], r["z"]] for r in self._buf],
+            "F":   [[r["fx"], r["fy"], r["fz"]] for r in self._buf],
+        }
+
+    def write_mbk_to_episode(self, params: dict):
+        """
+        把PINN推理出的M/B/K写入当前episode缓冲区的每一帧。
+        同一episode内M/B/K是常数（整段轨迹共享一组参数）。
+        必须在end_episode()之前调用。
+        """
+        if not self._buf:
+            logger.warning("write_mbk_to_episode: 缓冲区为空，跳过")
+            return
+        keys = ["Mx", "My", "Mz", "Bx", "By", "Bz", "Kx", "Ky", "Kz"]
+        for row in self._buf:
+            for k in keys:
+                if k in params:
+                    row[k] = float(params[k])
+        logger.debug(f"M/B/K已写入缓冲区 {len(self._buf)} 帧")
+
+    # ── Episode结束 ──────────────────────────────────
     def end_episode(self, comfort_label: int = -1) -> str | None:
         """
         结束episode：
-        1. 对位置序列做 S-G 一阶微分 → TCP线速度
-        2. 对位置序列做 S-G 二阶微分 → TCP线加速度
-        3. 打舒适度标签
-        4. 写CSV
-        Returns: 保存的文件路径，失败返回None
+        1. S-G微分 → TCP线速度/加速度
+        2. 打舒适度标签
+        3. 写CSV
         """
         if len(self._buf) < 10:
             logger.warning("数据点不足10，丢弃此episode")
@@ -131,13 +170,10 @@ class DataCollector:
             return None
 
         t_arr = np.array([r["t"] for r in self._buf])
-        # 仅对 x/y/z 做微分（单位 mm），rx/ry/rz 为姿态，不用于线速度/加速度
-        pos = np.array([[r["x"], r["y"], r["z"]] for r in self._buf])  # (N, 3)
+        pos   = np.array([[r["x"], r["y"], r["z"]] for r in self._buf])
 
-        # compute_acceleration 内部应先一阶微分得速度，再对速度微分得加速度
-        # 如果 smooth_differentiate 支持阶数参数，也可直接调两次
-        vel = smooth_differentiate(pos, t_arr)      # (N, 3)  mm/s
-        accel = compute_acceleration(pos, t_arr)    # (N, 3)  mm/s^2
+        vel   = smooth_differentiate(pos, t_arr)
+        accel = compute_acceleration(pos, t_arr)
 
         for i, row in enumerate(self._buf):
             row["vx"] = round(float(vel[i, 0]),   4)
@@ -148,9 +184,8 @@ class DataCollector:
             row["az"] = round(float(accel[i, 2]), 4)
             row["comfort"] = comfort_label
 
-        # 写CSV
         self._ep_count += 1
-        fname = os.path.join(self.out_dir, f"episode_{self._ep_count:04d}.csv")
+        fname    = os.path.join(self.out_dir, f"episode_{self._ep_count:04d}.csv")
         tmp_name = f"{fname}.tmp"
         with open(tmp_name, "w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=self.FIELDNAMES)
@@ -166,11 +201,7 @@ class DataCollector:
 
 
 def label_episodes(data_dir: str):
-    """
-    事后标注工具：遍历所有comfort=-1的episode，逐个打标签
-    标签：0=舒适  1=轻微不适  2=危险
-    """
-    import glob
+    """事后标注工具：遍历所有comfort=-1的episode，逐个打标签"""
     files = sorted(glob.glob(os.path.join(data_dir, "**/*.csv"), recursive=True))
     count = 0
     for fpath in files:
