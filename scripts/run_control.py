@@ -127,6 +127,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     logger.info("=== 控制循环启动 ===")
     step        = 0
     u_warm      = None   # MPC热启动：上一次的控制序列
+    last_acc    = 0.0    # 上一拍已执行加速度，用于jerk惩罚
     prev_pose   = None
     prev_time   = None
 
@@ -180,10 +181,12 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
             # 4. MPC求解：只受轨迹与comfort_score影响
             ref_horizon = ref_states[step: step + settings.MPC_HORIZON + 1]
-            u_opt, u_warm = mpc.solve(x0, ref_horizon, comfort_score, u_warm)
+            u_opt, u_warm = mpc.solve(
+                x0, ref_horizon, comfort_score, u_warm, last_acc)
             next_pose, _ = mpc.acceleration_to_pose(
                 cur_pose, cur_vel, u_opt, axis=0)
             next_pose[3:6] = tool_orientation
+            last_acc = u_opt
 
             # 5. 发送运动指令
             _servo_p(robot, next_pose)

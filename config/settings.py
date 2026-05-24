@@ -87,6 +87,9 @@ MPC_HORIZON        = 20             # 预测步数
 MPC_DT             = 0.02           # 控制周期 (s) = 50Hz
 MPC_W_TRACKING     = 1.0            # 轨迹跟踪权重
 MPC_W_COMFORT      = 2.0            # 不舒适时的控制平滑权重
+MPC_W_JERK         = 1.0            # jerk惩罚基础权重，抑制加速度突变
+MPC_TRACKING_MIN_SCALE = 0.3        # comfort=0时tracking权重比例
+MPC_JERK_COMFORT_GAIN  = 4.0        # comfort低时jerk权重增益
 MPC_A_MAX          = 500.0          # 最大加速度指令 (mm/s²)
 
 # ── 数据路径 ──────────────────────────────────────────

@@ -55,6 +55,9 @@ python3 scripts/train_comfort.py --data-dir data/subject_001/comfort_01
 
 # 4. 运行完整控制系统
 python scripts/run_control.py --subject subject_001
+
+
+find . -type d -name "__pycache__" -prune -exec rm -rf {} +
 ```
 
 ## 数据流
