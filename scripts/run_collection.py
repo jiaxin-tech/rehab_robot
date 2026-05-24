@@ -15,7 +15,6 @@ from collection.safety_guard import SafetyGuard
 from collection.trajectory import (
     generate_excitation_trajectory,
     generate_rehab_trajectory,
-    generate_slow_sweep,
     calibrate_joint_center,
 )
 from collection.collector import DataCollector, label_episodes
@@ -162,8 +161,20 @@ def _infer_and_write_mbk(collector, pinn: OnlinePINN, epochs: int = 300):
     )
 
 
+def _rehab_variant(rep: int) -> dict:
+    variants = getattr(settings, "REHAB_VARIANTS", None) or []
+    if not variants:
+        return {
+            "name": "default",
+            "range_scale": settings.REHAB_RANGE_SCALE,
+            "cycles": settings.REHAB_CYCLES,
+            "duration": settings.REHAB_DURATION,
+        }
+    return variants[rep % len(variants)]
+
+
 def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
-        n_sweeps: int = 5, n_excitations: int = 20,
+        n_excitations: int = 20,
         collect_kind: str = "pinn", n_rehab: int = 5):
 
     robot = _make_robot(robot_ip)
@@ -215,25 +226,8 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
     logger.info("=== 开始采集 ===  (Ctrl+C 随时中止)")
 
     try:
-        # ── 阶段1：慢速扫描（ROM探测 + K辨识）─────────
         if collect_kind in ("pinn", "both"):
-            logger.info(f"▶ PINN阶段1：慢速全程扫描 ({n_sweeps}次，不做舒适度标签)")
-            sweep_wps = generate_slow_sweep(orientation=tool_orientation)
-            _set_speed(robot, 3)
-
-            for rep in range(n_sweeps):
-                guard.check()
-                logger.info(f"  慢速扫描 {rep+1}/{n_sweeps}")
-                _move_l(robot, sweep_wps[0])
-                _wait_idle(robot)
-                time.sleep(0.3)
-
-                _run_waypoints(robot, guard, collector, sweep_wps[1:], max(dt, 0.05))
-                collector.end_episode(comfort_label=-1)
-                time.sleep(0.3)
-
-        # ── 阶段2：持续激励轨迹（PINN主力训练数据）────
-            logger.info(f"▶ PINN阶段2：持续激励轨迹 ({n_excitations}次，不做舒适度标签)")
+            logger.info(f"▶ PINN阶段：持续激励轨迹 ({n_excitations}次，不做舒适度标签)")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
             excit_wps = generate_excitation_trajectory(orientation=tool_orientation)
 
@@ -244,6 +238,7 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
                 _wait_idle(robot)
                 time.sleep(0.3)
 
+                collector.set_trajectory_type("excitation", "multi_sine")
                 _run_waypoints(robot, guard, collector, excit_wps, dt)
                 collector.end_episode(comfort_label=-1)
                 time.sleep(0.3)
@@ -252,15 +247,28 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         if collect_kind in ("comfort", "both"):
             logger.info(f"▶ 舒适度阶段：康复轨迹 ({n_rehab}次，需要人工标签)")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
-            rehab_wps = generate_rehab_trajectory(orientation=tool_orientation)
 
             for rep in range(n_rehab):
                 guard.check()
-                logger.info(f"  康复轨迹 {rep+1}/{n_rehab}")
+                variant = _rehab_variant(rep)
+                variant_name = str(variant.get("name", f"variant_{rep+1}"))
+                logger.info(
+                    f"  康复轨迹 {rep+1}/{n_rehab} | {variant_name} "
+                    f"range={variant.get('range_scale', settings.REHAB_RANGE_SCALE)} "
+                    f"cycles={variant.get('cycles', settings.REHAB_CYCLES)} "
+                    f"duration={variant.get('duration', settings.REHAB_DURATION)}s"
+                )
+                rehab_wps = generate_rehab_trajectory(
+                    duration=float(variant.get("duration", settings.REHAB_DURATION)),
+                    range_scale=float(variant.get("range_scale", settings.REHAB_RANGE_SCALE)),
+                    cycles=float(variant.get("cycles", settings.REHAB_CYCLES)),
+                    orientation=tool_orientation,
+                )
                 _move_l(robot, rehab_wps[0])
                 _wait_idle(robot)
                 time.sleep(0.3)
 
+                collector.set_trajectory_type("rehab", variant_name)
                 _run_waypoints(robot, guard, collector, rehab_wps, dt)
 
                 # 先推M/B/K，写入CSV，再打comfort标签
@@ -298,7 +306,6 @@ def main():
     parser.add_argument("--session",    default="session_01")
     parser.add_argument("--calibrate",  action="store_true", help="采集前做关节中心标定")
     parser.add_argument("--label-only", action="store_true", help="只做标注，不采集")
-    parser.add_argument("--sweeps",     type=int, default=0,  help="慢速扫描episode数量")
     parser.add_argument("--excitations",type=int, default=3,  help="激励轨迹episode数量")
     parser.add_argument("--collect-kind", choices=("pinn", "comfort", "both"),
                         default="pinn", help="pinn=只采PINN数据，comfort=只采康复舒适度数据，both=都采")
@@ -310,7 +317,7 @@ def main():
     else:
         run(args.robot_ip, args.sensor_ip,
             args.subject, args.session, args.calibrate,
-            n_sweeps=args.sweeps, n_excitations=args.excitations,
+            n_excitations=args.excitations,
             collect_kind=args.collect_kind, n_rehab=args.rehab_episodes)
 
 

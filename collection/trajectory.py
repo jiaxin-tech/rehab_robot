@@ -70,37 +70,6 @@ def generate_excitation_trajectory(
     return waypoints
 
 
-def generate_slow_sweep(n_points: int = 100,
-                        center=None,
-                        radius=None,
-                        angle_min=None,
-                        angle_max=None,
-                        orientation=None) -> np.ndarray:
-    """
-    慢速全程扫描轨迹（用于ROM探测和K辨识）
-    从最小角度线性扫到最大角度，再返回
-    """
-    center = settings.JOINT_CENTER if center is None else center
-    radius = settings.JOINT_RADIUS if radius is None else radius
-    angle_min = settings.JOINT_ANGLE_MIN if angle_min is None else angle_min
-    angle_max = settings.JOINT_ANGLE_MAX if angle_max is None else angle_max
-
-    angles_go   = np.linspace(angle_min, angle_max, n_points)
-    angles_back = np.linspace(angle_max, angle_min, n_points)
-    angles      = np.concatenate([angles_go, angles_back])
-
-    cx, cy, cz = center
-    rx, ry, rz = _resolve_tool_orientation(orientation)
-    waypoints = np.zeros((len(angles), 6))
-    waypoints[:, 0] = cx + radius * np.cos(angles)
-    waypoints[:, 1] = cy
-    waypoints[:, 2] = cz + radius * np.sin(angles)
-    waypoints[:, 3] = rx
-    waypoints[:, 4] = ry
-    waypoints[:, 5] = rz
-    return waypoints
-
-
 def generate_rehab_trajectory(
     duration: float = None,
     dt: float = None,

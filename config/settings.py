@@ -47,6 +47,13 @@ EXCITATION_DURATION = 5.0          # 每段激励时长 (s)
 REHAB_DURATION      = 20.0          # 每段康复轨迹时长 (s)
 REHAB_CYCLES        = 3.0           # 每段内往复次数
 REHAB_RANGE_SCALE   = 0.8           # 使用标定活动范围的比例，避免贴近极限
+REHAB_VARIANTS      = [
+    {"name": "small_slow",  "range_scale": 0.50, "cycles": 2.0, "duration": 24.0},
+    {"name": "medium",      "range_scale": 0.70, "cycles": 3.0, "duration": 20.0},
+    {"name": "large_slow",  "range_scale": 0.90, "cycles": 2.0, "duration": 24.0},
+    {"name": "small_fast",  "range_scale": 0.50, "cycles": 4.0, "duration": 16.0},
+    {"name": "large_fast",  "range_scale": 0.90, "cycles": 4.0, "duration": 16.0},
+]
 
 # ── 触觉传感器（未购入时保持None，接口预留）────────────
 TACTILE_IP         = None           # 购入后填写，如 "192.168.1.2"

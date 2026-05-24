@@ -1,9 +1,12 @@
 # models/pinn.py
-# Inverse PINN：三维任务空间，从力/运动数据反推关节等效参数 M, B, K
+# Inverse PINN：三维任务空间，从激励轨迹的力/运动数据反推等效参数 M, B, K
 #
 # 物理方程（三维对角形式）：
-#   Mi*ẍi + Bi*ẋi + Ki*xi = Fi，i ∈ {x, y, z}
+#   Mi*ẍi + Bi*ẋi + Ki*xi = Fi，i in {x, y, z}
 # 共9个可辨识参数：Mx/My/Mz, Bx/By/Bz, Kx/Ky/Kz
+# 项目内部统一使用mm：
+#   x: mm, v: mm/s, a: mm/s^2
+#   M: N*s^2/mm, B: N*s/mm, K: N/mm
 
 import numpy as np
 import torch
@@ -117,9 +120,9 @@ def run_pinn(t_data, xyz_data, F_data,
         raise ValueError("t_data duration too short")
     t_norm = (t_data - t0) / t_scale
 
-    xyz_m    = xyz_data / 1000.0
-    xyz_ref  = xyz_m.mean(axis=0)
-    xyz_disp = xyz_m - xyz_ref
+    # 项目内部统一使用mm。这里只去掉绝对坐标偏置，不再换算成m。
+    xyz_ref  = xyz_data.mean(axis=0)
+    xyz_disp = xyz_data - xyz_ref
     xyz_mean = xyz_disp.mean(axis=0)
     xyz_std  = xyz_disp.std(axis=0) + 1e-8
     xyz_norm = (xyz_disp - xyz_mean) / xyz_std
@@ -147,17 +150,17 @@ def run_pinn(t_data, xyz_data, F_data,
             p = model.get_params()
             logger.info(
                 f"Epoch {ep:5d} | data={loss_data.item():.4f} phys={loss_phys.item():.5f} | "
-                f"M=({p['Mx']:.3f},{p['My']:.3f},{p['Mz']:.3f}) | "
-                f"B=({p['Bx']:.3f},{p['By']:.3f},{p['Bz']:.3f}) | "
-                f"K=({p['Kx']:.3f},{p['Ky']:.3f},{p['Kz']:.3f})"
+                f"M=({p['Mx']:.6f},{p['My']:.6f},{p['Mz']:.6f}) | "
+                f"B=({p['Bx']:.6f},{p['By']:.6f},{p['Bz']:.6f}) | "
+                f"K=({p['Kx']:.6f},{p['Ky']:.6f},{p['Kz']:.6f})"
             )
 
     params = model.get_params()
     logger.info(
         f"PINN辨识完成 | "
-        f"M=({params['Mx']:.3f},{params['My']:.3f},{params['Mz']:.3f}) | "
-        f"B=({params['Bx']:.3f},{params['By']:.3f},{params['Bz']:.3f}) | "
-        f"K=({params['Kx']:.3f},{params['Ky']:.3f},{params['Kz']:.3f})"
+        f"M=({params['Mx']:.6f},{params['My']:.6f},{params['Mz']:.6f}) | "
+        f"B=({params['Bx']:.6f},{params['By']:.6f},{params['Bz']:.6f}) | "
+        f"K=({params['Kx']:.6f},{params['Ky']:.6f},{params['Kz']:.6f})"
     )
     return model, params
 

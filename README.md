@@ -43,18 +43,15 @@ rehab_robot/
 pip install -r requirements.txt
 
 # 1. 采集数据
-# 只采 PINN 数据：慢扫 + 激励，不标舒适度
-python3 scripts/run_collection.py --subject subject_001 --session pinn_01 --collect-kind pinn
-# 只采舒适度数据：跑康复轨迹，每段结束后让你标舒适度
-python3 scripts/run_collection.py --subject subject_001 --session comfort_01 --collect-kind comfort --rehab-episodes 5
-# 两者都采
-python3 scripts/run_collection.py --subject subject_001 --session session_01 --collect-kind both
+# 1. 采 PINN excitation 数据
+python3 scripts/run_collection.py --subject subject_001 --session pinn_01 --collect-kind pinn --excitations 3
+# 2. 离线验证 PINN 稳定性
+python3 scripts/train_pinn.py --data-dir data/subject_001/pinn_01
+# 3. 采不同康复轨迹的舒适度数据
+python3 scripts/run_collection.py --subject subject_001 --session comfort_01 --collect-kind comfort --rehab-episodes 10
 
-# 2. 训练舒适度网络
-python scripts/train_comfort.py --data-dir data/subject_001
-
-# 3. 验证PINN（用采集数据离线验证）
-python scripts/train_pinn.py --data-dir data/subject_001
+# 4. 训练 ComfortNet
+python3 scripts/train_comfort.py --data-dir data/subject_001/comfort_01
 
 # 4. 运行完整控制系统
 python scripts/run_control.py --subject subject_001

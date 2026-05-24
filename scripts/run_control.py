@@ -109,7 +109,6 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     # ── 初始化PINN和MPC ───────────────────────────────
     online_pinn = OnlinePINN()
     mpc         = MPCController()
-    mpc.set_comfort_predictor(comfort_pred)
 
     # ── 生成参考轨迹 ──────────────────────────────────
     ref_wps = generate_rehab_trajectory(orientation=tool_orientation)   # (N_total, 6)
@@ -163,34 +162,28 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
                 online_pinn.update(t_buf, xyz_buf, F_buf, epochs=300)
                 if online_pinn.is_ready:
                     p = online_pinn.get_params()
-                    mpc.set_patient_params(p["Mx"], p["Bx"], p["Kx"])  # MPC暂用x轴参数
                     logger.info(
                         f"[Step {step}] PINN更新 | "
-                        f"M=({p['Mx']:.2f},{p['My']:.2f},{p['Mz']:.2f}) "
-                        f"B=({p['Bx']:.2f},{p['By']:.2f},{p['Bz']:.2f}) "
-                        f"K=({p['Kx']:.2f},{p['Ky']:.2f},{p['Kz']:.2f})"
+                        f"M=({p['Mx']:.6f},{p['My']:.6f},{p['Mz']:.6f}) "
+                        f"B=({p['Bx']:.6f},{p['By']:.6f},{p['Bz']:.6f}) "
+                        f"K=({p['Kx']:.6f},{p['Ky']:.6f},{p['Kz']:.6f})"
                     )
 
             # 3. 实时舒适度评分
-            # 触觉传感器到位后在此传入 tactile=tactile_array
+            pinn_params = online_pinn.get_params()
             comfort_score = comfort_pred.predict(
                 fx=f_data["fx"], fy=f_data["fy"], fz=f_data["fz"],
-                x=cur_pose[0],   y=cur_pose[1],   z=cur_pose[2],
-                vx=cur_vel[0],   vy=cur_vel[1],   vz=cur_vel[2],
-                tactile=None,    # ← 触觉传感器到位后改为 tactile=read_tactile()
+                Mx=pinn_params["Mx"], My=pinn_params["My"], Mz=pinn_params["Mz"],
+                Bx=pinn_params["Bx"], By=pinn_params["By"], Bz=pinn_params["Bz"],
+                Kx=pinn_params["Kx"], Ky=pinn_params["Ky"], Kz=pinn_params["Kz"],
             )
 
-            # 4. MPC求解（只在PINN就绪后启动）
-            if online_pinn.is_ready:
-                ref_horizon = ref_states[step: step + settings.MPC_HORIZON + 1]
-                u_opt, u_warm = mpc.solve(x0, ref_horizon, F_vec, u_warm)
-                next_pose, _ = mpc.acceleration_to_pose(
-                    cur_pose, cur_vel, u_opt, axis=0)
-                next_pose[3:6] = tool_orientation
-            else:
-                # PINN未就绪：直接跟踪参考轨迹
-                next_pose    = ref_wps[step + 1].copy()
-                u_warm       = None
+            # 4. MPC求解：只受轨迹与comfort_score影响
+            ref_horizon = ref_states[step: step + settings.MPC_HORIZON + 1]
+            u_opt, u_warm = mpc.solve(x0, ref_horizon, comfort_score, u_warm)
+            next_pose, _ = mpc.acceleration_to_pose(
+                cur_pose, cur_vel, u_opt, axis=0)
+            next_pose[3:6] = tool_orientation
 
             # 5. 发送运动指令
             _servo_p(robot, next_pose)

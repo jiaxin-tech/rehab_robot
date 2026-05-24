@@ -17,6 +17,7 @@ class DataCollector:
     FIELDNAMES = [
         "t",
         "trajectory_type",
+        "trajectory_variant",
         "x", "y", "z", "rx", "ry", "rz",
         "vx", "vy", "vz",
         "ax", "ay", "az",
@@ -39,6 +40,7 @@ class DataCollector:
         self._active = False
         self._sample_errors = 0
         self.trajectory_type = "unknown"
+        self.trajectory_variant = "default"
 
         self.out_dir = os.path.join(settings.DATA_DIR, subject_id, session_id)
         os.makedirs(self.out_dir, exist_ok=True)
@@ -64,8 +66,9 @@ class DataCollector:
         self._sample_errors = 0
         logger.info(f"Episode {self._ep_count + 1} 开始")
 
-    def set_trajectory_type(self, trajectory_type: str):
+    def set_trajectory_type(self, trajectory_type: str, variant: str = "default"):
         self.trajectory_type = trajectory_type
+        self.trajectory_variant = variant
 
     @staticmethod
     def _as_six(values, name: str):
@@ -101,6 +104,7 @@ class DataCollector:
             row = {
                 "t": round(t_rel, 4),
                 "trajectory_type": self.trajectory_type,
+                "trajectory_variant": self.trajectory_variant,
                 "x": pose[0], "y": pose[1], "z": pose[2],
                 "rx": pose[3], "ry": pose[4], "rz": pose[5],
                 "vx": 0.0, "vy": 0.0, "vz": 0.0,
@@ -208,6 +212,8 @@ def label_episodes(data_dir: str):
         with open(fpath) as f:
             rows = list(csv.DictReader(f))
         if not rows or rows[0].get("comfort") != "-1":
+            continue
+        if rows[0].get("trajectory_type") != "rehab":
             continue
 
         print(f"\n[{count+1}] {fpath}  ({len(rows)} 行, mode={rows[0]['mode']})")

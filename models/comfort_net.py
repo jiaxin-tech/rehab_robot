@@ -2,11 +2,7 @@
 # 舒适度神经网络：离线训练，在线推理
 #
 # 输入模式（settings.COMFORT_INPUT_MODE）：
-#   "force"         → [Fx,Fy,Fz, x,y,z, vx,vy,vz]              维度=9
-#   "mbk"           → [Mx,My,Mz, Bx,By,Bz, Kx,Ky,Kz]           维度=9   ← 新增
-#   "mbk+force"     → [Mx..Kz, Fx,Fy,Fz, x,y,z, vx,vy,vz]      维度=18  ← 新增
-#   "tactile"       → [x,y,z, tactile_0...tactile_N]             维度=3+TACTILE_DIM
-#   "force+tactile" → [Fx,Fy,Fz, x,y,z, vx,vy,vz, tactile...]   维度=9+TACTILE_DIM
+#   "pinn_force"    → [Mx..Kz, Fx,Fy,Fz]                       维度=12
 
 import os
 import numpy as np
@@ -21,7 +17,9 @@ logger = get_logger("ComfortNet")
 
 # ── 输入维度计算 ──────────────────────────────────────
 def get_input_dim(mode: str = settings.COMFORT_INPUT_MODE) -> int:
-    if mode == "force":
+    if mode == "pinn_force":
+        return 12                                   # M/B/K(9) + Fx,Fy,Fz(3)
+    elif mode == "force":
         return 9
     elif mode == "mbk":
         return 9                                    # Mx,My,Mz,Bx,By,Bz,Kx,Ky,Kz
@@ -32,7 +30,7 @@ def get_input_dim(mode: str = settings.COMFORT_INPUT_MODE) -> int:
     elif mode == "force+tactile":
         return 9 + settings.TACTILE_DIM
     else:
-        raise ValueError(f"未知input_mode: {mode}，可选: force/mbk/mbk+force/tactile/force+tactile")
+        raise ValueError(f"未知input_mode: {mode}，可选: pinn_force/force/mbk/mbk+force/tactile/force+tactile")
 
 
 def build_feature(fx=0., fy=0., fz=0.,
@@ -51,12 +49,15 @@ def build_feature(fx=0., fy=0., fz=0.,
     触觉传感器到位后再用含tactile的模式，做消融实验对比
     """
     force_feat   = np.array([fx, fy, fz, x, y, z, vx, vy, vz], dtype=np.float32)
+    raw_force_feat = np.array([fx, fy, fz], dtype=np.float32)
     mbk_feat     = np.array([Mx, My, Mz, Bx, By, Bz, Kx, Ky, Kz], dtype=np.float32)
     tactile_feat = np.array(tactile, dtype=np.float32) if tactile is not None \
                    else np.zeros(settings.TACTILE_DIM, dtype=np.float32)
     pos_feat     = np.array([x, y, z], dtype=np.float32)
 
-    if mode == "force":
+    if mode == "pinn_force":
+        return np.concatenate([mbk_feat, raw_force_feat])
+    elif mode == "force":
         return force_feat
     elif mode == "mbk":
         return mbk_feat
@@ -100,12 +101,12 @@ def load_dataset(data_dir: str,
     """
     从data_dir下所有CSV加载数据。
 
-    CSV必须包含的列：
-        fx,fy,fz, x,y,z, vx,vy,vz, comfort
+    CSV必须包含的列（pinn_force默认模式）：
+        Mx,My,Mz, Bx,By,Bz, Kx,Ky,Kz, fx,fy,fz, comfort
 
-    mbk/mbk+force模式额外需要：
+    mbk/mbk+force/pinn_force模式需要：
         Mx,My,Mz, Bx,By,Bz, Kx,Ky,Kz
-        （由采集时调用 OnlinePINN.infer_mbk() 写入CSV，列不存在时用0填充并警告）
+        （由康复轨迹采集时调用 OnlinePINN.infer_mbk() 写入CSV）
 
     comfort: 0=舒适→label=1，1/2=不适→label=0，-1=跳过
     """
@@ -120,6 +121,8 @@ def load_dataset(data_dir: str,
     for fpath in files:
         with open(fpath) as f:
             rows = list(csv.DictReader(f))
+        if rows and rows[0].get("trajectory_type") != "rehab":
+            continue
         for r in rows:
             c = int(r["comfort"])
             if c == -1:
@@ -127,18 +130,18 @@ def load_dataset(data_dir: str,
 
             # 读取M/B/K（列不存在时填0并警告一次）
             mbk_keys = ["Mx","My","Mz","Bx","By","Bz","Kx","Ky","Kz"]
-            if mode in ("mbk", "mbk+force") and not mbk_missing_warned:
+            if mode in ("pinn_force", "mbk", "mbk+force") and not mbk_missing_warned:
                 missing = [k for k in mbk_keys if k not in r]
                 if missing:
-                    logger.warning(
-                        f"CSV缺少M/B/K列 {missing}，将用0填充。"
-                        f"请在采集时调用 OnlinePINN.infer_mbk() 写入这些列。"
+                    raise ValueError(
+                        f"CSV缺少M/B/K列 {missing}: {fpath}。"
+                        "请用 --collect-kind comfort 重新采集，让康复轨迹数据写入PINN参数。"
                     )
-                    mbk_missing_warned = True
+                mbk_missing_warned = True
 
-            Mx = float(r.get("Mx", 0.0)); My = float(r.get("My", 0.0)); Mz = float(r.get("Mz", 0.0))
-            Bx = float(r.get("Bx", 0.0)); By = float(r.get("By", 0.0)); Bz = float(r.get("Bz", 0.0))
-            Kx = float(r.get("Kx", 0.0)); Ky = float(r.get("Ky", 0.0)); Kz = float(r.get("Kz", 0.0))
+            Mx = float(r.get("Mx", settings.PINN_M_INIT)); My = float(r.get("My", settings.PINN_M_INIT)); Mz = float(r.get("Mz", settings.PINN_M_INIT))
+            Bx = float(r.get("Bx", settings.PINN_B_INIT)); By = float(r.get("By", settings.PINN_B_INIT)); Bz = float(r.get("Bz", settings.PINN_B_INIT))
+            Kx = float(r.get("Kx", settings.PINN_K_INIT)); Ky = float(r.get("Ky", settings.PINN_K_INIT)); Kz = float(r.get("Kz", settings.PINN_K_INIT))
 
             tactile = np.array([
                 float(r.get(f"tactile_{i}", 0.0))
@@ -274,18 +277,11 @@ class ComfortPredictor:
         返回舒适度分数 (0~1)。
 
         示例：
-            # mbk模式（推荐，触觉传感器到位前）
+            # pinn_force模式（推荐）
             score = predictor.predict(Mx=1.2, My=1.1, Mz=0.9,
                                       Bx=0.3, By=0.3, Bz=0.2,
-                                      Kx=5.1, Ky=4.8, Kz=4.9)
-
-            # mbk+force模式（信息最全）
-            score = predictor.predict(Mx=1.2, ..., fx=2.1, fy=0.3, fz=5.0,
-                                      x=301., y=-200., z=350.,
-                                      vx=10., vy=0., vz=5.)
-
-            # 触觉传感器到位后（消融实验对比用）
-            score = predictor.predict(fx=2.1, ..., tactile=tactile_array)
+                                      Kx=5.1, Ky=4.8, Kz=4.9,
+                                      fx=2.1, fy=0.3, fz=5.0)
         """
         feat = build_feature(
             fx=fx, fy=fy, fz=fz,

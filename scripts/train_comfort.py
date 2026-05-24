@@ -20,7 +20,7 @@ def evaluate(model_path: str, data_dir: str):
         raise FileNotFoundError(f"模型文件不存在，请先训练: {model_path}")
 
     predictor = ComfortPredictor(model_path)
-    X, y, _ = load_dataset(data_dir, normalize=False)
+    X, y, _ = load_dataset(data_dir, mode=predictor.mode, normalize=False)
 
     preds  = predictor.predict_batch(X)
     binary = (preds >= 0.5).astype(float)

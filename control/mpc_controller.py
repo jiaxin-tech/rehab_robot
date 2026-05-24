@@ -1,5 +1,5 @@
 # control/mpc_controller.py
-# MPC多目标控制器：轨迹跟踪 + 舒适度最大化 + 安全约束
+# MPC控制器：轨迹跟踪 + 舒适度调制
 
 import numpy as np
 from scipy.optimize import minimize
@@ -16,51 +16,29 @@ class MPCController:
     控制量：u = 末端加速度指令        (1维，单轴)
 
     代价函数：
-        J = w_track  * ||x - x_ref||²      ← 轨迹跟踪
-          + w_comfort * (1 - comfort_score) ← 舒适度最大化
-          + w_force   * ||F_pred||²         ← 受力最小化
+        J = w_track * ||x - x_ref||²
+          + w_comfort * (1 - comfort_score) * ||u||²
 
-    硬约束：
-        comfort_score >= COMFORT_THRESHOLD  ← 舒适度下限
-        |F_pred|       <= MAX_FORCE_N       ← 力绝对上限
+    也就是说，MPC只直接受参考轨迹和舒适度分数影响；
+    M/B/K与力数据只用于ComfortNet生成comfort_score。
     """
 
     def __init__(self,
                  horizon:    int   = settings.MPC_HORIZON,
                  dt:         float = settings.MPC_DT,
                  w_tracking: float = settings.MPC_W_TRACKING,
-                 w_comfort:  float = settings.MPC_W_COMFORT,
-                 w_force:    float = settings.MPC_W_FORCE):
+                 w_comfort:  float = settings.MPC_W_COMFORT):
         self.N          = horizon
         self.dt         = dt
         self.w_tracking = w_tracking
         self.w_comfort  = w_comfort
-        self.w_force    = w_force
-
-        # 从PINN获取的患者参数（默认值，会被实时更新）
-        self.M = settings.PINN_M_INIT
-        self.B = settings.PINN_B_INIT
-        self.K = settings.PINN_K_INIT
-
-        # 舒适度预测器（由外部注入）
-        self.comfort_predictor = None
 
         logger.info(f"MPC初始化: horizon={horizon}, dt={dt}s")
-
-    def set_patient_params(self, M: float, B: float, K: float):
-        """更新PINN辨识出的患者参数"""
-        self.M, self.B, self.K = M, B, K
-        logger.debug(f"MPC更新患者参数: M={M:.3f} B={B:.3f} K={K:.3f}")
-
-    def set_comfort_predictor(self, predictor):
-        """注入舒适度预测器"""
-        self.comfort_predictor = predictor
 
     def _predict_states(self, x0: np.ndarray,
                         u_seq: np.ndarray) -> np.ndarray:
         """
-        给定初始状态x0和控制序列u_seq，
-        用患者动力学模型滚动预测未来N步状态
+        给定初始状态x0和控制序列u_seq，用运动学模型滚动预测未来N步状态。
 
         x0:    [position, velocity]
         u_seq: (N,) 加速度指令序列
@@ -70,10 +48,7 @@ class MPCController:
         states[0] = x0
         for i in range(self.N):
             pos, vel = states[i]
-            # 离散化动力学：M*a + B*v + K*x = F → a = (F - B*v - K*x)/M
-            # 这里u是加速度指令，F = M*u + B*v + K*x（内力）
-            acc          = u_seq[i]
-            F_pred       = self.M * acc + self.B * vel + self.K * pos
+            acc = u_seq[i]
             states[i+1, 0] = pos + vel * self.dt
             states[i+1, 1] = vel + acc * self.dt
         return states
@@ -81,13 +56,13 @@ class MPCController:
     def _cost(self, u_flat: np.ndarray,
               x0: np.ndarray,
               ref_traj: np.ndarray,
-              current_force: np.ndarray) -> float:
+              comfort_score: float) -> float:
         """
         MPC代价函数（传给scipy.optimize.minimize）
         u_flat:       (N,) 展平的控制序列
         x0:           当前状态 [pos, vel]
         ref_traj:     (N+1, 2) 参考轨迹
-        current_force: 当前力传感器读数 [fx,fy,fz]
+        comfort_score: 当前舒适度分数，0~1，越大越舒适
         """
         u_seq  = u_flat
         states = self._predict_states(x0, u_seq)
@@ -96,57 +71,14 @@ class MPCController:
         track_err   = states - ref_traj
         cost_track  = self.w_tracking * np.sum(track_err ** 2)
 
-        # 2. 舒适度代价（用当前状态近似，不逐步预测）
-        cost_comfort = 0.0
-        if self.comfort_predictor is not None:
-            for i in range(1, self.N + 1):
-                pos, vel = states[i]
-                score = self.comfort_predictor.predict(
-                    current_force[0], current_force[1], current_force[2],
-                    pos, 0.0, 0.0,   # 单轴简化，y/z为0
-                    vel, 0.0, 0.0,
-                )
-                cost_comfort += self.w_comfort * (1.0 - score)
-
-        # 3. 受力最小化代价
-        F_seq       = self.M * u_seq + self.B * states[1:, 1] + self.K * states[1:, 0]
-        cost_force  = self.w_force * np.sum(F_seq ** 2)
-
-        return cost_track + cost_comfort + cost_force
-
-    def _constraints(self, u_flat: np.ndarray,
-                     x0: np.ndarray,
-                     current_force: np.ndarray) -> list:
-        """
-        硬约束列表（scipy格式，>= 0 表示满足）
-        1. 舒适度 >= COMFORT_THRESHOLD
-        2. 预测力 <= MAX_FORCE_N
-        """
-        u_seq  = u_flat
-        states = self._predict_states(x0, u_seq)
-        cons   = []
-
-        for i in range(1, self.N + 1):
-            pos, vel = states[i]
-
-            # 舒适度约束
-            if self.comfort_predictor is not None:
-                score = self.comfort_predictor.predict(
-                    current_force[0], current_force[1], current_force[2],
-                    pos, 0.0, 0.0, vel, 0.0, 0.0,
-                )
-                cons.append(score - settings.COMFORT_THRESHOLD)
-
-            # 力约束
-            F_pred = abs(self.M * u_seq[i-1] +
-                         self.B * vel + self.K * pos)
-            cons.append(settings.MAX_FORCE_N - F_pred)
-
-        return cons
+        comfort_score = float(np.clip(comfort_score, 0.0, 1.0))
+        u_norm = u_seq / max(settings.MPC_A_MAX, 1e-6)
+        cost_comfort = self.w_comfort * (1.0 - comfort_score) * np.sum(u_norm ** 2)
+        return cost_track + cost_comfort
 
     def solve(self, x0: np.ndarray,
               ref_traj: np.ndarray,
-              current_force: np.ndarray,
+              comfort_score: float = 1.0,
               u_init: np.ndarray = None) -> np.ndarray:
         """
         求解MPC，返回最优控制序列的第一步
@@ -154,7 +86,7 @@ class MPCController:
         Args:
             x0:            当前状态 [position(mm), velocity(mm/s)]
             ref_traj:      (N+1, 2) 参考轨迹（包含当前时刻）
-            current_force: 当前力传感器值 [fx,fy,fz]
+            comfort_score: 当前舒适度分数，0~1
             u_init:        控制序列初始猜测，None则用零初始化
 
         Returns:
@@ -164,21 +96,15 @@ class MPCController:
             u_init = np.zeros(self.N)
 
         # 加速度幅值约束（物理可行）
-        a_max  = 500.0   # mm/s²，根据实际调整
+        a_max  = settings.MPC_A_MAX
         bounds = [(-a_max, a_max)] * self.N
-
-        constraints = [{
-            "type": "ineq",
-            "fun":  lambda u: self._constraints(u, x0, current_force),
-        }]
 
         result = minimize(
             fun=self._cost,
             x0=u_init,
-            args=(x0, ref_traj, current_force),
+            args=(x0, ref_traj, comfort_score),
             method="SLSQP",
             bounds=bounds,
-            constraints=constraints,
             options={"maxiter": 100, "ftol": 1e-4},
         )
 

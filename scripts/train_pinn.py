@@ -22,11 +22,14 @@ PARAM_KEYS = ["Mx", "My", "Mz", "Bx", "By", "Bz", "Kx", "Ky", "Kz"]
 
 
 def load_episode(fpath: str):
-    """Load one collected episode as t, xyz, F arrays."""
+    """Load one collected excitation episode as t, xyz, F arrays."""
     with open(fpath, newline="") as f:
         rows = list(csv.DictReader(f))
     if len(rows) < 10:
         raise ValueError(f"episode too short: {fpath}")
+    trajectory_type = rows[0].get("trajectory_type", "")
+    if trajectory_type and trajectory_type != "excitation":
+        raise ValueError(f"skip non-excitation episode: {fpath} ({trajectory_type})")
 
     t = np.array([float(r["t"]) for r in rows], dtype=np.float32)
     xyz = np.array(
@@ -40,11 +43,20 @@ def load_episode(fpath: str):
     return t, xyz, force
 
 
+def _is_excitation_file(fpath: str) -> bool:
+    with open(fpath, newline="") as f:
+        first = next(csv.DictReader(f), None)
+    if first is None:
+        return False
+    return first.get("trajectory_type", "excitation") == "excitation"
+
+
 def run_validation(data_dir: str, n_episodes: int = 5, epochs: int = settings.PINN_EPOCHS):
-    """Run PINN on several episodes and summarize parameter consistency."""
-    files = sorted(glob.glob(os.path.join(data_dir, "**", "*.csv"), recursive=True))
+    """Run PINN only on excitation episodes and summarize M/B/K consistency."""
+    all_files = sorted(glob.glob(os.path.join(data_dir, "**", "*.csv"), recursive=True))
+    files = [f for f in all_files if _is_excitation_file(f)]
     if not files:
-        raise FileNotFoundError(f"No CSV files found under {data_dir}")
+        raise FileNotFoundError(f"No excitation CSV files found under {data_dir}")
 
     files = files[:n_episodes]
     results = []
