@@ -4,6 +4,8 @@
 import argparse
 import time
 import sys, os
+import queue
+import threading
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import numpy as np
@@ -13,7 +15,7 @@ from hardware.force_sensor import ForceSensor
 from collection.safety_guard import SafetyGuard
 from collection.trajectory import generate_rehab_trajectory
 from models.comfort_net import ComfortPredictor
-from models.pinn import OnlinePINN
+from models.pinn import OnlinePINN, run_pinn
 from control.mpc_controller import MPCController
 from utils.logger import get_logger
 
@@ -21,6 +23,60 @@ logger = get_logger("RunControl")
 
 # PINN在线更新的滑动窗口大小
 PINN_WINDOW = 200   # 200帧 @ 50Hz = 4秒数据
+
+
+class AsyncPINNUpdater:
+    """后台执行PINN训练，控制循环只轮询结果，不等待训练完成。"""
+
+    def __init__(self, epochs: int = settings.PINN_ONLINE_EPOCHS):
+        self.epochs = epochs
+        self._busy = False
+        self._lock = threading.Lock()
+        self._results = queue.Queue()
+
+    def start(self, t_buf, xyz_buf, F_buf) -> bool:
+        with self._lock:
+            if self._busy:
+                return False
+            self._busy = True
+
+        t = np.array(t_buf, dtype=np.float32)
+        xyz = np.array(xyz_buf, dtype=np.float32)
+        force = np.array(F_buf, dtype=np.float32)
+        worker = threading.Thread(
+            target=self._run,
+            args=(t, xyz, force),
+            daemon=True,
+        )
+        worker.start()
+        return True
+
+    def _run(self, t, xyz, force):
+        try:
+            _, params = run_pinn(
+                t_data=t,
+                xyz_data=xyz,
+                F_data=force,
+                epochs=self.epochs,
+                verbose=False,
+            )
+            self._results.put(("ok", params))
+        except Exception as e:
+            self._results.put(("error", e))
+        finally:
+            with self._lock:
+                self._busy = False
+
+    def poll(self):
+        try:
+            return self._results.get_nowait()
+        except queue.Empty:
+            return None
+
+    @property
+    def busy(self) -> bool:
+        with self._lock:
+            return self._busy
 
 
 def _make_robot(robot_ip: str) -> DobotCR5:
@@ -108,15 +164,19 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
     # ── 初始化PINN和MPC ───────────────────────────────
     online_pinn = OnlinePINN()
-    mpc         = MPCController()
+    pinn_updater = AsyncPINNUpdater()
+    mpc         = MPCController(dim=3)
 
     # ── 生成参考轨迹 ──────────────────────────────────
-    ref_wps = generate_rehab_trajectory(orientation=tool_orientation)   # (N_total, 6)
+    ref_wps = generate_rehab_trajectory(
+        dt=settings.MPC_DT,
+        orientation=tool_orientation,
+    )   # (N_total, 6)
 
-    # 参考轨迹转为状态序列 [position, velocity]（单轴x）
-    ref_x   = ref_wps[:, 0]
-    ref_vx  = np.gradient(ref_x, settings.COLLECT_DT)
-    ref_states = np.stack([ref_x, ref_vx], axis=1)   # (N_total, 2)
+    # 参考轨迹转为状态序列 [x,y,z, vx,vy,vz]
+    ref_pos = ref_wps[:, :3]
+    ref_vel = np.gradient(ref_pos, settings.MPC_DT, axis=0)
+    ref_states = np.hstack([ref_pos, ref_vel])   # (N_total, 6)
 
     # ── 滑动窗口缓存（供PINN在线更新用）─────────────
     # xyz_buf: list of [x,y,z]   F_buf: list of [Fx,Fy,Fz]
@@ -127,7 +187,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     logger.info("=== 控制循环启动 ===")
     step        = 0
     u_warm      = None   # MPC热启动：上一次的控制序列
-    last_acc    = 0.0    # 上一拍已执行加速度，用于jerk惩罚
+    last_acc    = np.zeros(3, dtype=float)   # 上一拍已执行加速度，用于jerk惩罚
     prev_pose   = None
     prev_time   = None
 
@@ -146,7 +206,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
                 dt_pose = max(now - prev_time, 1e-6)
                 cur_vel = (cur_pose[:3] - prev_pose[:3]) / dt_pose
 
-            x0 = np.array([cur_pose[0], cur_vel[0]])   # 单轴
+            x0 = np.concatenate([cur_pose[:3], cur_vel[:3]])   # [x,y,z,vx,vy,vz]
             F_vec = np.array([f_data["fx"], f_data["fy"], f_data["fz"]])
 
             # 2. 更新PINN滑动窗口（三维）
@@ -158,22 +218,39 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             if len(t_buf) > PINN_WINDOW:
                 t_buf.pop(0); xyz_buf.pop(0); F_buf.pop(0)
 
-            # 每100步更新一次PINN
-            if step % 100 == 0 and len(t_buf) >= 50:
-                online_pinn.update(t_buf, xyz_buf, F_buf, epochs=300)
-                if online_pinn.is_ready:
+            result = pinn_updater.poll()
+            if result is not None:
+                status, payload = result
+                if status == "ok":
+                    online_pinn.set_params(payload)
                     p = online_pinn.get_params()
                     logger.info(
-                        f"[Step {step}] PINN更新 | "
+                        f"[Step {step}] PINN后台更新完成 | "
                         f"M=({p['Mx']:.6f},{p['My']:.6f},{p['Mz']:.6f}) "
                         f"B=({p['Bx']:.6f},{p['By']:.6f},{p['Bz']:.6f}) "
                         f"K=({p['Kx']:.6f},{p['Ky']:.6f},{p['Kz']:.6f})"
+                    )
+                else:
+                    logger.warning(f"PINN后台更新失败: {payload}")
+
+            # 异步启动PINN更新；控制循环不等待训练完成。
+            if (
+                settings.PINN_ONLINE_ENABLED
+                and step % settings.PINN_ONLINE_UPDATE_EVERY == 0
+                and len(t_buf) >= settings.PINN_ONLINE_MIN_SAMPLES
+            ):
+                if pinn_updater.start(t_buf, xyz_buf, F_buf):
+                    logger.info(
+                        f"[Step {step}] PINN后台更新已启动 "
+                        f"({len(t_buf)}帧, epochs={settings.PINN_ONLINE_EPOCHS})"
                     )
 
             # 3. 实时舒适度评分
             pinn_params = online_pinn.get_params()
             comfort_score = comfort_pred.predict(
                 fx=f_data["fx"], fy=f_data["fy"], fz=f_data["fz"],
+                x=cur_pose[0], y=cur_pose[1], z=cur_pose[2],
+                vx=cur_vel[0], vy=cur_vel[1], vz=cur_vel[2],
                 Mx=pinn_params["Mx"], My=pinn_params["My"], Mz=pinn_params["Mz"],
                 Bx=pinn_params["Bx"], By=pinn_params["By"], Bz=pinn_params["Bz"],
                 Kx=pinn_params["Kx"], Ky=pinn_params["Ky"], Kz=pinn_params["Kz"],
@@ -184,7 +261,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             u_opt, u_warm = mpc.solve(
                 x0, ref_horizon, comfort_score, u_warm, last_acc)
             next_pose, _ = mpc.acceleration_to_pose(
-                cur_pose, cur_vel, u_opt, axis=0)
+                cur_pose, cur_vel, u_opt, axes=(0, 1, 2))
             next_pose[3:6] = tool_orientation
             last_acc = u_opt
 
@@ -198,10 +275,12 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             if step % 50 == 0:
                 logger.info(
                     f"[Step {step:4d}] "
-                    f"pos={cur_pose[0]:.1f}mm  "
+                    f"pos=({cur_pose[0]:.1f},{cur_pose[1]:.1f},{cur_pose[2]:.1f})mm  "
+                    f"|u|={np.linalg.norm(u_opt):.1f}mm/s²  "
                     f"F={np.linalg.norm(F_vec):.1f}N  "
                     f"comfort={comfort_score:.3f}  "
-                    f"pinn_ready={online_pinn.is_ready}"
+                    f"pinn_ready={online_pinn.is_ready} "
+                    f"pinn_busy={pinn_updater.busy}"
                 )
 
             step += 1

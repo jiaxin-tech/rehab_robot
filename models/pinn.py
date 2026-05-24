@@ -11,6 +11,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
+import threading
 from config import settings
 from utils.logger import get_logger
 
@@ -183,6 +184,7 @@ class OnlinePINN:
         }
         self._model = None
         self._ready = False
+        self._lock = threading.Lock()
 
     def update(self, t_buf, xyz_buf, F_buf, epochs=500):
         """用激励轨迹辨识关节全局参数，结果存入 self._params"""
@@ -197,8 +199,11 @@ class OnlinePINN:
         if F.ndim != 2 or F.shape[1] != 3:
             logger.error(f"F_buf shape错误: {F.shape}")
             return
-        self._model, self._params = run_pinn(t, xyz, F, epochs=epochs, verbose=False)
-        self._ready = True
+        model, params = run_pinn(t, xyz, F, epochs=epochs, verbose=False)
+        with self._lock:
+            self._model = model
+            self._params = params
+            self._ready = True
 
     def infer_mbk(self, t_buf, xyz_buf, F_buf, epochs=300) -> dict | None:
         """
@@ -222,8 +227,18 @@ class OnlinePINN:
         return params
 
     def get_params(self) -> dict:
-        return dict(self._params)
+        with self._lock:
+            return dict(self._params)
+
+    def set_params(self, params: dict):
+        keys = ["Mx", "My", "Mz", "Bx", "By", "Bz", "Kx", "Ky", "Kz"]
+        with self._lock:
+            for key in keys:
+                if key in params:
+                    self._params[key] = float(params[key])
+            self._ready = True
 
     @property
     def is_ready(self) -> bool:
-        return self._ready
+        with self._lock:
+            return self._ready

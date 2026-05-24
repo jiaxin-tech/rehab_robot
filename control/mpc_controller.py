@@ -12,8 +12,8 @@ logger = get_logger("MPC")
 class MPCController:
     """
     多目标MPC控制器
-    状态量：x = [position, velocity]  (2维，单轴)
-    控制量：u = 末端加速度指令        (1维，单轴)
+    状态量：x = [p1..pn, v1..vn]      (2*dim维，n维任务空间)
+    控制量：u = [a1..an]              (dim维末端加速度指令)
 
     代价函数：
         J = w_track_eff(comfort) * ||x - x_ref||²
@@ -29,14 +29,18 @@ class MPCController:
                  dt:         float = settings.MPC_DT,
                  w_tracking: float = settings.MPC_W_TRACKING,
                  w_comfort:  float = settings.MPC_W_COMFORT,
-                 w_jerk:     float = settings.MPC_W_JERK):
+                 w_jerk:     float = settings.MPC_W_JERK,
+                 dim:        int   = settings.MPC_DIM):
         self.N          = horizon
         self.dt         = dt
         self.w_tracking = w_tracking
         self.w_comfort  = w_comfort
         self.w_jerk     = w_jerk
+        self.dim        = int(dim)
+        if self.dim < 1:
+            raise ValueError("MPC dim must be >= 1")
 
-        logger.info(f"MPC初始化: horizon={horizon}, dt={dt}s")
+        logger.info(f"MPC初始化: horizon={horizon}, dt={dt}s, dim={self.dim}")
 
     def _comfort_weights(self, comfort_score: float) -> tuple[float, float]:
         """
@@ -54,22 +58,43 @@ class MPCController:
 
         return self.w_tracking * tracking_scale, self.w_jerk * jerk_scale
 
+    def _reshape_u(self, u_flat: np.ndarray) -> np.ndarray:
+        """把优化器的一维变量还原为 (N, dim) 加速度序列。"""
+        u_flat = np.asarray(u_flat, dtype=float)
+        expected = self.N * self.dim
+        if u_flat.size != expected:
+            raise ValueError(f"u size must be {expected}, got {u_flat.size}")
+        return u_flat.reshape(self.N, self.dim)
+
+    def _prepare_last_acc(self, last_acc) -> np.ndarray:
+        acc = np.asarray(last_acc, dtype=float).reshape(-1)
+        if acc.size == 1 and self.dim > 1:
+            return np.full(self.dim, float(acc[0]))
+        if acc.size != self.dim:
+            raise ValueError(f"last_acc size must be {self.dim}, got {acc.size}")
+        return acc
+
     def _predict_states(self, x0: np.ndarray,
                         u_seq: np.ndarray) -> np.ndarray:
         """
         给定初始状态x0和控制序列u_seq，用运动学模型滚动预测未来N步状态。
 
-        x0:    [position, velocity]
-        u_seq: (N,) 加速度指令序列
-        Returns: (N+1, 2) 状态序列
+        x0:    (2*dim,) [p1..pn, v1..vn]
+        u_seq: (N, dim) 加速度指令序列
+        Returns: (N+1, 2*dim) 状态序列
         """
-        states    = np.zeros((self.N + 1, 2))
+        x0 = np.asarray(x0, dtype=float).reshape(-1)
+        if x0.size != 2 * self.dim:
+            raise ValueError(f"x0 size must be {2 * self.dim}, got {x0.size}")
+
+        states    = np.zeros((self.N + 1, 2 * self.dim))
         states[0] = x0
         for i in range(self.N):
-            pos, vel = states[i]
+            pos = states[i, :self.dim]
+            vel = states[i, self.dim:]
             acc = u_seq[i]
-            states[i+1, 0] = pos + vel * self.dt
-            states[i+1, 1] = vel + acc * self.dt
+            states[i+1, :self.dim] = pos + vel * self.dt + 0.5 * acc * self.dt ** 2
+            states[i+1, self.dim:] = vel + acc * self.dt
         return states
 
     def _cost(self, u_flat: np.ndarray,
@@ -79,26 +104,38 @@ class MPCController:
               last_acc: float = 0.0) -> float:
         """
         MPC代价函数（传给scipy.optimize.minimize）
-        u_flat:       (N,) 展平的控制序列
-        x0:           当前状态 [pos, vel]
-        ref_traj:     (N+1, 2) 参考轨迹
+        u_flat:       (N*dim,) 展平的控制序列
+        x0:           当前状态 [p1..pn, v1..vn]
+        ref_traj:     (N+1, 2*dim) 参考轨迹
         comfort_score: 当前舒适度分数，0~1，越大越舒适
         last_acc:      上一控制周期已执行的加速度，用于第一步jerk惩罚
         """
-        u_seq  = u_flat
+        u_seq  = self._reshape_u(u_flat)
+        ref_traj = np.asarray(ref_traj, dtype=float)
+        if ref_traj.shape != (self.N + 1, 2 * self.dim):
+            raise ValueError(
+                f"ref_traj shape must be {(self.N + 1, 2 * self.dim)}, got {ref_traj.shape}"
+            )
         states = self._predict_states(x0, u_seq)
         w_tracking_eff, w_jerk_eff = self._comfort_weights(comfort_score)
 
         # 1. 轨迹跟踪代价
-        track_err   = states - ref_traj
-        cost_track  = w_tracking_eff * np.sum(track_err ** 2)
+        pos_err = states[:, :self.dim] - ref_traj[:, :self.dim]
+        vel_err = states[:, self.dim:] - ref_traj[:, self.dim:]
+        pos_err_norm = pos_err / max(settings.MPC_POS_SCALE, 1e-6)
+        vel_err_norm = vel_err / max(settings.MPC_VEL_SCALE, 1e-6)
+        cost_track = w_tracking_eff * (
+            settings.MPC_W_POS * np.sum(pos_err_norm ** 2)
+            + settings.MPC_W_VEL * np.sum(vel_err_norm ** 2)
+        )
 
         comfort_score = float(np.clip(comfort_score, 0.0, 1.0))
         u_norm = u_seq / max(settings.MPC_A_MAX, 1e-6)
         cost_comfort = self.w_comfort * (1.0 - comfort_score) * np.sum(u_norm ** 2)
 
         # 2. jerk惩罚：jerk = 加速度变化率，归一化后避免单位尺度主导优化
-        prev_u = np.concatenate(([float(last_acc)], u_seq[:-1]))
+        last_acc_vec = self._prepare_last_acc(last_acc)
+        prev_u = np.vstack([last_acc_vec, u_seq[:-1]])
         jerk = (u_seq - prev_u) / max(self.dt, 1e-6)
         jerk_norm = jerk / max(settings.MPC_A_MAX / max(self.dt, 1e-6), 1e-6)
         cost_jerk = w_jerk_eff * np.sum(jerk_norm ** 2)
@@ -114,25 +151,31 @@ class MPCController:
         求解MPC，返回最优控制序列的第一步
 
         Args:
-            x0:            当前状态 [position(mm), velocity(mm/s)]
-            ref_traj:      (N+1, 2) 参考轨迹（包含当前时刻）
+            x0:            当前状态 [p1..pn, v1..vn]
+            ref_traj:      (N+1, 2*dim) 参考轨迹（包含当前时刻）
             comfort_score: 当前舒适度分数，0~1
-            u_init:        控制序列初始猜测，None则用零初始化
+            u_init:        控制序列初始猜测，None则用零初始化，可为(N,dim)或(N*dim,)
             last_acc:      上一控制周期已执行的加速度
 
         Returns:
-            u_opt: 最优加速度指令 (mm/s²)，只返回第一步
+            u_opt: 最优加速度指令 (mm/s²)，dim=1时为标量，否则为(dim,)
         """
         if u_init is None:
-            u_init = np.zeros(self.N)
+            u_init_flat = np.zeros(self.N * self.dim)
+        else:
+            u_init_flat = np.asarray(u_init, dtype=float).reshape(-1)
+            if u_init_flat.size != self.N * self.dim:
+                raise ValueError(
+                    f"u_init size must be {self.N * self.dim}, got {u_init_flat.size}"
+                )
 
         # 加速度幅值约束（物理可行）
         a_max  = settings.MPC_A_MAX
-        bounds = [(-a_max, a_max)] * self.N
+        bounds = [(-a_max, a_max)] * (self.N * self.dim)
 
         result = minimize(
             fun=self._cost,
-            x0=u_init,
+            x0=u_init_flat,
             args=(x0, ref_traj, comfort_score, last_acc),
             method="SLSQP",
             bounds=bounds,
@@ -142,19 +185,31 @@ class MPCController:
         if not result.success:
             logger.warning(f"MPC求解警告: {result.message}")
 
-        # 只返回第一步控制量
-        return result.x[0], result.x   # (u_first, full_sequence)
+        u_seq = self._reshape_u(result.x)
+        u_first = u_seq[0, 0] if self.dim == 1 else u_seq[0].copy()
+        return u_first, u_seq   # (u_first, full_sequence)
 
     def acceleration_to_pose(self, current_pose: np.ndarray,
                              current_vel: np.ndarray,
-                             acc: float,
-                             axis: int = 0) -> np.ndarray:
+                             acc,
+                             axes=None,
+                             axis: int = None) -> np.ndarray:
         """
-        把加速度指令转换为下一时刻的末端位姿（供ServoJ使用）
-        axis: 0=x轴运动
+        把加速度指令转换为下一时刻的末端位姿（供ServoP使用）
+        axes: acc各维对应的pose/velocity索引，默认按前dim个xyz轴
         """
+        if axes is None:
+            axes = [axis] if axis is not None else list(range(self.dim))
+        axes = list(axes)
+        acc_vec = np.asarray(acc, dtype=float).reshape(-1)
+        if acc_vec.size == 1 and len(axes) == 1:
+            pass
+        elif acc_vec.size != len(axes):
+            raise ValueError(f"acc size must match axes length: {acc_vec.size} vs {len(axes)}")
+
         next_pose = current_pose.copy()
         next_vel  = current_vel.copy()
-        next_vel[axis]  += acc * self.dt
-        next_pose[axis] += next_vel[axis] * self.dt
+        for a, ax in zip(acc_vec, axes):
+            next_pose[ax] += next_vel[ax] * self.dt + 0.5 * a * self.dt ** 2
+            next_vel[ax]  += a * self.dt
         return next_pose, next_vel

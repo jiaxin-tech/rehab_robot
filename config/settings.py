@@ -77,20 +77,29 @@ PINN_HIDDEN_LAYERS = [64, 64, 64]
 PINN_LR            = 1e-3
 PINN_EPOCHS        = 2000
 PINN_LAMBDA        = 0.1            # 物理损失权重
+PINN_ONLINE_ENABLED = True          # 控制阶段是否后台更新PINN参数
+PINN_ONLINE_UPDATE_EVERY = 100      # 每隔多少控制步尝试启动一次后台更新
+PINN_ONLINE_MIN_SAMPLES  = 50       # 后台更新所需最少窗口帧数
+PINN_ONLINE_EPOCHS       = 300      # 后台PINN单次训练轮数
 # M/B/K 初始猜测值：项目内部统一使用mm
 PINN_M_INIT        = 0.001          # N·s²/mm，约等于 1 kg
 PINN_B_INIT        = 0.0005         # N·s/mm，约等于 0.5 N·s/m
 PINN_K_INIT        = 0.01           # N/mm，约等于 10 N/m
 
 # ── MPC ───────────────────────────────────────────────
+MPC_DIM            = 3              # MPC任务空间维度，当前使用xyz三维
 MPC_HORIZON        = 20             # 预测步数
 MPC_DT             = 0.02           # 控制周期 (s) = 50Hz
 MPC_W_TRACKING     = 1.0            # 轨迹跟踪权重
+MPC_W_POS          = 1.0            # 位置跟踪子权重
+MPC_W_VEL          = 0.2            # 速度跟踪子权重
 MPC_W_COMFORT      = 2.0            # 不舒适时的控制平滑权重
 MPC_W_JERK         = 1.0            # jerk惩罚基础权重，抑制加速度突变
 MPC_TRACKING_MIN_SCALE = 0.3        # comfort=0时tracking权重比例
 MPC_JERK_COMFORT_GAIN  = 4.0        # comfort低时jerk权重增益
 MPC_A_MAX          = 500.0          # 最大加速度指令 (mm/s²)
+MPC_POS_SCALE      = 100.0          # 位置误差归一化尺度 (mm)
+MPC_VEL_SCALE      = 200.0          # 速度误差归一化尺度 (mm/s)
 
 # ── 数据路径 ──────────────────────────────────────────
 DATA_DIR           = "data"
