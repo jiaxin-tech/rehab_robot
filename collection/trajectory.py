@@ -17,6 +17,37 @@ def _resolve_tool_orientation(orientation=None) -> tuple:
     return tuple(float(v) for v in orientation[:3])
 
 
+def _validate_rehab_motion_limits(range_scale: float, cycles: float, duration: float):
+    """真实机器人康复轨迹的参数护栏，危险样本只能走离线合成。"""
+    max_range = float(getattr(settings, "REHAB_MAX_REAL_RANGE_SCALE", 1.0))
+    max_freq = float(getattr(settings, "REHAB_MAX_REAL_CYCLES_PER_SEC", 0.30))
+    min_duration = float(getattr(settings, "REHAB_MIN_REAL_DURATION", 0.0))
+
+    if range_scale < 0.0:
+        raise ValueError(f"range_scale不能为负: {range_scale}")
+    if range_scale > max_range:
+        raise ValueError(
+            "拒绝生成真实机器人康复轨迹："
+            f"range_scale={range_scale:.2f} > 安全上限{max_range:.2f}。"
+            "越界/危险负样本请使用 --synthetic-risk-only 离线生成CSV。"
+        )
+    if duration <= 0.0:
+        raise ValueError("duration必须大于0")
+    if duration < min_duration:
+        raise ValueError(
+            "拒绝生成真实机器人康复轨迹："
+            f"duration={duration:.2f}s < 最小时长{min_duration:.2f}s，动作过快风险较高。"
+        )
+
+    cycles_per_sec = cycles / duration
+    if cycles_per_sec > max_freq:
+        raise ValueError(
+            "拒绝生成真实机器人康复轨迹："
+            f"cycles/duration={cycles_per_sec:.3f}Hz > 安全上限{max_freq:.3f}Hz。"
+            "高加速度危险负样本请使用离线合成CSV。"
+        )
+
+
 def generate_excitation_trajectory(
     duration: float = None,
     dt: float = None,
@@ -80,6 +111,7 @@ def generate_rehab_trajectory(
     range_scale: float = None,
     cycles: float = None,
     orientation: list = None,
+    enforce_safety: bool = True,
 ) -> np.ndarray:
     """
     生成康复训练轨迹：在标定得到的活动范围内做平滑往复运动。
@@ -95,11 +127,22 @@ def generate_rehab_trajectory(
     angle_max = settings.JOINT_ANGLE_MAX if angle_max is None else angle_max
     range_scale = settings.REHAB_RANGE_SCALE if range_scale is None else range_scale
     cycles = settings.REHAB_CYCLES if cycles is None else cycles
+    range_scale = float(range_scale)
+    cycles = float(cycles)
+    duration = float(duration)
+    dt = float(dt)
+
+    if dt <= 0.0:
+        raise ValueError("dt必须大于0")
+
+    if enforce_safety:
+        _validate_rehab_motion_limits(range_scale, cycles, duration)
 
     t = np.arange(0, duration, dt)
     angle_center = 0.5 * (angle_min + angle_max)
     angle_amp = 0.5 * (angle_max - angle_min) * range_scale
     angle = angle_center + angle_amp * np.sin(2.0 * np.pi * cycles * t / duration)
+    angle = np.clip(angle, angle_min, angle_max)
 
     cx, cy, cz = center
     rx, ry, rz = _resolve_tool_orientation(orientation)

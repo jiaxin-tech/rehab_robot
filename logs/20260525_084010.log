@@ -1,0 +1,12 @@
+[08:40:15][SafetyGuard][INFO] 安全守卫已启动，力阈值=30.0N
+[08:40:15][Collector][INFO] 存储路径: data\subject_001\comfort_01，已有 32 个episode
+[08:40:16][Collector][INFO] Episode 33 开始
+[08:40:41][Collector][DEBUG] M/B/K已写入缓冲区 1100 帧
+[08:40:43][Collector][INFO] Episode 33 已保存: data\subject_001\comfort_01\episode_0033.csv (1100 行)
+[08:40:45][Collector][INFO] Episode 34 开始
+[08:41:05][Collector][DEBUG] M/B/K已写入缓冲区 900 帧
+[08:41:07][Collector][INFO] Episode 34 已保存: data\subject_001\comfort_01\episode_0034.csv (900 行)
+[08:41:08][Collector][INFO] Episode 35 开始
+[08:41:25][Collector][DEBUG] M/B/K已写入缓冲区 750 帧
+[08:41:28][Collector][INFO] Episode 35 已保存: data\subject_001\comfort_01\episode_0035.csv (750 行)
+[08:41:28][SafetyGuard][INFO] 安全守卫已停止

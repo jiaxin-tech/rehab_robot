@@ -1,0 +1,3 @@
+[06:56:06][SyntheticRisk][INFO] 已写入离线风险episode: data\subject_001\comfort_01\episode_0020.csv (unsafe_sim_range_over_joint, 800行, comfort=2)
+[06:56:06][SyntheticRisk][INFO] 已写入离线风险episode: data\subject_001\comfort_01\episode_0021.csv (unsafe_sim_high_stiffness, 800行, comfort=2)
+[06:56:06][SyntheticRisk][INFO] 已写入离线风险episode: data\subject_001\comfort_01\episode_0022.csv (unsafe_sim_high_accel, 400行, comfort=2)

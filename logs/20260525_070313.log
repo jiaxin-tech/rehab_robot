@@ -1,0 +1,30 @@
+[07:03:13][RunControl][INFO] 等待反馈稳定 2s...
+[07:03:17][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.40, ry=0.14, rz=-149.99
+[07:03:17][MPC][INFO] MPC初始化: horizon=20, dt=0.02s, dim=3
+[07:03:17][RunControl][INFO] === 控制循环启动 ===
+[07:03:17][RunControl][INFO] [Step    0] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.1N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:03:18][RunControl][INFO] [Step   50] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.1N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:03:19][RunControl][INFO] [Step 100] PINN后台更新已启动 (101帧, epochs=300)
+[07:03:19][RunControl][INFO] [Step  100] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.6N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:20][RunControl][INFO] [Step  150] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.5N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:21][RunControl][INFO] [Step  200] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.2N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:22][RunControl][INFO] [Step  250] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.6N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:23][RunControl][INFO] [Step  300] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.6N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:24][RunControl][INFO] [Step  350] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.2N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:25][RunControl][INFO] [Step  400] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.2N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:03:26][RunControl][INFO] [Step 434] PINN后台更新完成 | M=(0.001000,0.001000,0.001011) B=(0.000500,0.000500,0.000501) K=(0.009955,0.009994,0.009506)
+[07:03:26][RunControl][INFO] [Step  450] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.5N  comfort=1.000  pinn_ready=True pinn_busy=False
+[07:03:27][RunControl][INFO] [Step 500] PINN后台更新已启动 (200帧, epochs=300)
+[07:03:27][RunControl][INFO] [Step  500] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.7N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:28][RunControl][INFO] [Step  550] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.3N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:29][RunControl][INFO] [Step  600] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.2N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:30][RunControl][INFO] [Step  650] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.3N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:31][RunControl][INFO] [Step  700] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.6N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:32][RunControl][INFO] [Step  750] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.4N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:33][RunControl][INFO] [Step  800] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=0.6N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:34][RunControl][INFO] [Step  850] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=1.5N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:34][RunControl][INFO] [Step 858] PINN后台更新完成 | M=(0.001000,0.001000,0.001000) B=(0.000500,0.000500,0.000500) K=(0.010010,0.009993,0.009707)
+[07:03:35][RunControl][INFO] [Step 900] PINN后台更新已启动 (200帧, epochs=300)
+[07:03:35][RunControl][INFO] [Step  900] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=1.1N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:36][RunControl][INFO] [Step  950] pos=(77.2,-666.6,265.6)mm  |u|=0.0mm/s²  F=1.1N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:03:37][RunControl][INFO] === 控制系统已停止 ===

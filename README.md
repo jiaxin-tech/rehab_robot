@@ -49,6 +49,10 @@ python3 scripts/run_collection.py --subject subject_001 --session pinn_01 --coll
 python3 scripts/train_pinn.py --data-dir data/subject_001/pinn_01
 # 3. 采不同康复轨迹的舒适度数据
 python3 scripts/run_collection.py --subject subject_001 --session comfort_01 --collect-kind comfort --rehab-episodes 10
+# 3.1 只采安全边界内的“不适”轨迹
+python3 scripts/run_collection.py --subject subject_001 --session comfort_01 --collect-kind comfort --rehab-profile safe-discomfort --rehab-episodes 3
+# 3.2 生成离线危险/明显不适负样本（不连接机器人，不执行轨迹，comfort=2）
+python3 scripts/run_collection.py --subject subject_001 --session comfort_01 --synthetic-risk-only --synthetic-risk-episodes 3
 
 # 4. 训练 ComfortNet
 python3 scripts/train_comfort.py --data-dir data/subject_001/comfort_01

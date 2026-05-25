@@ -1,0 +1,10 @@
+[07:42:52][RunControl][INFO] 等待反馈稳定 2s...
+[07:42:56][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.51, ry=0.21, rz=-149.94
+[07:42:56][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[07:42:56][MPC][INFO] MPC初始化: horizon=8, dt=0.03s, dim=3
+[07:42:56][RunControl][INFO] 在线PINN后台更新: 关闭
+[07:42:56][RunControl][INFO] 当前位置距控制轨迹起点 96.5mm，先移动到起点 (80.2,-666.6,262.5)
+[07:42:57][RunControl][INFO] === 控制循环启动 ===
+[07:42:57][RunControl][INFO] [Step    0] pos=(136.2,-666.6,183.8)mm  mpc_target=(80.2,-666.6,262.5)mm  err=96.6mm  ref_idx=0  v_cmd=2.1mm/s  |u|=137.5mm/s²  F=0.2N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:42:58][RunControl][ERROR] 安全停止: 轨迹跟踪误差过大: 201.8mm > 200.0mm
+[07:42:58][RunControl][INFO] === 控制系统已停止 ===

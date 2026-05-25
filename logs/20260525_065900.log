@@ -1,0 +1,5 @@
+[06:59:00][ComfortNet][WARNING] 检测到旧版ComfortNet checkpoint含numpy对象，正在使用兼容模式加载。请只加载本项目训练生成的可信模型文件。
+[06:59:00][ComfortNet][WARNING] 检测到旧版ComfortNet checkpoint含numpy对象，正在使用兼容模式加载。请只加载本项目训练生成的可信模型文件。
+[06:59:00][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[06:59:00][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[06:59:00][TrainComfort][ERROR] 未找到CSV文件：data/subject_001/comfort_02

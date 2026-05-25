@@ -1,0 +1,13 @@
+[08:41:47][TrainComfort][INFO] 开始训练舒适度网络，数据路径: data/subject_001/comfort_01
+[08:41:48][ComfortNet][INFO] [pinn_force模式] 加载数据: 32650行，舒适=19050，不适=13600，特征维度=12
+[08:41:59][ComfortNet][INFO] Epoch   20 | train=0.0001 | val=0.0001
+[08:42:08][ComfortNet][INFO] Epoch   40 | train=0.0000 | val=0.0000
+[08:42:18][ComfortNet][INFO] Epoch   60 | train=0.0000 | val=0.0000
+[08:42:29][ComfortNet][INFO] Epoch   80 | train=0.0000 | val=0.0000
+[08:42:40][ComfortNet][INFO] Epoch  100 | train=0.0000 | val=0.0000
+[08:42:40][ComfortNet][INFO] 训练完成 [pinn_force模式]，最优验证损失=0.0000，已保存: models/comfort_net.pth
+[08:42:40][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[08:42:40][ComfortNet][INFO] [pinn_force模式] 加载数据: 32650行，舒适=19050，不适=13600，特征维度=12
+[08:42:40][TrainComfort][INFO] 评估结果：准确率=1.000
+[08:42:40][TrainComfort][INFO]   TP=19050 TN=13600 FP=0 FN=0
+[08:42:40][TrainComfort][INFO]   精确率=1.000  召回率=1.000

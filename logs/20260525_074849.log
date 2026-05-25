@@ -1,0 +1,57 @@
+[07:48:50][RunControl][INFO] 等待反馈稳定 2s...
+[07:48:54][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.56, ry=0.24, rz=-149.94
+[07:48:54][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[07:48:54][MPC][INFO] MPC初始化: horizon=8, dt=0.03s, dim=3
+[07:48:54][RunControl][INFO] 在线PINN后台更新: 开启
+[07:48:54][RunControl][INFO] 当前位置距控制轨迹起点 95.3mm，先移动到起点 (80.2,-666.6,262.5)
+[07:48:57][RunControl][INFO] === 控制循环启动 ===
+[07:48:57][RunControl][INFO] [Step    0] pos=(80.2,-666.6,262.5)mm  mpc_target=(80.2,-666.6,262.5)mm  err=0.1mm  ref_idx=0  v_cmd=2.1mm/s  |u|=137.5mm/s²  F=2.0N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:48:58][RunControl][INFO] [Step   50] pos=(29.5,-666.6,300.4)mm  mpc_target=(-36.3,-666.6,339.5)mm  err=76.5mm  ref_idx=50  v_cmd=33.5mm/s  |u|=363.3mm/s²  F=3.4N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:49:00][RunControl][INFO] [Step 100] PINN后台更新已启动 (101帧, epochs=300)
+[07:49:00][RunControl][INFO] [Step  100] pos=(-16.6,-666.6,323.8)mm  mpc_target=(48.6,-666.6,293.1)mm  err=72.0mm  ref_idx=100  v_cmd=124.5mm/s  |u|=136.6mm/s²  F=4.4N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:49:01][RunControl][INFO] [Step  150] pos=(58.8,-666.6,268.3)mm  mpc_target=(150.3,-666.6,157.9)mm  err=143.4mm  ref_idx=150  v_cmd=65.2mm/s  |u|=232.2mm/s²  F=3.1N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:49:03][RunControl][INFO] [Step  200] pos=(113.3,-666.6,194.3)mm  mpc_target=(128.0,-666.6,195.2)mm  err=14.8mm  ref_idx=200  v_cmd=107.0mm/s  |u|=150.7mm/s²  F=2.0N  comfort=1.000  pinn_ready=False pinn_busy=True
+[07:49:03][PINN][INFO] PINN辨识完成 | M=(0.000847,0.000917,0.001193) | B=(0.000434,0.000475,0.000610) | K=(0.011793,0.009038,0.008523)
+[07:49:03][RunControl][INFO] [Step 219] PINN后台更新完成 | M=(0.000847,0.000917,0.001193) B=(0.000434,0.000475,0.000610) K=(0.011793,0.009038,0.008523)
+[07:49:03][RunControl][WARNING] 控制循环超时 1 次/秒，最大=64.6ms > 30ms
+[07:49:04][RunControl][INFO] [Step  250] pos=(94.5,-666.6,246.8)mm  mpc_target=(53.0,-666.6,290.2)mm  err=60.0mm  ref_idx=226  v_cmd=15.0mm/s  |u|=3.7mm/s²  F=1.6N  comfort=0.004  pinn_ready=True pinn_busy=False
+[07:49:06][RunControl][INFO] [Step 300] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:06][RunControl][INFO] [Step  300] pos=(37.5,-666.6,282.6)mm  mpc_target=(31.6,-666.6,281.0)mm  err=6.1mm  ref_idx=239  v_cmd=16.2mm/s  |u|=5.7mm/s²  F=4.1N  comfort=0.001  pinn_ready=True pinn_busy=True
+[07:49:07][RunControl][INFO] [Step  350] pos=(29.3,-666.7,280.9)mm  mpc_target=(0.8,-666.6,312.0)mm  err=42.1mm  ref_idx=252  v_cmd=51.9mm/s  |u|=2.2mm/s²  F=4.8N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:08][PINN][INFO] PINN辨识完成 | M=(0.000801,0.000894,0.001155) | B=(0.000415,0.000510,0.000623) | K=(0.012159,0.011941,0.008354)
+[07:49:08][RunControl][INFO] [Step 378] PINN后台更新完成 | M=(0.000801,0.000894,0.001155) B=(0.000415,0.000510,0.000623) K=(0.012159,0.011941,0.008354)
+[07:49:09][RunControl][INFO] [Step 400] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:09][RunControl][INFO] [Step  400] pos=(-15.4,-666.6,346.5)mm  mpc_target=(-31.6,-666.6,360.9)mm  err=21.7mm  ref_idx=264  v_cmd=10.5mm/s  |u|=2.1mm/s²  F=8.9N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:10][RunControl][INFO] [Step  450] pos=(-44.1,-666.6,355.7)mm  mpc_target=(-46.2,-666.6,354.3)mm  err=2.5mm  ref_idx=277  v_cmd=10.6mm/s  |u|=2.6mm/s²  F=7.3N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:11][PINN][INFO] PINN辨识完成 | M=(0.000846,0.000941,0.001140) | B=(0.000447,0.000478,0.000446) | K=(0.011858,0.011533,0.011000)
+[07:49:11][RunControl][INFO] [Step 477] PINN后台更新完成 | M=(0.000846,0.000941,0.001140) B=(0.000447,0.000478,0.000446) K=(0.011858,0.011533,0.011000)
+[07:49:12][RunControl][INFO] [Step 500] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:12][RunControl][INFO] [Step  500] pos=(-55.3,-666.6,347.5)mm  mpc_target=(-47.3,-666.6,340.4)mm  err=10.7mm  ref_idx=289  v_cmd=35.1mm/s  |u|=3.7mm/s²  F=5.0N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:13][RunControl][INFO] [Step  550] pos=(-14.3,-666.6,314.0)mm  mpc_target=(-5.1,-666.6,306.1)mm  err=12.1mm  ref_idx=302  v_cmd=37.2mm/s  |u|=3.0mm/s²  F=5.1N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:14][PINN][INFO] PINN辨识完成 | M=(0.001215,0.001018,0.000812) | B=(0.000439,0.000509,0.000471) | K=(0.008479,0.008977,0.011879)
+[07:49:14][RunControl][INFO] [Step 576] PINN后台更新完成 | M=(0.001215,0.001018,0.000812) B=(0.000439,0.000509,0.000471) K=(0.008479,0.008977,0.011879)
+[07:49:15][RunControl][INFO] [Step 600] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:15][RunControl][INFO] [Step  600] pos=(29.9,-666.6,280.3)mm  mpc_target=(40.4,-666.6,271.7)mm  err=13.5mm  ref_idx=314  v_cmd=38.8mm/s  |u|=2.7mm/s²  F=4.6N  comfort=0.041  pinn_ready=True pinn_busy=True
+[07:49:17][RunControl][INFO] [Step  650] pos=(68.6,-666.6,272.9)mm  mpc_target=(76.4,-666.6,273.7)mm  err=7.9mm  ref_idx=337  v_cmd=29.2mm/s  |u|=113.6mm/s²  F=2.0N  comfort=0.891  pinn_ready=True pinn_busy=True
+[07:49:18][RunControl][INFO] [Step  700] pos=(117.6,-666.6,220.7)mm  mpc_target=(170.9,-666.6,135.4)mm  err=100.6mm  ref_idx=386  v_cmd=60.3mm/s  |u|=280.0mm/s²  F=1.2N  comfort=0.977  pinn_ready=True pinn_busy=True
+[07:49:19][PINN][INFO] PINN辨识完成 | M=(0.000954,0.000999,0.000868) | B=(0.000408,0.000494,0.000599) | K=(0.008731,0.011505,0.011809)
+[07:49:19][RunControl][INFO] [Step 738] PINN后台更新完成 | M=(0.000954,0.000999,0.000868) B=(0.000408,0.000494,0.000599) K=(0.008731,0.011505,0.011809)
+[07:49:20][RunControl][INFO] [Step  750] pos=(140.6,-666.6,154.7)mm  mpc_target=(112.0,-666.6,217.3)mm  err=68.8mm  ref_idx=435  v_cmd=140.4mm/s  |u|=131.0mm/s²  F=1.6N  comfort=0.994  pinn_ready=True pinn_busy=False
+[07:49:21][RunControl][INFO] [Step 800] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:21][RunControl][INFO] [Step  800] pos=(96.5,-666.6,225.3)mm  mpc_target=(-20.4,-666.6,354.0)mm  err=173.8mm  ref_idx=476  v_cmd=78.5mm/s  |u|=4.5mm/s²  F=2.2N  comfort=0.169  pinn_ready=True pinn_busy=True
+[07:49:23][RunControl][INFO] [Step  850] pos=(21.7,-666.6,277.1)mm  mpc_target=(-43.1,-666.6,302.4)mm  err=69.6mm  ref_idx=490  v_cmd=33.3mm/s  |u|=4.1mm/s²  F=5.0N  comfort=0.003  pinn_ready=True pinn_busy=True
+[07:49:23][PINN][INFO] PINN辨识完成 | M=(0.000807,0.000951,0.001077) | B=(0.000598,0.000530,0.000410) | K=(0.012021,0.011630,0.009439)
+[07:49:23][RunControl][INFO] [Step 878] PINN后台更新完成 | M=(0.000807,0.000951,0.001077) B=(0.000598,0.000530,0.000410) K=(0.012021,0.011630,0.009439)
+[07:49:24][RunControl][INFO] [Step 900] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:24][RunControl][INFO] [Step  900] pos=(-15.7,-666.6,301.8)mm  mpc_target=(-0.3,-666.6,312.7)mm  err=18.9mm  ref_idx=503  v_cmd=31.1mm/s  |u|=2.3mm/s²  F=11.4N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:26][RunControl][INFO] [Step  950] pos=(10.5,-666.6,343.6)mm  mpc_target=(9.5,-666.6,350.2)mm  err=6.7mm  ref_idx=515  v_cmd=21.0mm/s  |u|=4.0mm/s²  F=20.0N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:26][PINN][INFO] PINN辨识完成 | M=(0.000839,0.000875,0.001184) | B=(0.000550,0.000551,0.000410) | K=(0.011832,0.011912,0.009145)
+[07:49:27][RunControl][INFO] [Step 979] PINN后台更新完成 | M=(0.000839,0.000875,0.001184) B=(0.000550,0.000551,0.000410) K=(0.011832,0.011912,0.009145)
+[07:49:27][RunControl][INFO] [Step 1000] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:27][RunControl][INFO] [Step 1000] pos=(-7.4,-666.6,352.6)mm  mpc_target=(-10.1,-666.6,342.6)mm  err=10.3mm  ref_idx=528  v_cmd=37.8mm/s  |u|=6.7mm/s²  F=9.9N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:29][RunControl][INFO] [Step 1050] pos=(7.4,-666.6,294.7)mm  mpc_target=(26.2,-666.6,272.6)mm  err=29.0mm  ref_idx=540  v_cmd=67.8mm/s  |u|=4.0mm/s²  F=4.7N  comfort=0.000  pinn_ready=True pinn_busy=True
+[07:49:29][PINN][INFO] PINN辨识完成 | M=(0.000917,0.000884,0.000849) | B=(0.000626,0.000467,0.000426) | K=(0.008969,0.012401,0.011890)
+[07:49:29][RunControl][INFO] [Step 1077] PINN后台更新完成 | M=(0.000917,0.000884,0.000849) B=(0.000626,0.000467,0.000426) K=(0.008969,0.012401,0.011890)
+[07:49:30][RunControl][INFO] [Step 1100] PINN后台更新已启动 (200帧, epochs=300)
+[07:49:30][RunControl][INFO] [Step 1100] pos=(80.1,-666.6,249.2)mm  mpc_target=(114.2,-666.6,221.3)mm  err=44.1mm  ref_idx=570  v_cmd=111.1mm/s  |u|=181.5mm/s²  F=2.5N  comfort=1.000  pinn_ready=True pinn_busy=True
+[07:49:32][RunControl][INFO] [Step 1150] pos=(133.7,-666.6,177.2)mm  mpc_target=(150.0,-666.6,145.1)mm  err=36.0mm  ref_idx=620  v_cmd=34.0mm/s  |u|=260.3mm/s²  F=0.5N  comfort=1.000  pinn_ready=True pinn_busy=True

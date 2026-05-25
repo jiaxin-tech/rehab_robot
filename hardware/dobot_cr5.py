@@ -7,6 +7,7 @@ import socket
 import struct
 import threading
 import time
+import math
 from typing import List, Tuple, Optional
 
 
@@ -45,6 +46,7 @@ class DobotCR5:
         self.joint_angles = [0.0] * 6
         self.cartesian_pose = [0.0] * 6
         self.actual_joint_speeds = [0.0] * 6
+        self._feedback_lock = threading.Lock()
         
         # 反馈数据缓冲
         self.state_data = bytearray(1440)
@@ -152,15 +154,18 @@ class DobotCR5:
 
     def get_joint_angles(self) -> List[float]:
         """实时反馈中的关节角（度），线程安全快照。"""
-        return list(self.joint_angles)
+        with self._feedback_lock:
+            return list(self.joint_angles)
 
     def get_actual_joint_speeds(self) -> List[float]:
         """实时反馈中的关节速度。"""
-        return list(self.actual_joint_speeds)
+        with self._feedback_lock:
+            return list(self.actual_joint_speeds)
 
     def get_cartesian_pose(self) -> List[float]:
         """实时反馈笛卡尔位姿 [x,y,z, rx,ry,rz]：位置 mm，姿态度（与 MovL/ServoP 输入一致）。"""
-        return list(self.cartesian_pose)
+        with self._feedback_lock:
+            return list(self.cartesian_pose)
     
     def joint_mov_j(self, joints: List[float]):
         """关节运动（角度单位：度）"""
@@ -270,10 +275,25 @@ class DobotCR5:
                 if data:
                     buffer.extend(data)
                     
-                    # 当缓冲区有足够数据时解析
+                    # 当缓冲区有足够数据时解析。反馈包以MessageSize=1440开头，
+                    # TCP流可能从任意字节切入，必须先做包头同步，避免错位解析成垃圾位姿。
                     while len(buffer) >= 1440:
-                        self.state_data = bytearray(buffer[:1440])
-                        buffer = buffer[1440:]  # 移除已处理的数据
+                        start = self._find_feedback_packet_start(buffer)
+                        if start < 0:
+                            buffer = buffer[-7:]
+                            break
+                        if start > 0:
+                            del buffer[:start]
+                        if len(buffer) < 1440:
+                            break
+
+                        packet = bytearray(buffer[:1440])
+                        if not self._looks_like_feedback_packet(packet):
+                            del buffer[0]
+                            continue
+
+                        self.state_data = packet
+                        del buffer[:1440]
                         self._parse_feedback_data()
                 else:
                     print("[DEBUG] Received empty data")
@@ -297,27 +317,80 @@ class DobotCR5:
                 7: "RUNNING", 8: "RECORDING", 9: "ERROR",
                 10: "PAUSE", 11: "JOG"
             }
-            self.robot_mode = mode_map.get(robot_mode_val, "UNKNOWN")
+            robot_mode = mode_map.get(robot_mode_val, "UNKNOWN")
             
             # 当前速度比例 (字节位置 64)
-            self.current_speed_ratio = self._bytes_to_double(64)
+            current_speed_ratio = self._bytes_to_double(64)
             
             # 关节角度 (字节位置 432 开始)
-            for i in range(6):
-                self.joint_angles[i] = self._bytes_to_double(432 + i * 8)
+            joint_angles = [self._bytes_to_double(432 + i * 8) for i in range(6)]
             
             # 笛卡尔位姿 (字节位置 624 开始)
-            for i in range(6):
-                value = self._bytes_to_double(624 + i * 8)
-                # Dobot反馈端口的x/y/z单位已经是mm，rx/ry/rz为度。
-                self.cartesian_pose[i] = value
+            cartesian_pose = [self._bytes_to_double(624 + i * 8) for i in range(6)]
             
             # 关节速度 (字节位置 480 开始)
-            for i in range(6):
-                self.actual_joint_speeds[i] = self._bytes_to_double(480 + i * 8)
+            actual_joint_speeds = [self._bytes_to_double(480 + i * 8) for i in range(6)]
+
+            if not self._is_reasonable_feedback(joint_angles, cartesian_pose, actual_joint_speeds):
+                return
+
+            with self._feedback_lock:
+                self.robot_mode = robot_mode
+                self.current_speed_ratio = current_speed_ratio
+                self.joint_angles = joint_angles
+                self.cartesian_pose = cartesian_pose
+                self.actual_joint_speeds = actual_joint_speeds
                 
         except Exception as e:
             pass  # 静默处理解析错误
+
+    @staticmethod
+    def _find_feedback_packet_start(buffer: bytearray) -> int:
+        signature = struct.pack("<H", 1440)
+        start = 0
+        while True:
+            idx = buffer.find(signature, start)
+            if idx < 0:
+                return -1
+            if len(buffer) - idx < 8:
+                return idx
+            if len(buffer) - idx < 1440:
+                return idx
+            if DobotCR5._looks_like_feedback_packet(buffer[idx:idx + 1440]):
+                return idx
+            start = idx + 1
+
+    @staticmethod
+    def _looks_like_feedback_packet(packet: bytearray) -> bool:
+        if len(packet) < 1440:
+            return False
+        try:
+            message_size = struct.unpack_from("<H", packet, 0)[0]
+            robot_mode = packet[24]
+            return message_size == 1440 and 1 <= robot_mode <= 11
+        except Exception:
+            return False
+
+    @staticmethod
+    def _is_finite_vector(values) -> bool:
+        return all(math.isfinite(float(v)) for v in values)
+
+    def _is_reasonable_feedback(self, joints, pose, joint_speeds) -> bool:
+        if not (
+            self._is_finite_vector(joints)
+            and self._is_finite_vector(pose)
+            and self._is_finite_vector(joint_speeds)
+        ):
+            return False
+        x, y, z = pose[:3]
+        rx, ry, rz = pose[3:6]
+        if not (-1500.0 <= x <= 1500.0 and -1500.0 <= y <= 1500.0 and -500.0 <= z <= 1500.0):
+            return False
+        if not all(-360.0 <= v <= 360.0 for v in (rx, ry, rz)):
+            return False
+        if not all(-360.0 <= v <= 360.0 for v in joints):
+            return False
+        return True
     
     def _bytes_to_double(self, start_index: int) -> float:
         """将 8 个字节转换为 double"""

@@ -160,23 +160,32 @@ class MPCController:
         Returns:
             u_opt: 最优加速度指令 (mm/s²)，dim=1时为标量，否则为(dim,)
         """
+        a_max = max(float(settings.MPC_A_MAX), 1e-6)
         if u_init is None:
-            u_init_flat = np.zeros(self.N * self.dim)
+            u_init_norm_flat = np.zeros(self.N * self.dim)
         else:
             u_init_flat = np.asarray(u_init, dtype=float).reshape(-1)
             if u_init_flat.size != self.N * self.dim:
                 raise ValueError(
                     f"u_init size must be {self.N * self.dim}, got {u_init_flat.size}"
                 )
+            u_init_norm_flat = np.clip(u_init_flat / a_max, -1.0, 1.0)
 
-        # 加速度幅值约束（物理可行）
-        a_max  = settings.MPC_A_MAX
-        bounds = [(-a_max, a_max)] * (self.N * self.dim)
+        # 在归一化加速度空间优化，避免SLSQP在mm/s²尺度下把零初值误判为最优。
+        bounds = [(-1.0, 1.0)] * (self.N * self.dim)
+
+        def cost_normalized(u_norm_flat: np.ndarray) -> float:
+            return self._cost(
+                np.asarray(u_norm_flat, dtype=float) * a_max,
+                x0,
+                ref_traj,
+                comfort_score,
+                last_acc,
+            )
 
         result = minimize(
-            fun=self._cost,
-            x0=u_init_flat,
-            args=(x0, ref_traj, comfort_score, last_acc),
+            fun=cost_normalized,
+            x0=u_init_norm_flat,
             method="SLSQP",
             bounds=bounds,
             options={"maxiter": 100, "ftol": 1e-4},
@@ -185,7 +194,7 @@ class MPCController:
         if not result.success:
             logger.warning(f"MPC求解警告: {result.message}")
 
-        u_seq = self._reshape_u(result.x)
+        u_seq = self._reshape_u(result.x * a_max)
         u_first = u_seq[0, 0] if self.dim == 1 else u_seq[0].copy()
         return u_first, u_seq   # (u_first, full_sequence)
 

@@ -1,0 +1,2 @@
+[06:48:32][ComfortNet][INFO] [pinn_force模式] 加载数据: 2000行，舒适=0，不适=2000，特征维度=12
+[06:48:32][ComfortNet][WARNING] comfort标注只有一类，训练前请补充另一类样本。

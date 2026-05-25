@@ -1,0 +1,33 @@
+[08:35:08][SafetyGuard][INFO] 安全守卫已启动，力阈值=30.0N
+[08:35:08][Collector][INFO] 存储路径: data\subject_001\comfort_01，已有 22 个episode
+[08:35:09][Collector][INFO] Episode 23 开始
+[08:35:36][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[08:35:39][Collector][INFO] Episode 23 已保存: data\subject_001\comfort_01\episode_0023.csv (1200 行)
+[08:35:41][Collector][INFO] Episode 24 开始
+[08:36:04][Collector][DEBUG] M/B/K已写入缓冲区 1000 帧
+[08:36:05][Collector][INFO] Episode 24 已保存: data\subject_001\comfort_01\episode_0024.csv (1000 行)
+[08:36:07][Collector][INFO] Episode 25 开始
+[08:36:33][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[08:36:35][Collector][INFO] Episode 25 已保存: data\subject_001\comfort_01\episode_0025.csv (1200 行)
+[08:36:36][Collector][INFO] Episode 26 开始
+[08:36:55][Collector][DEBUG] M/B/K已写入缓冲区 800 帧
+[08:36:58][Collector][INFO] Episode 26 已保存: data\subject_001\comfort_01\episode_0026.csv (800 行)
+[08:36:59][Collector][INFO] Episode 27 开始
+[08:37:18][Collector][DEBUG] M/B/K已写入缓冲区 800 帧
+[08:37:19][Collector][INFO] Episode 27 已保存: data\subject_001\comfort_01\episode_0027.csv (800 行)
+[08:37:20][Collector][INFO] Episode 28 开始
+[08:37:45][Collector][DEBUG] M/B/K已写入缓冲区 1100 帧
+[08:37:48][Collector][INFO] Episode 28 已保存: data\subject_001\comfort_01\episode_0028.csv (1100 行)
+[08:37:49][Collector][INFO] Episode 29 开始
+[08:38:10][Collector][DEBUG] M/B/K已写入缓冲区 900 帧
+[08:38:11][Collector][INFO] Episode 29 已保存: data\subject_001\comfort_01\episode_0029.csv (900 行)
+[08:38:12][Collector][INFO] Episode 30 开始
+[08:38:29][Collector][DEBUG] M/B/K已写入缓冲区 750 帧
+[08:38:32][Collector][INFO] Episode 30 已保存: data\subject_001\comfort_01\episode_0030.csv (750 行)
+[08:38:34][Collector][INFO] Episode 31 开始
+[08:39:00][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[08:39:01][Collector][INFO] Episode 31 已保存: data\subject_001\comfort_01\episode_0031.csv (1200 行)
+[08:39:03][Collector][INFO] Episode 32 开始
+[08:39:25][Collector][DEBUG] M/B/K已写入缓冲区 1000 帧
+[08:39:26][Collector][INFO] Episode 32 已保存: data\subject_001\comfort_01\episode_0032.csv (1000 行)
+[08:39:27][SafetyGuard][INFO] 安全守卫已停止

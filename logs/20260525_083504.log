@@ -1,0 +1,46 @@
+[08:35:04][RunCollection][INFO] 等待反馈稳定 2s...
+[08:35:08][RunCollection][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.65, ry=0.29, rz=-149.85
+[08:35:08][RunCollection][INFO] === 开始采集 ===  (Ctrl+C 随时中止)
+[08:35:08][RunCollection][INFO] ▶ 舒适度阶段：康复轨迹 (10次，需要人工标签, profile=mixed)
+[08:35:08][RunCollection][INFO]   康复轨迹 1/10 | small_slow range=0.5 cycles=2.0 duration=24.0s
+[08:35:33][RunCollection][INFO]   正在推理M/B/K参数...
+[08:35:36][PINN][INFO] PINN辨识完成 | M=(0.001071,0.000888,0.000802) | B=(0.000417,0.000468,0.000549) | K=(0.008815,0.011537,0.012006)
+[08:35:36][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.000,0.001) | K=(0.009,0.012,0.012)
+[08:35:40][RunCollection][INFO]   康复轨迹 2/10 | medium range=0.7 cycles=3.0 duration=20.0s
+[08:36:01][RunCollection][INFO]   正在推理M/B/K参数...
+[08:36:04][PINN][INFO] PINN辨识完成 | M=(0.000978,0.001000,0.000828) | B=(0.000428,0.000499,0.000470) | K=(0.011518,0.011227,0.011699)
+[08:36:04][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.000,0.000) | K=(0.012,0.011,0.012)
+[08:36:05][RunCollection][INFO]   康复轨迹 3/10 | large_slow range=0.9 cycles=2.0 duration=24.0s
+[08:36:31][RunCollection][INFO]   正在推理M/B/K参数...
+[08:36:33][PINN][INFO] PINN辨识完成 | M=(0.001079,0.001000,0.000890) | B=(0.000526,0.000500,0.000508) | K=(0.009385,0.011247,0.011759)
+[08:36:33][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.001,0.000,0.001) | K=(0.009,0.011,0.012)
+[08:36:35][RunCollection][INFO]   康复轨迹 4/10 | small_fast range=0.5 cycles=4.0 duration=16.0s
+[08:36:52][RunCollection][INFO]   正在推理M/B/K参数...
+[08:36:55][PINN][INFO] PINN辨识完成 | M=(0.000904,0.001002,0.000973) | B=(0.000421,0.000502,0.000591) | K=(0.011742,0.008623,0.008467)
+[08:36:55][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.001,0.001) | K=(0.012,0.009,0.008)
+[08:36:58][RunCollection][INFO]   康复轨迹 5/10 | large_fast range=0.9 cycles=4.0 duration=16.0s
+[08:37:15][RunCollection][INFO]   正在推理M/B/K参数...
+[08:37:18][PINN][INFO] PINN辨识完成 | M=(0.001091,0.001000,0.001060) | B=(0.000606,0.000500,0.000418) | K=(0.008620,0.009374,0.011541)
+[08:37:18][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.001,0.000,0.000) | K=(0.009,0.009,0.012)
+[08:37:19][RunCollection][INFO]   康复轨迹 6/10 | safe_near_limit_slow range=0.95 cycles=2.5 duration=22.0s
+[08:37:42][RunCollection][INFO]   正在推理M/B/K参数...
+[08:37:45][PINN][INFO] PINN辨识完成 | M=(0.000851,0.000978,0.000815) | B=(0.000410,0.000504,0.000405) | K=(0.012134,0.011892,0.011645)
+[08:37:45][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.001,0.000) | K=(0.012,0.012,0.012)
+[08:37:48][RunCollection][INFO]   康复轨迹 7/10 | safe_near_limit_fast range=0.9 cycles=5.0 duration=18.0s
+[08:38:07][RunCollection][INFO]   正在推理M/B/K参数...
+[08:38:10][PINN][INFO] PINN辨识完成 | M=(0.000897,0.001000,0.001202) | B=(0.000416,0.000501,0.000607) | K=(0.011570,0.009231,0.008629)
+[08:38:10][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.001,0.001) | K=(0.012,0.009,0.009)
+[08:38:11][RunCollection][INFO]   康复轨迹 8/10 | safe_midrange_fast range=0.7 cycles=4.5 duration=15.0s
+[08:38:27][RunCollection][INFO]   正在推理M/B/K参数...
+[08:38:29][PINN][INFO] PINN辨识完成 | M=(0.000816,0.001000,0.000910) | B=(0.000551,0.000501,0.000414) | K=(0.011112,0.010600,0.011705)
+[08:38:29][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.001,0.001,0.000) | K=(0.011,0.011,0.012)
+[08:38:32][RunCollection][INFO]   康复轨迹 9/10 | small_slow range=0.5 cycles=2.0 duration=24.0s
+[08:38:58][RunCollection][INFO]   正在推理M/B/K参数...
+[08:39:00][PINN][INFO] PINN辨识完成 | M=(0.000883,0.001000,0.001144) | B=(0.000457,0.000500,0.000535) | K=(0.011630,0.010127,0.008573)
+[08:39:00][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.000,0.001) | K=(0.012,0.010,0.009)
+[08:39:02][RunCollection][INFO]   康复轨迹 10/10 | medium range=0.7 cycles=3.0 duration=20.0s
+[08:39:23][RunCollection][INFO]   正在推理M/B/K参数...
+[08:39:25][PINN][INFO] PINN辨识完成 | M=(0.000836,0.001000,0.000969) | B=(0.000427,0.000500,0.000413) | K=(0.011589,0.010570,0.011608)
+[08:39:25][RunCollection][INFO] M/B/K已写入episode | M=(0.001,0.001,0.001) | B=(0.000,0.000,0.000) | K=(0.012,0.011,0.012)
+[08:39:27][RunCollection][INFO] === 采集结束 ===
+[08:39:27][RunCollection][INFO] 已清理 7 个 __pycache__ 目录

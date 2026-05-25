@@ -5,6 +5,7 @@
 #   "pinn_force"    → [Mx..Kz, Fx,Fy,Fz]                       维度=12
 
 import os
+import pickle
 import numpy as np
 import torch
 import torch.nn as nn
@@ -13,6 +14,26 @@ from config import settings
 from utils.logger import get_logger
 
 logger = get_logger("ComfortNet")
+
+
+def _load_checkpoint(model_path: str) -> dict:
+    """
+    Load ComfortNet checkpoints across PyTorch versions.
+
+    PyTorch 2.6 changed torch.load() to weights_only=True by default. Older
+    checkpoints in this project stored numpy arrays for normalization stats,
+    so they need one trusted fallback load.
+    """
+    try:
+        return torch.load(model_path, map_location="cpu", weights_only=True)
+    except TypeError:
+        return torch.load(model_path, map_location="cpu")
+    except pickle.UnpicklingError:
+        logger.warning(
+            "检测到旧版ComfortNet checkpoint含numpy对象，正在使用兼容模式加载。"
+            "请只加载本项目训练生成的可信模型文件。"
+        )
+        return torch.load(model_path, map_location="cpu", weights_only=False)
 
 
 # ── 输入维度计算 ──────────────────────────────────────
@@ -242,8 +263,8 @@ def train(data_dir:   str,
             os.makedirs(os.path.dirname(model_path) or ".", exist_ok=True)
             torch.save({
                 "model_state": model.state_dict(),
-                "norm_mean":   norm["mean"],
-                "norm_std":    norm["std"],
+                "norm_mean":   norm["mean"].astype(np.float32).tolist(),
+                "norm_std":    norm["std"].astype(np.float32).tolist(),
                 "input_mode":  mode,
                 "input_dim":   input_dim,
             }, model_path)
@@ -255,14 +276,14 @@ def train(data_dir:   str,
 # ── 推理封装 ─────────────────────────────────────────
 class ComfortPredictor:
     def __init__(self, model_path: str = settings.COMFORT_MODEL_PATH):
-        ckpt       = torch.load(model_path, map_location="cpu")
+        ckpt       = _load_checkpoint(model_path)
         self.mode  = ckpt["input_mode"]
-        input_dim  = ckpt["input_dim"]
+        input_dim  = int(ckpt["input_dim"])
         self.model = ComfortNet(input_dim=input_dim, mode=self.mode)
         self.model.load_state_dict(ckpt["model_state"])
         self.model.eval()
-        self.mean  = ckpt["norm_mean"]
-        self.std   = ckpt["norm_std"]
+        self.mean  = np.asarray(ckpt["norm_mean"], dtype=np.float32)
+        self.std   = np.asarray(ckpt["norm_std"], dtype=np.float32)
         logger.info(f"舒适度模型已加载: {model_path}  [mode={self.mode}, dim={input_dim}]")
 
     def predict(self,

@@ -18,6 +18,7 @@ from collection.trajectory import (
     calibrate_joint_center,
 )
 from collection.collector import DataCollector, label_episodes
+from collection.synthetic_risk import write_synthetic_risk_episodes
 from models.pinn import OnlinePINN
 from utils.logger import get_logger
 
@@ -161,21 +162,33 @@ def _infer_and_write_mbk(collector, pinn: OnlinePINN, epochs: int = 300):
     )
 
 
-def _rehab_variant(rep: int) -> dict:
-    variants = getattr(settings, "REHAB_VARIANTS", None) or []
-    if not variants:
-        return {
-            "name": "default",
-            "range_scale": settings.REHAB_RANGE_SCALE,
-            "cycles": settings.REHAB_CYCLES,
-            "duration": settings.REHAB_DURATION,
-        }
+def _default_rehab_variant() -> dict:
+    return {
+        "name": "default",
+        "range_scale": settings.REHAB_RANGE_SCALE,
+        "cycles": settings.REHAB_CYCLES,
+        "duration": settings.REHAB_DURATION,
+    }
+
+
+def _rehab_variant(rep: int, profile: str = "mixed") -> dict:
+    normal = list(getattr(settings, "REHAB_VARIANTS", None) or [_default_rehab_variant()])
+    discomfort = list(getattr(settings, "REHAB_UNCOMFORTABLE_VARIANTS", None) or [])
+
+    if profile == "normal":
+        variants = normal
+    elif profile == "safe-discomfort":
+        variants = discomfort or normal
+    else:
+        variants = normal + discomfort
+
     return variants[rep % len(variants)]
 
 
 def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
         n_excitations: int = 20,
-        collect_kind: str = "pinn", n_rehab: int = 5):
+        collect_kind: str = "pinn", n_rehab: int = 5,
+        rehab_profile: str = "mixed"):
 
     robot = _make_robot(robot_ip)
     force = ForceSensor(ip=sensor_ip)
@@ -245,12 +258,12 @@ def run(robot_ip, sensor_ip, subject_id, session_id, do_calibrate,
 
         # ── 阶段3：康复轨迹（舒适度标签 + M/B/K推理）──
         if collect_kind in ("comfort", "both"):
-            logger.info(f"▶ 舒适度阶段：康复轨迹 ({n_rehab}次，需要人工标签)")
+            logger.info(f"▶ 舒适度阶段：康复轨迹 ({n_rehab}次，需要人工标签, profile={rehab_profile})")
             _set_speed(robot, settings.INIT_SPEED_RATIO)
 
             for rep in range(n_rehab):
                 guard.check()
-                variant = _rehab_variant(rep)
+                variant = _rehab_variant(rep, rehab_profile)
                 variant_name = str(variant.get("name", f"variant_{rep+1}"))
                 logger.info(
                     f"  康复轨迹 {rep+1}/{n_rehab} | {variant_name} "
@@ -310,15 +323,30 @@ def main():
     parser.add_argument("--collect-kind", choices=("pinn", "comfort", "both"),
                         default="pinn", help="pinn=只采PINN数据，comfort=只采康复舒适度数据，both=都采")
     parser.add_argument("--rehab-episodes", type=int, default=1, help="康复轨迹舒适度episode数量")
+    parser.add_argument("--rehab-profile", choices=("normal", "mixed", "safe-discomfort"),
+                        default="mixed",
+                        help="normal=原康复轨迹，mixed=原轨迹+安全不适轨迹，safe-discomfort=只采安全不适轨迹")
+    parser.add_argument("--synthetic-risk-episodes", type=int, default=0,
+                        help="追加离线危险/明显不适episode数量；只写CSV，不执行机器人，comfort=2")
+    parser.add_argument("--synthetic-risk-only", action="store_true",
+                        help="只生成离线危险/明显不适CSV，不连接机器人")
     args = parser.parse_args()
 
-    if args.label_only:
+    if args.synthetic_risk_only:
+        n_synth = args.synthetic_risk_episodes
+        if n_synth <= 0:
+            n_synth = len(getattr(settings, "SYNTHETIC_RISK_VARIANTS", [])) or 3
+        write_synthetic_risk_episodes(args.subject, args.session, n_synth)
+    elif args.label_only:
         label_episodes(settings.DATA_DIR)
     else:
         run(args.robot_ip, args.sensor_ip,
             args.subject, args.session, args.calibrate,
             n_excitations=args.excitations,
-            collect_kind=args.collect_kind, n_rehab=args.rehab_episodes)
+            collect_kind=args.collect_kind, n_rehab=args.rehab_episodes,
+            rehab_profile=args.rehab_profile)
+        if args.synthetic_risk_episodes > 0:
+            write_synthetic_risk_episodes(args.subject, args.session, args.synthetic_risk_episodes)
 
 
 if __name__ == "__main__":

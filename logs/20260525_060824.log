@@ -1,0 +1,7 @@
+[06:10:18][Collector][INFO] 存储路径: data\subject_001\pinn_01，已有 0 个episode
+[06:10:22][Collector][INFO] Episode 1 开始
+[06:10:27][Collector][INFO] Episode 1 已保存: data\subject_001\pinn_01\episode_0001.csv (250 行)
+[06:10:30][Collector][INFO] Episode 2 开始
+[06:10:35][Collector][INFO] Episode 2 已保存: data\subject_001\pinn_01\episode_0002.csv (250 行)
+[06:10:38][Collector][INFO] Episode 3 开始
+[06:10:43][Collector][INFO] Episode 3 已保存: data\subject_001\pinn_01\episode_0003.csv (250 行)

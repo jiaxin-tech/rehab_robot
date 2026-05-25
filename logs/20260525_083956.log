@@ -1,0 +1,3 @@
+[08:40:02][SafetyGuard][INFO] 安全守卫已启动，力阈值=30.0N
+[08:40:04][SafetyGuard][WARNING] 安全停止！合力=34.6N > 30.0N
+[08:40:04][SafetyGuard][INFO] 安全守卫已停止

@@ -1,0 +1,10 @@
+[06:08:26][RunCollection][INFO] 等待反馈稳定 2s...
+[06:09:13][RunCollection][INFO] 标定完成，请更新settings.py: center=[-133.82024511942845, -666.6341456164093, 54.12649990352616], radius=298.7, angle_min=0.2221, angle_max=1.4702, neutral=0.9438
+[06:10:18][RunCollection][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.39, ry=0.13, rz=-149.96
+[06:10:18][RunCollection][INFO] === 开始采集 ===  (Ctrl+C 随时中止)
+[06:10:18][RunCollection][INFO] ▶ PINN阶段：持续激励轨迹 (3次，不做舒适度标签)
+[06:10:18][RunCollection][INFO]   激励轨迹 1/3
+[06:10:28][RunCollection][INFO]   激励轨迹 2/3
+[06:10:35][RunCollection][INFO]   激励轨迹 3/3
+[06:10:43][RunCollection][INFO] === 采集结束 ===
+[06:10:43][RunCollection][INFO] 已清理 5 个 __pycache__ 目录

@@ -1,0 +1,3 @@
+[07:32:07][SafetyGuard][INFO] 安全守卫已启动，力阈值=30.0N
+[07:32:07][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[07:32:08][SafetyGuard][INFO] 安全守卫已停止

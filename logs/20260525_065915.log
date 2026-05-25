@@ -1,0 +1,6 @@
+[06:59:15][ComfortNet][WARNING] 检测到旧版ComfortNet checkpoint含numpy对象，正在使用兼容模式加载。请只加载本项目训练生成的可信模型文件。
+[06:59:15][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[06:59:15][ComfortNet][INFO] [pinn_force模式] 加载数据: 19950行，舒适=7150，不适=12800，特征维度=12
+[06:59:15][TrainComfort][INFO] 评估结果：准确率=1.000
+[06:59:15][TrainComfort][INFO]   TP=7150 TN=12800 FP=0 FN=0
+[06:59:15][TrainComfort][INFO]   精确率=1.000  召回率=1.000

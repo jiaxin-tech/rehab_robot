@@ -1,0 +1,21 @@
+[07:21:21][RunControl][INFO] 等待反馈稳定 2s...
+[07:21:25][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.42, ry=0.15, rz=-149.99
+[07:21:25][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[07:21:25][MPC][INFO] MPC初始化: horizon=8, dt=0.03s, dim=3
+[07:21:25][RunControl][INFO] 在线PINN后台更新: 关闭
+[07:21:25][RunControl][INFO] === 控制循环启动 ===
+[07:21:25][RunControl][INFO] [Step    0] pos=(79.7,-666.7,263.3)mm  target=(77.6,-666.6,265.1)mm  err=2.8mm  |u|=136.0mm/s²  F=1.0N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:27][RunControl][INFO] [Step   50] pos=(79.7,-666.7,263.3)mm  target=(-27.9,-666.6,333.4)mm  err=128.4mm  |u|=707.1mm/s²  F=0.5N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:28][RunControl][INFO] [Step  100] pos=(43.5,-666.7,292.0)mm  target=(52.8,-666.6,287.4)mm  err=10.4mm  |u|=707.1mm/s²  F=1.4N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:30][RunControl][INFO] [Step  150] pos=(80.1,-666.7,253.7)mm  target=(144.2,-666.6,163.4)mm  err=110.8mm  |u|=691.7mm/s²  F=1.6N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:31][RunControl][INFO] [Step  200] pos=(133.8,-666.6,180.8)mm  target=(124.9,-666.6,203.5)mm  err=24.4mm  |u|=707.1mm/s²  F=2.4N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:33][RunControl][INFO] [Step  250] pos=(92.9,-666.6,239.1)mm  target=(3.9,-666.6,319.2)mm  err=119.7mm  |u|=707.1mm/s²  F=1.5N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:34][RunControl][INFO] [Step  300] pos=(17.3,-666.6,297.7)mm  target=(-3.8,-666.6,323.0)mm  err=33.0mm  |u|=424.0mm/s²  F=3.5N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:36][RunControl][INFO] [Step  350] pos=(51.3,-666.6,288.9)mm  target=(119.1,-666.6,213.1)mm  err=101.6mm  |u|=707.1mm/s²  F=1.2N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:37][RunControl][INFO] [Step  400] pos=(106.4,-666.6,213.3)mm  target=(146.0,-666.6,158.7)mm  err=67.4mm  |u|=117.9mm/s²  F=1.7N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:39][RunControl][INFO] [Step  450] pos=(123.7,-666.6,204.9)mm  target=(62.6,-666.6,279.1)mm  err=96.1mm  |u|=707.1mm/s²  F=1.4N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:40][RunControl][INFO] [Step  500] pos=(50.8,-666.6,272.8)mm  target=(-28.8,-666.6,333.8)mm  err=100.3mm  |u|=530.7mm/s²  F=3.1N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:42][RunControl][INFO] [Step  550] pos=(17.5,-666.6,319.5)mm  target=(68.1,-666.6,274.2)mm  err=67.9mm  |u|=707.1mm/s²  F=1.9N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:43][RunControl][INFO] [Step  600] pos=(84.2,-666.6,246.4)mm  target=(146.8,-666.6,156.5)mm  err=109.5mm  |u|=661.5mm/s²  F=2.9N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:45][RunControl][INFO] [Step  650] pos=(138.0,-666.6,179.8)mm  target=(115.5,-666.6,218.7)mm  err=45.0mm  |u|=707.1mm/s²  F=3.1N  comfort=1.000  pinn_ready=False pinn_busy=False
+[07:21:45][RunControl][INFO] === 控制系统已停止 ===

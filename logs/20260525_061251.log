@@ -1,0 +1,31 @@
+[06:12:56][Collector][INFO] 存储路径: data\subject_001\comfort_01，已有 0 个episode
+[06:12:57][Collector][INFO] Episode 1 开始
+[06:13:24][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[06:13:29][Collector][INFO] Episode 1 已保存: data\subject_001\comfort_01\episode_0001.csv (1200 行)
+[06:13:30][Collector][INFO] Episode 2 开始
+[06:13:53][Collector][DEBUG] M/B/K已写入缓冲区 1000 帧
+[06:13:58][Collector][INFO] Episode 2 已保存: data\subject_001\comfort_01\episode_0002.csv (1000 行)
+[06:13:59][Collector][INFO] Episode 3 开始
+[06:14:26][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[06:14:33][Collector][INFO] Episode 3 已保存: data\subject_001\comfort_01\episode_0003.csv (1200 行)
+[06:14:35][Collector][INFO] Episode 4 开始
+[06:14:54][Collector][DEBUG] M/B/K已写入缓冲区 800 帧
+[06:15:02][Collector][INFO] Episode 4 已保存: data\subject_001\comfort_01\episode_0004.csv (800 行)
+[06:15:03][Collector][INFO] Episode 5 开始
+[06:15:22][Collector][DEBUG] M/B/K已写入缓冲区 800 帧
+[06:15:24][Collector][INFO] Episode 5 已保存: data\subject_001\comfort_01\episode_0005.csv (800 行)
+[06:15:25][Collector][INFO] Episode 6 开始
+[06:15:52][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[06:15:56][Collector][INFO] Episode 6 已保存: data\subject_001\comfort_01\episode_0006.csv (1200 行)
+[06:15:57][Collector][INFO] Episode 7 开始
+[06:16:20][Collector][DEBUG] M/B/K已写入缓冲区 1000 帧
+[06:16:26][Collector][INFO] Episode 7 已保存: data\subject_001\comfort_01\episode_0007.csv (1000 行)
+[06:16:27][Collector][INFO] Episode 8 开始
+[06:16:54][Collector][DEBUG] M/B/K已写入缓冲区 1200 帧
+[06:16:56][Collector][INFO] Episode 8 已保存: data\subject_001\comfort_01\episode_0008.csv (1200 行)
+[06:16:57][Collector][INFO] Episode 9 开始
+[06:17:16][Collector][DEBUG] M/B/K已写入缓冲区 800 帧
+[06:17:17][Collector][INFO] Episode 9 已保存: data\subject_001\comfort_01\episode_0009.csv (800 行)
+[06:17:19][Collector][INFO] Episode 10 开始
+[06:17:37][Collector][DEBUG] M/B/K已写入缓冲区 800 帧
+[06:17:40][Collector][INFO] Episode 10 已保存: data\subject_001\comfort_01\episode_0010.csv (800 行)

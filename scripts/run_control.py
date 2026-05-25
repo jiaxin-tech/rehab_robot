@@ -134,7 +134,82 @@ def _stop_robot(robot):
     return robot.stop_move()
 
 
-def run(robot_ip: str, sensor_ip: str, subject_id: str):
+def _wait_idle(robot, timeout: float = 30.0):
+    if hasattr(robot, "wait_idle"):
+        return robot.wait_idle()
+
+    time.sleep(0.1)
+    deadline = time.time() + timeout
+    running_modes = {"RUNNING", "JOG", "RECORDING"}
+    idle_seen_at = None
+    while time.time() < deadline:
+        if getattr(robot, "robot_mode", "") not in running_modes:
+            if idle_seen_at is None:
+                idle_seen_at = time.time()
+            elif time.time() - idle_seen_at >= 0.2:
+                return True
+        else:
+            idle_seen_at = None
+        time.sleep(0.05)
+    logger.warning(f"等待机器人空闲超时 {timeout:.1f}s，继续执行")
+    return False
+
+
+def _as_valid_pose(values, name: str = "cartesian_pose") -> np.ndarray:
+    pose = np.asarray(values, dtype=float).reshape(-1)
+    if pose.size < 6 or not np.all(np.isfinite(pose[:6])):
+        raise RuntimeError(f"{name}反馈无效: {values}")
+    return pose[:6].copy()
+
+
+def _limit_position_step(current_xyz: np.ndarray, target_xyz: np.ndarray, max_step_mm: float) -> np.ndarray:
+    delta = np.asarray(target_xyz, dtype=float) - np.asarray(current_xyz, dtype=float)
+    dist = float(np.linalg.norm(delta))
+    if dist <= max_step_mm or dist <= 1e-9:
+        return np.asarray(target_xyz, dtype=float).copy()
+    return np.asarray(current_xyz, dtype=float) + delta * (max_step_mm / dist)
+
+
+def _comfort_progress_scale(comfort_score: float) -> float:
+    min_scale = float(np.clip(settings.CONTROL_MIN_PROGRESS_SCALE, 0.0, 1.0))
+    comfort_score = float(np.clip(comfort_score, 0.0, 1.0))
+    return min_scale + (1.0 - min_scale) * comfort_score
+
+
+def _comfort_motion_scale(comfort_score: float) -> float:
+    comfort_score = float(np.clip(comfort_score, 0.0, 1.0))
+    power = max(float(getattr(settings, "CONTROL_COMFORT_SPEED_POWER", 1.0)), 1.0)
+    return float(comfort_score ** power)
+
+
+def _comfort_target_step_mm(comfort_score: float) -> float:
+    max_step = max(float(settings.CONTROL_MAX_TARGET_STEP_MM), 0.0)
+    min_step = float(np.clip(getattr(settings, "CONTROL_MIN_TARGET_STEP_MM", 0.0), 0.0, max_step))
+    return min_step + (max_step - min_step) * _comfort_motion_scale(comfort_score)
+
+
+def _control_comfort_score(raw_comfort: float, force_norm: float = 0.0) -> float:
+    raw_comfort = float(np.clip(raw_comfort, 0.0, 1.0))
+    power = max(float(getattr(settings, "CONTROL_COMFORT_RECOVERY_POWER", 1.0)), 1.0)
+    recovered = 1.0 - (1.0 - raw_comfort) ** power
+
+    force_floor_n = max(float(getattr(settings, "CONTROL_COMFORT_FORCE_FLOOR_N", 0.0)), 0.0)
+    low_force_floor = float(np.clip(getattr(settings, "CONTROL_COMFORT_LOW_FORCE_FLOOR", 0.0), 0.0, 1.0))
+    if force_floor_n > 1e-6 and low_force_floor > 0.0:
+        force_norm = max(float(force_norm), 0.0)
+        force_scale = np.clip(1.0 - force_norm / force_floor_n, 0.0, 1.0)
+        recovered = max(recovered, low_force_floor * force_scale)
+
+    return float(np.clip(recovered, 0.0, 1.0))
+
+
+def run(
+    robot_ip: str,
+    sensor_ip: str,
+    subject_id: str,
+    online_pinn_enabled: bool = None,
+    trajectory_repeats: int = None,
+):
 
     # ── 初始化硬件 ────────────────────────────────────
     robot = _make_robot(robot_ip)
@@ -166,17 +241,39 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     online_pinn = OnlinePINN()
     pinn_updater = AsyncPINNUpdater()
     mpc         = MPCController(dim=3)
+    if online_pinn_enabled is None:
+        online_pinn_enabled = settings.PINN_ONLINE_ENABLED
+    logger.info(f"在线PINN后台更新: {'开启' if online_pinn_enabled else '关闭'}")
 
     # ── 生成参考轨迹 ──────────────────────────────────
-    ref_wps = generate_rehab_trajectory(
+    ref_wps_base = generate_rehab_trajectory(
         dt=settings.MPC_DT,
         orientation=tool_orientation,
     )   # (N_total, 6)
+    if trajectory_repeats is None:
+        trajectory_repeats = getattr(settings, "CONTROL_TRAJECTORY_REPEATS", 1)
+    trajectory_repeats = max(1, int(trajectory_repeats))
+    logger.info(f"control参考轨迹重复次数: {trajectory_repeats}")
+
+    cur_pose0 = _as_valid_pose(robot.get_cartesian_pose())
+    start_error = float(np.linalg.norm(cur_pose0[:3] - ref_wps_base[0, :3]))
+    if start_error > settings.CONTROL_START_TOLERANCE_MM:
+        logger.info(
+            f"当前位置距控制轨迹起点 {start_error:.1f}mm，先移动到起点 "
+            f"({ref_wps_base[0,0]:.1f},{ref_wps_base[0,1]:.1f},{ref_wps_base[0,2]:.1f})"
+        )
+        guard.check()
+        _move_l(robot, ref_wps_base[0])
+        _wait_idle(robot)
+        time.sleep(0.3)
 
     # 参考轨迹转为状态序列 [x,y,z, vx,vy,vz]
+    ref_wps = np.vstack([ref_wps_base] * trajectory_repeats)
     ref_pos = ref_wps[:, :3]
     ref_vel = np.gradient(ref_pos, settings.MPC_DT, axis=0)
     ref_states = np.hstack([ref_pos, ref_vel])   # (N_total, 6)
+    cmd_pose = ref_wps[0].copy()
+    cmd_vel = np.zeros(3, dtype=float)
 
     # ── 滑动窗口缓存（供PINN在线更新用）─────────────
     # xyz_buf: list of [x,y,z]   F_buf: list of [Fx,Fy,Fz]
@@ -190,23 +287,40 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
     last_acc    = np.zeros(3, dtype=float)   # 上一拍已执行加速度，用于jerk惩罚
     prev_pose   = None
     prev_time   = None
+    filtered_vel = None
+    timeout_count = 0
+    timeout_max_ms = 0.0
+    last_timeout_log = time.time()
 
     try:
-        while step < len(ref_states) - settings.MPC_HORIZON - 1:
+        ref_cursor = 0.0
+        while ref_cursor < len(ref_states) - settings.MPC_HORIZON - 1:
             loop_start = time.time()
             guard.check()
 
             # 1. 读取当前状态
             now = time.time()
             f_data = force.get()
-            cur_pose = np.array(robot.get_cartesian_pose(), dtype=float)
+            cur_pose = _as_valid_pose(robot.get_cartesian_pose())
             if prev_pose is None:
-                cur_vel = np.zeros(3, dtype=float)
+                cur_vel_meas = np.zeros(3, dtype=float)
             else:
+                pose_jump = float(np.linalg.norm(cur_pose[:3] - prev_pose[:3]))
+                if pose_jump > settings.CONTROL_MAX_FEEDBACK_JUMP_MM:
+                    raise RuntimeError(
+                        f"机器人反馈位姿跳变异常: {pose_jump:.1f}mm > "
+                        f"{settings.CONTROL_MAX_FEEDBACK_JUMP_MM:.1f}mm"
+                    )
                 dt_pose = max(now - prev_time, 1e-6)
-                cur_vel = (cur_pose[:3] - prev_pose[:3]) / dt_pose
+                cur_vel_meas = (cur_pose[:3] - prev_pose[:3]) / dt_pose
 
-            x0 = np.concatenate([cur_pose[:3], cur_vel[:3]])   # [x,y,z,vx,vy,vz]
+            vel_alpha = float(np.clip(getattr(settings, "CONTROL_VEL_FILTER_ALPHA", 1.0), 0.0, 1.0))
+            if filtered_vel is None:
+                filtered_vel = cur_vel_meas.copy()
+            else:
+                filtered_vel = vel_alpha * cur_vel_meas + (1.0 - vel_alpha) * filtered_vel
+            cur_vel = filtered_vel.copy()
+
             F_vec = np.array([f_data["fx"], f_data["fy"], f_data["fz"]])
 
             # 2. 更新PINN滑动窗口（三维）
@@ -235,7 +349,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
             # 异步启动PINN更新；控制循环不等待训练完成。
             if (
-                settings.PINN_ONLINE_ENABLED
+                online_pinn_enabled
                 and step % settings.PINN_ONLINE_UPDATE_EVERY == 0
                 and len(t_buf) >= settings.PINN_ONLINE_MIN_SAMPLES
             ):
@@ -247,7 +361,7 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
             # 3. 实时舒适度评分
             pinn_params = online_pinn.get_params()
-            comfort_score = comfort_pred.predict(
+            comfort_raw = comfort_pred.predict(
                 fx=f_data["fx"], fy=f_data["fy"], fz=f_data["fz"],
                 x=cur_pose[0], y=cur_pose[1], z=cur_pose[2],
                 vx=cur_vel[0], vy=cur_vel[1], vz=cur_vel[2],
@@ -255,15 +369,41 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
                 Bx=pinn_params["Bx"], By=pinn_params["By"], Bz=pinn_params["Bz"],
                 Kx=pinn_params["Kx"], Ky=pinn_params["Ky"], Kz=pinn_params["Kz"],
             )
+            comfort_score = _control_comfort_score(comfort_raw, np.linalg.norm(F_vec))
+            motion_scale = _comfort_motion_scale(comfort_score)
+            x0_vel = cur_vel[:3] * motion_scale
+            x0_cmd = np.concatenate([cur_pose[:3], x0_vel])   # [x,y,z,vx,vy,vz]
+            if comfort_score < getattr(settings, "CONTROL_LOW_COMFORT_RESET_THRESHOLD", 0.0):
+                u_warm = None
 
-            # 4. MPC求解：只受轨迹与comfort_score影响
-            ref_horizon = ref_states[step: step + settings.MPC_HORIZON + 1]
+            # 4. MPC求解：舒适度会改变MPC权重，MPC输出再积分成实际下发目标。
+            ref_base_idx = int(min(ref_cursor, len(ref_states) - settings.MPC_HORIZON - 1))
+            ref_horizon = ref_states[ref_base_idx: ref_base_idx + settings.MPC_HORIZON + 1].copy()
+            ref_horizon[:, 3:] *= motion_scale
             u_opt, u_warm = mpc.solve(
-                x0, ref_horizon, comfort_score, u_warm, last_acc)
+                x0_cmd, ref_horizon, comfort_score, u_warm, last_acc * motion_scale)
             next_pose, _ = mpc.acceleration_to_pose(
-                cur_pose, cur_vel, u_opt, axes=(0, 1, 2))
+                cur_pose, x0_vel, u_opt, axes=(0, 1, 2))
+            ref_target_idx = min(ref_base_idx + 1, len(ref_wps) - 1)
+            ref_target_xyz = ref_wps[ref_target_idx, :3]
+            next_pose[:3] = _limit_position_step(
+                ref_target_xyz, next_pose[:3], settings.CONTROL_MAX_MPC_REF_DEVIATION_MM
+            )
+            target_step_mm = _comfort_target_step_mm(comfort_score)
+            next_pose[:3] = _limit_position_step(
+                cur_pose[:3], next_pose[:3], target_step_mm
+            )
             next_pose[3:6] = tool_orientation
+            cmd_vel = (next_pose[:3] - cur_pose[:3]) / settings.MPC_DT
+            next_cmd_speed = float(np.linalg.norm(cmd_vel))
+            cmd_pose = next_pose.copy()
             last_acc = u_opt
+            track_error = float(np.linalg.norm(cur_pose[:3] - next_pose[:3]))
+            if track_error > settings.CONTROL_MAX_TRACK_ERROR_MM:
+                raise RuntimeError(
+                    f"轨迹跟踪误差过大: {track_error:.1f}mm > "
+                    f"{settings.CONTROL_MAX_TRACK_ERROR_MM:.1f}mm"
+                )
 
             # 5. 发送运动指令
             _servo_p(robot, next_pose)
@@ -273,17 +413,28 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
 
             # 6. 日志（每50步）
             if step % 50 == 0:
+                repeat_idx = ref_base_idx // len(ref_wps_base) + 1
+                repeat_ref_idx = ref_base_idx % len(ref_wps_base)
                 logger.info(
                     f"[Step {step:4d}] "
                     f"pos=({cur_pose[0]:.1f},{cur_pose[1]:.1f},{cur_pose[2]:.1f})mm  "
+                    f"mpc_target=({next_pose[0]:.1f},{next_pose[1]:.1f},{next_pose[2]:.1f})mm  "
+                    f"err={track_error:.1f}mm  "
+                    f"repeat={repeat_idx}/{trajectory_repeats}  "
+                    f"ref_idx={repeat_ref_idx}  "
+                    f"v_cmd={next_cmd_speed:.1f}mm/s  "
                     f"|u|={np.linalg.norm(u_opt):.1f}mm/s²  "
                     f"F={np.linalg.norm(F_vec):.1f}N  "
-                    f"comfort={comfort_score:.3f}  "
+                    f"comfort_raw={comfort_raw:.3f}  "
+                    f"comfort_ctrl={comfort_score:.3f}  "
+                    f"motion={motion_scale:.3f}  "
+                    f"step_lim={target_step_mm:.1f}mm  "
                     f"pinn_ready={online_pinn.is_ready} "
                     f"pinn_busy={pinn_updater.busy}"
                 )
 
             step += 1
+            ref_cursor += _comfort_progress_scale(comfort_score)
 
             # 7. 维持控制频率
             elapsed = time.time() - loop_start
@@ -291,7 +442,17 @@ def run(robot_ip: str, sensor_ip: str, subject_id: str):
             if sleep_t > 0:
                 time.sleep(sleep_t)
             elif elapsed > settings.MPC_DT * 1.5:
-                logger.warning(f"控制循环超时: {elapsed*1000:.1f}ms > {settings.MPC_DT*1000:.0f}ms")
+                timeout_count += 1
+                timeout_max_ms = max(timeout_max_ms, elapsed * 1000.0)
+                now_log = time.time()
+                if now_log - last_timeout_log >= 1.0:
+                    logger.warning(
+                        f"控制循环超时 {timeout_count} 次/秒，"
+                        f"最大={timeout_max_ms:.1f}ms > {settings.MPC_DT*1000:.0f}ms"
+                    )
+                    timeout_count = 0
+                    timeout_max_ms = 0.0
+                    last_timeout_log = now_log
 
     except KeyboardInterrupt:
         logger.info("用户中止控制")
@@ -315,8 +476,20 @@ def main():
     parser.add_argument("--robot-ip",  default=settings.ROBOT_IP)
     parser.add_argument("--sensor-ip", default=settings.SENSOR_IP)
     parser.add_argument("--subject",   default="subject_001")
+    parser.add_argument("--online-pinn", dest="online_pinn", action="store_true", default=None,
+                        help="强制开启后台PINN更新；未指定则使用 config/settings.py 中的 PINN_ONLINE_ENABLED")
+    parser.add_argument("--no-online-pinn", dest="online_pinn", action="store_false",
+                        help="强制关闭后台PINN更新")
+    parser.add_argument("--repeats", type=int, default=None,
+                        help="control参考轨迹重复次数；未指定则使用 config/settings.py 中的 CONTROL_TRAJECTORY_REPEATS")
     args = parser.parse_args()
-    run(args.robot_ip, args.sensor_ip, args.subject)
+    run(
+        args.robot_ip,
+        args.sensor_ip,
+        args.subject,
+        online_pinn_enabled=args.online_pinn,
+        trajectory_repeats=args.repeats,
+    )
 
 
 if __name__ == "__main__":
