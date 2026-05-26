@@ -1,0 +1,45 @@
+[09:21:40][RunControl][INFO] 等待反馈稳定 2s...
+[09:21:44][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.73, ry=0.35, rz=-149.76
+[09:21:44][MPC][INFO] MPC初始化: horizon=8, dt=0.03s, dim=3
+[09:21:44][RunControl][INFO] 在线PINN后台更新: 关闭
+[09:21:44][RunControl][INFO] control参考轨迹来源: 真实CSV path=bone_return_3.csv, mode=point, point=RWrist, joints=('RShoulder', 'RElbow', 'RWrist'), points=1500
+[09:21:44][RunControl][INFO] control参考轨迹重复次数: 1
+[09:21:44][RunControl][INFO] === 控制循环启动 ===
+[09:21:45][RunControl][INFO] [Step    0] pos=(117.4,-666.6,195.0)mm  mpc_target=(117.4,-666.6,195.1)mm  err=0.1mm  repeat=1/1  ref_idx=0  v_cmd=2.5mm/s  |u|=165.9mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:46][RunControl][INFO] [Step   50] pos=(117.4,-666.6,195.0)mm  mpc_target=(107.2,-590.1,258.6)mm  err=100.0mm  repeat=1/1  ref_idx=50  v_cmd=3333.3mm/s  |u|=748.5mm/s²  F=0.2N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:48][RunControl][INFO] [Step  100] pos=(109.6,-667.8,194.7)mm  mpc_target=(110.7,-614.8,279.4)mm  err=100.0mm  repeat=1/1  ref_idx=99  v_cmd=3333.3mm/s  |u|=541.0mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:49][RunControl][INFO] [Step  150] pos=(109.6,-667.8,194.7)mm  mpc_target=(109.7,-667.9,194.9)mm  err=0.2mm  repeat=1/1  ref_idx=149  v_cmd=8.2mm/s  |u|=549.2mm/s²  F=0.6N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:51][RunControl][INFO] [Step  200] pos=(109.6,-667.8,194.7)mm  mpc_target=(105.0,-581.1,244.3)mm  err=100.0mm  repeat=1/1  ref_idx=199  v_cmd=3333.3mm/s  |u|=606.9mm/s²  F=0.3N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:52][RunControl][INFO] [Step  250] pos=(109.6,-667.8,194.7)mm  mpc_target=(111.4,-628.4,286.6)mm  err=100.0mm  repeat=1/1  ref_idx=249  v_cmd=3333.3mm/s  |u|=532.4mm/s²  F=0.1N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:54][RunControl][INFO] [Step  300] pos=(109.6,-667.8,194.7)mm  mpc_target=(115.5,-668.0,240.4)mm  err=46.1mm  repeat=1/1  ref_idx=299  v_cmd=1536.8mm/s  |u|=702.9mm/s²  F=0.6N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:55][RunControl][INFO] [Step  350] pos=(109.6,-667.8,194.7)mm  mpc_target=(105.7,-577.5,237.4)mm  err=100.0mm  repeat=1/1  ref_idx=349  v_cmd=3333.3mm/s  |u|=707.1mm/s²  F=0.4N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:57][RunControl][INFO] [Step  400] pos=(109.6,-667.8,194.7)mm  mpc_target=(115.5,-670.9,213.2)mm  err=19.6mm  repeat=1/1  ref_idx=399  v_cmd=654.0mm/s  |u|=726.2mm/s²  F=0.2N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:21:58][RunControl][INFO] [Step  450] pos=(109.6,-667.8,194.7)mm  mpc_target=(114.5,-624.6,284.8)mm  err=100.0mm  repeat=1/1  ref_idx=449  v_cmd=3333.3mm/s  |u|=716.4mm/s²  F=0.1N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:00][RunControl][INFO] [Step  500] pos=(109.6,-667.8,194.7)mm  mpc_target=(105.9,-595.5,263.6)mm  err=100.0mm  repeat=1/1  ref_idx=499  v_cmd=3333.3mm/s  |u|=596.2mm/s²  F=0.2N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:01][RunControl][INFO] [Step  550] pos=(109.6,-667.8,194.7)mm  mpc_target=(109.7,-667.9,194.7)mm  err=0.1mm  repeat=1/1  ref_idx=549  v_cmd=3.9mm/s  |u|=258.2mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:03][RunControl][INFO] [Step  600] pos=(109.6,-667.8,194.7)mm  mpc_target=(104.1,-594.3,262.2)mm  err=100.0mm  repeat=1/1  ref_idx=599  v_cmd=3333.3mm/s  |u|=733.9mm/s²  F=0.4N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:04][RunControl][WARNING] 控制循环超时 2 次/秒，最大=51.8ms > 30ms
+[09:22:05][RunControl][INFO] [Step  650] pos=(109.6,-667.8,194.7)mm  mpc_target=(109.3,-620.2,282.6)mm  err=100.0mm  repeat=1/1  ref_idx=649  v_cmd=3333.3mm/s  |u|=522.7mm/s²  F=0.7N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:05][RunControl][WARNING] 控制循环超时 10 次/秒，最大=61.4ms > 30ms
+[09:22:06][RunControl][WARNING] 控制循环超时 16 次/秒，最大=81.8ms > 30ms
+[09:22:07][RunControl][INFO] [Step  700] pos=(109.6,-667.8,194.7)mm  mpc_target=(117.7,-668.6,231.4)mm  err=37.6mm  repeat=1/1  ref_idx=699  v_cmd=1253.7mm/s  |u|=713.1mm/s²  F=0.2N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:07][RunControl][WARNING] 控制循环超时 12 次/秒，最大=69.8ms > 30ms
+[09:22:08][RunControl][WARNING] 控制循环超时 6 次/秒，最大=68.7ms > 30ms
+[09:22:09][RunControl][INFO] [Step  750] pos=(109.6,-667.8,194.7)mm  mpc_target=(106.1,-579.6,241.7)mm  err=100.0mm  repeat=1/1  ref_idx=749  v_cmd=3333.3mm/s  |u|=707.7mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:09][RunControl][WARNING] 控制循环超时 6 次/秒，最大=53.9ms > 30ms
+[09:22:10][RunControl][WARNING] 控制循环超时 12 次/秒，最大=81.2ms > 30ms
+[09:22:11][RunControl][INFO] [Step  800] pos=(109.6,-667.8,194.7)mm  mpc_target=(116.5,-655.5,255.9)mm  err=62.8mm  repeat=1/1  ref_idx=799  v_cmd=2092.5mm/s  |u|=643.0mm/s²  F=0.8N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:11][RunControl][WARNING] 控制循环超时 12 次/秒，最大=56.8ms > 30ms
+[09:22:12][RunControl][WARNING] 控制循环超时 14 次/秒，最大=66.4ms > 30ms
+[09:22:13][RunControl][WARNING] 控制循环超时 12 次/秒，最大=93.3ms > 30ms
+[09:22:13][RunControl][INFO] [Step  850] pos=(109.6,-667.8,194.7)mm  mpc_target=(115.8,-631.9,287.8)mm  err=100.0mm  repeat=1/1  ref_idx=849  v_cmd=3333.3mm/s  |u|=719.7mm/s²  F=1.0N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:14][RunControl][WARNING] 控制循环超时 7 次/秒，最大=66.5ms > 30ms
+[09:22:15][RunControl][WARNING] 控制循环超时 12 次/秒，最大=66.6ms > 30ms
+[09:22:15][RunControl][INFO] [Step  900] pos=(109.6,-667.8,194.7)mm  mpc_target=(108.8,-579.4,241.5)mm  err=100.0mm  repeat=1/1  ref_idx=899  v_cmd=3333.3mm/s  |u|=740.4mm/s²  F=0.2N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:17][RunControl][WARNING] 控制循环超时 7 次/秒，最大=75.7ms > 30ms
+[09:22:18][RunControl][WARNING] 控制循环超时 17 次/秒，最大=60.9ms > 30ms
+[09:22:18][RunControl][INFO] [Step  950] pos=(109.6,-667.8,194.7)mm  mpc_target=(109.7,-668.0,194.6)mm  err=0.2mm  repeat=1/1  ref_idx=949  v_cmd=7.6mm/s  |u|=506.9mm/s²  F=0.2N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:19][RunControl][INFO] [Step 1000] pos=(109.6,-667.8,194.7)mm  mpc_target=(47.6,-606.8,243.9)mm  err=100.0mm  repeat=1/1  ref_idx=999  v_cmd=3333.3mm/s  |u|=866.0mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:21][RunControl][INFO] [Step 1050] pos=(109.6,-667.8,194.7)mm  mpc_target=(110.6,-586.3,252.6)mm  err=100.0mm  repeat=1/1  ref_idx=1049  v_cmd=3333.3mm/s  |u|=708.9mm/s²  F=0.1N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:22:21][RunControl][INFO] 用户中止控制
+[09:22:21][RunControl][INFO] === 控制系统已停止 ===

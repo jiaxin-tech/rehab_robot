@@ -1,0 +1,15 @@
+[09:22:55][RunControl][INFO] 等待反馈稳定 2s...
+[09:22:59][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=-177.79, ry=0.39, rz=-149.77
+[09:22:59][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[09:22:59][MPC][INFO] MPC初始化: horizon=8, dt=0.03s, dim=3
+[09:22:59][RunControl][INFO] 在线PINN后台更新: 关闭
+[09:22:59][RunControl][INFO] control参考轨迹来源: 真实CSV path=bone_return_3.csv, mode=point, point=RWrist, joints=('RShoulder', 'RElbow', 'RWrist'), points=1500
+[09:22:59][RunControl][INFO] control参考轨迹重复次数: 1
+[09:22:59][RunControl][INFO] === 控制循环启动 ===
+[09:22:59][RunControl][INFO] [Step    0] pos=(109.6,-667.8,194.7)mm  mpc_target=(109.7,-667.9,194.8)mm  err=0.1mm  repeat=1/1  ref_idx=0  v_cmd=2.5mm/s  |u|=165.9mm/s²  F=0.8N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:23:01][RunControl][INFO] [Step   50] pos=(109.6,-667.8,194.7)mm  mpc_target=(99.4,-591.3,258.3)mm  err=100.0mm  repeat=1/1  ref_idx=50  v_cmd=3333.3mm/s  |u|=748.8mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:23:02][RunControl][INFO] [Step  100] pos=(112.1,-669.9,191.2)mm  mpc_target=(108.8,-619.2,277.4)mm  err=100.0mm  repeat=1/1  ref_idx=100  v_cmd=3333.3mm/s  |u|=519.6mm/s²  F=0.3N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:23:04][RunControl][INFO] [Step  150] pos=(112.1,-669.9,191.2)mm  mpc_target=(112.2,-669.9,191.4)mm  err=0.2mm  repeat=1/1  ref_idx=150  v_cmd=7.7mm/s  |u|=513.4mm/s²  F=0.5N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:23:05][RunControl][INFO] [Step  200] pos=(112.1,-669.9,191.2)mm  mpc_target=(103.3,-583.1,240.2)mm  err=100.0mm  repeat=1/1  ref_idx=200  v_cmd=3333.3mm/s  |u|=625.1mm/s²  F=1.1N  comfort_raw=1.000  comfort_ctrl=1.000  motion=1.000  step_lim=100.0mm  pinn_ready=False pinn_busy=False
+[09:23:06][RunControl][INFO] 用户中止控制
+[09:23:06][RunControl][INFO] === 控制系统已停止 ===

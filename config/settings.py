@@ -53,7 +53,7 @@ EXCITATION_DURATION = 5.0          # 每段激励时长 (s)
 REHAB_DURATION      = 20.0          # 每段康复轨迹时长 (s)
 REHAB_CYCLES        = 3.0           # 每段内往复次数
 REHAB_RANGE_SCALE   = 0.8           # 使用标定活动范围的比例，避免贴近极限
-CONTROL_TRAJECTORY_REPEATS = 2      # control中同一条康复轨迹连续跑几次
+CONTROL_TRAJECTORY_REPEATS = 1      # control中同一条康复轨迹连续跑几次
 
 # control参考轨迹来源：
 #   "real_csv" 使用真实骨架CSV；"math" 使用 generate_rehab_trajectory 数学正弦轨迹。
@@ -67,17 +67,19 @@ REAL_TRAJECTORY_POINT = "RWrist"
 REAL_TRAJECTORY_POINT_USE_ABSOLUTE = False
 REAL_TRAJECTORY_POINT_AXIS_MAP = (0, 1, 2)       # CSV XYZ分别映射到机器人XYZ；需要换轴时改这里
 REAL_TRAJECTORY_POINT_AXIS_SIGN = (1.0, 1.0, 1.0)
-REAL_TRAJECTORY_POINT_SCALE = (0.25, 0.25, 0.25) # 相机/人体轨迹到机器人位移的缩放，需按现场标定微调
+REAL_TRAJECTORY_POINT_SCALE = (1.0, 1.0, 1.0) # 相机/人体轨迹到机器人位移的缩放，需按现场标定微调
 REAL_TRAJECTORY_POINT_MAX_DELTA_MM = (180.0, 180.0, 180.0)
 REAL_TRAJECTORY_POINT_OFFSET_XYZ = (0.0, 0.0, 0.0)
-REAL_TRAJECTORY_POINT_ANCHOR_XYZ = None
+# scale=1时不要把“当前停在边界处的位置”当作整条轨迹锚点，否则会从边界继续往外跑。
+# 这里固定到之前验证过的中间安全位；运行前如果当前位置不在这里，脚本会低速MovL到该点。
+REAL_TRAJECTORY_POINT_ANCHOR_XYZ = (110.0, -666.0, 260.0)
 # joint_angle模式会用右臂三点计算真实肘关节角，再映射到机器人标定安全弧线。
 REAL_TRAJECTORY_JOINTS = ("RShoulder", "RElbow", "RWrist")
 REAL_TRAJECTORY_INVERT = False
 REAL_TRAJECTORY_SMOOTH_WINDOW = 11
 # CSV若没有真实时间戳，None表示“一行CSV对应一个控制周期dt”；有视频帧率时可填如 30.0。
 REAL_TRAJECTORY_SOURCE_HZ = None
-REAL_TRAJECTORY_SOURCE_DT = None
+REAL_TRAJECTORY_SOURCE_DT = 0.25
 REAL_TRAJECTORY_RANGE_LOW_PERCENTILE = 1.0
 REAL_TRAJECTORY_RANGE_HIGH_PERCENTILE = 99.0
 REAL_TRAJECTORY_MIN_SOURCE_RANGE_RAD = 0.05
@@ -175,10 +177,12 @@ MPC_VEL_SCALE      = 200.0          # 速度误差归一化尺度 (mm/s)
 
 # ── 控制运行保护 ─────────────────────────────────────
 CONTROL_START_TOLERANCE_MM = 2.0    # 控制前当前位置离轨迹起点超过该值则先MovL到起点
+CONTROL_START_REACHED_TOLERANCE_MM = 5.0 # MovL到轨迹起点后，反馈位置必须进入该误差内才进入ServoP循环
+CONTROL_START_MOVE_TIMEOUT = 60.0   # 等待MovL到轨迹起点的最长时间(s)
 CONTROL_MAX_FEEDBACK_JUMP_MM = 80.0 # 单周期反馈跳变超过该值视为反馈异常并停机
-CONTROL_MAX_TRACK_ERROR_MM = 200.0  # 实际位姿偏离当前目标过大时停机，防止反馈/控制发散
-CONTROL_MAX_TARGET_STEP_MM = 100.0    # MPC单周期目标点最大位移，限制突变指令
-CONTROL_MIN_TARGET_STEP_MM = 0.5    # comfort很低时单周期目标点最大位移下限
+CONTROL_MAX_TRACK_ERROR_MM = 40.0   # 实际位姿偏离当前目标过大时停机，防止反馈/控制发散
+CONTROL_MAX_TARGET_STEP_MM = 3.5    # MPC单周期目标点最大位移，3.5mm/30ms≈117mm/s，避免ServoP突跳
+CONTROL_MIN_TARGET_STEP_MM = 0.2    # comfort很低时单周期目标点最大位移下限
 CONTROL_MIN_PROGRESS_SCALE = 0.05   # comfort很低时参考轨迹最慢推进比例
 CONTROL_COMFORT_RECOVERY_POWER = 2.5 # 控制用comfort恢复到1的速度；越大恢复越快
 CONTROL_COMFORT_SPEED_POWER = 2.0   # comfort低时速度/步长衰减强度；越大越保守
@@ -186,7 +190,12 @@ CONTROL_LOW_COMFORT_RESET_THRESHOLD = 0.35 # 低于该值时清空MPC热启动�
 CONTROL_COMFORT_FORCE_FLOOR_N = 12.0 # 合力低于该值时，避免控制comfort被模型瞬时0值锁死
 CONTROL_COMFORT_LOW_FORCE_FLOOR = 0.35 # 低力时comfort_ctrl的最高下限，随力增大线性衰减
 CONTROL_VEL_FILTER_ALPHA = 0.30     # 反馈速度低通系数，降低单帧抖动对MPC的影响
-CONTROL_MAX_MPC_REF_DEVIATION_MM = 35.0 # MPC目标相对当前参考点最大偏离，防止跑飞
+CONTROL_MAX_MPC_REF_DEVIATION_MM = 10.0 # MPC目标相对当前参考点最大偏离，防止跑飞
+CONTROL_REF_LAG_SLOWDOWN_MM = 20.0  # 实际末端落后参考点超过该距离时，减慢参考轨迹推进
+CONTROL_REF_LAG_HOLD_MM = 60.0      # 实际末端落后参考点超过该距离时，暂停推进参考轨迹
+CONTROL_MAX_REF_LAG_MM = 90.0       # 实际末端距当前参考点过大时停机，避免继续追远处目标
+CONTROL_WORKSPACE_MIN_XYZ = (-100.0, -790.0, 180.0) # 运行前检查参考轨迹是否越过安全工作空间
+CONTROL_WORKSPACE_MAX_XYZ = (220.0, -480.0, 460.0)
 
 # ── 数据路径 ──────────────────────────────────────────
 DATA_DIR           = "data"

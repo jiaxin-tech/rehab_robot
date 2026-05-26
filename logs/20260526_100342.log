@@ -1,0 +1,12 @@
+[10:03:42][RunControl][INFO] 等待反馈稳定 2s...
+[10:03:46][RunControl][INFO] 已将当前末端姿态锁定为夹爪向下姿态: rx=176.16, ry=3.94, rz=-151.36
+[10:03:46][ComfortNet][INFO] 舒适度模型已加载: models/comfort_net.pth  [mode=pinn_force, dim=12]
+[10:03:46][MPC][INFO] MPC初始化: horizon=8, dt=0.03s, dim=3
+[10:03:46][RunControl][INFO] 在线PINN后台更新: 关闭
+[10:03:46][RunControl][INFO] control参考轨迹来源: 真实CSV path=bone_return_3.csv, mode=point, point=RWrist, joints=('RShoulder', 'RElbow', 'RWrist'), points=14991
+[10:03:46][RunControl][INFO] 参考轨迹空间范围: x=[-70.0,195.2] y=[-785.4,-486.0] z=[215.8,440.0] mm
+[10:03:46][RunControl][INFO] control参考轨迹重复次数: 1
+[10:03:46][RunControl][INFO] 当前位置距控制轨迹起点 202.4mm，先移动到起点 (110.0,-666.0,260.0)
+[10:03:47][RunControl][INFO] === 控制循环启动 ===
+[10:03:47][RunControl][ERROR] 安全停止: 末端落后参考轨迹过大: 202.5mm > 90.0mm，已停止，避免继续追踪远处目标
+[10:03:47][RunControl][INFO] === 控制系统已停止 ===

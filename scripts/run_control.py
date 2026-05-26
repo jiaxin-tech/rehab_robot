@@ -165,6 +165,30 @@ def _as_valid_pose(values, name: str = "cartesian_pose") -> np.ndarray:
     return pose[:6].copy()
 
 
+def _wait_position_reached(robot, target_xyz, tolerance_mm: float, timeout: float,
+                           guard: SafetyGuard = None) -> np.ndarray:
+    target_xyz = np.asarray(target_xyz, dtype=float).reshape(3)
+    deadline = time.time() + float(timeout)
+    last_pose = None
+    last_error = np.inf
+
+    while time.time() < deadline:
+        if guard is not None:
+            guard.check()
+        last_pose = _as_valid_pose(robot.get_cartesian_pose())
+        last_error = float(np.linalg.norm(last_pose[:3] - target_xyz))
+        if last_error <= tolerance_mm:
+            return last_pose
+        time.sleep(0.05)
+
+    if last_pose is None:
+        raise RuntimeError("移动到控制轨迹起点超时: 无法读取有效反馈位置")
+    raise RuntimeError(
+        f"移动到控制轨迹起点超时: 当前距起点 {last_error:.1f}mm > {tolerance_mm:.1f}mm，"
+        f"last_pose=({last_pose[0]:.1f},{last_pose[1]:.1f},{last_pose[2]:.1f})"
+    )
+
+
 def _limit_position_step(current_xyz: np.ndarray, target_xyz: np.ndarray, max_step_mm: float) -> np.ndarray:
     delta = np.asarray(target_xyz, dtype=float) - np.asarray(current_xyz, dtype=float)
     dist = float(np.linalg.norm(delta))
@@ -189,6 +213,17 @@ def _comfort_target_step_mm(comfort_score: float) -> float:
     max_step = max(float(settings.CONTROL_MAX_TARGET_STEP_MM), 0.0)
     min_step = float(np.clip(getattr(settings, "CONTROL_MIN_TARGET_STEP_MM", 0.0), 0.0, max_step))
     return min_step + (max_step - min_step) * _comfort_motion_scale(comfort_score)
+
+
+def _reference_lag_progress_scale(ref_lag_mm: float) -> float:
+    slowdown_mm = max(float(getattr(settings, "CONTROL_REF_LAG_SLOWDOWN_MM", np.inf)), 0.0)
+    hold_mm = max(float(getattr(settings, "CONTROL_REF_LAG_HOLD_MM", slowdown_mm)), slowdown_mm)
+    if ref_lag_mm <= slowdown_mm:
+        return 1.0
+    if ref_lag_mm >= hold_mm:
+        return 0.0
+    span = max(hold_mm - slowdown_mm, 1e-6)
+    return float(np.clip(1.0 - (ref_lag_mm - slowdown_mm) / span, 0.0, 1.0))
 
 
 def _control_comfort_score(raw_comfort: float, force_norm: float = 0.0) -> float:
@@ -238,6 +273,34 @@ def _load_reference_waypoints(tool_orientation, trajectory_source: str = None,
         return ref_wps
 
     raise ValueError(f"未知control参考轨迹来源: {trajectory_source}")
+
+
+def _validate_reference_workspace(ref_wps: np.ndarray):
+    min_xyz = getattr(settings, "CONTROL_WORKSPACE_MIN_XYZ", None)
+    max_xyz = getattr(settings, "CONTROL_WORKSPACE_MAX_XYZ", None)
+    if min_xyz is None or max_xyz is None:
+        return
+
+    min_xyz = np.asarray(min_xyz, dtype=float).reshape(-1)
+    max_xyz = np.asarray(max_xyz, dtype=float).reshape(-1)
+    if min_xyz.size != 3 or max_xyz.size != 3:
+        raise ValueError("CONTROL_WORKSPACE_MIN_XYZ/MAX_XYZ必须包含3个数值")
+
+    xyz = np.asarray(ref_wps[:, :3], dtype=float)
+    traj_min = xyz.min(axis=0)
+    traj_max = xyz.max(axis=0)
+    logger.info(
+        "参考轨迹空间范围: "
+        f"x=[{traj_min[0]:.1f},{traj_max[0]:.1f}] "
+        f"y=[{traj_min[1]:.1f},{traj_max[1]:.1f}] "
+        f"z=[{traj_min[2]:.1f},{traj_max[2]:.1f}] mm"
+    )
+    if np.any(traj_min < min_xyz) or np.any(traj_max > max_xyz):
+        raise RuntimeError(
+            "参考轨迹超出配置安全工作空间: "
+            f"traj_min={traj_min.round(1).tolist()}, traj_max={traj_max.round(1).tolist()}, "
+            f"limit_min={min_xyz.round(1).tolist()}, limit_max={max_xyz.round(1).tolist()}"
+        )
 
 
 def run(
@@ -290,9 +353,14 @@ def run(
     ref_wps_base = _load_reference_waypoints(
         tool_orientation=tool_orientation,
         trajectory_source=trajectory_source,
-        anchor_xyz=cur_pose0[:3],
+        anchor_xyz=(
+            None
+            if getattr(settings, "REAL_TRAJECTORY_POINT_ANCHOR_XYZ", None) is not None
+            else cur_pose0[:3]
+        ),
         real_trajectory_csv=real_trajectory_csv,
     )   # (N_total, 6)
+    _validate_reference_workspace(ref_wps_base)
     if trajectory_repeats is None:
         trajectory_repeats = getattr(settings, "CONTROL_TRAJECTORY_REPEATS", 1)
     trajectory_repeats = max(1, int(trajectory_repeats))
@@ -307,6 +375,17 @@ def run(
         guard.check()
         _move_l(robot, ref_wps_base[0])
         _wait_idle(robot)
+        cur_pose0 = _wait_position_reached(
+            robot,
+            ref_wps_base[0, :3],
+            float(getattr(settings, "CONTROL_START_REACHED_TOLERANCE_MM", 5.0)),
+            float(getattr(settings, "CONTROL_START_MOVE_TIMEOUT", 60.0)),
+            guard=guard,
+        )
+        logger.info(
+            "已到达控制轨迹起点: "
+            f"pos=({cur_pose0[0]:.1f},{cur_pose0[1]:.1f},{cur_pose0[2]:.1f})mm"
+        )
         time.sleep(0.3)
 
     # 参考轨迹转为状态序列 [x,y,z, vx,vy,vz]
@@ -428,6 +507,13 @@ def run(
                 cur_pose, x0_vel, u_opt, axes=(0, 1, 2))
             ref_target_idx = min(ref_base_idx + 1, len(ref_wps) - 1)
             ref_target_xyz = ref_wps[ref_target_idx, :3]
+            ref_lag = float(np.linalg.norm(cur_pose[:3] - ref_target_xyz))
+            max_ref_lag = float(getattr(settings, "CONTROL_MAX_REF_LAG_MM", np.inf))
+            if ref_lag > max_ref_lag:
+                raise RuntimeError(
+                    f"末端落后参考轨迹过大: {ref_lag:.1f}mm > {max_ref_lag:.1f}mm，"
+                    "已停止，避免继续追踪远处目标"
+                )
             next_pose[:3] = _limit_position_step(
                 ref_target_xyz, next_pose[:3], settings.CONTROL_MAX_MPC_REF_DEVIATION_MM
             )
@@ -462,6 +548,7 @@ def run(
                     f"pos=({cur_pose[0]:.1f},{cur_pose[1]:.1f},{cur_pose[2]:.1f})mm  "
                     f"mpc_target=({next_pose[0]:.1f},{next_pose[1]:.1f},{next_pose[2]:.1f})mm  "
                     f"err={track_error:.1f}mm  "
+                    f"ref_lag={ref_lag:.1f}mm  "
                     f"repeat={repeat_idx}/{trajectory_repeats}  "
                     f"ref_idx={repeat_ref_idx}  "
                     f"v_cmd={next_cmd_speed:.1f}mm/s  "
@@ -476,7 +563,9 @@ def run(
                 )
 
             step += 1
-            ref_cursor += _comfort_progress_scale(comfort_score)
+            progress_scale = _comfort_progress_scale(comfort_score)
+            progress_scale *= _reference_lag_progress_scale(ref_lag)
+            ref_cursor += progress_scale
 
             # 7. 维持控制频率
             elapsed = time.time() - loop_start
