@@ -54,6 +54,33 @@ REHAB_DURATION      = 20.0          # 每段康复轨迹时长 (s)
 REHAB_CYCLES        = 3.0           # 每段内往复次数
 REHAB_RANGE_SCALE   = 0.8           # 使用标定活动范围的比例，避免贴近极限
 CONTROL_TRAJECTORY_REPEATS = 2      # control中同一条康复轨迹连续跑几次
+
+# control参考轨迹来源：
+#   "real_csv" 使用真实骨架CSV；"math" 使用 generate_rehab_trajectory 数学正弦轨迹。
+CONTROL_TRAJECTORY_SOURCE = "real_csv"
+REAL_TRAJECTORY_CSV_PATH = "bone_return_3.csv"
+# 默认直接跟踪右手腕点轨迹；机械臂末端绑在wrist时使用此模式。
+REAL_TRAJECTORY_MODE = "point"      # "point"/"wrist"=跟踪单点xyz；"joint_angle"=旧的肘角弧线映射
+REAL_TRAJECTORY_POINT = "RWrist"
+# point模式默认使用相对位移：轨迹第1帧对齐到控制启动时机器人当前末端位置。
+# 若CSV已是机器人基座坐标，可把 REAL_TRAJECTORY_POINT_USE_ABSOLUTE 改为 True，并把scale设为1。
+REAL_TRAJECTORY_POINT_USE_ABSOLUTE = False
+REAL_TRAJECTORY_POINT_AXIS_MAP = (0, 1, 2)       # CSV XYZ分别映射到机器人XYZ；需要换轴时改这里
+REAL_TRAJECTORY_POINT_AXIS_SIGN = (1.0, 1.0, 1.0)
+REAL_TRAJECTORY_POINT_SCALE = (0.25, 0.25, 0.25) # 相机/人体轨迹到机器人位移的缩放，需按现场标定微调
+REAL_TRAJECTORY_POINT_MAX_DELTA_MM = (180.0, 180.0, 180.0)
+REAL_TRAJECTORY_POINT_OFFSET_XYZ = (0.0, 0.0, 0.0)
+REAL_TRAJECTORY_POINT_ANCHOR_XYZ = None
+# joint_angle模式会用右臂三点计算真实肘关节角，再映射到机器人标定安全弧线。
+REAL_TRAJECTORY_JOINTS = ("RShoulder", "RElbow", "RWrist")
+REAL_TRAJECTORY_INVERT = False
+REAL_TRAJECTORY_SMOOTH_WINDOW = 11
+# CSV若没有真实时间戳，None表示“一行CSV对应一个控制周期dt”；有视频帧率时可填如 30.0。
+REAL_TRAJECTORY_SOURCE_HZ = None
+REAL_TRAJECTORY_SOURCE_DT = None
+REAL_TRAJECTORY_RANGE_LOW_PERCENTILE = 1.0
+REAL_TRAJECTORY_RANGE_HIGH_PERCENTILE = 99.0
+REAL_TRAJECTORY_MIN_SOURCE_RANGE_RAD = 0.05
 REHAB_VARIANTS      = [
     {"name": "small_slow",  "range_scale": 0.50, "cycles": 2.0, "duration": 24.0},
     {"name": "medium",      "range_scale": 0.70, "cycles": 3.0, "duration": 20.0},

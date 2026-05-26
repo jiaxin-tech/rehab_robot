@@ -13,7 +13,10 @@ from config import settings
 from hardware.dobot_cr5 import DobotCR5
 from hardware.force_sensor import ForceSensor
 from collection.safety_guard import SafetyGuard
-from collection.trajectory import generate_rehab_trajectory
+from collection.trajectory import (
+    generate_real_trajectory_from_csv,
+    generate_rehab_trajectory,
+)
 from models.comfort_net import ComfortPredictor
 from models.pinn import OnlinePINN, run_pinn
 from control.mpc_controller import MPCController
@@ -203,12 +206,48 @@ def _control_comfort_score(raw_comfort: float, force_norm: float = 0.0) -> float
     return float(np.clip(recovered, 0.0, 1.0))
 
 
+def _load_reference_waypoints(tool_orientation, trajectory_source: str = None,
+                              anchor_xyz=None,
+                              real_trajectory_csv: str = None) -> np.ndarray:
+    source = trajectory_source or getattr(settings, "CONTROL_TRAJECTORY_SOURCE", "math")
+    source = str(source).strip().lower()
+
+    if source in ("real", "real_csv", "csv"):
+        ref_wps = generate_real_trajectory_from_csv(
+            csv_path=real_trajectory_csv,
+            dt=settings.MPC_DT,
+            orientation=tool_orientation,
+            anchor_xyz=anchor_xyz,
+        )
+        csv_path = real_trajectory_csv or getattr(settings, "REAL_TRAJECTORY_CSV_PATH", "")
+        mode = getattr(settings, "REAL_TRAJECTORY_MODE", "point")
+        point = getattr(settings, "REAL_TRAJECTORY_POINT", "")
+        joints = getattr(settings, "REAL_TRAJECTORY_JOINTS", ())
+        logger.info(
+            "control参考轨迹来源: 真实CSV "
+            f"path={csv_path}, mode={mode}, point={point}, joints={joints}, points={len(ref_wps)}"
+        )
+        return ref_wps
+
+    if source in ("math", "generated", "rehab"):
+        ref_wps = generate_rehab_trajectory(
+            dt=settings.MPC_DT,
+            orientation=tool_orientation,
+        )
+        logger.info(f"control参考轨迹来源: 数学康复轨迹 points={len(ref_wps)}")
+        return ref_wps
+
+    raise ValueError(f"未知control参考轨迹来源: {trajectory_source}")
+
+
 def run(
     robot_ip: str,
     sensor_ip: str,
     subject_id: str,
     online_pinn_enabled: bool = None,
     trajectory_repeats: int = None,
+    trajectory_source: str = None,
+    real_trajectory_csv: str = None,
 ):
 
     # ── 初始化硬件 ────────────────────────────────────
@@ -245,17 +284,20 @@ def run(
         online_pinn_enabled = settings.PINN_ONLINE_ENABLED
     logger.info(f"在线PINN后台更新: {'开启' if online_pinn_enabled else '关闭'}")
 
-    # ── 生成参考轨迹 ──────────────────────────────────
-    ref_wps_base = generate_rehab_trajectory(
-        dt=settings.MPC_DT,
-        orientation=tool_orientation,
+    cur_pose0 = _as_valid_pose(robot.get_cartesian_pose())
+
+    # ── 加载参考轨迹 ──────────────────────────────────
+    ref_wps_base = _load_reference_waypoints(
+        tool_orientation=tool_orientation,
+        trajectory_source=trajectory_source,
+        anchor_xyz=cur_pose0[:3],
+        real_trajectory_csv=real_trajectory_csv,
     )   # (N_total, 6)
     if trajectory_repeats is None:
         trajectory_repeats = getattr(settings, "CONTROL_TRAJECTORY_REPEATS", 1)
     trajectory_repeats = max(1, int(trajectory_repeats))
     logger.info(f"control参考轨迹重复次数: {trajectory_repeats}")
 
-    cur_pose0 = _as_valid_pose(robot.get_cartesian_pose())
     start_error = float(np.linalg.norm(cur_pose0[:3] - ref_wps_base[0, :3]))
     if start_error > settings.CONTROL_START_TOLERANCE_MM:
         logger.info(
@@ -482,6 +524,10 @@ def main():
                         help="强制关闭后台PINN更新")
     parser.add_argument("--repeats", type=int, default=None,
                         help="control参考轨迹重复次数；未指定则使用 config/settings.py 中的 CONTROL_TRAJECTORY_REPEATS")
+    parser.add_argument("--trajectory-source", choices=("real_csv", "math"), default=None,
+                        help="control参考轨迹来源；默认使用 config/settings.py 中的 CONTROL_TRAJECTORY_SOURCE")
+    parser.add_argument("--real-trajectory-csv", default=None,
+                        help="真实轨迹CSV路径；未指定则使用 config/settings.py 中的 REAL_TRAJECTORY_CSV_PATH")
     args = parser.parse_args()
     run(
         args.robot_ip,
@@ -489,6 +535,8 @@ def main():
         args.subject,
         online_pinn_enabled=args.online_pinn,
         trajectory_repeats=args.repeats,
+        trajectory_source=args.trajectory_source,
+        real_trajectory_csv=args.real_trajectory_csv,
     )
 
 
