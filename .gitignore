@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+# xCoreSDK is a native Python extension, not a generated Python cache file.
+!hardware/windows/xcoresdk/*.pyd
+data/
+logs/
+_rokae_log_/
+hardware/windows/xcoresdk_python-v*/
+*.pth

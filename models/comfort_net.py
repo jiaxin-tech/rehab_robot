@@ -83,7 +83,8 @@ class ComfortNet(nn.Module):
 
 # ── 数据加载 ─────────────────────────────────────────
 def load_dataset(data_dir: str,
-                 mode: str = settings.COMFORT_INPUT_MODE):
+                 mode: str = settings.COMFORT_INPUT_MODE,
+                 normalize: bool = True):
     """
     从data_dir下所有CSV加载数据，根据mode选取对应列。
 
@@ -127,6 +128,11 @@ def load_dataset(data_dir: str,
             X_list.append(feat)
             y_list.append(1.0 if c == 0 else 0.0)
 
+    if len(X_list) < 2:
+        raise ValueError(
+            f"有效舒适度标注不足2条：{data_dir}；请先完成 episode 标注"
+        )
+
     X = np.array(X_list, dtype=np.float32)
     y = np.array(y_list, dtype=np.float32)
     logger.info(
@@ -135,10 +141,12 @@ def load_dataset(data_dir: str,
         f"特征维度={X.shape[1]}"
     )
 
-    # Z-score归一化
+    # Z-score归一化。评估已保存模型时可返回原始特征，让 Predictor
+    # 使用训练时保存的 mean/std，避免重复归一化或数据泄漏。
     mean = X.mean(axis=0)
     std  = X.std(axis=0) + 1e-8
-    X    = (X - mean) / std
+    if normalize:
+        X = (X - mean) / std
 
     return X, y, {"mean": mean, "std": std}
 

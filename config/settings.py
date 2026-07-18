@@ -2,17 +2,22 @@
 # 全局配置，所有模块从这里读参数，不要在各文件里硬编码
 
 # ── 硬件网络 ──────────────────────────────────────────
-ROBOT_IP          = "192.168.50.102"
-ROBOT_DASH_PORT   = 29999
-ROBOT_MOVE_PORT   = 30003
-ROBOT_FEED_PORT   = 30004
+ROBOT_IP          = "192.168.50.103"
+# xCoreSDK 0.7.0 Windows 配置。只做 NRT 慢扫时可留空；运行 50 Hz
+# 连续激励采集或 run_control.py 时必须填写本机同网段的网卡 IP。
+ROBOT_LOCAL_IP    = ""
+ROBOT_CLASS       = "xMateRobot"   # 6轴协作机器人（xMate CR/SR/ER系列）
+ROBOT_STATE_MS    = 8               # SDK支持 1/2/4/8/1000 ms
+ROBOT_MAX_SPEED   = 1000.0          # 100%对应的末端线速度 (mm/s)
+ROBOT_CMD_CACHE   = 1               # 限制未规划路径点，避免在线控制指令堆积
+ROBOT_RT_NETWORK_TOLERANCE = 20      # 实时网络丢包/延迟容忍百分比 (0~100)
+ROBOT_RT_FILTER_HZ         = 50.0    # 实时位置指令低通截止频率 (1~1000 Hz)
 
-SENSOR_IP         = "192.168.50.200"   # ATI力传感器，按实际修改
-SENSOR_PORT       = 49152
-SENSOR_HZ         = 100             # 1000 / SPEED(=10)
-SENSOR_FILTER     = 4               # 15Hz低通
-FORCE_DIV         = 10000.0
-TORQUE_DIV        = 100000.0
+# 珞石内置关节力矩传感器。末端六维力由控制器动力学模型估算。
+ROBOT_FORCE_FRAME        = "tool"   # world / flange / tool
+ROBOT_FORCE_HZ           = 50       # getEndTorque后台读取频率，需上机验证稳定性
+ROBOT_FORCE_BIAS_SAMPLES = 25       # 软件去零平均样本数
+ROBOT_FORCE_STALE_S      = 0.25     # 数据超过该时间未更新则安全停机
 
 # ── 采集参数 ──────────────────────────────────────────
 COLLECT_HZ        = 50              # 数据存储频率

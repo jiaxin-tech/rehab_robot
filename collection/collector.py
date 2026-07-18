@@ -27,7 +27,7 @@ class DataCollector:
         "vx", "vy", "vz",                         # 末端线速度
         "ax", "ay", "az",                         # 末端线加速度（后处理计算）
         "j1", "j2", "j3", "j4", "j5", "j6",       #joint angles
-        "dj1", "dj2", "dj3", "dj4", "dj5", "dj6",  # 关节速度（直接来自反馈，无需后处理）
+        "dj1", "dj2", "dj3", "dj4", "dj5", "dj6",  # 关节速度（由机械臂适配层提供）
         "fx", "fy", "fz", "tx", "ty", "tz",      # 力/力矩
         "mode",                                    # passive / active
         "comfort",                                 # 舒适度标注，-1=未标注
@@ -99,7 +99,7 @@ class DataCollector:
                 # 关节角度
                 "j1": jnt[0], "j2": jnt[1], "j3": jnt[2],
                 "j4": jnt[3], "j5": jnt[4], "j6": jnt[5],
-                # 关节速度（直接来自反馈，无需后处理）
+                # 关节速度（xCoreSDK适配层由连续关节状态差分得到）
                 "dj1": djnt[0], "dj2": djnt[1], "dj3": djnt[2],
                 "dj4": djnt[3], "dj5": djnt[4], "dj6": djnt[5],
                 # 力/力矩

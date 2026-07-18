@@ -44,11 +44,21 @@ class SafetyGuard:
                     self._active   = False
                     break
             except Exception as e:
-                logger.error(f"安全守卫异常: {e}")
+                logger.error(f"力数据异常，执行安全停止: {e}")
+                try:
+                    self._stop_robot()
+                finally:
+                    self.triggered = True
+                    self._active = False
+                break
             time.sleep(dt)
 
     def stop(self):
         self._active = False
+        thread = self._thread
+        if thread is not None and thread is not threading.current_thread():
+            thread.join(timeout=1.0)
+        self._thread = None
         logger.info("安全守卫已停止")
 
     def check(self):

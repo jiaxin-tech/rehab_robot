@@ -9,7 +9,6 @@ import csv, glob
 import numpy as np
 from config import settings
 from models.pinn import train_offline
-from utils.signal_processing import smooth_differentiate
 from utils.logger import get_logger
 
 logger = get_logger("TrainPINN")

@@ -5,8 +5,6 @@ import argparse
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import numpy as np
-import torch
 from config import settings
 from models.comfort_net import train, ComfortPredictor, load_dataset
 from utils.logger import get_logger
@@ -16,11 +14,12 @@ logger = get_logger("TrainComfort")
 
 def evaluate(model_path: str, data_dir: str):
     """训练完后评估准确率"""
-    from models.comfort_net import ComfortNet
-    import csv, glob
-
     predictor = ComfortPredictor(model_path)
-    X, y, _ = load_dataset(data_dir)
+    X, y, _ = load_dataset(
+        data_dir,
+        mode=predictor.mode,
+        normalize=False,
+    )
 
     preds  = predictor.predict_batch(X)
     binary = (preds >= 0.5).astype(float)
