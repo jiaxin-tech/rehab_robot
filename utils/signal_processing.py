@@ -26,12 +26,14 @@ def smooth_differentiate(values: np.ndarray, times: np.ndarray,
     if len(values) != n:
         raise ValueError("values 和 times 的长度必须一致")
     if n < 2:
-        return np.zeros_like(values, dtype=float)
+        raise ValueError("至少需要两个真实时间戳才能计算导数")
+    if not np.all(np.isfinite(values)) or not np.all(np.isfinite(times)):
+        raise ValueError("values 和 times 必须为有限数")
 
-    # 采集抖动或偶发重复时间戳会让 gradient 产生 inf/nan，这里先做保护。
+    # 这是离线工具，不能为了让 gradient 运行而重建真实采样时间。调用方
+    # 应先按 CSV 的 valid/invalid_reason 分段或剔除异常帧。
     if np.any(np.diff(times) <= 0):
-        dt = float(np.median(np.diff(np.unique(times)))) if len(np.unique(times)) > 1 else 1.0
-        times = np.arange(n, dtype=float) * max(dt, 1e-6)
+        raise ValueError("times 必须严格递增；不会重建采集时间轴")
 
     # 窗口长度必须为奇数、不能超过样本数，且 polyorder < window_length。
     wl = min(window, n if n % 2 == 1 else n - 1)
@@ -47,7 +49,7 @@ def lowpass_filter(values: np.ndarray, cutoff_hz: float,
                    sample_hz: float, order: int = 4) -> np.ndarray:
     """
     Butterworth低通滤波
-    用于实时力传感器数据的噪声过滤
+    用于离线数据的噪声过滤；实时采集保留原始值和真实时间戳。
     """
     nyq  = 0.5 * sample_hz
     norm = cutoff_hz / nyq
@@ -72,9 +74,9 @@ def compute_acceleration(cartesian_poses: np.ndarray,
                          times: np.ndarray) -> np.ndarray:
     """
     从末端笛卡尔位姿序列计算加速度
-    cartesian_poses: (N, 3/6) 数组，前三列为 [x,y,z]，单位跟输入保持一致
+    cartesian_poses: (N, 3/6) 数组，前三列为 base 系 [x,y,z]，单位m
     times:           (N,)   时间戳
-    返回:            (N, 3) 线加速度 [ax, ay, az]，单位为 输入位置单位/s^2
+    返回:            (N, 3) base 系线加速度 [ax, ay, az]，单位m/s²
     """
     accel = np.zeros((len(times), 3))
     for i in range(3):   # 只对xyz做，姿态角不需要

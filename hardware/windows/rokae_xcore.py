@@ -1,9 +1,10 @@
 """Rokae robot adapter backed by xCoreSDK 0.7.0 on Windows.
 
-The rest of this project uses millimetres and degrees. xCoreSDK uses metres and
-radians for Cartesian poses, and radians for joint positions. All unit
-conversions are kept in this adapter so the collection and control layers do
-not depend on vendor-specific conventions.
+The realtime stream provides TCP pose and joint position in the robot *base*
+frame.  It does not provide an SDK device timestamp, velocity, wrench, or
+collision field.  This adapter therefore exposes receipt times and explicitly
+labels finite-difference velocity estimates; it never advertises them as an
+SDK-synchronous wrench/state packet.
 """
 
 from __future__ import annotations
@@ -18,6 +19,16 @@ import sys
 import threading
 import time
 from typing import Any, Sequence
+
+from collection.state import (
+    KinematicStateFrame,
+    as_float_tuple,
+    as_vec3,
+    finite_vector,
+    rpy_euler_xyz_rotation_matrix,
+    transpose_rotation,
+    utc_now_iso,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -52,9 +63,9 @@ def _load_sdk():
 class RokaeRobot:
     """Project-facing interface for a Rokae robot controlled by xCoreSDK.
 
-    Public pose units are ``[mm, mm, mm, deg, deg, deg]``. Joint positions and
-    velocities are returned in degrees and degrees/s. The native SDK keeps its
-    own conventions internally (m and rad).
+    Public pose units are ``[m, m, m, rad, rad, rad]`` in the robot base frame.
+    Joint positions are SDK realtime values in rad.  TCP and joint velocities
+    are host-time finite differences between consecutive realtime frames.
     """
 
     def __init__(
@@ -63,15 +74,15 @@ class RokaeRobot:
         local_ip: str = "",
         robot_class: str = "xMateRobot",
         state_interval_ms: int = 8,
-        max_linear_speed_mm_s: float = 1000.0,
+        max_linear_speed_m_s: float = 1.0,
         command_cache_size: int = 1,
         rt_network_tolerance_percent: int = 20,
         rt_filter_hz: float = 50.0,
     ):
         if state_interval_ms not in (1, 2, 4, 8, 1000):
             raise ValueError("state_interval_ms must be one of 1, 2, 4, 8, or 1000")
-        if max_linear_speed_mm_s <= 0:
-            raise ValueError("max_linear_speed_mm_s must be positive")
+        if max_linear_speed_m_s <= 0:
+            raise ValueError("max_linear_speed_m_s must be positive")
         if not 1 <= command_cache_size <= 300:
             raise ValueError("command_cache_size must be between 1 and 300")
         if not 0 <= rt_network_tolerance_percent <= 100:
@@ -83,7 +94,7 @@ class RokaeRobot:
         self.local_ip = local_ip
         self.robot_class = robot_class
         self.state_interval_ms = state_interval_ms
-        self.max_linear_speed_mm_s = float(max_linear_speed_mm_s)
+        self.max_linear_speed_m_s = float(max_linear_speed_m_s)
         self.command_cache_size = int(command_cache_size)
         self.rt_network_tolerance_percent = int(rt_network_tolerance_percent)
         self.rt_filter_hz = float(rt_filter_hz)
@@ -103,14 +114,23 @@ class RokaeRobot:
         self._state_streaming = False
         self._state_ready = threading.Event()
         self._last_state_time: float | None = None
+        self._state_sequence_id = 0
+        self._state_error: str | None = None
+        self._state_keypads: tuple[bool, ...] | None = None
+        self._state_wall_time_iso: str | None = None
+        self._sdk_version: str | None = None
+        self._collision_state: bool | None = None
+        self._collision_error: str | None = None
+        self._joint_soft_limits_rad: tuple[tuple[float, float], ...] | None = None
+        self._joint_soft_limit_error: str | None = None
 
         self.is_connected = False
         self.robot_mode = "DISCONNECTED"
         self.current_speed_ratio = 0
-        self.cartesian_pose = [0.0] * 6
-        self.tcp_speed = [0.0] * 6
-        self.joint_angles = [0.0] * 6
-        self.actual_joint_speeds = [0.0] * 6
+        self.cartesian_pose: list[float] | None = None
+        self.tcp_speed: list[float] | None = None
+        self.joint_angles: list[float] | None = None
+        self.actual_joint_speeds: list[float] | None = None
         self._pre_drag_powered = False
         self._pre_drag_automatic = False
 
@@ -144,6 +164,7 @@ class RokaeRobot:
                 f"Expected xCoreSDK {_EXPECTED_SDK_VERSION}, but loaded {sdk_version}. "
                 "Check hardware/windows/xcoresdk and the Python DLL search path."
             )
+        self._sdk_version = sdk_version
         robot_type = getattr(self._sdk, self.robot_class, None)
         if robot_type is None:
             raise ValueError(f"Unknown xCoreSDK robot class: {self.robot_class}")
@@ -175,6 +196,17 @@ class RokaeRobot:
                     "built-in force sensing"
                 )
             self._force_control = force_control_factory()
+            try:
+                self._joint_soft_limits_rad = self._read_joint_soft_limits_rad()
+                self._joint_soft_limit_error = None
+            except Exception as exc:
+                # The safety layer decides whether unavailable soft limits are
+                # acceptable for the current operation; never invent defaults.
+                self._joint_soft_limits_rad = None
+                self._joint_soft_limit_error = (
+                    f"joint_soft_limit_query_error:{type(exc).__name__}:{exc}"
+                )
+                logger.warning("Unable to read xCoreSDK joint soft limits: %s", exc)
             self._call(
                 "setMotionControlMode",
                 self._robot.setMotionControlMode,
@@ -201,23 +233,40 @@ class RokaeRobot:
                 try:
                     with self._sdk_lock:
                         self._robot.stopReceiveRobotState()
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.warning("Unable to stop failed xCoreSDK state stream: %s", exc)
                 self._state_streaming = False
             try:
                 self._robot.disconnectFromRobot({})
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.warning("Unable to disconnect failed xCoreSDK connection: %s", exc)
         self._robot = None
         self._robot_info = None
         self._force_control = None
         self._rt_controller = None
+        self._joint_soft_limits_rad = None
+        self._joint_soft_limit_error = None
+        self._clear_cached_state()
         self.is_connected = False
         self.robot_mode = "DISCONNECTED"
+
+    def _clear_cached_state(self) -> None:
+        """Discard a previous connection's RT cache instead of reusing it."""
+        with self._state_lock:
+            self.cartesian_pose = None
+            self.tcp_speed = None
+            self.joint_angles = None
+            self.actual_joint_speeds = None
+            self._last_state_time = None
+            self._state_sequence_id = 0
+            self._state_wall_time_iso = None
+            self._state_keypads = None
+            self._state_error = "robot_state_disconnected"
 
     def disconnect(self) -> None:
         """Stop feedback and disconnect. Calling this repeatedly is safe."""
         if self._robot is None:
+            self._clear_cached_state()
             self.is_connected = False
             self.robot_mode = "DISCONNECTED"
             return
@@ -243,6 +292,9 @@ class RokaeRobot:
             self._robot_info = None
             self._force_control = None
             self._rt_controller = None
+            self._joint_soft_limits_rad = None
+            self._joint_soft_limit_error = None
+            self._clear_cached_state()
             self.is_connected = False
             self.robot_mode = "DISCONNECTED"
             self._state_ready.clear()
@@ -251,13 +303,22 @@ class RokaeRobot:
         from xCoreSDK_python import RtSupportedFields
 
         interval = timedelta(milliseconds=self.state_interval_ms)
-        fields = [RtSupportedFields.tcpPoseAbc_m, RtSupportedFields.jointPos_m]
+        # v0.7.0 exposes these three fields only; velocity/torque/wrench and
+        # controller time are intentionally not requested because they are not
+        # part of RtSupportedFields.
+        fields = [
+            RtSupportedFields.tcpPoseAbc_m,
+            RtSupportedFields.jointPos_m,
+            RtSupportedFields.keypads,
+        ]
         with self._sdk_lock:
             self._robot.startReceiveRobotState(interval, fields)
         self._state_streaming = True
         self._state_running = True
         self._state_ready.clear()
         self._last_state_time = None
+        self._state_sequence_id = 0
+        self._state_error = None
         self._state_thread = threading.Thread(
             target=self._state_loop,
             name="rokae-xcore-state",
@@ -284,13 +345,22 @@ class RokaeRobot:
                         pass
                     tcp = self._sdk.PyTypeVectorDouble()
                     joints = self._sdk.PyTypeVectorDouble()
+                    keypads = self._sdk.PyTypeVectorBool()
                     self._robot.getStateData(RtSupportedFields.tcpPoseAbc_m, tcp, 6)
                     self._robot.getStateData(RtSupportedFields.jointPos_m, joints, 6)
+                    self._robot.getStateData(RtSupportedFields.keypads, keypads)
                     tcp_native = list(tcp.content())
                     joints_native = list(joints.content())
-                self._accept_state(tcp_native, joints_native, time.perf_counter())
+                    keypad_native = tuple(bool(value) for value in keypads.content())
+                self._accept_state(
+                    tcp_native,
+                    joints_native,
+                    time.monotonic(),
+                    keypad_native,
+                )
             except Exception as exc:
                 if self._state_running:
+                    self._mark_state_error(exc)
                     logger.warning("xCoreSDK state update failed: %s", exc)
                     time.sleep(0.05)
 
@@ -299,20 +369,25 @@ class RokaeRobot:
         tcp_native: Sequence[float],
         joints_native: Sequence[float],
         now: float,
+        keypads: Sequence[bool] | None = None,
     ) -> None:
         if len(tcp_native) < 6 or len(joints_native) < 6:
             raise ValueError("xCoreSDK returned an incomplete state frame")
 
         pose = self._pose_from_sdk(tcp_native)
-        joints = [math.degrees(float(value)) for value in joints_native[:6]]
+        joints = [float(value) for value in joints_native[:6]]
+        if not finite_vector(joints, 6):
+            raise ValueError("xCoreSDK returned non-finite joint positions")
         with self._state_lock:
             if self._last_state_time is None:
-                tcp_speed = [0.0] * 6
-                joint_speed = [0.0] * 6
+                # The first frame has no predecessor.  Leave velocity absent
+                # rather than encoding an unmeasured zero velocity.
+                tcp_speed = None
+                joint_speed = None
             else:
                 dt = now - self._last_state_time
                 if dt <= 0:
-                    return
+                    raise ValueError("Non-increasing host time in state stream")
                 tcp_speed = [
                     (pose[i] - self.cartesian_pose[i]) / dt for i in range(6)
                 ]
@@ -324,7 +399,16 @@ class RokaeRobot:
             self.joint_angles = joints
             self.actual_joint_speeds = joint_speed
             self._last_state_time = now
+            self._state_wall_time_iso = utc_now_iso()
+            self._state_keypads = tuple(bool(value) for value in keypads) if keypads else ()
+            self._state_sequence_id += 1
+            self._state_error = None
         self._state_ready.set()
+
+    def _mark_state_error(self, exc: BaseException) -> None:
+        """Make stream faults visible to collector and SafetyGuard immediately."""
+        with self._state_lock:
+            self._state_error = f"robot_state_stream_error:{type(exc).__name__}:{exc}"
 
     @staticmethod
     def _pose_to_sdk(pose: Sequence[float]) -> list[float]:
@@ -333,26 +417,16 @@ class RokaeRobot:
         values = [float(value) for value in pose[:6]]
         if not all(math.isfinite(value) for value in values):
             raise ValueError("Cartesian pose must contain only finite values")
-        return [
-            values[0] / 1000.0,
-            values[1] / 1000.0,
-            values[2] / 1000.0,
-            math.radians(values[3]),
-            math.radians(values[4]),
-            math.radians(values[5]),
-        ]
+        return values
 
     @staticmethod
     def _pose_from_sdk(pose: Sequence[float]) -> list[float]:
+        if len(pose) < 6:
+            raise ValueError("Cartesian pose must contain 6 values")
         values = [float(value) for value in pose[:6]]
-        return [
-            values[0] * 1000.0,
-            values[1] * 1000.0,
-            values[2] * 1000.0,
-            math.degrees(values[3]),
-            math.degrees(values[4]),
-            math.degrees(values[5]),
-        ]
+        if not all(math.isfinite(value) for value in values):
+            raise ValueError("Cartesian pose must contain only finite values")
+        return values
 
     def clear_error(self) -> None:
         self._require_connected()
@@ -446,8 +520,8 @@ class RokaeRobot:
             self._stop_realtime_best_effort()
             try:
                 self._call("setPowerState", self._robot.setPowerState, False)
-            except Exception:
-                pass
+            except Exception as power_exc:
+                logger.warning("Unable to power down after realtime setup failure: %s", power_exc)
             raise
         self._refresh_operation_state()
 
@@ -499,8 +573,8 @@ class RokaeRobot:
             if move_started:
                 try:
                     self._rt_controller.stopMove()
-                except Exception:
-                    pass
+                except Exception as stop_exc:
+                    logger.warning("Unable to stop partially started realtime move: %s", stop_exc)
             self._rt_callback = None
             self._rt_target_native = None
             raise
@@ -563,12 +637,17 @@ class RokaeRobot:
         self._refresh_operation_state()
 
     def set_speed(self, ratio: int) -> None:
-        """Set default Cartesian speed from a 1..100 percentage."""
+        """Set default Cartesian speed from a 1..100 percentage.
+
+        ``setDefaultSpeed`` is one of the SDK's non-SI calls and accepts mm/s.
+        """
         self._require_connected()
         if not 1 <= int(ratio) <= 100:
             raise ValueError("Speed ratio must be between 1 and 100")
-        speed = max(5.0, self.max_linear_speed_mm_s * int(ratio) / 100.0)
-        self._call("setDefaultSpeed", self._robot.setDefaultSpeed, speed)
+        speed_m_s = max(0.005, self.max_linear_speed_m_s * int(ratio) / 100.0)
+        self._call(
+            "setDefaultSpeed", self._robot.setDefaultSpeed, speed_m_s * 1000.0
+        )
         self.current_speed_ratio = int(ratio)
 
     set_speed_ratio = set_speed
@@ -583,21 +662,25 @@ class RokaeRobot:
         command_id = self._sdk.PyString()
         self._call("moveAppend", self._robot.moveAppend, [command], command_id)
         self._call("moveStart", self._robot.moveStart)
+        # The RT stream has no operation-state field.  Do not keep reporting a
+        # stale IDLE value while an NRT command is known to be pending.
+        self.robot_mode = "NRT_COMMAND_PENDING"
         return str(command_id.content())
 
-    def move_j(self, joints_deg: Sequence[float]) -> str:
+    def move_j(self, joints_rad: Sequence[float]) -> str:
         self._require_connected()
         if self._rt_controller is not None:
             raise RuntimeError(
                 "MoveAbsJCommand is unavailable while realtime mode is selected"
             )
-        if len(joints_deg) < 6:
+        if len(joints_rad) < 6:
             raise ValueError("Joint target must contain 6 values")
-        target = [math.radians(float(value)) for value in joints_deg[:6]]
+        target = [float(value) for value in joints_rad[:6]]
         command = self._sdk.MoveAbsJCommand(target)
         command_id = self._sdk.PyString()
         self._call("moveAppend", self._robot.moveAppend, [command], command_id)
         self._call("moveStart", self._robot.moveStart)
+        self.robot_mode = "NRT_COMMAND_PENDING"
         return str(command_id.content())
 
     def stop(self) -> None:
@@ -649,32 +732,232 @@ class RokaeRobot:
 
     def get_cartesian_pose(self) -> list[float]:
         with self._state_lock:
+            if self.cartesian_pose is None:
+                raise RuntimeError("No xCoreSDK realtime pose frame is available")
             return list(self.cartesian_pose)
 
     def get_joint_angles(self) -> list[float]:
         with self._state_lock:
+            if self.joint_angles is None:
+                raise RuntimeError("No xCoreSDK realtime joint frame is available")
             return list(self.joint_angles)
 
     def get_actual_joint_speeds(self) -> list[float]:
+        """Compatibility accessor for host-difference joint velocity estimates."""
         with self._state_lock:
+            if self.actual_joint_speeds is None:
+                raise RuntimeError("Joint velocity needs two realtime state frames")
             return list(self.actual_joint_speeds)
 
-    def get_state(self) -> dict[str, Any]:
+    def get_state_frame(self) -> KinematicStateFrame:
+        """Return an immutable latest realtime frame without re-querying the SDK."""
         with self._state_lock:
-            return {
-                "cartesian_pose": list(self.cartesian_pose),
-                "tcp_speed": list(self.tcp_speed),
-                "joint_angles": list(self.joint_angles),
-                "joint_speeds": list(self.actual_joint_speeds),
-                "robot_mode": self.robot_mode,
+            pose = list(self.cartesian_pose) if self.cartesian_pose is not None else None
+            tcp_speed = list(self.tcp_speed) if self.tcp_speed is not None else None
+            joints = list(self.joint_angles) if self.joint_angles is not None else None
+            joint_speed = (
+                list(self.actual_joint_speeds)
+                if self.actual_joint_speeds is not None
+                else None
+            )
+            error = self._state_error
+            state_time = self._last_state_time
+            sequence_id = self._state_sequence_id
+            wall_time_iso = self._state_wall_time_iso
+            keypads = self._state_keypads
+
+        valid = (
+            self.is_connected
+            and error is None
+            and pose is not None
+            and finite_vector(pose, 6)
+            and joints is not None
+            and finite_vector(joints, 6)
+            and state_time is not None
+        )
+        reason = "" if valid else (error or "robot_state_not_ready")
+        velocity_available = finite_vector(tcp_speed, 6) and finite_vector(joint_speed, 6)
+        return KinematicStateFrame(
+            sequence_id=sequence_id,
+            host_monotonic_time_s=state_time,
+            wall_time_iso=wall_time_iso,
+            robot_device_time_s=None,  # v0.7.0 RT fields expose no device time.
+            valid=valid,
+            invalid_reason=reason,
+            tcp_position_m=as_vec3(pose[:3]) if pose is not None else None,
+            tcp_orientation_rad=as_vec3(pose[3:6]) if pose is not None else None,
+            tcp_linear_velocity_mps=as_vec3(tcp_speed[:3]) if velocity_available else None,
+            # This is an Euler-angle rate, not a guaranteed physical angular
+            # velocity vector.  Keep it separate and label its provenance.
+            tcp_angular_velocity_radps=as_vec3(tcp_speed[3:6]) if velocity_available else None,
+            velocity_source=(
+                "numerical_difference_realtime_frame_rpy"
+                if velocity_available
+                else "unavailable_first_realtime_frame"
+            ),
+            joint_position_rad=as_float_tuple(joints, 6),
+            joint_velocity_radps=as_float_tuple(joint_speed, 6),
+            pose_time_s=state_time,
+            joint_time_s=state_time,
+            velocity_time_s=state_time if velocity_available else None,
+            operation_state=self.robot_mode,
+            collision_state=self._collision_state,
+            controller_error=error,
+            keypad_state=keypads,
+        )
+
+    def get_state(self) -> dict[str, Any]:
+        """Compatibility dictionary; new code should consume ``get_state_frame``."""
+        frame = self.get_state_frame()
+        return {
+            "cartesian_pose": list(frame.tcp_position_m or ())
+            + list(frame.tcp_orientation_rad or ()),
+            "tcp_speed": list(frame.tcp_linear_velocity_mps or ())
+            + list(frame.tcp_angular_velocity_radps or ()),
+            "joint_angles": list(frame.joint_position_rad or ()),
+            "joint_speeds": list(frame.joint_velocity_radps or ()),
+            "robot_mode": frame.operation_state,
+            "state_time_s": frame.host_monotonic_time_s,
+            "valid": frame.valid,
+            "invalid_reason": frame.invalid_reason,
+        }
+
+    def get_robot_metadata(self) -> dict[str, Any]:
+        """Return only values actually supplied by xCoreSDK/the adapter."""
+        info = self._robot_info
+        try:
+            tool_payload = self.get_tool_payload_metadata()
+        except Exception as exc:
+            tool_payload = {
+                "read_error": f"tool_payload_query_error:{type(exc).__name__}:{exc}"
             }
+        return {
+            "robot_ip": self.ip_address,
+            "local_ip": self.local_ip or None,
+            "robot_class": self.robot_class,
+            "robot_model": getattr(info, "type", None) if info is not None else None,
+            "robot_serial_number": getattr(info, "id", None) if info is not None else None,
+            "controller_version": getattr(info, "version", None) if info is not None else None,
+            "xcore_sdk_version": self._sdk_version,
+            "state_interval_ms": self.state_interval_ms,
+            "joint_soft_limits_rad": self._joint_soft_limits_rad,
+            "joint_soft_limit_read_error": self._joint_soft_limit_error,
+            "sdk_tool_payload": tool_payload,
+        }
 
-    def get_end_wrench(self, reference_frame: str = "tool") -> dict[str, Any]:
-        """Read the controller-estimated external wrench.
+    def get_tool_payload_metadata(self) -> dict[str, Any]:
+        """Read the SDK toolset/load configuration without changing it.
 
-        The collaborative robot measures joint torques and uses its dynamics
-        model to estimate Cartesian force/torque. Returned Cartesian values are
-        expressed in ``world``, ``flange``, or ``tool`` coordinates.
+        ``Toolset`` is documented as the SDK motion-control tool/workobject
+        configuration, not proof of a separate HMI/RL project's active setup.
+        The returned provenance therefore records available names and load data
+        while explicitly leaving the active HMI tool/workobject unverified.
+        """
+        self._require_connected()
+        toolset = self._call("toolset", self._robot.toolset)
+        load = toolset.load
+        result: dict[str, Any] = {
+            "toolset_load_mass_kg": float(load.mass),
+            "toolset_load_cog_m": [float(value) for value in load.cog],
+            "toolset_load_inertia_kg_m2": [float(value) for value in load.inertia],
+            "toolset_end_translation_m": [float(value) for value in toolset.end.trans],
+            "toolset_end_rpy_rad": [float(value) for value in toolset.end.rpy],
+            "toolset_ref_translation_m": [float(value) for value in toolset.ref.trans],
+            "toolset_ref_rpy_rad": [float(value) for value in toolset.ref.rpy],
+            "active_hmi_tool_workobject_verified": False,
+        }
+        tools = self._call("toolsInfo", self._robot.toolsInfo)
+        wobjs = self._call("wobjsInfo", self._robot.wobjsInfo)
+        result["sdk_available_tool_names"] = [str(item.name) for item in tools]
+        result["sdk_available_workobject_names"] = [str(item.name) for item in wobjs]
+        return result
+
+    def _read_joint_soft_limits_rad(self) -> tuple[tuple[float, float], ...]:
+        """Read configured controller soft limits through the normal SDK API."""
+        self._require_connected()
+        limits_native = self._sdk.PyTypeVectorArrayDouble2()
+        self._call("getSoftLimit", self._robot.getSoftLimit, limits_native)
+        content = list(limits_native.content())
+        if len(content) < 6:
+            raise RuntimeError("xCoreSDK returned fewer than six joint soft limits")
+        limits: list[tuple[float, float]] = []
+        for index, pair in enumerate(content[:6], start=1):
+            if len(pair) != 2:
+                raise RuntimeError(f"xCoreSDK soft limit q{index} is not [lower, upper]")
+            lower, upper = float(pair[0]), float(pair[1])
+            if not math.isfinite(lower) or not math.isfinite(upper) or lower >= upper:
+                raise RuntimeError(f"xCoreSDK soft limit q{index} is invalid")
+            limits.append((lower, upper))
+        return tuple(limits)
+
+    def get_joint_soft_limits_rad(
+        self, *, refresh: bool = False
+    ) -> tuple[tuple[float, float], ...] | None:
+        """Return cached controller soft limits in radians, optionally refreshing."""
+        if refresh:
+            try:
+                self._joint_soft_limits_rad = self._read_joint_soft_limits_rad()
+                self._joint_soft_limit_error = None
+            except Exception as exc:
+                self._joint_soft_limits_rad = None
+                self._joint_soft_limit_error = (
+                    f"joint_soft_limit_query_error:{type(exc).__name__}:{exc}"
+                )
+        return self._joint_soft_limits_rad
+
+    def get_base_frame_pose_in_world(self) -> list[float]:
+        """Read ``^world T_base`` from xCoreSDK's normal query interface."""
+        self._require_connected()
+        pose = self._call("baseFrame", self._robot.baseFrame)
+        values = self._pose_from_sdk(pose)
+        return values
+
+    def get_world_to_base_rotation(self) -> tuple[tuple[float, float, float], ...]:
+        """Build ``R_base_from_world`` from SDK ``baseFrame`` orientation.
+
+        The SDK documents baseFrame as the base frame relative to world and its
+        Frame RPY as XYZ Euler.  This is an expression rotation only; callers
+        must not infer an unverified wrench reference-point translation from it.
+        """
+        base_pose_in_world = self.get_base_frame_pose_in_world()
+        world_from_base = rpy_euler_xyz_rotation_matrix(base_pose_in_world[3:6])
+        return transpose_rotation(world_from_base)
+
+    def get_collision_state(self) -> bool | None:
+        """Poll the separate safety event when the controller supports it.
+
+        Collision is not contained in the realtime state frame and has no
+        synchronized timestamp in v0.7.0.  ``None`` means unavailable rather
+        than a safe/false collision state.
+        """
+        self._require_connected()
+        try:
+            event = self._sdk.Event.safety
+            info = self._call("queryEventInfo(safety)", self._robot.queryEventInfo, event)
+        except Exception as exc:
+            self._collision_error = f"collision_query_error:{type(exc).__name__}:{exc}"
+            return None
+
+        collided: bool | None = None
+        if isinstance(info, dict):
+            for key, value in info.items():
+                if str(key).lower().endswith("collided") or str(key).lower() == "collided":
+                    collided = bool(value)
+                    break
+        self._collision_state = collided
+        self._collision_error = None
+        return collided
+
+    def get_end_wrench(self, reference_frame: str = "world") -> dict[str, Any]:
+        """Query ``forceControl().getEndTorque`` once and retain its provenance.
+
+        The SDK documents the returned joint arrays as measured joint torque and
+        model-derived external joint torque (both N·m), and the Cartesian arrays
+        as force (N) / torque (N·m) in the requested ``world``, ``flange``, or
+        ``tool`` expression frame.  It does *not* document compensation state,
+        device time, or synchronization with the realtime pose packet; callers
+        must keep the returned host query time and validate those properties on
+        the physical robot.
         """
         self._require_connected()
         if self._force_control is None:
@@ -694,6 +977,7 @@ class RokaeRobot:
         joint_external = self._sdk.PyTypeVectorDouble()
         cart_torque = self._sdk.PyTypeVectorDouble()
         cart_force = self._sdk.PyTypeVectorDouble()
+        query_started_s = time.monotonic()
         ec: dict[str, Any] = {}
         with self._sdk_lock:
             self._force_control.getEndTorque(
@@ -704,23 +988,40 @@ class RokaeRobot:
                 cart_force,
                 ec,
             )
+        query_finished_s = time.monotonic()
         self._check_ec("getEndTorque", ec)
 
         force = [float(value) for value in cart_force.content()]
         torque = [float(value) for value in cart_torque.content()]
-        if len(force) < 3 or len(torque) < 3:
+        measured = [float(value) for value in joint_measured.content()]
+        external = [float(value) for value in joint_external.content()]
+        if (
+            len(force) < 3
+            or len(torque) < 3
+            or len(measured) < 6
+            or len(external) < 6
+            or not all(math.isfinite(value) for value in [*force[:3], *torque[:3], *measured[:6], *external[:6]])
+        ):
             raise RuntimeError("xCoreSDK returned an incomplete Cartesian wrench")
+        midpoint_s = (query_started_s + query_finished_s) / 2.0
         return {
+            "joint_measured_torque_nm": measured[:6],
+            "joint_external_torque_nm": external[:6],
+            "cartesian_force_raw_n": force[:3],
+            "cartesian_torque_raw_nm": torque[:3],
+            "raw_force_frame": reference_frame.lower(),
+            "force_query_started_s": query_started_s,
+            "force_query_finished_s": query_finished_s,
+            "host_monotonic_time_s": midpoint_s,
+            "wall_time_iso": utc_now_iso(),
+            # Compatibility keys.  New collection code consumes the explicit
+            # unit/provenance names above.
             "force": force[:3],
             "torque": torque[:3],
-            "joint_torque_measured": [
-                float(value) for value in joint_measured.content()
-            ],
-            "joint_torque_external": [
-                float(value) for value in joint_external.content()
-            ],
+            "joint_torque_measured": measured[:6],
+            "joint_torque_external": external[:6],
             "reference_frame": reference_frame.lower(),
-            "ts": time.time(),
+            "ts": midpoint_s,
         }
 
     def calibrate_force_sensors(self) -> None:

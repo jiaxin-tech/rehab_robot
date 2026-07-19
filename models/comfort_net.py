@@ -1,6 +1,7 @@
 # models/comfort_net.py
 # 舒适度神经网络：离线训练，在线推理
 # 支持三种输入模式（通过 settings.COMFORT_INPUT_MODE 切换）：
+# 所有运动特征均使用 base 坐标系和 SI 单位（N、m、m/s）。
 #   "force"         → [Fx,Fy,Fz, x,y,z, vx,vy,vz]            维度=9
 #   "tactile"       → [x,y,z, tactile_0...tactile_N]           维度=3+TACTILE_DIM
 #   "force+tactile" → [Fx,Fy,Fz, x,y,z, vx,vy,vz, tactile...] 维度=9+TACTILE_DIM
@@ -14,6 +15,10 @@ from config import settings
 from utils.logger import get_logger
 
 logger = get_logger("ComfortNet")
+VERIFIED_BASE_WRENCH_TRANSFORMS = {
+    "sdk_base",
+    "rotation_only_verified_by_project_procedure",
+}
 
 
 # ── 输入维度计算 ──────────────────────────────────────
@@ -36,6 +41,7 @@ def build_feature(fx=0., fy=0., fz=0.,
                   mode: str = settings.COMFORT_INPUT_MODE) -> np.ndarray:
     """
     根据mode把各传感器数据拼成特征向量，供推理时调用。
+    力为 N，位置为 m，速度为 m/s，且均在 robot base 坐标系。
     tactile: (TACTILE_DIM,) 触觉向量，mode含tactile时必须传入
     """
     force_feat   = np.array([fx, fy, fz, x, y, z, vx, vy, vz], dtype=np.float32)
@@ -89,7 +95,8 @@ def load_dataset(data_dir: str,
     从data_dir下所有CSV加载数据，根据mode选取对应列。
 
     CSV必须包含的列（force模式）：
-        fx,fy,fz, x,y,z, vx,vy,vz, comfort
+        fx_base_n,fy_base_n,fz_base_n, x_m,y_m,z_m,
+        vx_mps,vy_mps,vz_mps, valid, force_estimate_valid, comfort
 
     CSV可选列（触觉模式）：
         tactile_0, tactile_1, ..., tactile_{TACTILE_DIM-1}
@@ -107,8 +114,26 @@ def load_dataset(data_dir: str,
     for fpath in files:
         with open(fpath) as f:
             rows = list(csv.DictReader(f))
-        for r in rows:
-            c = int(r["comfort"])
+        for row_index, r in enumerate(rows, start=2):
+            if int(r.get("schema_version", -1)) != settings.DATA_SCHEMA_VERSION:
+                raise ValueError(
+                    f"数据 schema 不兼容: {fpath}；需要版本 "
+                    f"{settings.DATA_SCHEMA_VERSION}"
+                )
+            if r.get("frame") != settings.CONTROL_FRAME:
+                raise ValueError(
+                    f"数据坐标系不兼容: {fpath}；需要 {settings.CONTROL_FRAME}"
+                )
+            if r.get("units") != settings.SI_UNITS:
+                raise ValueError(f"数据单位元数据不兼容: {fpath}:{row_index}")
+            if r.get("valid") != "1" or r.get("force_estimate_valid") != "1":
+                continue
+            if r.get("base_wrench_transform_kind") not in VERIFIED_BASE_WRENCH_TRANSFORMS:
+                continue
+            try:
+                c = int(r["comfort"])
+            except (KeyError, TypeError, ValueError):
+                continue
             if c == -1:
                 continue
 
@@ -118,19 +143,30 @@ def load_dataset(data_dir: str,
                 for i in range(settings.TACTILE_DIM)
             ], dtype=np.float32)
 
-            feat = build_feature(
-                fx=float(r["fx"]), fy=float(r["fy"]), fz=float(r["fz"]),
-                x =float(r["x"]),  y =float(r["y"]),  z =float(r["z"]),
-                vx=float(r["vx"]), vy=float(r["vy"]), vz=float(r["vz"]),
-                tactile=tactile,
-                mode=mode,
-            )
+            try:
+                feat = build_feature(
+                    fx=float(r["fx_base_n"]), fy=float(r["fy_base_n"]),
+                    fz=float(r["fz_base_n"]),
+                    x=float(r["x_m"]), y=float(r["y_m"]), z=float(r["z_m"]),
+                    vx=float(r["vx_mps"]), vy=float(r["vy_mps"]),
+                    vz=float(r["vz_mps"]),
+                    tactile=tactile,
+                    mode=mode,
+                )
+            except (KeyError, TypeError, ValueError):
+                # A partial/invalid capture row must not be converted to zeros.
+                continue
+            if not np.all(np.isfinite(feat)):
+                continue
             X_list.append(feat)
             y_list.append(1.0 if c == 0 else 0.0)
 
-    if len(X_list) < 2:
+    # BatchNorm in ComfortNet needs at least two training rows after the
+    # validation split; three total rows is the smallest safe split (2 train,
+    # 1 validation).
+    if len(X_list) < 3:
         raise ValueError(
-            f"有效舒适度标注不足2条：{data_dir}；请先完成 episode 标注"
+            f"有效舒适度标注不足3条：{data_dir}；请先完成 episode 标注"
         )
 
     X = np.array(X_list, dtype=np.float32)
@@ -214,6 +250,10 @@ def train(data_dir:   str,
                 "norm_std":    norm["std"],
                 "input_mode":  mode,          # ← 保存mode，加载时自动恢复
                 "input_dim":   input_dim,
+                "data_schema_version": settings.DATA_SCHEMA_VERSION,
+                "frame": settings.CONTROL_FRAME,
+                "units": "SI",
+                "force_feature_source": "cartesian_force_base_corrected",
             }, model_path)
 
     logger.info(f"训练完成 [{mode}模式]，最优验证损失={best_val_loss:.4f}，已保存: {model_path}")
@@ -229,6 +269,14 @@ class ComfortPredictor:
 
     def __init__(self, model_path: str = settings.COMFORT_MODEL_PATH):
         ckpt       = torch.load(model_path, map_location="cpu")
+        if ckpt.get("data_schema_version") != settings.DATA_SCHEMA_VERSION:
+            raise ValueError(
+                "舒适度模型使用旧数据；请用 schema v3 的 SI/base 数据重新训练"
+            )
+        if ckpt.get("frame") != settings.CONTROL_FRAME or ckpt.get("units") != "SI":
+            raise ValueError("舒适度模型的单位或坐标系与当前项目不一致")
+        if ckpt.get("force_feature_source") != "cartesian_force_base_corrected":
+            raise ValueError("舒适度模型未声明使用去偏 base-frame 内部力")
         self.mode  = ckpt["input_mode"]
         input_dim  = ckpt["input_dim"]
         self.model = ComfortNet(input_dim=input_dim, mode=self.mode)
@@ -250,8 +298,8 @@ class ComfortPredictor:
         示例：
             # 只用力传感器（mode="force"）
             score = predictor.predict(fx=2.1, fy=0.3, fz=5.0,
-                                      x=301., y=-200., z=350.,
-                                      vx=10., vy=0., vz=5.)
+                                      x=.301, y=-.200, z=.350,
+                                      vx=.010, vy=0., vz=.005)
 
             # 力+触觉（mode="force+tactile"）
             score = predictor.predict(fx=2.1, ..., tactile=tactile_array)

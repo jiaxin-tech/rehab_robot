@@ -9,7 +9,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import settings
-from hardware.windows import RokaeForceSensor, RokaeRobot
+from hardware.windows import RokaeInternalWrenchSource, RokaeRobot
 
 
 def make_robot(robot_ip: str) -> RokaeRobot:
@@ -18,7 +18,7 @@ def make_robot(robot_ip: str) -> RokaeRobot:
         local_ip=settings.ROBOT_LOCAL_IP,
         robot_class=settings.ROBOT_CLASS,
         state_interval_ms=settings.ROBOT_STATE_MS,
-        max_linear_speed_mm_s=settings.ROBOT_MAX_SPEED,
+        max_linear_speed_m_s=settings.ROBOT_MAX_LINEAR_SPEED_M_S,
         command_cache_size=settings.ROBOT_CMD_CACHE,
         rt_network_tolerance_percent=settings.ROBOT_RT_NETWORK_TOLERANCE,
         rt_filter_hz=settings.ROBOT_RT_FILTER_HZ,
@@ -27,7 +27,7 @@ def make_robot(robot_ip: str) -> RokaeRobot:
 
 def run(robot_ip: str, duration: float, software_bias: bool) -> None:
     robot = make_robot(robot_ip)
-    force = RokaeForceSensor(robot)
+    force = RokaeInternalWrenchSource(robot)
     samples: list[list[float]] = []
     timestamps: list[float] = []
 
@@ -44,24 +44,24 @@ def run(robot_ip: str, duration: float, software_bias: bool) -> None:
         last_timestamp = None
         next_report = time.monotonic()
         while time.monotonic() < deadline:
-            data = force.get()
-            if data["ts"] != last_timestamp:
-                last_timestamp = data["ts"]
-                timestamps.append(data["ts"])
+            frame = force.snapshot()
+            if not frame.valid:
+                raise RuntimeError(f"Internal wrench unavailable: {frame.invalid_reason}")
+            values = (
+                (*frame.cartesian_force_corrected_n, *frame.cartesian_torque_corrected_nm)
+                if software_bias
+                else (*frame.cartesian_force_raw_n, *frame.cartesian_torque_raw_nm)
+            )
+            if frame.host_monotonic_time_s != last_timestamp:
+                last_timestamp = frame.host_monotonic_time_s
+                timestamps.append(frame.host_monotonic_time_s)
                 samples.append(
-                    [
-                        data["fx"],
-                        data["fy"],
-                        data["fz"],
-                        data["tx"],
-                        data["ty"],
-                        data["tz"],
-                    ]
+                    list(values)
                 )
             if time.monotonic() >= next_report:
                 print(
-                    "F[N]=({fx:+8.3f}, {fy:+8.3f}, {fz:+8.3f})  "
-                    "T[Nm]=({tx:+8.3f}, {ty:+8.3f}, {tz:+8.3f})".format(**data)
+                    "F[N]=({:+8.3f}, {:+8.3f}, {:+8.3f})  "
+                    "T[Nm]=({:+8.3f}, {:+8.3f}, {:+8.3f})".format(*values)
                 )
                 next_report += 1.0
             time.sleep(0.002)

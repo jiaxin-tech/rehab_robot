@@ -1,4 +1,5 @@
 import unittest
+import sys
 
 from hardware.windows.rokae_xcore import RokaeRobot, _load_sdk
 
@@ -62,6 +63,8 @@ class _FakeNativeRobot:
 class RokaeXCoreTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        if sys.platform != "win32":
+            raise unittest.SkipTest("bundled xCoreSDK tests require Windows")
         cls.sdk = _load_sdk()
 
     def make_robot(self, local_ip="192.168.50.10"):
@@ -70,7 +73,7 @@ class RokaeXCoreTests(unittest.TestCase):
         robot._sdk = self.sdk
         robot._robot = native
         robot.is_connected = True
-        robot.cartesian_pose = [300.0, -200.0, 350.0, 0.0, 90.0, 0.0]
+        robot.cartesian_pose = [0.3, -0.2, 0.35, 0.0, 1.5707963267948966, 0.0]
         robot._state_ready.set()
         return robot, native
 
@@ -79,7 +82,7 @@ class RokaeXCoreTests(unittest.TestCase):
         self.assertTrue(hasattr(self.sdk.xMateRobot, "getRtMotionController"))
 
     def test_pose_unit_round_trip(self):
-        pose = [123.4, -56.7, 890.1, 10.0, -20.0, 30.0]
+        pose = [0.1234, -0.0567, 0.8901, 0.1, -0.2, 0.3]
         restored = RokaeRobot._pose_from_sdk(RokaeRobot._pose_to_sdk(pose))
         for actual, expected in zip(restored, pose):
             self.assertAlmostEqual(actual, expected)
@@ -94,10 +97,11 @@ class RokaeXCoreTests(unittest.TestCase):
         self.assertAlmostEqual(first.rpy[1], 1.5707963267948966)
 
         robot.set_realtime_cartesian_target(
-            [310.0, -190.0, 340.0, 1.0, 2.0, 3.0]
+            [0.310, -0.190, 0.340, 0.1, 0.2, 0.3]
         )
         updated = native.rt.callback()
         self.assertEqual(updated.trans, [0.31, -0.19, 0.34])
+        self.assertEqual(updated.rpy, [0.1, 0.2, 0.3])
         self.assertIn(("startLoop", False), native.rt.calls)
 
         robot.stop_realtime(switch_to_nrt=False)
