@@ -63,7 +63,7 @@ class DataCollector:
         "base_wrench_transform_kind",
         "force_tangent_n", "velocity_tangent_mps", "acceleration_tangent_mps2",
         "robot_operation_state", "robot_collision", "controller_error",
-        "force_estimate_valid", "force_source", "comfort",
+        "force_estimate_valid", "force_source",
     ]
 
     def __init__(
@@ -177,8 +177,7 @@ class DataCollector:
             "session_id": self.session_id,
             "robot": self._robot_metadata(),
             "sample_hz": settings.COLLECT_HZ,
-            "trajectory_name": settings.TRAJECTORY_NAME,
-            "trajectory_version": settings.TRAJECTORY_VERSION,
+            "trajectory_source": "runtime_supplied_or_none",
             "tool_name_expected": settings.TOOL_NAME,
             "workpiece_name_expected": settings.WORKPIECE_NAME,
             "payload_mass_kg_expected": settings.PAYLOAD_MASS_KG,
@@ -260,7 +259,6 @@ class DataCollector:
                 "invalid_reason": reason,
                 "force_source": settings.ROBOT_FORCE_SOURCE,
                 "force_estimate_valid": 0,
-                "comfort": -1,
             }
         )
         return row
@@ -370,7 +368,6 @@ class DataCollector:
                 "controller_error": sample.controller_error,
                 "force_estimate_valid": int(sample.force_estimate_valid),
                 "force_source": settings.ROBOT_FORCE_SOURCE,
-                "comfort": -1,
             }
         )
         for prefix, values, suffix in (
@@ -433,7 +430,7 @@ class DataCollector:
         return success
 
     def start_background_sampling(self, sample_hz: float = settings.COLLECT_HZ) -> None:
-        """Run collection independently from motion commands/MPC calculation."""
+        """Run collection independently from any trajectory-command scheduler."""
         if not self._active:
             raise RuntimeError("Start an episode before background sampling")
         if self._sampling_thread is not None and self._sampling_thread.is_alive():
@@ -491,12 +488,10 @@ class DataCollector:
 
     def end_episode(
         self,
-        comfort_label: int = -1,
         *,
         completed: bool = True,
         stop_reason: str | None = None,
         operator_note: str | None = None,
-        pain_label: int | None = None,
     ) -> str:
         """Atomically save CSV and episode JSON even after an abnormal finish."""
         if not self._active:
@@ -510,9 +505,6 @@ class DataCollector:
             sampling_failure = exc
             completed = False
             stop_reason = stop_reason or f"collection_thread_error:{exc}"
-        for row in self._buf:
-            row["comfort"] = comfort_label
-
         self._ep_count += 1
         episode_id = self._episode_id or f"episode_{self._ep_count:04d}"
         csv_path = os.path.join(self.out_dir, f"episode_{self._ep_count:04d}.csv")
@@ -539,8 +531,6 @@ class DataCollector:
             "completed": bool(completed),
             "stop_reason": stop_reason,
             "operator_note": operator_note,
-            "comfort_label": comfort_label,
-            "pain_label": pain_label,
             "sample_count": len(self._buf),
             "valid_sample_count": sum(int(row.get("valid") == 1) for row in self._buf),
             "invalid_sample_count": sum(int(row.get("valid") != 1) for row in self._buf),
@@ -583,7 +573,6 @@ class DataCollector:
             return None
         try:
             return self.end_episode(
-                comfort_label=-1,
                 completed=False,
                 stop_reason=reason,
                 operator_note=operator_note,
@@ -594,26 +583,3 @@ class DataCollector:
             # original robot exception or skip its emergency stop path.
             logger.error("异常 episode 已保存，但采集线程也失败: %s", exc)
             return None
-
-
-def label_episodes(data_dir: str) -> None:
-    """Interactively set the ``comfort`` field without changing raw measurements."""
-    files = sorted(glob.glob(os.path.join(data_dir, "**/*.csv"), recursive=True))
-    count = 0
-    for fpath in files:
-        with open(fpath, encoding="utf-8") as stream:
-            rows = list(csv.DictReader(stream))
-        if not rows or rows[0].get("comfort") != "-1":
-            continue
-        print(f"\n[{count + 1}] {fpath} ({len(rows)} rows, mode={rows[0].get('mode')})")
-        label = input("舒适度标签 (0/1/2，跳过按 Enter): ").strip()
-        if label not in {"0", "1", "2"}:
-            continue
-        for row in rows:
-            row["comfort"] = label
-        with open(fpath, "w", newline="", encoding="utf-8") as stream:
-            writer = csv.DictWriter(stream, fieldnames=list(rows[0].keys()))
-            writer.writeheader()
-            writer.writerows(rows)
-        count += 1
-    print(f"\n共标注 {count} 个 episode")

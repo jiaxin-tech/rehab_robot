@@ -1,0 +1,260 @@
+\section{System Modeling and Problem Formulation}
+\label{sec:modeling}
+
+\subsection{Rehabilitation Scenario and Coordinate Definition}
+\label{subsec:scenario}
+
+% Trace: III-A-P1
+We consider prescribed passive hip--knee flexion for a supine subject.  The
+lower limb is approximated in the sagittal plane, with the hip center fixed at
+the origin of a rehabilitation frame.  The $x$-axis lies along the bed and
+points from the hip toward the foot, while the $z$-axis points upward.  This
+model describes the thigh, knee, shank, and the point at which the robot acts
+through a lower-leg strap; it does not model active muscle recruitment,
+distributed strap pressure, out-of-plane motion, or robot-link dynamics.
+% TODO: citation for the sagittal-plane and passive-rehabilitation assumptions.
+
+% Trace: III-A-P2
+The generalized coordinates are
+\begin{equation}
+    \vect{q}=\begin{bmatrix}q_h & q_k\end{bmatrix}^{\mathsf T},
+    \label{eq:generalized_coordinates}
+\end{equation}
+where $q_h$ and $q_k$ denote hip and knee flexion, respectively.  Positive knee
+flexion folds the shank toward the thigh; consequently, the absolute shank
+orientation used throughout the implementation is
+\begin{equation}
+    \theta_s=q_h-q_k,
+    \label{eq:shank_angle}
+\end{equation}
+not $q_h+q_k$.  All internal angular quantities are expressed in radians.
+
+% Trace: III-A-P3
+Let $L_1$ be the thigh length and let $L_2$ be the distance from the knee to the
+strap equivalent traction point.  The latter is a task-specific kinematic
+length and is not assumed to be the anatomical knee--ankle distance or the
+shank center-of-mass distance.  The current software geometry uses
+$L_1=\SI{0.42}{m}$ and $L_2=\SI{0.30}{m}$.  Hip flexion is constrained to be no
+greater than $120^{\circ}$.  The repository currently uses different knee-ROM
+upper limits in the legacy workspace/identification pipeline and the active
+reference audit; therefore, the applicable knee interval is retained as an
+explicit experiment configuration rather than asserted as a universal model
+constant.
+
+\subsection{Two-Link Lower-Limb Kinematics}
+\label{subsec:kinematics}
+
+% Trace: III-B-P1
+With $\vect{p}_K=[x_K,z_K]^{\mathsf T}$ denoting the knee and
+$\vect{p}_P=[x_P,z_P]^{\mathsf T}$ denoting the strap equivalent traction point,
+the implemented forward kinematics are
+\begin{align}
+    x_K &= L_1\cos q_h, & z_K &= L_1\sin q_h, \nonumber\\
+    x_P &= L_1\cos q_h+L_2\cos(q_h-q_k),
+    & z_P &= L_1\sin q_h+L_2\sin(q_h-q_k).
+    \label{eq:forward_kinematics}
+\end{align}
+The signs in~\eqref{eq:forward_kinematics} follow directly from
+\eqref{eq:shank_angle}: increasing $q_k$ rotates the shank clockwise relative
+to the thigh in the selected $x$--$z$ convention.
+
+% Trace: III-B-P2
+For workspace construction, a sampled posture is retained only when the knee
+and traction point do not cross below the bed and the traction point does not
+move behind the hip, i.e., $z_K\geq 0$, $z_P\geq 0$, and $x_P\geq 0$.  These are
+geometric feasibility checks, not clinical safety guarantees.  Inverse
+kinematics uses the flexion branch
+\begin{align}
+    D &= \frac{x_P^2+z_P^2-L_1^2-L_2^2}{2L_1L_2}, \nonumber\\
+    q_k &= \cos^{-1}D, \nonumber\\
+    q_h &= \operatorname{atan2}(z_P,x_P)
+      +\operatorname{atan2}\!\left(L_2\sin q_k,L_1+L_2\cos q_k\right),
+    \label{eq:inverse_kinematics}
+\end{align}
+and rejects solutions outside the configured ROM.
+
+\subsection{Jacobian and Mechanical Interaction Mapping}
+\label{subsec:jacobian}
+
+% Trace: III-C-P1
+Differentiating~\eqref{eq:forward_kinematics} gives
+\begin{equation}
+    \dot{\vect{p}}_P=\vect{J}(\vect{q})\dot{\vect{q}},
+    \qquad
+    \vect{J}(\vect{q})=
+    \begin{bmatrix}
+    -L_1\sin q_h-L_2\sin(q_h-q_k) & L_2\sin(q_h-q_k)\\
+     L_1\cos q_h+L_2\cos(q_h-q_k) & -L_2\cos(q_h-q_k)
+    \end{bmatrix}.
+    \label{eq:jacobian}
+\end{equation}
+
+% Trace: III-C-P2
+Under the implemented point-force assumption, let
+$\vect{F}_{R\rightarrow L}=[F_x,F_z]^{\mathsf T}$ be the force exerted by the
+robot on the leg at the strap equivalent traction point.  Virtual work yields
+the generalized interaction torque
+\begin{equation}
+    \vect{\tau}_{\mathrm{meas}}
+    =\vect{J}(\vect{q})^{\mathsf T}\vect{F}_{R\rightarrow L}.
+    \label{eq:force_to_torque}
+\end{equation}
+Conversely, when a required generalized torque is mapped to an endpoint force,
+the implementation evaluates
+\begin{equation}
+    \vect{F}_{R\rightarrow L}
+    =\left(\vect{J}^{\mathsf T}\right)^{\dagger}\vect{\tau}_{\mathrm{req}},
+    \label{eq:torque_to_force}
+\end{equation}
+where $(\cdot)^{\dagger}$ denotes the Moore--Penrose pseudoinverse.
+
+% Trace: III-C-P3
+The mapping is marked invalid when its inputs or outputs are non-finite, when
+$|\det\vect{J}|<10^{-4}$, when the two-norm condition number exceeds $100$, or
+when the software anomaly limit of \SI{1000}{N} is exceeded.  The last value is
+only a numerical audit bound; it is not a robot or participant safety limit.
+Equation~\eqref{eq:force_to_torque} also assumes that the measured force is
+expressed in the modeled sagittal frame and acts at the modeled point.  Wrench
+frame, sign, reference point, compensation, and physical synchronization remain
+separate real-robot validation items.
+
+\subsection{Subject-Specific Equivalent Dynamic Model}
+\label{subsec:dynamics}
+
+% Trace: III-D-P1
+The modeled torque required to follow a prescribed motion is
+\begin{equation}
+    \vect{\tau}_{\mathrm{req}}
+    =\vect{M}(\vect{q})\ddot{\vect{q}}
+    +\vect{c}(\vect{q},\dot{\vect{q}})
+    +\vect{g}(\vect{q})
+    +\vect{B}\dot{\vect{q}}
+    +\vect{K}(\vect{q}-\vect{q}_0).
+    \label{eq:inverse_dynamics}
+\end{equation}
+Let $m_1,m_2$, $c_1,c_2$, and $I_1,I_2$ be the thigh and shank masses,
+center-of-mass distances, and planar inertias.  Defining
+\begin{equation}
+    a=m_1c_1^2+I_1+m_2L_1^2,\quad
+    b=m_2c_2^2+I_2,\quad
+    d=m_2L_1c_2,
+    \label{eq:dynamic_abbreviations}
+\end{equation}
+the implemented mass matrix is
+\begin{equation}
+    \vect{M}(\vect{q})=
+    \begin{bmatrix}
+      a+b+2d\cos q_k & -(b+d\cos q_k)\\
+      -(b+d\cos q_k) & b
+    \end{bmatrix}.
+    \label{eq:mass_matrix}
+\end{equation}
+Its negative off-diagonal terms result from
+$\dot{\theta}_s=\dot q_h-\dot q_k$.
+
+% Trace: III-D-P2
+The implemented Coriolis/centrifugal and gravity vectors are
+\begin{align}
+    \vect{c}(\vect{q},\dot{\vect{q}})
+    &=d\sin q_k
+    \begin{bmatrix}
+      \dot q_k^2-2\dot q_h\dot q_k\\
+      \dot q_h^2
+    \end{bmatrix},
+    \label{eq:coriolis_vector}\\
+    \vect{g}(\vect{q})
+    &=g
+    \begin{bmatrix}
+    (m_1c_1+m_2L_1)\cos q_h+m_2c_2\cos(q_h-q_k)\\
+    -m_2c_2\cos(q_h-q_k)
+    \end{bmatrix}.
+    \label{eq:gravity_vector}
+\end{align}
+The negative knee component in~\eqref{eq:gravity_vector} is another consequence
+of the shank-angle convention.
+
+% Trace: III-D-P3
+Passive joint behavior is represented by independent linear terms
+\begin{equation}
+    \vect{B}=\operatorname{diag}(b_h,b_k),\qquad
+    \vect{K}=\operatorname{diag}(k_h,k_k),
+    \label{eq:passive_terms}
+\end{equation}
+where $k_h,k_k$ are equivalent passive stiffnesses and $b_h,b_k$ are
+equivalent passive damping coefficients.  The estimator changes only a common
+mass/inertia scale and these four passive coefficients; segment proportions,
+center-of-mass locations, neutral angles, and gravity are supplied by a
+baseline template.  No passive cross-joint stiffness or damping coefficient is
+estimated by the current five-parameter model.
+
+% Trace: III-D-P4
+The identified quantities are termed \emph{subject-specific equivalent
+dynamics}.  They summarize the mechanical input--output relation over the
+excited task region and may absorb unmodeled tissue, strap, or joint effects.
+They are not interpreted as unique physiological parameters or direct tissue
+measurements.  This distinction is essential when low prediction residuals are
+obtained from a simplified model.
+
+\subsection{Reference-Trajectory-Centered Personalization Problem}
+\label{subsec:personalization_problem}
+
+% Trace: III-E-P1
+Let $s\in[0,1]$ be normalized cycle phase and let
+$\vect{q}_{\mathrm{ref}}(s)$ be the prescribed rehabilitation reference.  The
+required topological condition is
+\begin{equation}
+    \vect{q}_{\mathrm{ref}}(0)=\vect{q}_{\mathrm{ref}}(1).
+    \label{eq:reference_closure}
+\end{equation}
+The path may be periodic, closed, continuous, and asymmetric; in particular,
+no constraint of the form
+$\vect{q}_{\mathrm{ref}}(s)=\vect{q}_{\mathrm{ref}}(1-s)$ is imposed.  The
+currently active software reference retains distinct measured flexion and
+extension branches and applies a small periodic cubic B-spline correction to
+obtain $C^2$ closure.
+
+% Trace: III-E-P2
+A reference-local candidate can be represented abstractly as
+\begin{equation}
+    \vect{q}_{\mathrm{cand}}(s;\vect{\alpha})
+    =\vect{q}_{\mathrm{ref}}(s)
+    +\Delta\vect{q}(s;\vect{\alpha}),
+    \qquad
+    \Delta\vect{q}(0;\vect{\alpha})
+    =\Delta\vect{q}(1;\vect{\alpha})=\vect{0}.
+    \label{eq:candidate_parameterization}
+\end{equation}
+The repository implements fixed low-dimensional amplitude reductions, a
+monotone endpoint-preserving knee-phase warp, and duration scaling.  It does
+not yet implement a continuous optimizer over $\vect{\alpha}$ about the active
+asymmetric reference; therefore,~\eqref{eq:candidate_parameterization} is a
+problem-formulation abstraction rather than a claim of a finalized optimizer.
+
+% Trace: III-E-P3
+For a candidate set $\mathcal{Q}_{\mathrm{cand}}$, the intended task-local
+selection problem is
+\begin{equation}
+    \vect{q}^{\star}\in
+    \arg\min_{\vect{q}\in\mathcal{Q}_{\mathrm{cand}}}
+    \mathcal{L}_{\mathrm{int}}(\vect{q};\hat{\vect{\vartheta}})
+    \quad\text{subject to}\quad
+    \vect{q}\in\mathcal{F},
+    \label{eq:personalization_problem}
+\end{equation}
+where $\hat{\vect{\vartheta}}$ denotes the identified equivalent dynamics,
+$\mathcal{L}_{\mathrm{int}}$ is a mechanical-interaction criterion, and
+$\mathcal{F}$ is a feasibility set.  In the current offline candidate evaluator,
+$\mathcal{F}$ checks joint ROM, $x_P\geq0$, $z_P\geq0$, $z_K\geq0$, cycle
+closure, finite force mapping, Jacobian conditioning, and at least $90\%$
+coverage by a train-fitted six-dimensional local state box.
+
+% Trace: III-E-P4
+Explicit velocity, acceleration, and physical interaction-load limits are
+present only as planned experiment-specific constraints or in the separate
+fail-closed robot preflight architecture; they are not yet validated as
+personalization constraints.  Likewise, the stored candidate study reports an
+unweighted multi-objective Pareto comparison, but no final subject-specific
+selector, calibrated tactile criterion, or clinically validated objective.
+Accordingly, the current formulation supports model-based candidate screening,
+not a claim of a comfortable, clinically optimal, or clinically safer
+trajectory.

@@ -2,6 +2,11 @@
 
 from .rokae_xcore import RokaeRobot
 from .rokae_internal_wrench import RokaeInternalWrenchSource
-from .rokae_force_sensor import RokaeForceSensor
+from hardware.rokae_adapter import RobotWrenchFrame, RokaeRobotAdapter
 
-__all__ = ["RokaeInternalWrenchSource", "RokaeForceSensor", "RokaeRobot"]
+__all__ = [
+    "RobotWrenchFrame",
+    "RokaeInternalWrenchSource",
+    "RokaeRobot",
+    "RokaeRobotAdapter",
+]

@@ -1,0 +1,6 @@
+{
+  "rehab_x_axis_in_base": null,
+  "rehab_z_axis_in_base": null,
+  "reviewed": false,
+  "notes": "Fill measured bed +x and +z directions in robot Base, then review manually."
+}

@@ -26,15 +26,11 @@ from collection.state import (
 )
 from collection.trajectory import (
     TrajectoryGeometry,
-    calibrate_joint_center,
     project_along_tangent,
 )
 from config import settings
-from control.mpc_controller import MPCController
 from hardware.windows.rokae_internal_wrench import RokaeInternalWrenchSource
 from hardware.windows.rokae_xcore import RokaeRobot
-from models.comfort_net import load_dataset
-from scripts.train_pinn import load_tangential_episode
 
 
 def _state_frame(now_s: float, *, sequence_id: int = 1, position=(0.2, 0.0, 0.0),
@@ -138,14 +134,6 @@ class _FakeNativeSpeedRobot:
 
     def setDefaultSpeed(self, speed_mm_s, ec):
         self.speed_mm_s = speed_mm_s
-
-
-class _CalibrationRobot:
-    def __init__(self, points):
-        self._points = iter(points)
-
-    def get_cartesian_pose(self):
-        return next(self._points)
 
 
 class UnitAndFrameTests(unittest.TestCase):
@@ -254,28 +242,7 @@ class UnitAndFrameTests(unittest.TestCase):
         self.assertEqual(frame.joint_measured_torque_nm[0], 1.0)
         self.assertEqual(frame.joint_external_torque_nm[0], 11.0)
 
-    def test_circle_center_regression(self):
-        robot = _CalibrationRobot([
-            [4.0, 0.4, 2.0], [1.0, 0.4, 5.0], [-2.0, 0.4, 2.0],
-        ])
-        with patch("builtins.input", side_effect=["", "", ""]):
-            center, radius = calibrate_joint_center(robot, use_drag=False)
-        self.assertTrue(np.allclose(center, (1.0, 0.4, 2.0)))
-        self.assertAlmostEqual(radius, 3.0)
-
-    def test_mpc_prediction_and_full_trajectory_target_use_same_integrator(self):
-        controller = MPCController(horizon=1, dt=0.1)
-        states = controller._predict_states(np.array([0.0, 1.0]), np.array([2.0]))
-        geometry = TrajectoryGeometry(np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 0.0]]))
-        target, next_velocity, next_arc = controller.acceleration_to_trajectory_pose(
-            geometry, 0.0, 1.0, 2.0
-        )
-        self.assertAlmostEqual(states[1, 0], next_arc)
-        self.assertAlmostEqual(states[1, 1], next_velocity)
-        self.assertGreater(target[0], 0.0)
-        self.assertGreater(target[1], 0.0)
-
-    def test_collector_csv_metadata_and_schema_readers(self):
+    def test_collector_csv_metadata_and_snapshot_schema(self):
         with tempfile.TemporaryDirectory() as data_dir:
             with patch.object(settings, "DATA_DIR", data_dir):
                 collector = DataCollector(_LiveRobot(), _LiveWrench(), "subject", "session")
@@ -283,9 +250,7 @@ class UnitAndFrameTests(unittest.TestCase):
                 for _ in range(12):
                     self.assertTrue(collector.record_sample())
                     time.sleep(0.001)
-                output = collector.end_episode(comfort_label=0, pain_label=1)
-                features, labels, _ = load_dataset(data_dir)
-                t, arc, force = load_tangential_episode(output)
+                output = collector.end_episode()
 
             with open(output, newline="", encoding="utf-8") as stream:
                 row = next(csv.DictReader(stream))
@@ -297,17 +262,13 @@ class UnitAndFrameTests(unittest.TestCase):
                 self.assertIn(name, row)
             self.assertEqual(row["schema_version"], "3")
             self.assertEqual(row["frame"], "base")
-            self.assertEqual(features.shape, (12, 9))
-            self.assertTrue(np.all(labels == 1.0))
-            self.assertEqual(t.shape, (12,))
-            self.assertEqual(arc.shape, (12,))
-            self.assertEqual(force.shape, (12,))
+            self.assertNotIn("comfort", row)
             with open(output.replace(".csv", ".json"), encoding="utf-8") as stream:
                 metadata = json.load(stream)
             self.assertIn("started_at", metadata)
             self.assertIn("finished_at", metadata)
-            self.assertEqual(metadata["comfort_label"], 0)
-            self.assertEqual(metadata["pain_label"], 1)
+            self.assertNotIn("comfort_label", metadata)
+            self.assertNotIn("pain_label", metadata)
 
     def test_invalid_episode_is_saved_and_sample_index_does_not_repeat(self):
         class OneInvalidWrench(_LiveWrench):

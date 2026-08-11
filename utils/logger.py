@@ -1,19 +1,10 @@
-# utils/logger.py
-# 统一日志，所有模块用同一个logger
+"""Project logging without import-time filesystem writes."""
 
 import logging
-import os
-from datetime import datetime
-from config import settings
 
 
 def get_logger(name: str) -> logging.Logger:
-    """
-    获取logger，自动同时输出到控制台和文件
-    文件名格式：logs/YYYYMMDD_HHMMSS.log
-    """
-    os.makedirs(settings.LOG_DIR, exist_ok=True)
-
+    """Return a console logger; experiment files are owned by episode loggers."""
     logger = logging.getLogger(name)
     if logger.handlers:
         return logger  # 避免重复添加handler
@@ -24,20 +15,9 @@ def get_logger(name: str) -> logging.Logger:
         datefmt="%H:%M:%S"
     )
 
-    # 控制台
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     ch.setFormatter(fmt)
     logger.addHandler(ch)
-
-    # 文件
-    log_path = os.path.join(
-        settings.LOG_DIR,
-        datetime.now().strftime("%Y%m%d_%H%M%S") + ".log"
-    )
-    fh = logging.FileHandler(log_path, encoding="utf-8")
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(fmt)
-    logger.addHandler(fh)
-
+    logger.propagate = False
     return logger

@@ -1,0 +1,17 @@
+{
+  "hip_center_in_base_m": null,
+  "human_x_axis_in_base": null,
+  "human_z_axis_in_base": null,
+  "tool_offset_m": null,
+  "tcp_orientation": null,
+  "approved_hip_rom_deg": [
+    0,
+    120
+  ],
+  "approved_knee_rom_deg": [
+    5,
+    145
+  ],
+  "reviewed": false,
+  "notes": ""
+}

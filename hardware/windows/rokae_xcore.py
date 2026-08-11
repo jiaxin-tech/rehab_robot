@@ -108,6 +108,13 @@ class RokaeRobot:
         self._rt_target_native: tuple[float, ...] | None = None
         self._rt_active = False
         self._sdk_lock = threading.RLock()
+        # xCoreSDK state reception and getEndTorque are independent producer
+        # loops.  Keep their host-side serialization domains separate so a
+        # slow wrench query cannot take the state-cache or command-target lock.
+        # Native thread-safety and physical timing still require Windows/robot
+        # validation; this is not evidence of controller-side synchronization.
+        self._state_sdk_lock = threading.RLock()
+        self._wrench_sdk_lock = threading.RLock()
         self._state_lock = threading.Lock()
         self._state_thread: threading.Thread | None = None
         self._state_running = False
@@ -153,7 +160,14 @@ class RokaeRobot:
             raise ConnectionError("Robot is not connected")
 
     def connect(self) -> None:
-        """Connect, select non-realtime command mode, and start state feedback."""
+        """Connect and start observation-only state feedback.
+
+        This path deliberately does not select a motion-control mode, change
+        command-cache settings, clear alarms, power servos, or issue motion.
+        The SDK connection/disconnection implementation may still have
+        controller-session side effects and therefore needs a supervised
+        Windows validation before being treated as an observation session.
+        """
         if self.is_connected:
             return
 
@@ -170,12 +184,16 @@ class RokaeRobot:
             raise ValueError(f"Unknown xCoreSDK robot class: {self.robot_class}")
 
         try:
-            self._robot = (
-                robot_type(self.ip_address, self.local_ip)
-                if self.local_ip
-                else robot_type(self.ip_address)
-            )
-            self._call("connectToRobot", self._robot.connectToRobot)
+            # Use one unambiguous vendor-supported connection style.  The
+            # alternate xMateRobot(remoteIP[, localIP]) constructor is shown in
+            # examples as already usable without connectToRobot(), so combining
+            # both styles risks a duplicate connection.
+            self._robot = robot_type()
+            with self._sdk_lock:
+                if self.local_ip:
+                    self._robot.connectToRobot(self.ip_address, self.local_ip)
+                else:
+                    self._robot.connectToRobot(self.ip_address)
             self.is_connected = True
             self._robot_info = self._call("robotInfo", self._robot.robotInfo)
             if int(self._robot_info.joint_num) != 6:
@@ -207,39 +225,35 @@ class RokaeRobot:
                     f"joint_soft_limit_query_error:{type(exc).__name__}:{exc}"
                 )
                 logger.warning("Unable to read xCoreSDK joint soft limits: %s", exc)
-            self._call(
-                "setMotionControlMode",
-                self._robot.setMotionControlMode,
-                self._sdk.MotionControlMode.NrtCommandMode,
-            )
-            self._call(
-                "setMaxCacheSize",
-                self._robot.setMaxCacheSize,
-                self.command_cache_size,
-            )
-            self._start_state_stream()
+            self.start_state_stream()
             self._refresh_operation_state()
-        except Exception:
-            self._cleanup_failed_connection()
+        except Exception as connection_exc:
+            try:
+                self._cleanup_failed_connection()
+            except BaseException as cleanup_exc:
+                if hasattr(connection_exc, "add_note"):
+                    connection_exc.add_note(
+                        "xCoreSDK failed-connection cleanup was not confirmed; "
+                        "native handles were retained: "
+                        f"{type(cleanup_exc).__name__}:{cleanup_exc}"
+                    )
             raise
 
     def _cleanup_failed_connection(self) -> None:
-        self._stop_realtime_best_effort()
-        self._state_running = False
-        if self._state_thread is not None:
-            self._state_thread.join(timeout=1.0)
+        """Strict cleanup that retains retryable handles on any uncertainty."""
+
+        self._stop_realtime_impl(raise_on_error=True)
+        self.stop_state_stream()
         if self._robot is not None:
-            if self._state_streaming:
-                try:
-                    with self._sdk_lock:
-                        self._robot.stopReceiveRobotState()
-                except Exception as exc:
-                    logger.warning("Unable to stop failed xCoreSDK state stream: %s", exc)
-                self._state_streaming = False
-            try:
-                self._robot.disconnectFromRobot({})
-            except Exception as exc:
-                logger.warning("Unable to disconnect failed xCoreSDK connection: %s", exc)
+            self._call(
+                "disconnectFromRobot",
+                self._robot.disconnectFromRobot,
+            )
+        self._clear_after_confirmed_disconnect()
+
+    def _clear_after_confirmed_disconnect(self) -> None:
+        """Clear local handles only after native disconnect has succeeded."""
+
         self._robot = None
         self._robot_info = None
         self._force_control = None
@@ -249,6 +263,7 @@ class RokaeRobot:
         self._clear_cached_state()
         self.is_connected = False
         self.robot_mode = "DISCONNECTED"
+        self._state_ready.clear()
 
     def _clear_cached_state(self) -> None:
         """Discard a previous connection's RT cache instead of reusing it."""
@@ -269,37 +284,23 @@ class RokaeRobot:
             self._clear_cached_state()
             self.is_connected = False
             self.robot_mode = "DISCONNECTED"
+            self._state_ready.clear()
             return
 
-        self._stop_realtime_best_effort()
-        self._state_running = False
-        if self._state_thread is not None:
-            self._state_thread.join(timeout=1.0)
-        if self._state_streaming:
-            try:
-                with self._sdk_lock:
-                    self._robot.stopReceiveRobotState()
-            except Exception as exc:
-                logger.warning("Unable to stop xCoreSDK state stream: %s", exc)
-            finally:
-                self._state_streaming = False
+        # A failed realtime stop or a producer still inside updateRobotState
+        # leaves native activity uncertain.  Preserve every handle and refuse
+        # disconnect so the caller can retry or escalate to supervised manual
+        # recovery without a false local "DISCONNECTED" state.
+        self._stop_realtime_impl(raise_on_error=True)
+        self.stop_state_stream()
+        self._call("disconnectFromRobot", self._robot.disconnectFromRobot)
+        self._clear_after_confirmed_disconnect()
 
-        try:
-            if self.is_connected:
-                self._call("disconnectFromRobot", self._robot.disconnectFromRobot)
-        finally:
-            self._robot = None
-            self._robot_info = None
-            self._force_control = None
-            self._rt_controller = None
-            self._joint_soft_limits_rad = None
-            self._joint_soft_limit_error = None
-            self._clear_cached_state()
-            self.is_connected = False
-            self.robot_mode = "DISCONNECTED"
-            self._state_ready.clear()
-
-    def _start_state_stream(self) -> None:
+    def start_state_stream(self) -> None:
+        """Start the receive-only RT state cache; calling repeatedly is safe."""
+        self._require_connected()
+        if self._state_streaming and self._state_running:
+            return
         from xCoreSDK_python import RtSupportedFields
 
         interval = timedelta(milliseconds=self.state_interval_ms)
@@ -311,7 +312,7 @@ class RokaeRobot:
             RtSupportedFields.jointPos_m,
             RtSupportedFields.keypads,
         ]
-        with self._sdk_lock:
+        with self._state_sdk_lock:
             self._robot.startReceiveRobotState(interval, fields)
         self._state_streaming = True
         self._state_running = True
@@ -328,13 +329,51 @@ class RokaeRobot:
         if not self._state_ready.wait(timeout=3.0):
             raise TimeoutError("Timed out waiting for the first xCoreSDK state frame")
 
+    # Kept as a private compatibility alias for older offline tests/tools.
+    _start_state_stream = start_state_stream
+
+    def stop_state_stream(self) -> None:
+        """Stop only receive-side state resources; calling repeatedly is safe."""
+        self._state_running = False
+        thread = self._state_thread
+        if thread is threading.current_thread():
+            self._state_ready.clear()
+            raise RuntimeError(
+                "xCoreSDK state stream cannot be stopped from its producer thread"
+            )
+        if thread is not None:
+            thread.join(timeout=1.0)
+            if thread.is_alive():
+                # updateRobotState may still own _state_sdk_lock.  Never block
+                # on that same lock or lose the only live-thread handle.
+                self._state_ready.clear()
+                raise RuntimeError(
+                    "xCoreSDK state producer did not stop within 1.0s; "
+                    "refusing stopReceiveRobotState and disconnect"
+                )
+            self._state_thread = None
+        if self._state_streaming and self._robot is not None:
+            try:
+                with self._state_sdk_lock:
+                    self._robot.stopReceiveRobotState()
+            except Exception as exc:
+                logger.warning("Unable to stop xCoreSDK state stream: %s", exc)
+                # Keep the streaming flag true so a subsequent cleanup attempt
+                # retries the native stop instead of claiming success.
+                self._state_ready.clear()
+                raise RuntimeError(
+                    "xCoreSDK stopReceiveRobotState was not confirmed"
+                ) from exc
+            self._state_streaming = False
+        self._state_ready.clear()
+
     def _state_loop(self) -> None:
         from xCoreSDK_python import RtSupportedFields
 
         timeout = timedelta(milliseconds=max(1, self.state_interval_ms * 2))
         while self._state_running:
             try:
-                with self._sdk_lock:
+                with self._state_sdk_lock:
                     updated = self._robot.updateRobotState(timeout)
                     if not updated:
                         continue
@@ -355,7 +394,7 @@ class RokaeRobot:
                 self._accept_state(
                     tcp_native,
                     joints_native,
-                    time.monotonic(),
+                    time.perf_counter_ns() / 1_000_000_000.0,
                     keypad_native,
                 )
             except Exception as exc:
@@ -525,6 +564,70 @@ class RokaeRobot:
             raise
         self._refresh_operation_state()
 
+    def attach_externally_prepared_realtime(
+        self,
+        *,
+        reviewed_filter_hz: float,
+    ) -> None:
+        """Attach to realtime Cartesian control without changing mode or power.
+
+        The operator must have prepared automatic mode, servo power, realtime
+        command mode, and network tolerance outside this method.  This method
+        verifies the queryable mode/power state, obtains the SDK's confirmed
+        realtime controller, and configures only its command filter.  It never
+        clears errors, powers on, or changes a motion-control mode.
+        """
+        self._require_connected()
+        if (
+            isinstance(reviewed_filter_hz, bool)
+            or not isinstance(reviewed_filter_hz, (int, float))
+            or not math.isfinite(float(reviewed_filter_hz))
+            or not 1.0 <= float(reviewed_filter_hz) <= 1000.0
+        ):
+            raise ValueError(
+                "reviewed_filter_hz must be an explicitly reviewed value in "
+                "[1, 1000] Hz"
+            )
+        if not self.local_ip:
+            raise ValueError(
+                "ROBOT_LOCAL_IP is required for xCoreSDK realtime control"
+            )
+        if self._rt_controller is not None:
+            return
+        operation_state = self._refresh_operation_state()
+        if operation_state != self._sdk.OperationState.idle:
+            raise RuntimeError("robot must be idle before realtime attachment")
+        operate_mode = self._call("operateMode", self._robot.operateMode)
+        power_state = self._call("powerState", self._robot.powerState)
+        if operate_mode != self._sdk.OperateMode.automatic:
+            raise RuntimeError(
+                "operator must prepare automatic mode outside the program"
+            )
+        if power_state != self._sdk.PowerState.on:
+            raise RuntimeError(
+                "operator must prepare servo power outside the program"
+            )
+        try:
+            with self._sdk_lock:
+                controller = self._robot.getRtMotionController()
+            self._call(
+                "setFilterFrequency",
+                controller.setFilterFrequency,
+                float(reviewed_filter_hz),
+                float(reviewed_filter_hz),
+                float(reviewed_filter_hz),
+            )
+        except Exception as exc:
+            raise RuntimeError(
+                "unable to attach realtime controller; verify external RtCommandMode "
+                "and network-tolerance preparation"
+            ) from exc
+        self._rt_controller = controller
+        operation_state = self._refresh_operation_state()
+        if operation_state != self._sdk.OperationState.idle:
+            self._rt_controller = None
+            raise RuntimeError("robot left idle state during realtime attachment")
+
     def start_realtime_cartesian(
         self, initial_pose: Sequence[float] | None = None
     ) -> None:
@@ -536,7 +639,11 @@ class RokaeRobot:
         """
         self._require_connected()
         if self._rt_controller is None:
-            raise RuntimeError("Call enable_realtime() before starting realtime motion")
+            raise RuntimeError(
+                "Call attach_externally_prepared_realtime(reviewed_filter_hz=...) "
+                "before starting "
+                "gated realtime motion"
+            )
         if self._rt_active:
             raise RuntimeError("Realtime Cartesian control is already active")
 
@@ -554,7 +661,7 @@ class RokaeRobot:
             return sdk.CartesianPosition(target)
 
         self._rt_callback = cartesian_callback
-        move_started = False
+        move_attempted = False
         try:
             with self._sdk_lock:
                 self._rt_controller.setControlLoopCar(
@@ -562,38 +669,82 @@ class RokaeRobot:
                     0,
                     False,
                 )
+                move_attempted = True
                 self._rt_controller.startMove(
                     self._sdk.RtControllerMode.cartesianPosition
                 )
-                move_started = True
                 # Non-blocking starts the SDK-owned periodic task. It must later
                 # be paired with stopLoop(), as required by the 0.7.0 API.
                 self._rt_controller.startLoop(False)
-        except Exception:
-            if move_started:
+                # Publish active state before releasing the same lock used by
+                # stop, so a concurrent request cannot observe a started loop
+                # as inactive and skip stopLoop/stopMove.
+                self._rt_active = True
+        except Exception as start_exc:
+            cleanup_failures: list[str] = []
+            # startMove/startLoop may have a controller-side effect before an
+            # exception reaches Python.  Once startMove was attempted, always
+            # try both paired stop calls instead of guessing how far native
+            # startup progressed.
+            if move_attempted:
+                try:
+                    self._rt_controller.stopLoop()
+                except Exception as stop_exc:
+                    cleanup_failures.append(
+                        f"stopLoop:{type(stop_exc).__name__}:{stop_exc}"
+                    )
+                    logger.warning(
+                        "Unable to stop partially started realtime loop: %s",
+                        stop_exc,
+                    )
                 try:
                     self._rt_controller.stopMove()
                 except Exception as stop_exc:
-                    logger.warning("Unable to stop partially started realtime move: %s", stop_exc)
+                    cleanup_failures.append(
+                        f"stopMove:{type(stop_exc).__name__}:{stop_exc}"
+                    )
+                    logger.warning(
+                        "Unable to stop partially started realtime move: %s",
+                        stop_exc,
+                    )
+            if cleanup_failures:
+                # Keep a valid hold callback/target published.  Clearing it
+                # while a native loop may still be alive would turn a stop
+                # failure into repeated callback exceptions.
+                self._rt_active = True
+                self.robot_mode = "RT_START_FAILED_STOP_UNCONFIRMED"
+                raise RuntimeError(
+                    "realtime start failed and cleanup was not confirmed: "
+                    + ";".join(cleanup_failures)
+                ) from start_exc
+            self._rt_active = False
             self._rt_callback = None
             self._rt_target_native = None
             raise
-        self._rt_active = True
         self.robot_mode = "RT_CONTROLLING"
 
     def set_realtime_cartesian_target(self, pose: Sequence[float]) -> None:
-        """Atomically replace the target held by the 1 ms SDK callback."""
+        """Atomically replace the target held by the 1 ms SDK callback.
+
+        This hot path performs no blocking SDK query.  Motion-error polling is
+        intentionally a separate health-monitor responsibility so a delayed
+        state or wrench producer cannot directly serialize command scheduling.
+        """
         if not self._rt_active or self._rt_controller is None:
             raise RuntimeError("Realtime Cartesian control is not active")
         target = tuple(self._pose_to_sdk(pose))
         if not all(math.isfinite(value) for value in target):
             raise ValueError("Realtime Cartesian target must contain finite values")
-        with self._sdk_lock:
-            if self._rt_controller.hasMotionError():
-                raise RuntimeError("xCoreSDK reported a realtime motion error")
         self._rt_target_native = target
 
-    def _stop_realtime_best_effort(self) -> None:
+    def realtime_motion_error(self) -> bool:
+        """Poll the SDK motion-error flag outside the command update hot path."""
+        if self._rt_controller is None:
+            return False
+        with self._sdk_lock:
+            return bool(self._rt_controller.hasMotionError())
+
+    def _stop_realtime_impl(self, *, raise_on_error: bool) -> None:
         controller = self._rt_controller
         if controller is None:
             self._rt_active = False
@@ -601,25 +752,41 @@ class RokaeRobot:
             self._rt_target_native = None
             return
 
+        failures: list[str] = []
         with self._sdk_lock:
             if self._rt_active:
                 try:
                     controller.stopLoop()
                 except Exception as exc:
+                    failures.append(f"stopLoop:{type(exc).__name__}:{exc}")
                     logger.warning("Unable to stop xCoreSDK realtime loop: %s", exc)
                 try:
                     controller.stopMove()
                 except Exception as exc:
+                    failures.append(f"stopMove:{type(exc).__name__}:{exc}")
                     logger.warning("Unable to stop xCoreSDK realtime motion: %s", exc)
+        if failures:
+            # The callback may still be running when stopLoop reports failure.
+            # Preserve its finite hold target and keep the state retryable.
+            self._rt_active = True
+            self.robot_mode = "RT_STOP_FAILED_UNCONFIRMED"
+            if raise_on_error:
+                raise RuntimeError(
+                    "xCoreSDK realtime stop failed: " + ";".join(failures)
+                )
+            return
         self._rt_active = False
         self._rt_callback = None
         self._rt_target_native = None
+
+    def _stop_realtime_best_effort(self) -> None:
+        self._stop_realtime_impl(raise_on_error=False)
 
     def stop_realtime(self, switch_to_nrt: bool = True) -> None:
         """Stop the callback and realtime motion, optionally returning to NRT."""
         if self._robot is None:
             return
-        self._stop_realtime_best_effort()
+        self._stop_realtime_impl(raise_on_error=True)
         if switch_to_nrt and self.is_connected:
             self._call(
                 "setMotionControlMode",
@@ -942,10 +1109,20 @@ class RokaeRobot:
         if isinstance(info, dict):
             for key, value in info.items():
                 if str(key).lower().endswith("collided") or str(key).lower() == "collided":
-                    collided = bool(value)
+                    if type(value) is bool:
+                        collided = value
+                    else:
+                        self._collision_error = (
+                            "collision_query_invalid_boolean_type:"
+                            f"{type(value).__name__}"
+                        )
+                        self._collision_state = None
+                        return None
                     break
         self._collision_state = collided
-        self._collision_error = None
+        self._collision_error = (
+            None if collided is not None else "collision_query_missing_collided_field"
+        )
         return collided
 
     def get_end_wrench(self, reference_frame: str = "world") -> dict[str, Any]:
@@ -977,9 +1154,9 @@ class RokaeRobot:
         joint_external = self._sdk.PyTypeVectorDouble()
         cart_torque = self._sdk.PyTypeVectorDouble()
         cart_force = self._sdk.PyTypeVectorDouble()
-        query_started_s = time.monotonic()
+        query_started_s = time.perf_counter_ns() / 1_000_000_000.0
         ec: dict[str, Any] = {}
-        with self._sdk_lock:
+        with self._wrench_sdk_lock:
             self._force_control.getEndTorque(
                 frame,
                 joint_measured,
@@ -988,7 +1165,7 @@ class RokaeRobot:
                 cart_force,
                 ec,
             )
-        query_finished_s = time.monotonic()
+        query_finished_s = time.perf_counter_ns() / 1_000_000_000.0
         self._check_ec("getEndTorque", ec)
 
         force = [float(value) for value in cart_force.content()]
