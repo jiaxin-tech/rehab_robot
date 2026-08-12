@@ -108,7 +108,7 @@ def perturb_closed_phase_path(
 
     Amplitude changes use ``sin(pi*global_phase)^2`` and are therefore zero at
     the cycle endpoints.  Knee phase changes use a monotone warp independently
-    on the two symmetric branches and preserve both endpoint and peak values.
+    on the two branches and preserve both endpoint and peak values.
     No pointwise angle clipping is used.
     """
 
@@ -293,16 +293,23 @@ def build_local_identification_dataset(
     trajectories: Mapping[str, pd.DataFrame],
     *,
     subject_ids: Sequence[str] = SUBJECT_IDS,
+    expected_trajectory_ids: Sequence[str] | None = None,
 ) -> pd.DataFrame:
     """Generate clean force observations for four virtual subjects."""
 
-    expected = set(LOCAL_TRAJECTORY_SPLIT)
+    expected = (
+        set(LOCAL_TRAJECTORY_SPLIT)
+        if expected_trajectory_ids is None
+        else set(map(str, expected_trajectory_ids))
+    )
     if set(trajectories) != expected:
-        raise ValueError("local trajectories must exactly match the fixed Stage-5C set.")
+        raise ValueError(
+            "local trajectories do not match the declared trajectory set."
+        )
     frames: list[pd.DataFrame] = []
     for subject_id in subject_ids:
         subject = get_dynamic_subject(subject_id)
-        for trajectory_id in LOCAL_TRAJECTORY_SPLIT:
+        for trajectory_id in trajectories:
             table = _clean_observation_table(trajectories[trajectory_id], subject)
             if not table["trajectory_id"].eq(trajectory_id).all():
                 raise RuntimeError("trajectory identity changed during dataset creation.")
@@ -334,21 +341,37 @@ def fit_local_subject_parameters(
     dataset: pd.DataFrame,
     *,
     subject_ids: Sequence[str] = SUBJECT_IDS,
+    training_trajectory_ids: Sequence[str] | None = None,
 ) -> tuple[pd.DataFrame, dict[str, ParameterEstimationResult], dict[str, dict[str, float]]]:
     """Fit each subject from train rows only and evaluate held-out splits."""
 
     baseline = get_dynamic_subject("baseline")
     template = baseline_template_from_dynamic_subject(baseline)
+    allowed_training_ids = (
+        {
+            name
+            for name, split in LOCAL_TRAJECTORY_SPLIT.items()
+            if split == "train"
+        }
+        if training_trajectory_ids is None
+        else set(map(str, training_trajectory_ids))
+    )
+    if not allowed_training_ids:
+        raise ValueError("training_trajectory_ids must not be empty.")
     rows: list[dict[str, object]] = []
     optimizer_results: dict[str, ParameterEstimationResult] = {}
     estimates: dict[str, dict[str, float]] = {}
     for subject_id in subject_ids:
         subject_rows = dataset.loc[dataset["subject_id"].eq(subject_id)]
         training = subject_rows.loc[subject_rows["dataset_split"].eq("train")]
-        if not training["trajectory_id"].isin(
-            [name for name, split in LOCAL_TRAJECTORY_SPLIT.items() if split == "train"]
+        if training.empty or not training["trajectory_id"].isin(
+            allowed_training_ids
         ).all():
             raise RuntimeError("validation/test trajectory entered local fitting.")
+        if set(training["trajectory_id"].astype(str)) != allowed_training_ids:
+            raise RuntimeError(
+                "local fitting did not receive every declared train trajectory."
+            )
         estimator_columns = [*REQUIRED_OBSERVATION_COLUMNS, "force_mapping_valid"]
         optimizer_input = training.loc[:, estimator_columns].copy(deep=True)
         result = estimate_subject_parameters(
@@ -428,16 +451,31 @@ def _estimated_state_table(dataframe: pd.DataFrame) -> pd.DataFrame:
     return table
 
 
-def fit_local_identification_domain(dataset: pd.DataFrame) -> StateDomainBounds:
+def fit_local_identification_domain(
+    dataset: pd.DataFrame,
+    *,
+    training_trajectory_ids: Sequence[str] | None = None,
+) -> StateDomainBounds:
     """Fit the six-state local domain from training observations only."""
 
+    allowed_training_ids = (
+        {
+            name
+            for name, split in LOCAL_TRAJECTORY_SPLIT.items()
+            if split == "train"
+        }
+        if training_trajectory_ids is None
+        else set(map(str, training_trajectory_ids))
+    )
     training = dataset.loc[dataset["dataset_split"].eq("train")]
     if training.empty:
         raise ValueError("local dataset has no training rows.")
-    if not training["trajectory_id"].isin(
-        [name for name, split in LOCAL_TRAJECTORY_SPLIT.items() if split == "train"]
-    ).all():
+    if not training["trajectory_id"].isin(allowed_training_ids).all():
         raise RuntimeError("non-training local trajectory entered domain fitting.")
+    if set(training["trajectory_id"].astype(str)) != allowed_training_ids:
+        raise RuntimeError(
+            "domain fitting did not receive every declared train trajectory."
+        )
     # The four subjects share exactly the same prescribed state trajectory.
     # Remove those repeats so the reported domain sample count represents
     # independent states rather than four copies of each state.
@@ -474,9 +512,19 @@ def _coverage_missing_groups(states: pd.DataFrame, bounds: StateDomainBounds) ->
 def build_local_domain_coverage(
     trajectories: Mapping[str, pd.DataFrame],
     bounds: StateDomainBounds,
+    *,
+    split_by_trajectory: Mapping[str, str] | None = None,
+    domain_model: str = LOCAL_DOMAIN_MODEL,
 ) -> pd.DataFrame:
-    """Report train-built domain coverage for all six local trajectories."""
+    """Report train-built domain coverage for the declared local trajectories."""
 
+    split_map = (
+        LOCAL_TRAJECTORY_SPLIT
+        if split_by_trajectory is None
+        else {str(key): str(value) for key, value in split_by_trajectory.items()}
+    )
+    if set(split_map) != set(trajectories):
+        raise ValueError("domain coverage split map must match the trajectory set.")
     rows: list[dict[str, object]] = []
     for trajectory_id, trajectory in trajectories.items():
         observed = trajectory.copy(deep=True)
@@ -494,12 +542,12 @@ def build_local_domain_coverage(
                     if trajectory_id == "knee_phase_delay_3pct"
                     else trajectory_id
                 ),
-                "dataset_split": LOCAL_TRAJECTORY_SPLIT[trajectory_id],
+                "dataset_split": split_map[trajectory_id],
                 "in_domain_sample_count": in_count,
                 "out_of_domain_sample_count": int(len(trajectory) - in_count),
                 "in_domain_percent": 100.0 * in_count / len(trajectory),
                 "missing_state_variables": _coverage_missing_groups(states, bounds),
-                "domain_model": LOCAL_DOMAIN_MODEL,
+                "domain_model": domain_model,
                 "domain_fitted_from_split": "train",
                 "domain_training_sample_count": bounds.valid_training_samples,
             }
