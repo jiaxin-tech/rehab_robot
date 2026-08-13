@@ -1400,3 +1400,23 @@ offline real-episode identification and candidate comparison
 工作空间图谱、虚拟准静态力地图、完整动态测试轨迹、第四阶段虚拟参数辨识
 以及 4.5C/4.5D 软件验证、阶段 5A 外部骨架参考导入，都不能直接解释为
 真实患者参数、受力安全性、舒适性、临床有效性或机器人可执行轨迹。
+
+## Continuous asymmetric reference neighbourhood
+
+`continuous_reference_neighborhood.py` 在唯一 frozen parent
+`reference_measured_asymmetric_closed_slow` 周围提供三个连续离线参数：髋幅度、
+膝幅度和分支内膝 phase warp。它在每次生成前核对 parent SHA，保持
+`theta_shank = q_hip - q_knee`、24 s 固定时长、实测非对称伸展分支及 C2
+接缝，并重新计算 FK、解析导数和离线 constraint-ready metadata。第一版搜索
+范围 `[-5, +2] deg`、`[-5, +2] deg`、`[-0.03, +0.03]` 仅是软件个性化范围，
+不是机器人安全阈值；任何失败都标为不可行，禁止 clipping。
+
+生成 27 点人工核查网格与四张图：
+
+```bash
+python -m lower_limb_sim.run_continuous_reference_neighborhood
+```
+
+默认产物位于
+`lower_limb_sim/formal_artifacts/continuous_reference_neighborhood/`。这些结果只
+验证连续生成器，不包含 optimizer、selector、真实机器人连接或运动批准。

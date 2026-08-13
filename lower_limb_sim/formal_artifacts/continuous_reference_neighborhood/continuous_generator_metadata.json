@@ -1,0 +1,93 @@
+{
+  "generated_at_utc": "2026-08-13T14:47:05.282075+00:00",
+  "artifact_status": "offline_generator_verification_only",
+  "generator_version": "continuous_asymmetric_reference_neighborhood_v1",
+  "parent_reference_id": "reference_measured_asymmetric_closed_slow",
+  "parent_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "parent_sha_verified_before_generation": true,
+  "offline_personalization_search_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "time_scale": 1.0,
+  "duration_optimization_enabled": false,
+  "grid_axes": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      -2.5,
+      0.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      -2.5,
+      0.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.0,
+      0.03
+    ]
+  },
+  "grid_sample_count": 27,
+  "grid_feasible_count": 27,
+  "representative_points": {
+    "neutral": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "hip_minus_3deg": [
+      -3.0,
+      0.0,
+      0.0
+    ],
+    "hip_minus_5deg": [
+      -5.0,
+      0.0,
+      0.0
+    ],
+    "knee_minus_3deg": [
+      0.0,
+      -3.0,
+      0.0
+    ],
+    "knee_minus_5deg": [
+      0.0,
+      -5.0,
+      0.0
+    ],
+    "phase_plus_3pct": [
+      0.0,
+      0.0,
+      0.03
+    ],
+    "phase_minus_3pct": [
+      0.0,
+      0.0,
+      -0.03
+    ]
+  },
+  "measured_extension_is_reversed_flexion": false,
+  "optimizer_implemented": false,
+  "robot_connection_performed": false,
+  "robot_motion_authorized": false,
+  "hardware_safety_thresholds_modified": false,
+  "files": [
+    "candidate_family_hip.png",
+    "candidate_family_knee.png",
+    "candidate_family_phase.png",
+    "candidate_pull_paths.png",
+    "continuous_candidate_parameter_space.csv",
+    "representative_regression_points.csv"
+  ]
+}
