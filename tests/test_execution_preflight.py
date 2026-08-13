@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+from pathlib import Path
 
 import pytest
 
@@ -20,6 +21,14 @@ from control.start_anchored_relative_trajectory import (
 )
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 from safety.experiment_safety import ExperimentSafetyConfig
+
+
+SOURCE_CANDIDATE_DIRECTORY = (
+    Path(__file__).resolve().parents[1]
+    / "lower_limb_sim"
+    / "data"
+    / "reference_candidates"
+)
 
 
 class ReadyLogger:
@@ -155,10 +164,12 @@ def _evaluate(**overrides):
     return evaluate_execution_preflight(**values)
 
 
-def test_all_explicit_reviewed_slow_gates_can_pass_offline():
+def test_reference_freeze_keeps_even_reviewed_slow_request_no_go():
     result = _evaluate()
-    assert result.allowed
-    assert result.reasons == ()
+    assert not result.allowed
+    assert result.reasons == (
+        "reference_release_not_approved_for_first_robot_trial",
+    )
     assert result.evaluation_phase == "live"
     assert result.trajectory_sha256
 
@@ -178,9 +189,7 @@ def test_unreviewed_frame_anchor_and_safety_are_each_blocking():
 
 def test_nominal_reference_is_not_first_trial_whitelisted():
     frame, _, _, anchor, safety, health = _inputs()
-    nominal = DEFAULT_REFERENCE_PATH.with_name(
-        "reference_measured_asymmetric_closed_nominal.csv"
-    )
+    nominal = SOURCE_CANDIDATE_DIRECTORY / "reference_measured_asymmetric_closed_nominal.csv"
     trajectory, audit, _ = build_start_anchored_relative_trajectory(
         nominal,
         current_tcp_start_pose=anchor.tcp_pose_base,
@@ -319,7 +328,8 @@ def test_offline_preflight_is_explicitly_unbound_from_executor():
         trajectory=trajectory,
         audit=audit,
     )
-    assert result.allowed
+    assert not result.allowed
+    assert "reference_release_not_approved_for_first_robot_trial" in result.reasons
     assert result.evaluation_phase == "offline"
     with pytest.raises(PermissionError, match="not_live_bound"):
         result.require_live_trajectory_binding(trajectory)

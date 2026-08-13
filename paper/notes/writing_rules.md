@@ -10,8 +10,8 @@
    robot, or experimental validation.
 5. Do not promote `/tmp`, scratch, debug, or temporary files.
 6. Preserve `theta_shank = q_hip - q_knee` in every formula and figure.
-7. Preserve the implemented hip upper bound of 120 deg. Keep the knee ROM
-   explicitly configured until the 5–130 vs 5–145 pipeline split is resolved.
+7. Use only `ROM_PROTOCOL_V2` in formal methods/results: hip 0--120 deg and
+   knee 5--145 deg. Mention 5--130 deg only as a labelled historical protocol.
 8. Describe `L2` as knee-to-strap-equivalent-traction-point distance.
 9. A closed reference needs `q_ref(0) = q_ref(1)`; do not impose time-reversal
    symmetry. The active reference is explicitly asymmetric.

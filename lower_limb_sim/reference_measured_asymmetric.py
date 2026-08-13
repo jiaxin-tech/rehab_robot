@@ -23,7 +23,7 @@ from scipy.signal import savgol_filter
 
 from .config import L1, L2
 from .kinematics import forward_kinematics
-from .reference_closed_c2 import APPROVED_HIP_ROM_DEG, APPROVED_KNEE_ROM_DEG
+from .formal_protocol import FORMAL_HIP_ROM_DEG, FORMAL_KNEE_ROM_DEG
 from .trajectory_profiles import minimum_jerk_profile
 
 
@@ -58,6 +58,8 @@ PERIODIC_SPLINE_SUBDIVISION_FACTOR = 4
 PERIODIC_PATH_SMOOTHING_WINDOW = 5
 PERIODIC_PATH_SMOOTHING_POLYNOMIAL_ORDER = 3
 MODEL_ANGLE_DEFINITION = "theta_shank = q_hip - q_knee"
+APPROVED_HIP_ROM_DEG = FORMAL_HIP_ROM_DEG
+APPROVED_KNEE_ROM_DEG = FORMAL_KNEE_ROM_DEG
 
 
 @dataclass(frozen=True)

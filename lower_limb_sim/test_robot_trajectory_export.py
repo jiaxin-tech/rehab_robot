@@ -520,6 +520,7 @@ def test_fk_inconsistent_pull_point_is_reported_not_silently_transformed() -> No
 
 def test_source_and_calibration_approved_rom_must_match_exactly() -> None:
     reference = _synthetic_reference()
+    # Legacy calibration must remain rejected by the formal V2 source loader.
     calibration = _identity_calibration(approved_knee_rom=(5.0, 130.0))
     command, audit, transform = build_robot_trajectory(reference, calibration)
 

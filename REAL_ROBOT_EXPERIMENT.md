@@ -51,7 +51,7 @@ Release gate:
 
 The current slow reference is approved by the byte SHA-256 `f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881`, not by comparison against a second read of the same mutable file. The present `lower_limb_sim/` source and its ignored data are not protected by the cleanup tag; commit the intended source and independently preserve the source/manifest/pinned CSV before treating any Git commit field as complete experiment provenance. Any StartAnchor bound to the old `reference_closed_c2_slow` ID is invalid for this reference and must be recaptured, not relabeled.
 
-The repository result recorded on 2026-08-11 is `640 passed, 5 skipped in 96.90 s`, with `645` tests collected. The skips are explicit Windows/platform integration gates; this is offline evidence only.
+The final-reference-freeze result recorded on 2026-08-13 is `667 passed, 5 skipped in 100.64 s`. The skips are explicit Windows/platform integration gates; this is offline evidence only.
 
 ## 3. Phase B — Windows SDK import, no robot
 

@@ -32,8 +32,9 @@ x_pull = x_knee + L2 cos(q_hip - q_knee)
 z_pull = z_knee + L2 sin(q_hip - q_knee)
 ```
 
-默认参数为 `L1 = 0.42 m`、`L2 = 0.30 m`、髋屈曲 `0~120 deg`、膝屈曲
-`5~130 deg`，关节网格步长为 `1 deg`。图谱保留所有关节网格行，并用
+正式 `ROM_PROTOCOL_V2` 参数为 `L1 = 0.42 m`、`L2 = 0.30 m`、髋屈曲
+`0~120 deg`、膝屈曲 `5~145 deg`，关节网格步长为 `1 deg`。图谱保留
+所有关节网格行，并用
 `reachable` 标记满足 `x_pull >= 0`、`z_pull >= 0` 的行；绘图和查询只
 使用这些有效行。
 
@@ -52,7 +53,7 @@ python -m lower_limb_sim.workspace_atlas
 该 main 示例一次生成：
 
 ```text
-lower_limb_sim/data/workspace/
+lower_limb_sim/formal_artifacts/rom_protocol_v2/workspace/
 ├── workspace_atlas.csv
 ├── workspace_atlas.npy
 ├── workspace_hip_angle.png
@@ -1066,23 +1067,19 @@ q_ddot = d2q_ref/ds2 * (ds/dt)^2 + dq_ref/ds * d2s/dt2
 
 ### ROM 门控和幅值映射
 
-逐点 `clip` 被禁止。没有显式批准范围时，原始路径始终保留；只要其超过
-当前配置范围，就设置 `trajectory_requires_rom_confirmation=true` 并阻止
-动力学计算。当前 cycle 3 的膝屈曲峰值高于 130°，所以默认命令只生成相位、
-三种重定时运动学、正运动学、适用域审计以及五张非动力学图：
+逐点 `clip` 被禁止。当前正式配置直接读取 `ROM_PROTOCOL_V2` 的
+`0~120° / 5~145°`。旧 Stage 5B 数据仍按其生成时协议保留为 legacy；重新
+运行时，143° 路径在 V2 下合法，不再需要临时扩展 ROM：
 
 ```bash
 python -m lower_limb_sim.run_reference_retiming
 ```
 
-导师明确批准目标 ROM 后，可提供一对上下限。若原路径超过这个批准范围，
-程序对整条关节曲线进行一次平滑的归一化幅值映射，并同时保存映射前后的
-角度，而不是逐样本截断。批准范围是当前模型配置范围内的映射目标，不能用
-更宽的数值绕过配置的 `0~120°` 髋和 `5~130°` 膝范围。例如：
+旧的显式幅值映射接口只保留用于 legacy 方法回归；它不得成为正式 active
+pipeline 的临时 ROM 覆盖。V2 正式重跑不映射、不裁剪 active reference：
 
 ```bash
-python -m lower_limb_sim.run_reference_retiming \
-  --approved-knee-min-deg 5 --approved-knee-max-deg 130
+python -m lower_limb_sim.run_reference_retiming
 ```
 
 也可以选择阶段 5A 已检测的其他完整周期，或只运行一个自定义时长方案：
@@ -1123,18 +1120,10 @@ PCHIP 保证角度路径连续且一阶导连续，但其分段二阶导在内�
 
 ### 显式膝 ROM 审批和 fail-closed 门控
 
-阶段 5C 的正式动力学、五参数辨识和候选筛选必须同时收到：
-
-```text
---approved-knee-min-deg
---approved-knee-max-deg
-```
-
-不提供这两个参数时，程序仍会保存 measured/closed 几何版本和闭合审计，
-但正式计算表保持为空。运行级审批可以显式覆盖 130° 的配置默认值，却只写
-入本次 metadata，不会修改 `config.py`。若参考路径超过审批范围，还必须
-额外提供 `--apply-smooth-rom-mapping`；映射是对整条曲线做一次仿射幅值
-变换，原始角度列永久保留，程序从不逐点 `clip`。
+阶段 5C 的正式动力学、五参数辨识和候选筛选直接读取
+`formal_experiment_manifest.json`。命令行不再接受 ROM 上下限，也不能形成
+第二套 active ROM。`None` 和旧幅值映射只存在于低层 legacy 回归测试；原始
+角度列永久保留，程序从不逐点 `clip`。
 
 默认仅审计命令：
 
@@ -1142,21 +1131,14 @@ PCHIP 保证角度路径连续且一阶导连续，但其分段二阶导在内�
 python -m lower_limb_sim.run_reference_candidate_evaluation
 ```
 
-只有在导师确实批准某个范围后，才把批准值明确写入命令。例如，若批准值
-确实为 5°～145°：
+正式 V2 候选审计命令为：
 
 ```bash
-python -m lower_limb_sim.run_reference_candidate_evaluation \
-  --approved-knee-min-deg 5 --approved-knee-max-deg 145
+python -m lower_limb_sim.run_reference_candidate_evaluation
 ```
 
-若批准值仍为 5°～130°，参考峰值超限，必须显式授权整条路径的平滑映射：
-
-```bash
-python -m lower_limb_sim.run_reference_candidate_evaluation \
-  --approved-knee-min-deg 5 --approved-knee-max-deg 130 \
-  --apply-smooth-rom-mapping
-```
+5°～130° 只允许作为明确标记的 legacy 回归或冲突输入，用于验证 loader
+fail closed；它不是正式 active 候选实验范围。
 
 ### 参考邻域辨识、适用域和候选边界
 
@@ -1186,11 +1168,11 @@ collection、control、安全配置或安全阈值。
 
 ### 本次正式ROM审批与C2闭合参考
 
-本次reference experiment已由用户显式批准髋 `0°～120°`、膝 `5°～145°`。
-该审批只写入本次Stage 5C产物，不修改全局配置中的膝 `5°～130°`。原参考
-最大膝屈曲约143.05°，因此正式重跑保留原幅度，`rom_mapping_applied=false`，
-不做逐点裁剪。正式slow/nominal、局部辨识和C0～C8结果位于
-`data/reference_candidates/`。
+正式 reference experiment 与全局 active pipeline 统一读取
+`ROM_PROTOCOL_V2`：髋 `0°～120°`、膝 `5°～145°`。现 active measured
+asymmetric reference 的膝范围约 `18.319°～124.787°`，完整保留原幅度，
+`rom_mapping_applied=false`，不做逐点裁剪。旧 symmetric Stage 5C 结果仍位于
+`data/reference_candidates/`，仅作 legacy provenance。
 
 原 `reference_closed_symmetric` 使用PCHIP，保留作来源审计，不被覆盖。新增
 `reference_closed_c2` 只对测得的flexion分支拟合五次B-spline，extension仍是

@@ -1,0 +1,19 @@
+{
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "angle_step_deg": 1.0,
+  "sample_count": 17061,
+  "reachable_sample_count": 11993,
+  "jacobian_mapping_valid_sample_count": 17061,
+  "knee_above_legacy_upper_bound_sample_count": 1815,
+  "legacy_workspace_overwritten": false,
+  "real_robot_safety_thresholds_modified": false
+}

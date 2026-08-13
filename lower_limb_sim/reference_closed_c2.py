@@ -21,6 +21,7 @@ import pandas as pd
 from scipy.interpolate import BSpline, PchipInterpolator, make_interp_spline
 
 from .config import L1, L2
+from .formal_protocol import FORMAL_HIP_ROM_DEG, FORMAL_KNEE_ROM_DEG
 from .kinematics import forward_kinematics
 from .reference_execution_trajectory import CLOSED_REFERENCE, retime_closed_reference
 from .reference_trajectory_retiming import MODEL_ANGLE_DEFINITION
@@ -29,8 +30,9 @@ from .trajectory_profiles import minimum_jerk_profile
 
 C2_REFERENCE = "reference_closed_c2"
 C2_MODEL_VERSION = "lower_limb_sim_reference_closed_c2_v2"
-APPROVED_HIP_ROM_DEG = (0.0, 120.0)
-APPROVED_KNEE_ROM_DEG = (5.0, 145.0)
+# Compatibility aliases: values come from the one formal protocol source.
+APPROVED_HIP_ROM_DEG = FORMAL_HIP_ROM_DEG
+APPROVED_KNEE_ROM_DEG = FORMAL_KNEE_ROM_DEG
 
 # These are shape-preservation acceptance gates, not robot safety thresholds.
 DEFAULT_MAX_HIP_DEVIATION_DEG = 0.5

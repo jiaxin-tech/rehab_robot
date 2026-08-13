@@ -2,13 +2,21 @@
 
 from pathlib import Path
 
+from .formal_protocol import (
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+    THETA_SHANK_DEFINITION,
+)
+
 # 人体下肢几何尺寸，单位为 m。
 L1 = 0.42
 L2 = 0.30
 
-# 关节角范围仅用于仰卧屈髋、屈膝姿态。内部计算统一使用 rad。
-hip_range_deg = (0.0, 120.0)
-knee_range_deg = (5.0, 130.0)
+# 正式论文与 active pipeline 的唯一关节 ROM。旧公开名字保留为兼容别名，
+# 但不再拥有独立数值；内部计算统一使用 rad。
+hip_range_deg = FORMAL_HIP_ROM_DEG
+knee_range_deg = FORMAL_KNEE_ROM_DEG
 
 # 工作空间图谱采样分辨率。
 angle_step_deg = 1.0
@@ -29,10 +37,11 @@ virtual_shank_length_m = 0.40
 query_max_distance_m = 0.02
 
 MODULE_DIR = Path(__file__).resolve().parent
-workspace_data_dir = MODULE_DIR / "data" / "workspace"
+formal_rom_data_dir = MODULE_DIR / "formal_artifacts" / "rom_protocol_v2"
+workspace_data_dir = formal_rom_data_dir / "workspace"
 workspace_csv_path = workspace_data_dir / "workspace_atlas.csv"
 workspace_npy_path = workspace_data_dir / "workspace_atlas.npy"
-force_map_data_dir = MODULE_DIR / "data" / "force_maps"
+force_map_data_dir = formal_rom_data_dir / "force_maps"
 dynamic_trajectory_data_dir = MODULE_DIR / "data" / "dynamic_trajectories"
 identification_data_dir = MODULE_DIR / "data" / "identification"
 

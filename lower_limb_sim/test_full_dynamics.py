@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from lower_limb_sim.config import L1, L2
+from lower_limb_sim.config import L1, L2, hip_range_deg, knee_range_deg
 from lower_limb_sim.dynamic_subject import get_dynamic_subject
 from lower_limb_sim.force_mapping import endpoint_force_from_joint_torque
 from lower_limb_sim.full_dynamics import (
@@ -36,8 +36,8 @@ def test_mass_matrix_is_symmetric() -> None:
 
 def test_mass_matrix_is_positive_definite() -> None:
     rng = np.random.default_rng(20260728)
-    q_hip = np.deg2rad(rng.uniform(0.0, 120.0, size=500))
-    q_knee = np.deg2rad(rng.uniform(5.0, 130.0, size=500))
+    q_hip = np.deg2rad(rng.uniform(*hip_range_deg, size=500))
+    q_knee = np.deg2rad(rng.uniform(*knee_range_deg, size=500))
     eigenvalues = np.linalg.eigvalsh(mass_matrix(q_hip, q_knee, SUBJECT, L1))
 
     assert np.isfinite(eigenvalues).all()
@@ -162,8 +162,8 @@ def test_shank_center_of_mass_uses_hip_minus_knee_angle() -> None:
 
 def test_kinetic_energy_is_non_negative() -> None:
     rng = np.random.default_rng(20260728)
-    q_hip = np.deg2rad(rng.uniform(0.0, 120.0, size=1000))
-    q_knee = np.deg2rad(rng.uniform(5.0, 130.0, size=1000))
+    q_hip = np.deg2rad(rng.uniform(*hip_range_deg, size=1000))
+    q_knee = np.deg2rad(rng.uniform(*knee_range_deg, size=1000))
     dq_hip = rng.normal(0.0, 1.0, size=1000)
     dq_knee = rng.normal(0.0, 1.0, size=1000)
     energy = kinetic_energy(

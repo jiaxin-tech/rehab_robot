@@ -8,9 +8,11 @@ The active paper experiment is supine passive hip-knee rehabilitation through an
 
 ```text
 theta_shank = q_hip - q_knee
+ROM protocol = ROM_PROTOCOL_V2
 hip ROM = 0–120 deg
 knee ROM = 5–145 deg
-first real trial = reference_measured_asymmetric_closed_slow only
+first-trial candidate = reference_measured_asymmetric_closed_slow only
+reference-freeze robot approval = false (NO-GO)
 ```
 
 `reference_measured_asymmetric_closed_nominal` remains offline and fail-closed because its frozen six-dimensional local-domain coverage is 66.334%, below the unchanged 90% threshold. `reference_closed_symmetric` and `reference_closed_c2` remain legacy software comparisons only. The completed Stage 1–6 mismatch, delay, geometry, and candidate studies remain evidence, but they are not extended by this refactor.
@@ -61,7 +63,7 @@ The relative builder:
 - writes row-level validity/reasons and an aggregate audit;
 - never marks offline output as robot-execution approved.
 
-The first-trial manifest pins the slow-reference byte SHA-256 to `f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881` and pins `L1=0.42 m`, `L2=0.30 m`. Build metadata records both the observed source hash and the geometry/physical definition; live execution blocks if either frozen value changes. Existing anchors bound to the old C2 slow ID cannot be relabeled and reused; the later supervised hardware phase must recapture and review a new anchor. The current `lower_limb_sim/data/` artifact is ignored and is not protected by the present Git tag.
+The tracked `reference_release/` bundle pins the slow-reference byte SHA-256 to `f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881` and pins `L1=0.42 m`, `L2=0.30 m`. Build metadata records both parent reference ID/SHA and the geometry/physical definition. The freeze explicitly sets `approved_for_first_robot_trial=false`; candidate whitelisting is not physical approval. Existing anchors bound to the old C2 slow ID cannot be relabeled and reused.
 
 ## 4. ROKAE interface split
 
@@ -217,4 +219,4 @@ Missing review/data or optimizer failure creates no fake parameter outputs.
 | RT Cartesian physical behavior/stability/stop latency | Needs supervised empty-load slow test |
 | Human trial readiness | Requires institutional/site safety process beyond this repository |
 
-Offline verification on 2026-08-11 completed with `640 passed, 5 skipped in 96.90 s`; `645` tests were collected. The five skips are platform/environment-gated native Windows integration tests. These results do not load the Windows `.pyd`, connect to a robot, validate a physical frame/wrench, or authorize motion.
+Final-reference-freeze verification on 2026-08-13 completed with `667 passed, 5 skipped in 100.64 s`. The five skips are platform/environment-gated native Windows integration tests. These results do not load the Windows `.pyd`, connect to a robot, validate a physical frame/wrench, or authorize motion.

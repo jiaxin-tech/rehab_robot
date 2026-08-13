@@ -22,6 +22,7 @@ import pandas as pd
 
 from .config import L1, L2
 from .kinematics import forward_kinematics
+from .formal_protocol import REFERENCE_RELEASE_MANIFEST_PATH
 from .reference_execution_trajectory import (
     CLOSED_REFERENCE,
     retime_closed_reference,
@@ -29,6 +30,10 @@ from .reference_execution_trajectory import (
 from .reference_closed_c2 import C2_REFERENCE
 from .reference_measured_asymmetric import (
     MEASURED_ASYMMETRIC_CLOSED_REFERENCE,
+)
+from .reference_release import (
+    RELEASE_ACTIVE_REFERENCE_PATH,
+    load_frozen_active_reference,
 )
 from .robot_coordinate_transform import (
     MODEL_ANGLE_DEFINITION,
@@ -51,12 +56,7 @@ STAGE5C_PCHIP_REFERENCE_PATH = (
     / "reference_candidates"
     / "reference_execution_versions.csv"
 )
-DEFAULT_REFERENCE_PATH = (
-    Path(__file__).resolve().parent
-    / "data"
-    / "reference_candidates"
-    / "reference_measured_asymmetric_closed_slow.csv"
-)
+DEFAULT_REFERENCE_PATH = RELEASE_ACTIVE_REFERENCE_PATH
 DEFAULT_OUTPUT_DIRECTORY = (
     Path(__file__).resolve().parent / "data" / "robot_trajectories"
 )
@@ -319,9 +319,16 @@ def load_closed_reference_trajectory(
     """
 
     path = Path(input_reference).expanduser().resolve()
+    frozen_bundle = None
+    if path == DEFAULT_REFERENCE_PATH.resolve():
+        frozen_bundle = load_frozen_active_reference(path)
     if not path.is_file():
         raise FileNotFoundError(f"closed reference file does not exist: {path}")
-    reference = pd.read_csv(path)
+    reference = (
+        frozen_bundle.trajectory.copy(deep=True)
+        if frozen_bundle is not None
+        else pd.read_csv(path)
+    )
     reference_version_tag_present = "reference_version" in reference
     selected_reference_version: str | None = None
     if reference_version_tag_present:
@@ -470,6 +477,25 @@ def load_closed_reference_trajectory(
         "duration_s": float(time_s[-1] - time_s[0]),
         "source_formal_execution_allowed_all": source_formal_all,
     }
+    if frozen_bundle is not None:
+        source_metadata.update(
+            {
+                "parent_reference_id": frozen_bundle.manifest["reference_id"],
+                "parent_reference_sha256": frozen_bundle.manifest["sha256"],
+                "reference_release_version": frozen_bundle.manifest[
+                    "reference_version"
+                ],
+                "reference_release_manifest": str(
+                    REFERENCE_RELEASE_MANIFEST_PATH.resolve()
+                ),
+                "approved_for_first_robot_trial": frozen_bundle.manifest[
+                    "approved_for_first_robot_trial"
+                ],
+                "robot_execution_status": frozen_bundle.manifest[
+                    "robot_execution_status"
+                ],
+            }
+        )
     return reference, source_metadata
 
 

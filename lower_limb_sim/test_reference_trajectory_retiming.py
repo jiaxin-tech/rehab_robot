@@ -331,37 +331,33 @@ def test_subtractive_shank_angle_and_existing_forward_kinematics_are_preserved(
                 trajectory[column], values, atol=1e-13, rtol=0.0
             )
     assert tuple(float(value) for value in hip_range_deg) == (0.0, 120.0)
-    assert tuple(float(value) for value in knee_range_deg) == (5.0, 130.0)
+    assert tuple(float(value) for value in knee_range_deg) == (5.0, 145.0)
 
 
-def test_default_143_degree_knee_path_blocks_all_dynamics_without_deletion(
+def test_default_143_degree_knee_path_is_valid_under_formal_v2_rom(
     default_result,
 ) -> None:
     audit = default_result.rom_audit
     assert 142.0 < audit.original_angle_range_deg["knee"][1] < 144.0
-    assert audit.trajectory_requires_rom_confirmation
-    assert not audit.dynamics_allowed
+    assert not audit.trajectory_requires_rom_confirmation
+    assert audit.dynamics_allowed
     assert not audit.rom_mapping_applied
-    assert audit.confirmation_reasons == (
-        "knee_outside_configured_rom_without_explicit_approval",
-    )
-    assert default_result.dynamics_by_profile_subject == {}
-    assert not default_result.metadata["dynamics_evaluated"]
-    assert not default_result.metadata["dynamics_allowed"]
-    assert not default_result.subject_comparison["dynamics_evaluated"].any()
-    assert default_result.subject_comparison["dynamics_block_reason"].str.contains(
-        "knee_outside_configured_rom"
-    ).all()
+    assert audit.confirmation_reasons == ()
+    assert default_result.dynamics_by_profile_subject
+    assert default_result.metadata["dynamics_evaluated"]
+    assert default_result.metadata["dynamics_allowed"]
+    assert default_result.subject_comparison["dynamics_evaluated"].all()
     for trajectory in default_result.retimed_by_profile.values():
         assert np.rad2deg(trajectory["q_knee_rad"].max()) > 142.0
-        assert (~trajectory["joint_limit_valid"]).any()
-        assert not trajectory["dynamics_allowed"].any()
+        assert trajectory["joint_limit_valid"].all()
+        assert trajectory["dynamics_allowed"].all()
 
 
 def test_explicit_rom_mapping_is_affine_not_clipping_and_preserves_originals(
     raw_phase_path: pd.DataFrame,
 ) -> None:
     original = raw_phase_path.copy(deep=True)
+    # Historical 5--130 mapping regression only; the active protocol is V2.
     mapped, audit = apply_approved_rom_mapping(
         raw_phase_path,
         approved_rom=ApprovedRom(knee_deg=(5.0, 130.0)),

@@ -34,6 +34,11 @@ from .geometry_error_metrics import (
     classify_state_domain,
 )
 from .kinematics import forward_kinematics
+from .formal_protocol import (
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+)
 from .parameter_estimator import (
     baseline_template_from_dynamic_subject,
     candidate_subject_from_parameters,
@@ -543,7 +548,8 @@ def _build_metadata(
         "retimed_timing_is_original": False,
         "model_angle_definition": MODEL_ANGLE_DEFINITION,
         "configured_hip_range_deg": list(map(float, hip_range_deg)),
-        "configured_knee_range_deg_unchanged": list(map(float, knee_range_deg)),
+        "configured_knee_range_deg": list(map(float, knee_range_deg)),
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
         "rom_audit": rom_audit.as_dict(),
         "approved_hip_rom_deg": list(rom_audit.approved_hip_range_deg),
         "approved_knee_rom_deg": (
@@ -679,15 +685,31 @@ def run_reference_candidate_evaluation(
     processed_directory: str | Path = reference_trajectory_data_dir,
     output_directory: str | Path = DEFAULT_OUTPUT_DIRECTORY,
     cycle_index: int | None = None,
-    approved_hip_range_deg: tuple[float, float] | None = None,
-    approved_knee_range_deg: tuple[float, float] | None = None,
+    approved_hip_range_deg: tuple[float, float] | None = FORMAL_HIP_ROM_DEG,
+    approved_knee_range_deg: tuple[float, float] | None = FORMAL_KNEE_ROM_DEG,
     rom_approval_source: str | None = None,
     apply_smooth_rom_mapping: bool = False,
     samples_per_segment: int = 201,
     save_outputs: bool = True,
     generate_plots: bool = True,
 ) -> Stage5CResult:
-    """Run Stage 5C, or save a geometry-only audit when approval is absent."""
+    """Run legacy Stage 5C under the one formal ROM protocol.
+
+    ``None`` remains available only for explicit legacy audit tests.  Every
+    non-null runner approval must exactly match the manifest; command-line
+    values cannot create a second active ROM or authorize amplitude mapping.
+    """
+
+    if approved_hip_range_deg is not None and tuple(
+        map(float, approved_hip_range_deg)
+    ) != FORMAL_HIP_ROM_DEG:
+        raise ValueError("Stage 5C hip ROM must exactly match ROM_PROTOCOL_V2")
+    if approved_knee_range_deg is not None and tuple(
+        map(float, approved_knee_range_deg)
+    ) != FORMAL_KNEE_ROM_DEG:
+        raise ValueError("Stage 5C knee ROM must exactly match ROM_PROTOCOL_V2")
+    if apply_smooth_rom_mapping:
+        raise ValueError("formal Stage 5C forbids ROM amplitude mapping")
 
     source_cycle, source_metadata = load_processed_reference_cycle(
         processed_directory, cycle_index=cycle_index
@@ -789,6 +811,12 @@ def run_reference_candidate_evaluation(
         local_result=local_result,
         candidate_result=candidate_result,
         rom_approval_source=rom_approval_source,
+    )
+    metadata["parent_reference_id"] = None
+    metadata["parent_reference_sha256"] = None
+    metadata["final_result_eligible"] = False
+    metadata["final_result_ineligible_reason"] = (
+        "legacy_symmetric_candidate_pipeline_not_bound_to_frozen_active_reference"
     )
     metadata["selected_source_cycle_angle_ranges_deg"] = {
         "q_hip": [
@@ -904,16 +932,11 @@ def build_argument_parser() -> argparse.ArgumentParser:
         "--output-directory", type=Path, default=DEFAULT_OUTPUT_DIRECTORY
     )
     parser.add_argument("--cycle-index", type=int)
-    parser.add_argument("--approved-hip-min-deg", type=float)
-    parser.add_argument("--approved-hip-max-deg", type=float)
-    parser.add_argument("--approved-knee-min-deg", type=float)
-    parser.add_argument("--approved-knee-max-deg", type=float)
     parser.add_argument(
         "--rom-approval-source",
         type=str,
         help="Human-readable provenance for the run-local ROM approval.",
     )
-    parser.add_argument("--apply-smooth-rom-mapping", action="store_true")
     parser.add_argument("--samples-per-segment", type=int, default=201)
     parser.add_argument("--no-plots", action="store_true")
     return parser
@@ -922,12 +945,8 @@ def build_argument_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_argument_parser()
     args = parser.parse_args(argv)
-    approved_hip = _approved_pair(
-        parser, args.approved_hip_min_deg, args.approved_hip_max_deg, "hip"
-    )
-    approved_knee = _approved_pair(
-        parser, args.approved_knee_min_deg, args.approved_knee_max_deg, "knee"
-    )
+    approved_hip = FORMAL_HIP_ROM_DEG
+    approved_knee = FORMAL_KNEE_ROM_DEG
     result = run_reference_candidate_evaluation(
         processed_directory=args.processed_directory,
         output_directory=args.output_directory,
@@ -935,20 +954,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         approved_hip_range_deg=approved_hip,
         approved_knee_range_deg=approved_knee,
         rom_approval_source=(
-            args.rom_approval_source
-            or (
-                "explicit_command_line_arguments"
-                if approved_hip is not None and approved_knee is not None
-                else None
-            )
+            args.rom_approval_source or "formal_experiment_manifest"
         ),
-        apply_smooth_rom_mapping=args.apply_smooth_rom_mapping,
+        apply_smooth_rom_mapping=False,
         samples_per_segment=args.samples_per_segment,
         generate_plots=not args.no_plots,
     )
     print("Stage 5C completed (software-only).")
     print(f"Output directory: {Path(args.output_directory).resolve()}")
-    print(f"Configured knee ROM remains unchanged: {knee_range_deg} deg")
+    print(f"Formal configured knee ROM: {knee_range_deg} deg")
     print(f"Approved hip ROM: {result.rom_audit.approved_hip_range_deg}")
     print(f"Approved knee ROM: {result.rom_audit.approved_knee_range_deg}")
     print(f"ROM mapping applied: {result.rom_audit.rom_mapping_applied}")

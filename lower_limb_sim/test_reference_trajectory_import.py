@@ -267,7 +267,7 @@ def test_knee_angle_is_nonnegative_and_opposite_projection_branch_is_audited() -
 
 def test_out_of_range_angles_are_flagged_without_clipping() -> None:
     q_hip = np.deg2rad(np.array([30.0, 80.0, 130.0]))
-    q_knee = np.deg2rad(np.array([40.0, 100.0, 145.0]))
+    q_knee = np.deg2rad(np.array([40.0, 100.0, 146.0]))
     result = import_reference_trajectory_dataframe(
         _synthetic_bilateral_markers(q_hip, q_knee),
         coordinate_unit="m",
@@ -276,7 +276,7 @@ def test_out_of_range_angles_are_flagged_without_clipping() -> None:
     output = result.trajectory
 
     assert output.loc[2, "q_hip_deg"] == pytest.approx(130.0)
-    assert output.loc[2, "q_knee_deg"] == pytest.approx(145.0)
+    assert output.loc[2, "q_knee_deg"] == pytest.approx(146.0)
     assert not output.loc[2, "joint_range_valid"]
     assert "q_hip_out_of_range" in output.loc[2, "joint_range_reason"]
     assert "q_knee_out_of_range" in output.loc[2, "joint_range_reason"]

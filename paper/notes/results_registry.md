@@ -10,13 +10,13 @@ the repository root. Quantities reported below were audited on 2026-08-11.
 - **Stage / Module:** Workspace and kinematics
 - **Scientific question:** What sagittal traction-point region satisfies the implemented ROM and above-bed geometry checks?
 - **Experiment type:** software validation
-- **Claim supported:** The implemented two-link geometry produces a finite, filterable workspace atlas for the configured legacy ROM.
-- **Numerical evidence:** 15,246 sampled configurations; 10,866 retained as reachable.
-- **Primary source file:** `lower_limb_sim/data/workspace/workspace_atlas.csv`
+- **Claim supported:** The implemented two-link geometry produces a finite, filterable workspace atlas under formal `ROM_PROTOCOL_V2`.
+- **Numerical evidence:** 17,061 sampled configurations; 11,993 retained as reachable. The newly admitted knee-above-130-deg region contains 1,815 samples, including 1,127 geometrically reachable samples; all 1,815 pass the existing Jacobian numerical gate.
+- **Primary source file:** `lower_limb_sim/formal_artifacts/rom_protocol_v2/workspace/workspace_atlas.csv`
 - **Generating script:** `lower_limb_sim/workspace_atlas.py`
 - **Input dataset:** None; deterministic grid from `lower_limb_sim/config.py`.
-- **Figure/table source:** `lower_limb_sim/data/workspace/workspace_hip_angle.png`, `workspace_knee_angle.png`, and `sample_postures.png`.
-- **Allowed interpretation:** Software evidence for the geometry and workspace filters under the configured 5--130 deg legacy knee ROM.
+- **Figure/table source:** `lower_limb_sim/formal_artifacts/rom_protocol_v2/workspace/workspace_hip_angle.png`, `workspace_knee_angle.png`, and `sample_postures.png`.
+- **Allowed interpretation:** Software evidence for geometry, workspace and Jacobian filters under hip 0--120 deg and knee 5--145 deg.
 - **Interpretation NOT supported:** Clinical ROM, collision avoidance, robot reachability, or participant safety.
 - **Candidate manuscript section:** VI-B; Fig. 3.
 - **Status:** FORMAL
@@ -28,10 +28,10 @@ the repository root. Quantities reported below were audited on 2026-08-11.
 - **Experiment type:** simulation
 - **Claim supported:** The quasi-static model and Jacobian pseudoinverse produce subject-dependent software force maps and explicitly reject anomalous mappings.
 - **Numerical evidence:** Four subject maps over the workspace; the hip-stiff map reaches 998.08 N among valid samples and has 14 samples rejected above the 1000-N software anomaly threshold.
-- **Primary source file:** `lower_limb_sim/data/force_maps/virtual_subject_comparison.csv`
+- **Primary source file:** `lower_limb_sim/formal_artifacts/rom_protocol_v2/force_maps/virtual_subject_comparison.csv`
 - **Generating script:** `lower_limb_sim/build_force_map.py`
-- **Input dataset:** `lower_limb_sim/data/workspace/workspace_atlas.csv` and virtual-subject definitions.
-- **Figure/table source:** `lower_limb_sim/data/force_maps/virtual_subject_comparison.png` and per-subject force-map CSV files.
+- **Input dataset:** Formal V2 workspace atlas and virtual-subject definitions.
+- **Figure/table source:** `lower_limb_sim/formal_artifacts/rom_protocol_v2/force_maps/virtual_subject_comparison.png` and per-subject force-map CSV files.
 - **Allowed interpretation:** Numerical behavior of the quasi-static model and its software validity gates.
 - **Interpretation NOT supported:** A physical interaction-load limit, safe contact force, or measured human/robot force.
 - **Candidate manuscript section:** VI-B; supplementary model audit.
@@ -156,9 +156,9 @@ the repository root. Quantities reported below were audited on 2026-08-11.
 - **Experiment type:** software validation
 - **Claim supported:** The active slow reference is a 24-s, 401-sample, asymmetric, periodic $C^2$ software trajectory with complete frozen-domain coverage.
 - **Numerical evidence:** Selected raw cycle: 91 rows and 4.507-mm natural closure error. Periodic correction maxima: 0.2462 deg hip, 0.1891 deg knee, and 2.2558 mm traction point. Asymmetry-retention ratios exceed 0.99998. Slow profile: 13.6-s flexion plus 10.4-s extension and 100% domain coverage. The 12-s nominal profile has only 66.334% coverage and is fail-closed.
-- **Primary source file:** `lower_limb_sim/data/reference_candidates/reference_measured_asymmetric_metadata.json`
+- **Primary source file:** `reference_release/reference_release_manifest.json`; frozen CSV SHA-256 `f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881`.
 - **Generating script:** `lower_limb_sim/run_reference_measured_asymmetric.py`
-- **Input dataset:** `lower_limb_sim/data/reference_candidates/reference_measured_raw.csv`
+- **Input dataset:** Natural cycle `5844 -> 5895 -> 5934`; source skeleton SHA and reconstruction paths are frozen in `reference_release/source_reference_information.json`.
 - **Figure/table source:** `measured_flexion_vs_extension.png`, `raw_vs_periodic_closed.png`, `asymmetry_preservation.png`, and `new_reference_pull_path.png`.
 - **Allowed interpretation:** A frozen software reference satisfying the implemented continuity/correction/domain gates.
 - **Interpretation NOT supported:** Robot executability, participant-specific rehabilitation prescription, or clinical validity.

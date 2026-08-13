@@ -28,6 +28,13 @@ from .geometry_error_metrics import (
     classify_state_domain,
 )
 from .kinematics import forward_kinematics
+from .formal_protocol import (
+    ACTIVE_REFERENCE_SHA256,
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+    THETA_SHANK_DEFINITION,
+)
 from .reference_cycle_closure import (
     ReferenceCycleClosureAuditResult,
     audit_reference_cycle_closure,
@@ -305,6 +312,10 @@ def _manifest(
             "active_reference": False,
             "allowed_for_first_robot_trial": False,
             "legacy_software_comparison": False,
+            "active": False,
+            "legacy": False,
+            "not_used_for_final_personalization": True,
+            "not_used_for_robot_execution": True,
             "path": str(paths.get("measured_raw", "")),
         },
         {
@@ -314,6 +325,10 @@ def _manifest(
             "active_reference": False,
             "allowed_for_first_robot_trial": False,
             "legacy_software_comparison": False,
+            "active": False,
+            "legacy": False,
+            "not_used_for_final_personalization": True,
+            "not_used_for_robot_execution": True,
             "path": str(paths.get("periodic_phase", "")),
         },
     ]
@@ -327,10 +342,12 @@ def _manifest(
                 "active_reference": bool(
                     trajectory["active_reference"].astype(bool).all()
                 ),
-                "allowed_for_first_robot_trial": bool(
-                    trajectory["allowed_for_first_robot_trial"].astype(bool).all()
-                ),
+                "allowed_for_first_robot_trial": False,
                 "legacy_software_comparison": False,
+                "active": profile == "slow",
+                "legacy": False,
+                "not_used_for_final_personalization": profile != "slow",
+                "not_used_for_robot_execution": True,
                 "path": str(paths.get(profile, "")),
             }
         )
@@ -343,6 +360,10 @@ def _manifest(
                 "active_reference": False,
                 "allowed_for_first_robot_trial": False,
                 "legacy_software_comparison": True,
+                "active": False,
+                "legacy": True,
+                "not_used_for_final_personalization": True,
+                "not_used_for_robot_execution": True,
                 "path": "reference_execution_versions.csv",
             },
             {
@@ -352,6 +373,10 @@ def _manifest(
                 "active_reference": False,
                 "allowed_for_first_robot_trial": False,
                 "legacy_software_comparison": True,
+                "active": False,
+                "legacy": True,
+                "not_used_for_final_personalization": True,
+                "not_used_for_robot_execution": True,
                 "path": "reference_closed_c2_slow.csv",
             },
             {
@@ -361,6 +386,10 @@ def _manifest(
                 "active_reference": False,
                 "allowed_for_first_robot_trial": False,
                 "legacy_software_comparison": True,
+                "active": False,
+                "legacy": True,
+                "not_used_for_final_personalization": True,
+                "not_used_for_robot_execution": True,
                 "path": "reference_closed_c2_nominal.csv",
             },
         )
@@ -558,11 +587,15 @@ def run_reference_measured_asymmetric(
         "active_reference_trajectory": MEASURED_ASYMMETRIC_SLOW_ID,
         "active_reference_path": str(active_path) if active_path else None,
         "active_reference_sha256": _sha256(active_path) if active_path else None,
+        "parent_reference_id": MEASURED_ASYMMETRIC_SLOW_ID,
+        "parent_reference_sha256": _sha256(active_path) if active_path else None,
         "legacy_reference_closed_symmetric_active_reference": False,
         "legacy_reference_closed_c2_active_reference": False,
         "model_angle_definition": "theta_shank = q_hip - q_knee",
-        "approved_hip_rom_deg": [0.0, 120.0],
-        "approved_knee_rom_deg": [5.0, 145.0],
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
+        "approved_hip_rom_deg": list(FORMAL_HIP_ROM_DEG),
+        "approved_knee_rom_deg": list(FORMAL_KNEE_ROM_DEG),
+        "theta_shank_definition": THETA_SHANK_DEFINITION,
         "L1_m": float(model.phase_path["L1_m"].iloc[0]),
         "L2_m": float(model.phase_path["L2_m"].iloc[0]),
         "L2_definition": "knee_to_strap_equivalent_pull_point",
@@ -576,6 +609,10 @@ def run_reference_measured_asymmetric(
         "safety_thresholds_modified": False,
     }
     if save_outputs:
+        if metadata["active_reference_sha256"] != ACTIVE_REFERENCE_SHA256:
+            raise RuntimeError(
+                "generated active reference differs from the formally pinned SHA-256"
+            )
         metadata["generated_file_sha256"] = {
             key: _sha256(path) for key, path in output_paths.items()
         }

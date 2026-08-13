@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
+from pathlib import Path
 
 import pytest
 
@@ -22,6 +23,14 @@ from safety.experiment_safety import ExperimentSafetyConfig
 from scripts.run_rehab_experiment import run_execute
 
 
+SOURCE_CANDIDATE_DIRECTORY = (
+    Path(__file__).resolve().parents[1]
+    / "lower_limb_sim"
+    / "data"
+    / "reference_candidates"
+)
+
+
 def _reviewed_files(
     tmp_path, *, trajectory_id=FIRST_ROBOT_TRIAL_TRAJECTORY_ID
 ):
@@ -29,9 +38,8 @@ def _reviewed_files(
     reference = (
         DEFAULT_REFERENCE_PATH
         if trajectory_id.endswith("slow")
-        else DEFAULT_REFERENCE_PATH.with_name(
-            "reference_measured_asymmetric_closed_nominal.csv"
-        )
+        else SOURCE_CANDIDATE_DIRECTORY
+        / "reference_measured_asymmetric_closed_nominal.csv"
     )
     trajectory, audit, _ = build_start_anchored_relative_trajectory(
         reference,
@@ -165,6 +173,9 @@ def test_real_default_factory_requires_explicit_local_interface_before_connectio
     tmp_path,
 ):
     monkeypatch.setattr(settings, "ROBOT_LOCAL_IP", "")
-    with pytest.raises(PermissionError, match="local xCoreSDK interface IP"):
+    with pytest.raises(
+        PermissionError,
+        match="reference_release_not_approved_for_first_robot_trial",
+    ):
         _call(tmp_path, None)
     assert not (tmp_path / "episode").exists()

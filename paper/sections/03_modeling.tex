@@ -34,12 +34,10 @@ Let $L_1$ be the thigh length and let $L_2$ be the distance from the knee to the
 strap equivalent traction point.  The latter is a task-specific kinematic
 length and is not assumed to be the anatomical knee--ankle distance or the
 shank center-of-mass distance.  The current software geometry uses
-$L_1=\SI{0.42}{m}$ and $L_2=\SI{0.30}{m}$.  Hip flexion is constrained to be no
-greater than $120^{\circ}$.  The repository currently uses different knee-ROM
-upper limits in the legacy workspace/identification pipeline and the active
-reference audit; therefore, the applicable knee interval is retained as an
-explicit experiment configuration rather than asserted as a universal model
-constant.
+$L_1=\SI{0.42}{m}$ and $L_2=\SI{0.30}{m}$.  The formal experiment protocol
+ROM\_PROTOCOL\_V2 constrains hip flexion to $0$--$120^{\circ}$ and knee flexion
+to $5$--$145^{\circ}$.  Earlier $5$--$130^{\circ}$ outputs are retained only as
+historical development evidence and are not inputs to the active pipeline.
 
 \subsection{Two-Link Lower-Limb Kinematics}
 \label{subsec:kinematics}
@@ -212,6 +210,12 @@ $\vect{q}_{\mathrm{ref}}(s)=\vect{q}_{\mathrm{ref}}(1-s)$ is imposed.  The
 currently active software reference retains distinct measured flexion and
 extension branches and applies a small periodic cubic B-spline correction to
 obtain $C^2$ closure.
+
+A naturally repeating cycle was selected from the measured sequence using
+joint-state and endpoint-closure criteria.  Both measured flexion and measured
+extension branches were preserved.  Only a small periodic smoothing
+correction was introduced to obtain a repeatable $C^2$ trajectory.  The frozen
+slow timing assigns \SI{13.6}{s} to flexion and \SI{10.4}{s} to extension.
 
 % Trace: III-E-P2
 A reference-local candidate can be represented abstractly as

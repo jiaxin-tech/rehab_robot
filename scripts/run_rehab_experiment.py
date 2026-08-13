@@ -29,9 +29,10 @@ from control.start_anchored_relative_trajectory import (
     build_start_anchored_relative_trajectory,
     load_rehab_frame_config,
 )
-from lower_limb_sim.reference_closed_c2 import (
-    APPROVED_HIP_ROM_DEG,
-    APPROVED_KNEE_ROM_DEG,
+from lower_limb_sim.formal_protocol import (
+    FORMAL_HIP_ROM_DEG as APPROVED_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG as APPROVED_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
 )
 from lower_limb_sim.reference_measured_asymmetric import (
     MEASURED_ASYMMETRIC_CLOSED_REFERENCE,
@@ -52,11 +53,16 @@ DEFAULT_SAFETY_CONFIG = Path(__file__).resolve().parents[1] / "config" / "experi
 
 
 def _reference_path(trajectory_id: str) -> Path:
+    source_candidate_directory = (
+        Path(__file__).resolve().parents[1]
+        / "lower_limb_sim"
+        / "data"
+        / "reference_candidates"
+    )
     paths = {
         FIRST_ROBOT_TRIAL_TRAJECTORY_ID: DEFAULT_REFERENCE_PATH,
-        MEASURED_ASYMMETRIC_NOMINAL_ID: DEFAULT_REFERENCE_PATH.with_name(
-            "reference_measured_asymmetric_closed_nominal.csv"
-        ),
+        MEASURED_ASYMMETRIC_NOMINAL_ID: source_candidate_directory
+        / "reference_measured_asymmetric_closed_nominal.csv",
     }
     try:
         return paths[trajectory_id]
@@ -134,10 +140,17 @@ def run_execute(
             "robot_local_ip": resolved_local_ip or None,
             "sdk_version_if_available": None,
             "trajectory_id": audit.trajectory_id,
+            "parent_reference_id": trajectory_metadata.get(
+                "parent_reference_id"
+            ),
+            "parent_reference_sha256": trajectory_metadata.get(
+                "parent_reference_sha256"
+            ),
             "reference_version": MEASURED_ASYMMETRIC_CLOSED_REFERENCE,
             "reference_path": str(reference_path.resolve()),
             "approved_hip_rom": list(APPROVED_HIP_ROM_DEG),
             "approved_knee_rom": list(APPROVED_KNEE_ROM_DEG),
+            "rom_protocol_version": ROM_PROTOCOL_VERSION,
             "rehab_frame": frame.as_metadata(),
             "rehab_frame_config_path": str(Path(frame_config_path).resolve()),
             "start_anchor": anchor.to_dict(),

@@ -22,9 +22,9 @@ from control.start_anchored_relative_trajectory import (
     RehabFrameConfig,
     RelativeTrajectoryAudit,
 )
-from lower_limb_sim.reference_closed_c2 import (
-    APPROVED_HIP_ROM_DEG,
-    APPROVED_KNEE_ROM_DEG,
+from lower_limb_sim.formal_protocol import (
+    FORMAL_HIP_ROM_DEG as APPROVED_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG as APPROVED_KNEE_ROM_DEG,
 )
 from lower_limb_sim.config import L1, L2
 from lower_limb_sim.kinematics import forward_kinematics
@@ -32,6 +32,7 @@ from lower_limb_sim.run_robot_trajectory_export import (
     DEFAULT_REFERENCE_PATH,
     load_closed_reference_trajectory,
 )
+from lower_limb_sim.reference_release import load_reference_release_manifest
 from safety.experiment_safety import ExperimentSafetyConfig
 
 
@@ -525,6 +526,11 @@ def evaluate_execution_preflight(
     block(not frame.reviewed, "rehab_frame_not_reviewed")
     block(not anchor.reviewed, "start_anchor_not_reviewed")
     block(requested_anchor_id != anchor.anchor_id, "requested_anchor_id_mismatch")
+    block(
+        load_reference_release_manifest()["approved_for_first_robot_trial"]
+        is not True,
+        "reference_release_not_approved_for_first_robot_trial",
+    )
     for reason in safety.execution_block_reasons():
         block(True, reason)
     adapter_connected = _connected(robot_adapter)

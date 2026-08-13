@@ -1,0 +1,18 @@
+{
+  "source_bone_csv": "../bone_return_3_leg.csv",
+  "source_bone_csv_sha256": "38ef1f454d6e404ab83fa94d69aaa1d20aa9857361331a5f4af41ffe44ccd890",
+  "source_bone_csv_size_bytes": 209094,
+  "stage5a_full_angles": "../lower_limb_sim/data/reference_trajectories/processed/reference_full_angles.csv",
+  "stage5a_full_angles_sha256": "3fb26480b4d1f2fba46e424eee596f8b0e145ec0be05e479eebff4b9207eb025",
+  "stage5a_detected_cycles": "../lower_limb_sim/data/reference_trajectories/processed/detected_cycles.csv",
+  "stage5a_detected_cycles_sha256": "5a9f3768d373eaa45f75be9d721afdbb5cb211d06a66bcd767dc36ebd9ce19a0",
+  "stage5a_metadata": "../lower_limb_sim/data/reference_trajectories/processed/metadata.json",
+  "stage5a_metadata_sha256": "b3c4d042230e9b6d6a07bdfaffcb9a0a477c819053adf2bb2b467c4629270a8e",
+  "selected_cycle_frames": [5844, 5895, 5934],
+  "selection_method": "approved-ROM normalized full-joint PCA phase and endpoint closure audit",
+  "measured_branches_preserved": ["flexion", "extension"],
+  "source_fps": null,
+  "source_fps_limitation": "source frame rate was not provided; slow timing is prescribed, not measured skeleton timing",
+  "reconstruction_entrypoint": "python3 -B -m lower_limb_sim.run_reference_measured_asymmetric",
+  "reconstruction_is_not_part_of_freeze": true
+}

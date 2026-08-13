@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -18,6 +19,13 @@ from .config import (
     workspace_data_dir,
 )
 from .kinematics import forward_kinematics
+from .jacobian import jacobian_diagnostics
+from .formal_protocol import (
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+    THETA_SHANK_DEFINITION,
+)
 
 
 def _inclusive_angle_values(
@@ -63,11 +71,16 @@ def build_workspace_atlas(step_deg: float = angle_step_deg) -> pd.DataFrame:
     )
     reachable = finite & (x_pull >= 0.0) & (z_pull >= 0.0)
     near_singular = np.abs(np.sin(q_knee_rad)) < singularity_threshold
+    jacobian = jacobian_diagnostics(q_hip_rad, q_knee_rad, L1, L2)
+    jacobian_near_singular = np.asarray(jacobian.near_singular, dtype=bool)
 
     return pd.DataFrame(
         {
+            "rom_protocol_version": ROM_PROTOCOL_VERSION,
+            "theta_shank_definition": THETA_SHANK_DEFINITION,
             "q_hip_rad": q_hip_rad.ravel(),
             "q_knee_rad": q_knee_rad.ravel(),
+            "theta_shank_rad": (q_hip_rad - q_knee_rad).ravel(),
             "q_hip_deg": q_hip_deg.ravel(),
             "q_knee_deg": q_knee_deg.ravel(),
             "x_knee": x_knee.ravel(),
@@ -76,6 +89,12 @@ def build_workspace_atlas(step_deg: float = angle_step_deg) -> pd.DataFrame:
             "z_pull": z_pull.ravel(),
             "reachable": reachable.ravel(),
             "near_singular": near_singular.ravel(),
+            "jacobian_determinant": np.asarray(jacobian.determinant).ravel(),
+            "jacobian_condition_number": np.asarray(
+                jacobian.condition_number
+            ).ravel(),
+            "jacobian_near_singular": jacobian_near_singular.ravel(),
+            "jacobian_mapping_valid": (~jacobian_near_singular).ravel(),
         }
     )
 
@@ -91,7 +110,44 @@ def save_workspace_atlas(
     csv_path = output_path / "workspace_atlas.csv"
     npy_path = output_path / "workspace_atlas.npy"
     atlas.to_csv(csv_path, index=False)
-    np.save(npy_path, atlas.to_records(index=False), allow_pickle=False)
+    arrays: list[np.ndarray] = []
+    names: list[str] = []
+    for column in atlas.columns:
+        values = atlas[column].to_numpy()
+        if values.dtype == object:
+            strings = atlas[column].astype(str).to_numpy()
+            maximum_length = max(1, max(map(len, strings)))
+            values = strings.astype(f"<U{maximum_length}")
+        arrays.append(values)
+        names.append(str(column))
+    np.save(
+        npy_path,
+        np.rec.fromarrays(arrays, names=names),
+        allow_pickle=False,
+    )
+    metadata = {
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
+        "hip_rom_deg": list(FORMAL_HIP_ROM_DEG),
+        "knee_rom_deg": list(FORMAL_KNEE_ROM_DEG),
+        "theta_shank_definition": THETA_SHANK_DEFINITION,
+        "angle_step_deg": float(
+            np.min(np.diff(np.sort(atlas["q_hip_deg"].unique())))
+        ),
+        "sample_count": int(len(atlas)),
+        "reachable_sample_count": int(atlas["reachable"].astype(bool).sum()),
+        "jacobian_mapping_valid_sample_count": int(
+            atlas["jacobian_mapping_valid"].astype(bool).sum()
+        ),
+        "knee_above_legacy_upper_bound_sample_count": int(
+            atlas["q_knee_deg"].gt(FORMAL_KNEE_ROM_DEG[1] - 15.0).sum()
+        ),
+        "legacy_workspace_overwritten": False,
+        "real_robot_safety_thresholds_modified": False,
+    }
+    (output_path / "workspace_metadata.json").write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
     return csv_path, npy_path
 
 
