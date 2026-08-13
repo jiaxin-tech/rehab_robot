@@ -1,0 +1,169 @@
+{
+  "created_utc": "2026-08-13T14:27:03.013983+00:00",
+  "mode": "concurrent",
+  "strict_read_only": true,
+  "requested_duration_s": 180.0,
+  "robot_ip": "192.168.50.103",
+  "local_ip": "192.168.50.209",
+  "architecture": {
+    "rt_process_single_thread": true,
+    "rt_ipc_transport": "fixed_shared_memory_latest_snapshot",
+    "timestamp_source": "host_monotonic_immediately_after_getStateData_no_controller_timestamp",
+    "controller_timestamp_used": false,
+    "sdk_objects_shared_across_processes": false
+  },
+  "rt_worker_metadata": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic",
+    "rt_process_single_thread": true,
+    "rt_ipc_transport": "fixed_shared_memory_latest_snapshot",
+    "timestamp_source": "host_monotonic_immediately_after_getStateData_no_controller_timestamp",
+    "state_interval_ms": 8,
+    "publish_count": 22691,
+    "publish_success_count": 22691,
+    "publish_drop_count": 0,
+    "source_period_ms": {
+      "count": 22690,
+      "mean": 7.979312600264434,
+      "p95": 8.1809,
+      "p99": 8.289399000000001,
+      "max": 61.2904
+    },
+    "publish_interval_ms": {
+      "count": 22690,
+      "mean": 7.9793124724548266,
+      "p95": 8.1822,
+      "p99": 8.292111,
+      "max": 61.2973
+    },
+    "source_period_gt_10ms_count": 11,
+    "source_period_gt_20ms_count": 9,
+    "source_period_gt_30ms_count": 7,
+    "source_period_gt_50ms_count": 7,
+    "source_period_gt_100ms_count": 0,
+    "update_timeout_count": 20
+  },
+  "rt_summary": {
+    "duration_s": 179.9903919,
+    "supervisor_loop_rate_hz": 99.64420773062388,
+    "sequence_advance": 22499,
+    "source_period_ms": {
+      "count": 22690,
+      "mean": 7.979312600264434,
+      "p95": 8.1809,
+      "p99": 8.289399000000001,
+      "max": 61.2904,
+      "count_gt_20ms": 9,
+      "count_gt_30ms": 7,
+      "count_gt_50ms": 7,
+      "count_gt_100ms": 0,
+      "count_gt_10ms": 11
+    },
+    "publish_interval_ms": {
+      "count": 22690,
+      "mean": 7.9793124724548266,
+      "p95": 8.1822,
+      "p99": 8.292111,
+      "max": 61.2973
+    },
+    "ipc_age_ms": {
+      "count": 17819,
+      "mean": 4.112079437678882,
+      "p95": 7.86321,
+      "p99": 8.063401999999998,
+      "max": 18.8644,
+      "count_gt_20ms": 0,
+      "count_gt_30ms": 0,
+      "count_gt_50ms": 0,
+      "count_gt_100ms": 0
+    },
+    "publish_to_receive_age_ms": {
+      "count": 17819,
+      "mean": 4.09768542566923,
+      "p95": 7.84826,
+      "p99": 8.045945999999999,
+      "max": 18.8545,
+      "count_gt_20ms": 0,
+      "count_gt_30ms": 0,
+      "count_gt_50ms": 0,
+      "count_gt_100ms": 0
+    },
+    "supervisor_loop_period_ms": {
+      "count": 17934,
+      "mean": 10.036265858146537,
+      "p95": 10.785504999999999,
+      "p99": 10.978667,
+      "max": 63.3715,
+      "count_gt_20ms": 52,
+      "count_gt_30ms": 11,
+      "count_gt_50ms": 1,
+      "count_gt_100ms": 0
+    },
+    "publish_count": 22685,
+    "publish_success_count": 22685,
+    "receive_count": 17820,
+    "overwrite_count": 4865,
+    "publish_drop_count": 0,
+    "rt_invalid_tick_count": 3,
+    "rt_worker_hung_tick_count": 0,
+    "source_freeze_count_gt_20ms": 9,
+    "source_reliable": true,
+    "ipc_fresh": true,
+    "supervisor_reliable": true,
+    "no_obvious_freshness_tail": true
+  },
+  "wrench_summary": {
+    "tested": true,
+    "sequence_advance": 3583,
+    "age_ms": {
+      "count": 17889,
+      "mean": 25.636524473139918,
+      "p95": 48.441320000000005,
+      "p99": 50.48779199999999,
+      "max": 352.1857,
+      "count_gt_20ms": 10779,
+      "count_gt_30ms": 7211,
+      "count_gt_50ms": 202,
+      "count_gt_100ms": 28
+    },
+    "heartbeat_age_ms": {
+      "count": 17919,
+      "mean": 25.76832670349908,
+      "p95": 48.4257,
+      "p99": 50.566371999999994,
+      "max": 342.014,
+      "count_gt_20ms": 10786,
+      "count_gt_30ms": 7219,
+      "count_gt_50ms": 211,
+      "count_gt_100ms": 46
+    },
+    "valid_tick_count": 17868,
+    "stale_tick_count": 67,
+    "worker_hung_tick_count": 0,
+    "natural_block_observed": false,
+    "error_codes_seen": []
+  },
+  "stop_reason": null,
+  "fatal_error": null,
+  "rt_cleanup": {
+    "worker_exited": true,
+    "worker_exitcode": 0,
+    "latency_ms": 389.521,
+    "graceful_disconnect_confirmed": true,
+    "forced": false
+  },
+  "wrench_cleanup": {
+    "worker_exited": true,
+    "worker_exitcode": 0,
+    "latency_ms": 29.8227,
+    "graceful_disconnect_confirmed": true,
+    "forced": false
+  },
+  "case_pass": true,
+  "eligible_for_concurrent_test": false
+}

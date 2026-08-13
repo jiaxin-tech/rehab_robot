@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "diagnostic": "wrench_process_isolation_final_analysis",
+  "timestamp_utc": "2026-08-13T11:37:55Z",
+  "scope": "strictly_read_only_diagnostic_prototype",
+  "architecture": {
+    "selected": "option_b",
+    "supervisor": "no SDK object; bounded non-blocking IPC reader and age/hung decisions",
+    "rt_process": "exclusively owns Session A and the existing SDK RT/state receive path",
+    "wrench_process": "exclusively owns Session B and getEndTorque(world)",
+    "sdk_objects_cross_process": false,
+    "production_hardware_layer_modified": false
+  },
+  "local_evidence": {
+    "rt_api_depends_on_get_end_torque": false,
+    "current_wrapper_uses_same_native_robot_object_for_rt_and_wrench": true,
+    "raw_udp_listener_without_sdk_present": false,
+    "vendor_multi_session_contract_documented": false
+  },
+  "offline": {
+    "source": "wrench_process_isolation_offline_20260813T111959Z.json",
+    "overall_pass": true,
+    "scenarios": [
+      "normal",
+      "slow_40ms",
+      "stale_500ms",
+      "long_block_10s",
+      "permanent_block",
+      "error_263",
+      "worker_exception",
+      "worker_crash",
+      "ipc_saturation"
+    ],
+    "ten_second_block_parent_rate_hz": 99.771,
+    "ten_second_block_termination_latency_ms": 5.3747,
+    "permanent_block_termination_latency_ms": 4.2809,
+    "ipc_saturation_worker_sequence_seen": 583,
+    "ipc_saturation_parent_ticks": 79
+  },
+  "fresh_sessions": {
+    "after_original_263_storm": true,
+    "after_startup_worker_forced_termination": true,
+    "after_live_wrench_worker_forced_termination": true,
+    "latest_result": "wrench_process_fresh_sanity_20260813T113726Z.json",
+    "latest_elapsed_ms": 428.1374,
+    "latest_graceful_disconnect_confirmed": true
+  },
+  "multi_session": {
+    "source": "wrench_process_multisession_20260813T112749Z.json",
+    "simultaneous_read_only_sessions_observed": true,
+    "overlap_duration_s": 30.0,
+    "sdk_error_codes": [],
+    "rt_source_period_mean_ms": 8.003770015963884,
+    "rt_source_period_p99_ms": 8.114012,
+    "wrench_sequence_advance": 572,
+    "rt_session_disconnected_first": true,
+    "wrench_updates_after_rt_disconnect": 60,
+    "rt_disconnect_confirmed": true,
+    "wrench_disconnect_confirmed": true,
+    "vendor_contract_still_undocumented": true
+  },
+  "live_option_b": {
+    "source": "wrench_process_isolation_20260813T113416Z.json",
+    "requested_duration_s": 180.0,
+    "ended_early_on_natural_wrench_hung": true,
+    "supervisor_rate_hz": 99.38392783639658,
+    "supervisor_period_p99_ms": 11.02198,
+    "supervisor_period_max_ms": 48.9306,
+    "wrench_success_sequence_before_hung": 1318,
+    "hung_detection_age_ms": 753.1068,
+    "wrench_termination_latency_ms": 3.2989,
+    "wrench_graceful_disconnect_confirmed": false,
+    "block_window": {
+      "observed_stale_window_s": 0.6004736,
+      "supervisor_rate_hz": 99.92698777303207,
+      "rt_sequence_advance": 80,
+      "rt_source_period_p99_ms": 8.15448,
+      "rt_source_period_max_ms": 8.1625,
+      "wrench_sequence_advance": 0,
+      "wrench_age_max_ms": 753.1299,
+      "stale_tick_count": 61,
+      "hung_tick_count": 1
+    },
+    "after_wrench_termination": {
+      "observation_s": 3.0,
+      "supervisor_rate_hz": 99.98375514774222,
+      "rt_sequence_advance": 374,
+      "rt_source_period_mean_ms": 7.997509077813358,
+      "rt_source_period_p99_ms": 8.176884,
+      "rt_source_period_max_ms": 8.1951,
+      "rt_process_graceful_disconnect_confirmed": true
+    },
+    "rt_ipc_freshness": {
+      "pass_at_50_ms": false,
+      "whole_overlap_age_p99_ms": 201.161977,
+      "whole_overlap_age_max_ms": 367.9332,
+      "after_wrench_stop_invalid_ticks": 97,
+      "after_wrench_stop_total_ticks": 300,
+      "interpretation": "RT source and RT process survived, but the current inner RT thread to process-main to IPC publication path has unacceptable age tail."
+    },
+    "process_isolation_core_pass": true,
+    "complete_live_architecture_pass": false
+  },
+  "cleanup": {
+    "residual_python_process_count": 0,
+    "python_owned_udp_on_local_rt_ip": 0,
+    "python_owned_tcp_to_robot_ip": 0
+  },
+  "decisions": {
+    "PROCESS_ISOLATION_OFFLINE_PASS": true,
+    "FRESH_SDK_RECONNECT_PASS": true,
+    "MULTI_SESSION_SUPPORTED": true,
+    "LIVE_PROCESS_ISOLATION_PASS": "partial",
+    "SUPERVISOR_SURVIVES_WRENCH_BLOCK": true,
+    "RT_SURVIVES_WRENCH_BLOCK": true,
+    "HUNG_WORKER_TERMINATABLE": true,
+    "FRESH_RECONNECT_AFTER_WORKER_FAILURE": true,
+    "WRENCH_ASYNC_ARCHITECTURE_VIABLE": "partial",
+    "READY_FOR_FIRST_MOTION_TEST": false
+  }
+}

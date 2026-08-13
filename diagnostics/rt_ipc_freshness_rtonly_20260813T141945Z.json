@@ -1,0 +1,132 @@
+{
+  "created_utc": "2026-08-13T14:22:48.065412+00:00",
+  "mode": "rt-only",
+  "strict_read_only": true,
+  "requested_duration_s": 180.0,
+  "robot_ip": "192.168.50.103",
+  "local_ip": "192.168.50.209",
+  "architecture": {
+    "rt_process_single_thread": true,
+    "rt_ipc_transport": "fixed_shared_memory_latest_snapshot",
+    "timestamp_source": "host_monotonic_immediately_after_getStateData_no_controller_timestamp",
+    "controller_timestamp_used": false,
+    "sdk_objects_shared_across_processes": false
+  },
+  "rt_worker_metadata": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic",
+    "rt_process_single_thread": true,
+    "rt_ipc_transport": "fixed_shared_memory_latest_snapshot",
+    "timestamp_source": "host_monotonic_immediately_after_getStateData_no_controller_timestamp",
+    "state_interval_ms": 8,
+    "publish_count": 22686,
+    "publish_success_count": 22686,
+    "publish_drop_count": 0,
+    "source_period_ms": {
+      "count": 22685,
+      "mean": 7.979526039232973,
+      "p95": 8.1805,
+      "p99": 8.303795999999998,
+      "max": 59.0812
+    },
+    "publish_interval_ms": {
+      "count": 22685,
+      "mean": 7.979525827639409,
+      "p95": 8.182,
+      "p99": 8.308016,
+      "max": 59.0845
+    },
+    "source_period_gt_10ms_count": 6,
+    "source_period_gt_20ms_count": 3,
+    "update_timeout_count": 9
+  },
+  "rt_summary": {
+    "duration_s": 179.9944375,
+    "supervisor_loop_rate_hz": 99.63641237524354,
+    "sequence_advance": 22499,
+    "source_period_ms": {
+      "count": 22685,
+      "mean": 7.979526039232973,
+      "p95": 8.1805,
+      "p99": 8.303795999999998,
+      "max": 59.0812,
+      "count_gt_20ms": 3,
+      "count_gt_30ms": 0,
+      "count_gt_50ms": 0,
+      "count_gt_100ms": 0,
+      "count_gt_10ms": 6
+    },
+    "publish_interval_ms": {
+      "count": 22685,
+      "mean": 7.979525827639409,
+      "p95": 8.182,
+      "p99": 8.308016,
+      "max": 59.0845
+    },
+    "ipc_age_ms": {
+      "count": 17840,
+      "mean": 4.093492242152466,
+      "p95": 7.822605,
+      "p99": 8.046361000000001,
+      "max": 9.761,
+      "count_gt_20ms": 0,
+      "count_gt_30ms": 0,
+      "count_gt_50ms": 0,
+      "count_gt_100ms": 0
+    },
+    "publish_to_receive_age_ms": {
+      "count": 17840,
+      "mean": 4.076972825112108,
+      "p95": 7.804835,
+      "p99": 8.031122,
+      "max": 9.7426,
+      "count_gt_20ms": 0,
+      "count_gt_30ms": 0,
+      "count_gt_50ms": 0,
+      "count_gt_100ms": 0
+    },
+    "supervisor_loop_period_ms": {
+      "count": 17933,
+      "mean": 10.037051106897898,
+      "p95": 10.796940000000001,
+      "p99": 10.984440000000001,
+      "max": 58.471,
+      "count_gt_20ms": 56,
+      "count_gt_30ms": 13,
+      "count_gt_50ms": 3,
+      "count_gt_100ms": 0
+    },
+    "publish_count": 22684,
+    "publish_success_count": 22684,
+    "receive_count": 17841,
+    "overwrite_count": 4843,
+    "publish_drop_count": 0,
+    "rt_invalid_tick_count": 3,
+    "rt_worker_hung_tick_count": 0,
+    "source_freeze_count_gt_20ms": 3,
+    "source_reliable": true,
+    "ipc_fresh": true,
+    "supervisor_reliable": true,
+    "no_obvious_freshness_tail": true
+  },
+  "wrench_summary": {
+    "tested": false
+  },
+  "stop_reason": null,
+  "fatal_error": null,
+  "rt_cleanup": {
+    "worker_exited": true,
+    "worker_exitcode": 0,
+    "latency_ms": 389.9943,
+    "graceful_disconnect_confirmed": true,
+    "forced": false
+  },
+  "wrench_cleanup": {},
+  "case_pass": true,
+  "eligible_for_concurrent_test": true
+}

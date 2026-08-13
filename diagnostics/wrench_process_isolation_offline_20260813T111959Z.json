@@ -1,0 +1,302 @@
+{
+  "schema_version": 1,
+  "diagnostic": "wrench_process_isolation_offline",
+  "timestamp_utc": "2026-08-13T11:20:18.029232+00:00",
+  "overall_pass": true,
+  "results": [
+    {
+      "scenario": "normal",
+      "worker_pid": 23308,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.8188829,
+      "main_loop_tick_count": 80,
+      "main_loop_rate_hz": 100.00015189896492,
+      "main_loop_period_ms": {
+        "mean": 9.999984810126582,
+        "p50": 9.9999,
+        "p95": 10.04472,
+        "p99": 10.106497999999998,
+        "max": 10.232
+      },
+      "parent_work_counter": 80,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 12,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 0,
+        "latency_ms": 18.5228,
+        "graceful_disconnect_confirmed": true,
+        "forced": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "slow_40ms",
+      "worker_pid": 22764,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.8363896,
+      "main_loop_tick_count": 80,
+      "main_loop_rate_hz": 100.00024050690755,
+      "main_loop_period_ms": {
+        "mean": 9.999975949367089,
+        "p50": 10.0,
+        "p95": 10.02611,
+        "p99": 10.894870000000001,
+        "max": 10.9366
+      },
+      "parent_work_counter": 80,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 11,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 0,
+        "latency_ms": 36.2667,
+        "graceful_disconnect_confirmed": true,
+        "forced": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "stale_500ms",
+      "worker_pid": 8652,
+      "requested_duration_s": 1.2,
+      "observed_duration_s": 1.2579373,
+      "main_loop_tick_count": 120,
+      "main_loop_rate_hz": 100.0000504201935,
+      "main_loop_period_ms": {
+        "mean": 9.999994957983192,
+        "p50": 9.9999,
+        "p95": 10.06081,
+        "p99": 10.18212,
+        "max": 10.2117
+      },
+      "parent_work_counter": 120,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 1,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 0,
+        "latency_ms": 57.7586,
+        "graceful_disconnect_confirmed": true,
+        "forced": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "long_block_10s",
+      "worker_pid": 28908,
+      "requested_duration_s": 10.5,
+      "observed_duration_s": 11.5112028,
+      "main_loop_tick_count": 1048,
+      "main_loop_rate_hz": 99.77056391389993,
+      "main_loop_period_ms": {
+        "mean": 10.022996370582616,
+        "p50": 10.0,
+        "p95": 10.05257,
+        "p99": 10.156369999999999,
+        "max": 31.6306
+      },
+      "parent_work_counter": 1048,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": true,
+      "maximum_wrench_sequence_seen": 1,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_exited": false,
+        "worker_exitcode": -15,
+        "latency_ms": 1000.7656,
+        "graceful_disconnect_confirmed": false,
+        "forced": true,
+        "normal_stop_failed": true,
+        "worker_terminated": true,
+        "termination_latency_ms": 5.3747,
+        "used_kill": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "permanent_block",
+      "worker_pid": 30536,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.804519,
+      "main_loop_tick_count": 80,
+      "main_loop_rate_hz": 100.00031645669763,
+      "main_loop_period_ms": {
+        "mean": 9.999968354430381,
+        "p50": 9.9999,
+        "p95": 10.00318,
+        "p99": 10.067154,
+        "max": 10.0911
+      },
+      "parent_work_counter": 80,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": true,
+      "maximum_wrench_sequence_seen": 0,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_terminated": true,
+        "worker_exitcode": -15,
+        "termination_latency_ms": 4.2809,
+        "used_kill": false,
+        "graceful_disconnect_confirmed": false,
+        "forced": true
+      },
+      "pass": true
+    },
+    {
+      "scenario": "error_263",
+      "worker_pid": 4524,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.8127258,
+      "main_loop_tick_count": 80,
+      "main_loop_rate_hz": 100.00037974827754,
+      "main_loop_period_ms": {
+        "mean": 9.999962025316455,
+        "p50": 10.0,
+        "p95": 10.00338,
+        "p99": 10.066594,
+        "max": 10.1779
+      },
+      "parent_work_counter": 80,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 11,
+      "last_error_code": 263,
+      "last_error": "RuntimeError:xCoreSDK getEndTorque failed (263): synthetic offline fault",
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 0,
+        "latency_ms": 12.5737,
+        "graceful_disconnect_confirmed": true,
+        "forced": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "worker_exception",
+      "worker_pid": 6772,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.8309176,
+      "main_loop_tick_count": 78,
+      "main_loop_rate_hz": 97.16776165479979,
+      "main_loop_period_ms": {
+        "mean": 10.291479220779221,
+        "p50": 10.0,
+        "p95": 10.12794,
+        "p99": 17.573667999999934,
+        "max": 27.6936
+      },
+      "parent_work_counter": 78,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 11,
+      "last_error_code": null,
+      "last_error": "RuntimeError:synthetic worker exception",
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 0,
+        "latency_ms": 28.3484,
+        "graceful_disconnect_confirmed": true,
+        "forced": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "worker_crash",
+      "worker_pid": 11012,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.2409981,
+      "main_loop_tick_count": 25,
+      "main_loop_rate_hz": 99.99970833418404,
+      "main_loop_period_ms": {
+        "mean": 10.000029166666666,
+        "p50": 10.00005,
+        "p95": 10.010435000000001,
+        "p99": 10.037765,
+        "max": 10.0457
+      },
+      "parent_work_counter": 25,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 0,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 17,
+        "latency_ms": 0.3925,
+        "graceful_disconnect_confirmed": null,
+        "forced": false
+      },
+      "pass": true
+    },
+    {
+      "scenario": "ipc_saturation",
+      "worker_pid": 1368,
+      "requested_duration_s": 0.8,
+      "observed_duration_s": 0.8154438,
+      "main_loop_tick_count": 79,
+      "main_loop_rate_hz": 98.48386613315347,
+      "main_loop_period_ms": {
+        "mean": 10.153947435897436,
+        "p50": 10.0,
+        "p95": 10.00461,
+        "p99": 15.578173000000032,
+        "max": 21.8191
+      },
+      "parent_work_counter": 79,
+      "worker_alive_seen": true,
+      "worker_death_visible": true,
+      "wrench_stale_seen": true,
+      "worker_hung_seen": false,
+      "maximum_wrench_sequence_seen": 583,
+      "last_error_code": null,
+      "last_error": null,
+      "cleanup": {
+        "worker_exited": true,
+        "worker_exitcode": 0,
+        "latency_ms": 13.3116,
+        "graceful_disconnect_confirmed": true,
+        "forced": false
+      },
+      "pass": true
+    }
+  ],
+  "acceptance": {
+    "parent_never_blocks_on_worker": true,
+    "ten_second_block_main_loop_continues": true,
+    "permanent_block_detected_and_terminated": true,
+    "stale_visible": true,
+    "worker_death_visible": true,
+    "bounded_latest_snapshot_survives_saturation": true
+  },
+  "read_only": true,
+  "robot_contacted": false
+}

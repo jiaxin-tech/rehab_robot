@@ -1,0 +1,1566 @@
+{
+  "schema_version": 1,
+  "diagnostic": "wrench_realtime_concurrency",
+  "timestamp_utc": "2026-08-13T11:01:19.309789+00:00",
+  "robot_ip": "192.168.50.103",
+  "local_ip": "192.168.50.209",
+  "target_wrench_hz": 20.0,
+  "target_main_loop_hz": 100.0,
+  "duration_s": 900.0,
+  "metadata": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic"
+  },
+  "postcheck": {},
+  "summary": {
+    "main_loop_tick_count": 33255,
+    "main_loop_rate_hz": 37.71214711266035,
+    "main_loop_period_ms": {
+      "mean": 26.51665515126,
+      "p50": 15.822,
+      "p95": 31.9351,
+      "p99": 39.946235,
+      "max": 10023.4675
+    },
+    "rt_sequence_first": 6,
+    "rt_sequence_last": 51230,
+    "rt_sequence_advance": 51224,
+    "rt_source_period_ms": {
+      "mean": 27.283902015820626,
+      "p50": 8.000400150194764,
+      "p95": 8.48149671995391,
+      "p99": 9.93435019161552,
+      "max": 80082.12959999219
+    },
+    "rt_age_ms": {
+      "mean": 114.3581237433916,
+      "p50": 8.004499599337578,
+      "p95": 9.324159938842058,
+      "p99": 10.767038092017174,
+      "max": 120119.7676002048
+    },
+    "consumer_skipped_rt_sequence_count": 30930,
+    "rt_non_monotonic_event_count": 0,
+    "rt_frozen_event_count": 16,
+    "rt_freeze_threshold_ms": 24.0,
+    "maximum_observed_unchanged_rt_sequence_ms": 120115.1351,
+    "rt_invalid_tick_count": 0,
+    "non_idle_tick_count": 0,
+    "wrench_age_ms": {
+      "mean": 779.7250106720793,
+      "p50": 22.9131,
+      "p95": 54.38435,
+      "p99": 58.18773399999983,
+      "max": 470596.522
+    },
+    "wrench_sequence_first": 1,
+    "wrench_sequence_last": 8271,
+    "wrench_sequence_advance": 8270,
+    "wrench_stale_tick_count": 113,
+    "wrench_stale_tick_count_after_first_update": 113,
+    "wrench_invalid_tick_count": 113,
+    "wrench_invalid_tick_count_after_first_update": 113,
+    "wrench_worker_dead_tick_count": 0,
+    "wrench_query_in_flight_tick_count": 203
+  },
+  "slow_call_concurrency_analysis": [
+    {
+      "sequence_id": 692,
+      "latency_ms": 26.4992,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 47.461855,
+        "max": 47.9403
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 693,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1049
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 825,
+      "latency_ms": 22.3996,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 826,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1998
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 916,
+      "latency_ms": 36.6422,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 55.53456800000001,
+        "max": 56.3557
+      },
+      "rt_sequence_advance_during_main_loop_window": 2,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 917,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1771
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2019,
+      "latency_ms": 47.4611,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2020,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.8995
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2060,
+      "latency_ms": 62.0331,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 62.833774,
+        "max": 63.463
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2061,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.9366
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2130,
+      "latency_ms": 22.5039,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2131,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.8912
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2306,
+      "latency_ms": 45.4435,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 33.580568,
+        "max": 33.9166
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2307,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.9447
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2386,
+      "latency_ms": 21.3352,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2387,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.9871
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2388,
+      "latency_ms": 54.8019,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 41.716781999999995,
+        "max": 42.3199
+      },
+      "rt_sequence_advance_during_main_loop_window": 2,
+      "stale_tick_count_during_call": 1,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2389,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.0747
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 2428,
+      "latency_ms": 25.8736,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 63.254604,
+        "max": 63.8917
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 2429,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1938
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 3568,
+      "latency_ms": 24.8334,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 3569,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1048
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 4281,
+      "latency_ms": 44.3416,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 52.550236,
+        "max": 53.2486
+      },
+      "rt_sequence_advance_during_main_loop_window": 3,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 4282,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.9596
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 4643,
+      "latency_ms": 40.1401,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 39.650401,
+        "max": 40.0495
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 4644,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1183
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 4936,
+      "latency_ms": 20.9974,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 4937,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.9586
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 5097,
+      "latency_ms": 21.9016,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 23.039401,
+        "max": 23.2707
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 5098,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.159
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 5712,
+      "latency_ms": 54.5894,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 35.50429,
+        "max": 35.851
+      },
+      "rt_sequence_advance_during_main_loop_window": 3,
+      "stale_tick_count_during_call": 1,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 5713,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.0061
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 5794,
+      "latency_ms": 54.6519,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 41.812389,
+        "max": 42.2314
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 5795,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.046
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 6296,
+      "latency_ms": 24.0912,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 32.543437999999995,
+        "max": 32.8403
+      },
+      "rt_sequence_advance_during_main_loop_window": 3,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 6297,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.0093
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 6813,
+      "latency_ms": 20.7611,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 6814,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 0.9465
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 7107,
+      "latency_ms": 55.0039,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 67.336195,
+        "max": 68.0141
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 7108,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1885
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 7834,
+      "latency_ms": 21.1825,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 47.524744,
+        "max": 48.0038
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 7835,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1181
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 7961,
+      "latency_ms": 28.5833,
+      "success": true,
+      "error_code": null,
+      "main_loop_ticks_during_call": 1,
+      "main_loop_period_ms_during_call": {
+        "p99": 55.8217,
+        "max": 55.8217
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 7962,
+        "success": true,
+        "error_code": null,
+        "latency_ms": 1.1542
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8226,
+      "latency_ms": 10007.3158,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9922.426300000001,
+        "max": 10022.6512
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8227,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10016.6442
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8227,
+      "latency_ms": 10016.6442,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9803.110576000001,
+        "max": 10002.8834
+      },
+      "rt_sequence_advance_during_main_loop_window": 1,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8228,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10012.3711
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8228,
+      "latency_ms": 10012.3711,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9800.836438,
+        "max": 10000.6154
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8229,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.8057
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8229,
+      "latency_ms": 10006.8057,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.895616999998,
+        "max": 10006.9636
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8230,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.5852
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8230,
+      "latency_ms": 10006.5852,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9901.158757000001,
+        "max": 10001.1686
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8231,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10014.5758
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8231,
+      "latency_ms": 10014.5758,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9908.599684,
+        "max": 10008.5671
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8232,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10005.5987
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8232,
+      "latency_ms": 10005.5987,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9912.174485000001,
+        "max": 10012.2957
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8233,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.7258
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8233,
+      "latency_ms": 10006.7258,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.791973,
+        "max": 10006.8588
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8234,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10005.8922
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8234,
+      "latency_ms": 10005.8922,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9905.960916,
+        "max": 10006.0194
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8235,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10013.4337
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8235,
+      "latency_ms": 10013.4337,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9800.990016,
+        "max": 10000.7481
+      },
+      "rt_sequence_advance_during_main_loop_window": 1,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8236,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.9355
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8236,
+      "latency_ms": 10006.9355,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.822379000001,
+        "max": 10006.8896
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8237,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.4671
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8237,
+      "latency_ms": 10006.4671,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.570662,
+        "max": 10006.6356
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8238,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10013.1038
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8238,
+      "latency_ms": 10013.1038,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9801.694555999999,
+        "max": 10001.4924
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8239,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.8922
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8239,
+      "latency_ms": 10006.8922,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.965268,
+        "max": 10007.034
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8240,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10012.4925
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8240,
+      "latency_ms": 10012.4925,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9801.086392000001,
+        "max": 10000.8741
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8241,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.9228
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8241,
+      "latency_ms": 10006.9228,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9907.007111,
+        "max": 10007.0769
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8242,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.7469
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8242,
+      "latency_ms": 10006.7469,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.565888,
+        "max": 10006.6304
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8243,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10012.7933
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8243,
+      "latency_ms": 10012.7933,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9902.46053,
+        "max": 10002.4841
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8244,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.364
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8244,
+      "latency_ms": 10006.364,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9916.838897,
+        "max": 10017.0079
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8245,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.606
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8245,
+      "latency_ms": 10006.606,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9901.121777,
+        "max": 10001.1301
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8246,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10007.0668
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8246,
+      "latency_ms": 10007.0668,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 1,
+      "main_loop_period_ms_during_call": {
+        "p99": 10012.5554,
+        "max": 10012.5554
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 1,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8247,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10024.8828
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8247,
+      "latency_ms": 10024.8828,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9800.904492,
+        "max": 10000.7063
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8248,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10005.9457
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8248,
+      "latency_ms": 10005.9457,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 1,
+      "main_loop_period_ms_during_call": {
+        "p99": 10019.5858,
+        "max": 10019.5858
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 1,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8249,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10012.6577
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8249,
+      "latency_ms": 10012.6577,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9801.399568,
+        "max": 10001.1887
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8250,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.3971
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8250,
+      "latency_ms": 10006.3971,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.562619,
+        "max": 10006.6278
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8251,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10011.5667
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8251,
+      "latency_ms": 10011.5667,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9801.00547,
+        "max": 10000.8082
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8252,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10011.7248
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8252,
+      "latency_ms": 10011.7248,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9901.224038999999,
+        "max": 10001.2346
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8253,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.4882
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8253,
+      "latency_ms": 10006.4882,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9917.025568,
+        "max": 10017.196
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8254,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.6032
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8254,
+      "latency_ms": 10006.6032,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.679302,
+        "max": 10006.7455
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8255,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10017.3937
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8255,
+      "latency_ms": 10017.3937,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9901.027734,
+        "max": 10001.0366
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8256,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10007.068
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8256,
+      "latency_ms": 10007.068,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9923.234662,
+        "max": 10023.4675
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8257,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10016.6407
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8257,
+      "latency_ms": 10016.6407,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9901.038466,
+        "max": 10001.0477
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8258,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10011.5902
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8258,
+      "latency_ms": 10011.5902,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9816.610164,
+        "max": 10016.7324
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8259,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.7253
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8259,
+      "latency_ms": 10006.7253,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.803474999999,
+        "max": 10006.8707
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8260,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.3669
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8260,
+      "latency_ms": 10006.3669,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8261,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10007.0983
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8261,
+      "latency_ms": 10007.0983,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9913.249436,
+        "max": 10013.3817
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8262,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10007.206
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8262,
+      "latency_ms": 10007.206,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9907.307719,
+        "max": 10007.3804
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8263,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.5951
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8263,
+      "latency_ms": 10006.5951,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9901.093714,
+        "max": 10001.1031
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8264,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10016.0596
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8264,
+      "latency_ms": 10016.0596,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9916.117271,
+        "max": 10016.2789
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8265,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.9423
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8265,
+      "latency_ms": 10006.9423,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9922.166275,
+        "max": 10022.3881
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8266,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.9462
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8266,
+      "latency_ms": 10006.9462,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9907.120536,
+        "max": 10007.1914
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8267,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10007.8962
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8267,
+      "latency_ms": 10007.8962,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9907.6703,
+        "max": 10007.7452
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8268,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10016.2321
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8268,
+      "latency_ms": 10016.2321,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9811.12854,
+        "max": 10011.0506
+      },
+      "rt_sequence_advance_during_main_loop_window": 1,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8269,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.9766
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8269,
+      "latency_ms": 10006.9766,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9906.841363,
+        "max": 10006.9085
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8270,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10007.3739
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8270,
+      "latency_ms": 10007.3739,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9915.802047000001,
+        "max": 10015.9593
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8271,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10005.5108
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8271,
+      "latency_ms": 10005.5108,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 2,
+      "main_loop_period_ms_during_call": {
+        "p99": 9913.720603,
+        "max": 10013.8577
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 2,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8272,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10012.585
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8272,
+      "latency_ms": 10012.585,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 3,
+      "main_loop_period_ms_during_call": {
+        "p99": 9801.201348,
+        "max": 10000.9884
+      },
+      "rt_sequence_advance_during_main_loop_window": 0,
+      "stale_tick_count_during_call": 3,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8273,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10006.6897
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8273,
+      "latency_ms": 10006.6897,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": {
+        "sequence_id": 8274,
+        "success": false,
+        "error_code": 263,
+        "latency_ms": 10014.8908
+      },
+      "reconnect_used": false
+    },
+    {
+      "sequence_id": 8274,
+      "latency_ms": 10014.8908,
+      "success": false,
+      "error_code": 263,
+      "main_loop_ticks_during_call": 0,
+      "main_loop_period_ms_during_call": {
+        "p99": null,
+        "max": null
+      },
+      "rt_sequence_advance_during_main_loop_window": null,
+      "stale_tick_count_during_call": 0,
+      "worker_dead_tick_count_during_call": 0,
+      "next_query": null,
+      "reconnect_used": false
+    }
+  ],
+  "fatal_error": "RuntimeError:xCoreSDK operationState failed (263): 超时前未收到机器人回复, 可能由于网络通信问题",
+  "cleanup": {
+    "disconnect_attempted": true,
+    "disconnected_confirmed": false,
+    "error": "RuntimeError:xCoreSDK disconnectFromRobot failed (263): 超时前未收到机器人回复, 可能由于网络通信问题"
+  },
+  "read_only": true
+}

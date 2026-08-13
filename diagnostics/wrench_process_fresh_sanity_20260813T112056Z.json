@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "diagnostic": "wrench_process_fresh_session_sanity",
+  "timestamp_utc": "2026-08-13T11:20:57.989577+00:00",
+  "robot_ip": "192.168.50.103",
+  "local_ip_passed_to_status_only_session": "",
+  "result": {
+    "worker_pid": 20672,
+    "fresh_connection_success": true,
+    "status_read_success": true,
+    "disconnect_success": true,
+    "metadata": {
+      "sdk_version": "0.7.0",
+      "controller_version": "3.2.1",
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "operation_state": "idle",
+      "power_state": "on",
+      "operate_mode": "automatic"
+    },
+    "error": null,
+    "process_exitcode": 0,
+    "process_terminated_by_parent": false,
+    "elapsed_ms": 1085.3932,
+    "graceful_disconnect_confirmed": true
+  },
+  "pass": true,
+  "read_only": true
+}

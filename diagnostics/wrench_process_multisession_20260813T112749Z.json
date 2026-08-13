@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "diagnostic": "wrench_process_multisession",
+  "timestamp_utc": "2026-08-13T11:28:25.738363+00:00",
+  "phase": "multi-session",
+  "result": "pass",
+  "pass": true,
+  "robot_ip": "192.168.50.103",
+  "local_rt_ip": "192.168.50.209",
+  "requested_duration_s": 30.0,
+  "post_disconnect_observation_s": 3.0,
+  "parent_pid": 19760,
+  "worker_pid": 7804,
+  "session_ownership": {
+    "session_a": "parent process: read-only RT/state",
+    "session_b": "spawned wrench child: read-only getEndTorque",
+    "sdk_objects_cross_process": false,
+    "session_b_local_rt_ip": ""
+  },
+  "disconnect_order": "rt_first",
+  "metadata": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic"
+  },
+  "parent_postcheck": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic"
+  },
+  "summary": {
+    "tick_count": 630,
+    "main_loop_rate_hz": 21.033679197354534,
+    "main_loop_period_ms": {
+      "mean": 47.54279984101749,
+      "p50": 32.3949,
+      "p95": 104.0604,
+      "p99": 136.10815200000002,
+      "max": 344.4486
+    },
+    "rt_sequence_first": 98,
+    "rt_sequence_last": 3831,
+    "rt_sequence_advance": 3733,
+    "rt_source_period_ms": {
+      "mean": 8.003770015963884,
+      "p50": 7.999705882352941,
+      "p95": 8.066488333333334,
+      "p99": 8.114012,
+      "max": 11.308941666666668
+    },
+    "rt_age_ms": {
+      "mean": 7.910293333333334,
+      "p50": 7.9124,
+      "p95": 8.122185,
+      "p99": 8.219346,
+      "max": 8.5679
+    },
+    "rt_frozen_event_count": 0,
+    "maximum_unchanged_rt_sequence_ms": 0.0,
+    "rt_invalid_tick_count": 0,
+    "non_idle_tick_count": 0,
+    "wrench_sequence_first": 2,
+    "wrench_sequence_last": 574,
+    "wrench_sequence_advance": 572,
+    "wrench_age_ms": {
+      "mean": 24.155591780821915,
+      "p50": 21.117849999999997,
+      "p95": 49.20695,
+      "p99": 87.72856399999985,
+      "max": 99.1348
+    },
+    "wrench_stale_tick_count": 46,
+    "wrench_invalid_tick_count": 46,
+    "worker_hung_tick_count": 0,
+    "worker_dead_tick_count": 0,
+    "heartbeat_age_ms": {
+      "mean": 41.87134471153846,
+      "p50": 0.0,
+      "p95": 201.15709500000074,
+      "p99": 902.6160579999994,
+      "max": 1077.7556
+    },
+    "error_codes_seen": []
+  },
+  "post_disconnect_summary": {
+    "tick_count": 298,
+    "main_loop_rate_hz": 99.21874757277371,
+    "main_loop_period_ms": {
+      "mean": 10.078740404040403,
+      "p50": 9.9754,
+      "p95": 10.78664,
+      "p99": 11.105108000000053,
+      "max": 28.4017
+    },
+    "rt_sequence_first": null,
+    "rt_sequence_last": null,
+    "rt_sequence_advance": null,
+    "rt_source_period_ms": {
+      "mean": null,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "rt_age_ms": {
+      "mean": null,
+      "p50": null,
+      "p95": null,
+      "p99": null,
+      "max": null
+    },
+    "rt_frozen_event_count": 0,
+    "maximum_unchanged_rt_sequence_ms": 0.0,
+    "rt_invalid_tick_count": 298,
+    "non_idle_tick_count": 0,
+    "wrench_sequence_first": 581,
+    "wrench_sequence_last": 641,
+    "wrench_sequence_advance": 60,
+    "wrench_age_ms": {
+      "mean": 27.52620167785235,
+      "p50": 27.94435,
+      "p95": 49.620605,
+      "p99": 50.634826,
+      "max": 59.1679
+    },
+    "wrench_stale_tick_count": 0,
+    "wrench_invalid_tick_count": 0,
+    "worker_hung_tick_count": 0,
+    "worker_dead_tick_count": 0,
+    "heartbeat_age_ms": {
+      "mean": 27.500806375838923,
+      "p50": 27.92935,
+      "p95": 49.585955,
+      "p99": 50.605673,
+      "max": 59.1533
+    },
+    "error_codes_seen": []
+  },
+  "stop_reason": null,
+  "native_block_observed": false,
+  "child_cleanup": {
+    "worker_exited": true,
+    "worker_exitcode": 0,
+    "latency_ms": 24.9967,
+    "graceful_disconnect_confirmed": true,
+    "forced": false
+  },
+  "parent_disconnect_confirmed": true,
+  "other_session_survived_first_disconnect": true,
+  "fatal_error": null,
+  "read_only": true
+}

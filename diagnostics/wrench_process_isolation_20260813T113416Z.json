@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "diagnostic": "wrench_process_isolation_option_b_live",
+  "timestamp_utc": "2026-08-13T11:35:28.380767+00:00",
+  "result": "native_block_isolation_failed",
+  "pass": false,
+  "robot_ip": "192.168.50.103",
+  "local_rt_ip": "192.168.50.209",
+  "requested_duration_s": 180.0,
+  "post_wrench_observation_s": 3.0,
+  "supervisor_pid": 23572,
+  "rt_worker_pid": 17880,
+  "wrench_worker_pid": 21816,
+  "session_ownership": {
+    "supervisor": "no SDK object; bounded non-blocking IPC readers only",
+    "session_a": "RT child process exclusively owns RT/state SDK connection",
+    "session_b": "wrench child process exclusively owns getEndTorque SDK connection",
+    "sdk_objects_cross_process": false
+  },
+  "rt_metadata": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic"
+  },
+  "wrench_metadata": {
+    "sdk_version": "0.7.0",
+    "controller_version": "3.2.1",
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "operation_state": "idle",
+    "power_state": "on",
+    "operate_mode": "automatic"
+  },
+  "overlap_summary": {
+    "tick_count": 6762,
+    "main_loop_rate_hz": 99.38392783639658,
+    "main_loop_period_ms": {
+      "mean": 10.061989114036384,
+      "p50": 9.9763,
+      "p95": 10.79,
+      "p99": 11.021979999999996,
+      "max": 48.9306
+    },
+    "rt_sequence_first": 31,
+    "rt_sequence_last": 8512,
+    "rt_sequence_advance": 8481,
+    "rt_source_period_ms": {
+      "mean": 8.01998238279389,
+      "p50": 8.00065,
+      "p95": 8.11296,
+      "p99": 8.4082,
+      "max": 15.979633333333332
+    },
+    "rt_age_ms": {
+      "mean": 53.58419878734102,
+      "p50": 44.341300000000004,
+      "p95": 121.81462999999998,
+      "p99": 201.16197700000023,
+      "max": 367.9332
+    },
+    "rt_frozen_event_count": 794,
+    "maximum_unchanged_rt_sequence_ms": 350.0974,
+    "rt_invalid_tick_count": 2870,
+    "non_idle_tick_count": 0,
+    "wrench_sequence_first": 1,
+    "wrench_sequence_last": 1318,
+    "wrench_sequence_advance": 1317,
+    "wrench_age_ms": {
+      "mean": 29.430878788336607,
+      "p50": 25.8917,
+      "p95": 46.87785,
+      "p99": 91.68807999999817,
+      "max": 753.1299
+    },
+    "wrench_stale_tick_count": 204,
+    "wrench_invalid_tick_count": 204,
+    "worker_hung_tick_count": 1,
+    "worker_dead_tick_count": 0,
+    "heartbeat_age_ms": {
+      "mean": 38.46076203772464,
+      "p50": 25.9502,
+      "p95": 46.9708,
+      "p99": 607.4516840000022,
+      "max": 1130.2838
+    },
+    "error_codes_seen": []
+  },
+  "post_wrench_summary": {
+    "tick_count": 300,
+    "main_loop_rate_hz": 99.98375514774222,
+    "main_loop_period_ms": {
+      "mean": 10.001624749163879,
+      "p50": 9.9813,
+      "p95": 10.77373,
+      "p99": 10.969456000000001,
+      "max": 11.0432
+    },
+    "rt_sequence_first": 8512,
+    "rt_sequence_last": 8886,
+    "rt_sequence_advance": 374,
+    "rt_source_period_ms": {
+      "mean": 7.997509077813358,
+      "p50": 7.9992,
+      "p95": 8.089697090909091,
+      "p99": 8.176884000000001,
+      "max": 8.1951
+    },
+    "rt_age_ms": {
+      "mean": 44.749372666666666,
+      "p50": 39.653,
+      "p95": 89.69879000000002,
+      "p99": 121.98833299999995,
+      "max": 141.8999
+    },
+    "rt_frozen_event_count": 38,
+    "maximum_unchanged_rt_sequence_ms": 109.8516,
+    "rt_invalid_tick_count": 97,
+    "non_idle_tick_count": 0,
+    "wrench_sequence_first": 1318,
+    "wrench_sequence_last": 1318,
+    "wrench_sequence_advance": 0,
+    "wrench_age_ms": {
+      "mean": 2252.2236583333333,
+      "p50": 2251.9753,
+      "p95": 3597.4776300000003,
+      "p99": 3716.9368759999998,
+      "max": 3747.213
+    },
+    "wrench_stale_tick_count": 300,
+    "wrench_invalid_tick_count": 300,
+    "worker_hung_tick_count": 0,
+    "worker_dead_tick_count": 300,
+    "heartbeat_age_ms": {
+      "mean": 2252.2005583333334,
+      "p50": 2251.9521999999997,
+      "p95": 3597.4545300000004,
+      "p99": 3716.913776,
+      "max": 3747.1899
+    },
+    "error_codes_seen": []
+  },
+  "stop_reason": "wrench_worker_hung",
+  "native_block_observed": true,
+  "wrench_cleanup": {
+    "worker_terminated": true,
+    "worker_exitcode": -15,
+    "termination_latency_ms": 3.2989,
+    "used_kill": false,
+    "graceful_disconnect_confirmed": false,
+    "forced": true
+  },
+  "rt_cleanup": {
+    "worker_exited": true,
+    "worker_exitcode": 0,
+    "latency_ms": 109.0629,
+    "graceful_disconnect_confirmed": true,
+    "forced": false
+  },
+  "rt_survived_wrench_stop": false,
+  "fatal_error": null,
+  "read_only": true
+}
