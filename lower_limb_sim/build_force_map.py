@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +17,12 @@ from .config import (
     workspace_csv_path,
 )
 from .force_mapping import endpoint_force_from_joint_torque
+from .formal_protocol import (
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+    THETA_SHANK_DEFINITION,
+)
 from .quasi_static_dynamics import quasi_static_joint_torque
 from .virtual_subject import (
     VIRTUAL_SUBJECTS,
@@ -47,6 +54,8 @@ def load_workspace_atlas(path: str | Path = workspace_csv_path) -> pd.DataFrame:
         )
     atlas = pd.read_csv(atlas_path)
     required = {
+        "rom_protocol_version",
+        "theta_shank_definition",
         "q_hip_rad",
         "q_knee_rad",
         "q_hip_deg",
@@ -57,10 +66,22 @@ def load_workspace_atlas(path: str | Path = workspace_csv_path) -> pd.DataFrame:
         "z_pull",
         "reachable",
         "near_singular",
+        "jacobian_determinant",
+        "jacobian_condition_number",
+        "jacobian_near_singular",
+        "jacobian_mapping_valid",
     }
     missing = required.difference(atlas.columns)
     if missing:
         raise ValueError(f"workspace atlas is missing columns: {sorted(missing)}")
+    if not atlas["rom_protocol_version"].astype(str).eq(
+        ROM_PROTOCOL_VERSION
+    ).all():
+        raise ValueError("workspace atlas is not ROM_PROTOCOL_V2")
+    if not atlas["theta_shank_definition"].astype(str).eq(
+        THETA_SHANK_DEFINITION
+    ).all():
+        raise ValueError("workspace atlas has an invalid theta_shank definition")
     return atlas
 
 
@@ -268,6 +289,66 @@ def save_virtual_subject_comparison(
     return csv_path
 
 
+def save_force_map_metadata(
+    force_maps: dict[str, pd.DataFrame],
+    workspace: pd.DataFrame,
+    workspace_path: str | Path,
+    output_dir: str | Path = force_map_data_dir,
+) -> Path:
+    """保存可复现的正式 ROM 协议与各受试者 force-map 摘要。"""
+
+    summaries: dict[str, dict[str, int | float]] = {}
+    for subject_id, force_map in force_maps.items():
+        valid = _true_mask(force_map["force_mapping_valid"])
+        valid_force = force_map.loc[valid, "force_magnitude_n"].to_numpy(
+            dtype=float
+        )
+        summaries[subject_id] = {
+            "row_count": int(len(force_map)),
+            "valid_count": int(valid.sum()),
+            "maximum_valid_force_magnitude_n": float(
+                np.nanmax(valid_force)
+            ),
+        }
+
+    source_path = Path(workspace_path)
+    try:
+        source_text = str(source_path.resolve().relative_to(Path.cwd()))
+    except ValueError:
+        source_text = str(source_path.resolve())
+    metadata = {
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
+        "hip_rom_deg": list(FORMAL_HIP_ROM_DEG),
+        "knee_rom_deg": list(FORMAL_KNEE_ROM_DEG),
+        "theta_shank_definition": THETA_SHANK_DEFINITION,
+        "source_workspace": source_text,
+        "source_workspace_sample_count": int(len(workspace)),
+        "source_workspace_reachable_sample_count": int(
+            _true_mask(workspace["reachable"]).sum()
+        ),
+        "virtual_subjects": summaries,
+        "force_magnitude_software_anomaly_limit_n": float(
+            force_magnitude_limit_n
+        ),
+        "force_limit_interpretation": (
+            "existing offline software anomaly gate, not a real-robot "
+            "safety threshold"
+        ),
+        "legacy_force_maps_overwritten": False,
+        "real_robot_connected": False,
+        "hardware_code_modified": False,
+        "safety_thresholds_modified": False,
+    }
+    destination = Path(output_dir)
+    destination.mkdir(parents=True, exist_ok=True)
+    output_path = destination / "force_map_metadata.json"
+    output_path.write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+    return output_path
+
+
 def _build_one(
     subject: VirtualSubject,
     workspace: pd.DataFrame,
@@ -356,6 +437,13 @@ def main() -> None:
                 args.output_dir / "virtual_subject_comparison.png",
             )
             print(f"comparison figure: {png_path}")
+        metadata_path = save_force_map_metadata(
+            force_maps,
+            workspace,
+            args.workspace,
+            args.output_dir,
+        )
+        print(f"metadata: {metadata_path}")
 
 
 if __name__ == "__main__":

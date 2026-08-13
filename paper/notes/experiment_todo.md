@@ -74,10 +74,13 @@ No item below authorizes robot motion or changes to control/safety code.
 
 ### P1.1 Harmonize and freeze experiment-specific ROM conventions
 
-- **Current state:** Legacy workspace/IK uses knee 5--130 deg; active reference
-  audit uses 5--145 deg. Hip 0--120 deg is consistent.
-- **Needed:** One versioned experiment manifest that states which ROM applies to
-  workspace, identification, candidate screening, and physical preflight.
+- **Current state:** **Completed in software by `ROM_PROTOCOL_V2`.** The formal
+  manifest freezes hip 0--120 deg, knee 5--145 deg and the subtractive shank
+  convention for workspace, IK, reference, identification, candidate and
+  robot-preview gates. Old 5--130 deg outputs remain inactive legacy evidence.
+- **Remaining physical boundary:** Site-specific robot workspace, soft limits
+  and safety thresholds still require human review; this migration does not
+  approve them.
 
 ### P1.2 Subject-specific geometry calibration and sensitivity reporting
 

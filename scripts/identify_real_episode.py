@@ -28,9 +28,11 @@ from lower_limb_sim.parameter_estimator import (
     compute_torque_metrics,
     estimate_subject_parameters,
 )
-from lower_limb_sim.reference_closed_c2 import (
-    APPROVED_HIP_ROM_DEG,
-    APPROVED_KNEE_ROM_DEG,
+from lower_limb_sim.formal_protocol import (
+    ACTIVE_REFERENCE_ID,
+    ACTIVE_REFERENCE_SHA256,
+    FORMAL_HIP_ROM_DEG as APPROVED_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG as APPROVED_KNEE_ROM_DEG,
 )
 from lower_limb_sim.state_history_buffer import StateHistoryBuffer
 from utils.provenance import current_git_commit
@@ -154,6 +156,10 @@ def _load_episode(episode: Path) -> tuple[dict[str, Any], pd.DataFrame, pd.DataF
     if missing:
         raise FileNotFoundError(f"episode is missing files: {missing}")
     metadata = json.loads(paths["metadata"].read_text(encoding="utf-8"))
+    if metadata.get("parent_reference_id") != ACTIVE_REFERENCE_ID:
+        raise RuntimeError("episode parent_reference_id is missing or invalid")
+    if metadata.get("parent_reference_sha256") != ACTIVE_REFERENCE_SHA256:
+        raise RuntimeError("episode parent_reference_sha256 is missing or invalid")
     state = pd.read_csv(paths["state"])
     wrench = pd.read_csv(paths["wrench"])
     state_required = {
@@ -372,6 +378,8 @@ def identify_real_episode(
         "schema_version": 1,
         "source_episode": str(episode),
         "source_episode_git_commit": metadata.get("git_commit"),
+        "parent_reference_id": ACTIVE_REFERENCE_ID,
+        "parent_reference_sha256": ACTIVE_REFERENCE_SHA256,
         "identification_git_commit": identification_git_commit,
         "real_data_only": True,
         "model": "existing_five_parameter_lower_limb_model",

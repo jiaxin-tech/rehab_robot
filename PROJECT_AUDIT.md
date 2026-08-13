@@ -52,9 +52,9 @@ pre-cleanup audit snapshot, the closed C2 references were present under
 Both references preserve `theta_shank = q_hip - q_knee`, use the configured
 `L1/L2` forward kinematics for `x_pull_m/z_pull_m`, explicitly state that the
 observed ankle is not the pull point, and carry the 0–120 / 5–145 approval.
-`lower_limb_sim/config.py` still declares an older global knee range of 5–130
-degrees; this is an audited inconsistency, not permission to remap or clip the
-C2 data. The experiment refactor must make the frozen 5–145 approval explicit.
+`ROM_PROTOCOL_V2` now supplies the single formal 0–120 / 5–145 range to the
+workspace, IK, reference, candidate, identification and robot-preview gates.
+Pre-migration 5–130 outputs remain inactive legacy evidence, not active inputs.
 
 Post-audit update on 2026-08-11: both files above are now legacy software
 comparisons. The active offline-approved source is

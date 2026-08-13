@@ -181,7 +181,9 @@ def test_offline_runner_persists_complete_measured_asymmetric_release(
     nominal_manifest = manifest.loc[manifest["role"].eq("retimed_nominal")]
     assert len(slow_manifest) == len(nominal_manifest) == 1
     _assert_all_true(slow_manifest["active_reference"])
-    _assert_all_true(slow_manifest["allowed_for_first_robot_trial"])
+    _assert_all_false(slow_manifest["allowed_for_first_robot_trial"])
+    _assert_all_true(slow_manifest["active"])
+    _assert_all_true(slow_manifest["not_used_for_robot_execution"])
     _assert_all_false(nominal_manifest["active_reference"])
     _assert_all_false(nominal_manifest["allowed_for_first_robot_trial"])
     legacy = manifest.loc[
@@ -193,6 +195,9 @@ def test_offline_runner_persists_complete_measured_asymmetric_release(
     _assert_all_false(legacy["active_reference"])
     _assert_all_false(legacy["allowed_for_first_robot_trial"])
     _assert_all_true(legacy["legacy_software_comparison"])
+    _assert_all_true(legacy["legacy"])
+    _assert_all_true(legacy["not_used_for_final_personalization"])
+    _assert_all_true(legacy["not_used_for_robot_execution"])
 
     metadata_path = result.output_paths["metadata"]
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))

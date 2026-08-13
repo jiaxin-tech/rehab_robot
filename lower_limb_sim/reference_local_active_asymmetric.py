@@ -27,6 +27,14 @@ from .config import (
     model_mismatch_nrmse_epsilon_nm,
     model_mismatch_nrmse_minimum_range_nm,
 )
+from .formal_protocol import (
+    ACTIVE_REFERENCE_ID as FORMAL_ACTIVE_REFERENCE_ID,
+    ACTIVE_REFERENCE_SHA256,
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+    THETA_SHANK_DEFINITION,
+)
 from .dynamic_subject import get_dynamic_subject
 from .geometry_error_metrics import StateDomainBounds
 from .identifiability_analysis import IdentifiabilityResult, analyze_identifiability
@@ -54,17 +62,19 @@ from .reference_local_excitation import (
     perturb_closed_phase_path,
 )
 from .reference_trajectory_retiming import retime_reference_path
+from .reference_release import (
+    RELEASE_ACTIVE_REFERENCE_PATH,
+    RELEASE_METADATA_PATH,
+    RELEASE_VERSION_MANIFEST_PATH,
+    load_frozen_active_reference,
+)
 
 
 MODULE_DIR = Path(__file__).resolve().parent
 REFERENCE_DIRECTORY = MODULE_DIR / "data" / "reference_candidates"
-ACTIVE_MANIFEST_PATH = REFERENCE_DIRECTORY / "reference_version_manifest.csv"
-ACTIVE_METADATA_PATH = (
-    REFERENCE_DIRECTORY / "reference_measured_asymmetric_metadata.json"
-)
-ACTIVE_REFERENCE_PATH = (
-    REFERENCE_DIRECTORY / "reference_measured_asymmetric_closed_slow.csv"
-)
+ACTIVE_MANIFEST_PATH = RELEASE_VERSION_MANIFEST_PATH
+ACTIVE_METADATA_PATH = RELEASE_METADATA_PATH
+ACTIVE_REFERENCE_PATH = RELEASE_ACTIVE_REFERENCE_PATH
 ACTIVE_NOMINAL_PATH = (
     REFERENCE_DIRECTORY / "reference_measured_asymmetric_closed_nominal.csv"
 )
@@ -84,6 +94,9 @@ MODEL_VERSION = "lower_limb_sim_reference_local_active_asymmetric_v1"
 RANDOM_SEED = 20260811
 DOMAIN_MODEL = "axis_aligned_6d_active_asymmetric_reference_local_train_only"
 SPLIT_DEFINITION_ID = "active_asymmetric_reference_local_split_v1"
+
+if ACTIVE_REFERENCE_ID != FORMAL_ACTIVE_REFERENCE_ID:
+    raise RuntimeError("active local-identification reference disagrees with manifest")
 
 
 @dataclass(frozen=True)
@@ -272,6 +285,9 @@ def _active_reference_summary(
         "manifest_file": str(ACTIVE_MANIFEST_PATH.resolve()),
         "active_reference_identifier": ACTIVE_REFERENCE_ID,
         "active_reference_sha256": sha256_file(ACTIVE_REFERENCE_PATH),
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
+        "formal_hip_rom_deg": list(FORMAL_HIP_ROM_DEG),
+        "formal_knee_rom_deg": list(FORMAL_KNEE_ROM_DEG),
         "trajectory_duration_s": float(time_s[-1] - time_s[0]),
         "sample_count": int(len(active)),
         "sampling_interval": {
@@ -291,7 +307,7 @@ def _active_reference_summary(
             float(np.rad2deg(np.min(q_knee))),
             float(np.rad2deg(np.max(q_knee))),
         ],
-        "theta_shank_convention": "theta_shank = q_hip - q_knee",
+        "theta_shank_convention": f"theta_shank = {THETA_SHANK_DEFINITION}",
         "q_closure_error_rad": float(np.linalg.norm(closure_q)),
         "q_closure_error_deg": float(np.linalg.norm(np.rad2deg(closure_q))),
         "pull_point_closure_error_m": float(np.linalg.norm(closure_pull)),
@@ -318,6 +334,7 @@ def _active_reference_summary(
 def load_active_reference() -> ActiveReferenceBundle:
     """Load and fail-closed verify the one manifest-declared active reference."""
 
+    frozen = load_frozen_active_reference()
     for path in (
         ACTIVE_MANIFEST_PATH,
         ACTIVE_METADATA_PATH,
@@ -340,7 +357,7 @@ def load_active_reference() -> ActiveReferenceBundle:
         raise RuntimeError("manifest active row is not the expected asymmetric reference.")
     if bool(row["legacy_software_comparison"]):
         raise RuntimeError("manifest active row is incorrectly marked legacy.")
-    manifest_path = Path(str(row["path"])).resolve()
+    manifest_path = (ACTIVE_MANIFEST_PATH.parent / str(row["path"])).resolve()
     if manifest_path != ACTIVE_REFERENCE_PATH.resolve():
         raise RuntimeError(
             "manifest active path differs from the canonical asymmetric reference path."
@@ -351,6 +368,8 @@ def load_active_reference() -> ActiveReferenceBundle:
     if metadata.get("active_reference_trajectory") != ACTIVE_REFERENCE_ID:
         raise RuntimeError("metadata active trajectory identifier does not match manifest.")
     actual_sha = sha256_file(ACTIVE_REFERENCE_PATH)
+    if actual_sha != ACTIVE_REFERENCE_SHA256:
+        raise RuntimeError("active-reference SHA-256 differs from formal manifest.")
     if metadata.get("active_reference_sha256") != actual_sha:
         raise RuntimeError("active-reference SHA-256 does not match release metadata.")
     if metadata.get("measured_extension_is_reversed_flexion") is not False:
@@ -385,6 +404,13 @@ def load_active_reference() -> ActiveReferenceBundle:
         raise RuntimeError("active reference CSV does not mark every row active.")
     if not active["trajectory_sample_valid"].astype(bool).all():
         raise RuntimeError("active reference contains invalid trajectory samples.")
+    hip = np.rad2deg(active["q_hip_rad"].to_numpy(dtype=float))
+    knee = np.rad2deg(active["q_knee_rad"].to_numpy(dtype=float))
+    if not (
+        ((hip >= FORMAL_HIP_ROM_DEG[0]) & (hip <= FORMAL_HIP_ROM_DEG[1])).all()
+        and ((knee >= FORMAL_KNEE_ROM_DEG[0]) & (knee <= FORMAL_KNEE_ROM_DEG[1])).all()
+    ):
+        raise RuntimeError("active reference is outside ROM_PROTOCOL_V2")
 
     summary = _active_reference_summary(active, metadata)
     if not summary["q_start_equals_q_end"]:
@@ -395,6 +421,14 @@ def load_active_reference() -> ActiveReferenceBundle:
         raise RuntimeError("active reference is not C2 according to release metadata.")
     if not summary["is_asymmetric"]:
         raise RuntimeError("active reference is not verified asymmetric.")
+    summary["parent_reference_id"] = frozen.manifest["reference_id"]
+    summary["parent_reference_sha256"] = frozen.manifest["sha256"]
+    summary["approved_for_offline_personalization"] = frozen.manifest[
+        "approved_for_offline_personalization"
+    ]
+    summary["approved_for_first_robot_trial"] = frozen.manifest[
+        "approved_for_first_robot_trial"
+    ]
     return ActiveReferenceBundle(active, nominal, metadata, summary)
 
 
@@ -471,6 +505,8 @@ def _annotate_trajectory(
     output["evaluation_role"] = specification.evaluation_role
     output["active_reference_identifier"] = ACTIVE_REFERENCE_ID
     output["active_reference_sha256"] = reference_sha256
+    output["parent_reference_id"] = ACTIVE_REFERENCE_ID
+    output["parent_reference_sha256"] = reference_sha256
     output["active_reference_source_path"] = str(ACTIVE_REFERENCE_PATH.resolve())
     output["active_reference_exact_samples"] = exact_source_samples
     output["hip_amplitude_reduction_deg"] = (
@@ -622,6 +658,12 @@ def _trajectory_feasibility(trajectory: pd.DataFrame) -> dict[str, object]:
     )
     return {
         "trajectory_id": str(trajectory["trajectory_id"].iloc[0]),
+        "parent_reference_id": str(
+            trajectory["parent_reference_id"].iloc[0]
+        ),
+        "parent_reference_sha256": str(
+            trajectory["parent_reference_sha256"].iloc[0]
+        ),
         "dataset_split": str(trajectory["dataset_split"].iloc[0]),
         "evaluation_role": str(trajectory["evaluation_role"].iloc[0]),
         "sample_count": int(len(trajectory)),
@@ -1057,6 +1099,10 @@ def run_active_reference_local_identification(
     dataset["evaluation_role"] = dataset["trajectory_id"].map(role_by_id)
     dataset["active_reference_identifier"] = ACTIVE_REFERENCE_ID
     dataset["active_reference_sha256"] = reference.summary[
+        "active_reference_sha256"
+    ]
+    dataset["parent_reference_id"] = ACTIVE_REFERENCE_ID
+    dataset["parent_reference_sha256"] = reference.summary[
         "active_reference_sha256"
     ]
     excitation_metadata = build_excitation_metadata(trajectories, dataset)

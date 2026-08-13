@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import inspect
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -33,6 +34,12 @@ from lower_limb_sim.run_robot_trajectory_export import (
 
 
 ANCHOR = np.asarray((0.41, -0.12, 0.36, 0.1, -0.2, 0.3), dtype=float)
+SOURCE_CANDIDATE_DIRECTORY = (
+    Path(__file__).resolve().parents[1]
+    / "lower_limb_sim"
+    / "data"
+    / "reference_candidates"
+)
 
 
 def _identity_frame(*, reviewed: bool = False) -> RehabFrameConfig:
@@ -153,11 +160,13 @@ def test_current_slow_reference_keeps_frozen_rom_theta_and_fk() -> None:
     assert audit.theta_shank_definition_valid
     assert audit.pull_forward_kinematics_valid
     assert metadata["trajectory_id"] == FIRST_ROBOT_TRIAL_TRAJECTORY_ID
-    assert metadata["allowed_for_first_robot_trial"] is True
+    assert metadata["allowed_for_first_robot_trial"] is False
+    assert metadata["first_robot_trial_candidate_whitelisted"] is True
     assert metadata["reference"]["sha256"] == (
         APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
     )
-    assert metadata["reference_sha256_matches_approved_first_trial"] is True
+    assert metadata["reference_sha256_matches_approved_first_trial"] is False
+    assert metadata["reference_sha256_matches_frozen_release"] is True
     assert APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256 == (
         "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
     )
@@ -191,9 +200,7 @@ def test_nonclosed_reference_is_invalid_not_silently_forced_closed() -> None:
 
 
 def test_nominal_reference_is_retained_but_not_first_trial_whitelisted() -> None:
-    nominal = DEFAULT_REFERENCE_PATH.with_name(
-        "reference_measured_asymmetric_closed_nominal.csv"
-    )
+    nominal = SOURCE_CANDIDATE_DIRECTORY / "reference_measured_asymmetric_closed_nominal.csv"
     trajectory, audit, metadata = build_start_anchored_relative_trajectory(
         nominal,
         current_tcp_start_pose=ANCHOR,

@@ -31,13 +31,13 @@ paragraph-level source cannot conceal an unsupported mathematical statement.
 ### III-A-P3
 
 - **Manuscript subsection:** III-A
-- **Claim/equation:** $L_1$ is thigh length, $L_2$ is knee-to-strap-equivalent-point length, current values are 0.42/0.30 m, hip limit is 120 deg, and knee upper limit conflicts by pipeline.
+- **Claim/equation:** $L_1$ is thigh length, $L_2$ is knee-to-strap-equivalent-point length, current values are 0.42/0.30 m, and formal `ROM_PROTOCOL_V2` is hip 0--120 deg / knee 5--145 deg.
 - **Implementation source:** `config.py`, `reference_measured_asymmetric.py`, `reference_closed_c2.py`.
 - **Relevant function/class:** Configuration constants; active-reference ROM audit.
-- **Relevant configuration:** `L1`, `L2`, legacy ROM arrays, `APPROVED_HIP_ROM_DEG`, `APPROVED_KNEE_ROM_DEG`.
+- **Relevant configuration:** `L1`, `L2`, `formal_experiment_manifest.json`, `FORMAL_HIP_ROM_DEG`, `FORMAL_KNEE_ROM_DEG`.
 - **Relevant result file:** `reference_measured_asymmetric_metadata.json`; `workspace_atlas.csv`.
 - **Confidence:** HIGH.
-- **Notes / assumptions:** Legacy knee 5--130 deg versus active audit 5--145 deg is deliberately not harmonized in the manuscript.
+- **Notes / assumptions:** Earlier 5--130 deg files are legacy provenance and are not formal active inputs.
 
 ### III-B-P1
 

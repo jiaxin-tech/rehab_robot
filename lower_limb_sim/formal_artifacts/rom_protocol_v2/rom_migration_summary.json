@@ -1,0 +1,58 @@
+{
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "active_reference_sha256_unchanged": true,
+  "workspace": {
+    "sample_count": 17061,
+    "reachable_count": 11993,
+    "new_region_above_130_sample_count": 1815,
+    "new_region_above_130_reachable_count": 1127,
+    "new_region_above_130_jacobian_valid_count": 1815,
+    "new_region_jacobian_determinant_abs_min": 0.0722706309802317,
+    "new_region_jacobian_condition_number_max": 1.31431539991986
+  },
+  "active_reference_audit": {
+    "sample_count": 401,
+    "hip_range_deg": [
+      28.90933692566648,
+      112.02543857007235
+    ],
+    "knee_range_deg": [
+      18.31912469027814,
+      124.78660371882795
+    ],
+    "rom_valid": true,
+    "workspace_valid": true,
+    "jacobian_valid": true,
+    "jacobian_determinant_abs_min": 0.039602977605291564,
+    "jacobian_condition_number_max": 14.973214387514414,
+    "theta_identity_max_abs_error_rad": 4.996003610813204e-16,
+    "reference_rows_modified": false
+  },
+  "stage_3_4_4_5_dependency_review": {
+    "configured_internal_trajectory_knee_max_deg": 120.0,
+    "trajectory_values_exceed_legacy_130_deg": false,
+    "numeric_results_require_regeneration": false,
+    "formal_protocol_metadata_required_for_future_regeneration": true
+  },
+  "legacy_artifacts": {
+    "workspace_path": "lower_limb_sim/data/workspace",
+    "force_map_path": "lower_limb_sim/data/force_maps",
+    "active": false,
+    "rom_protocol_version": "legacy_5_130",
+    "overwritten": false
+  },
+  "real_robot_connected": false,
+  "hardware_code_modified": false,
+  "safety_thresholds_modified": false
+}

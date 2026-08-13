@@ -1,0 +1,43 @@
+{
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "source_workspace": "lower_limb_sim/formal_artifacts/rom_protocol_v2/workspace/workspace_atlas.csv",
+  "source_workspace_sample_count": 17061,
+  "source_workspace_reachable_sample_count": 11993,
+  "virtual_subjects": {
+    "baseline": {
+      "row_count": 11993,
+      "valid_count": 11993,
+      "maximum_valid_force_magnitude_n": 556.0864797210256
+    },
+    "hip_stiff": {
+      "row_count": 11993,
+      "valid_count": 11979,
+      "maximum_valid_force_magnitude_n": 998.0786772719437
+    },
+    "knee_stiff": {
+      "row_count": 11993,
+      "valid_count": 11993,
+      "maximum_valid_force_magnitude_n": 453.65597006880915
+    },
+    "heavy_leg": {
+      "row_count": 11993,
+      "valid_count": 11993,
+      "maximum_valid_force_magnitude_n": 680.998526067759
+    }
+  },
+  "force_magnitude_software_anomaly_limit_n": 1000.0,
+  "force_limit_interpretation": "existing offline software anomaly gate, not a real-robot safety threshold",
+  "legacy_force_maps_overwritten": false,
+  "real_robot_connected": false,
+  "hardware_code_modified": false,
+  "safety_thresholds_modified": false
+}

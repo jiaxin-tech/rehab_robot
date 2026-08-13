@@ -19,10 +19,15 @@ import pandas as pd
 
 from lower_limb_sim.config import L1, L2
 from lower_limb_sim.kinematics import forward_kinematics
-from lower_limb_sim.reference_closed_c2 import (
-    APPROVED_HIP_ROM_DEG,
-    APPROVED_KNEE_ROM_DEG,
+from lower_limb_sim.formal_protocol import (
+    ACTIVE_REFERENCE_ID,
+    ACTIVE_REFERENCE_SHA256,
+    FORMAL_HIP_ROM_DEG,
+    FORMAL_KNEE_ROM_DEG,
+    ROM_PROTOCOL_VERSION,
+    THETA_SHANK_DEFINITION,
 )
+from lower_limb_sim.reference_release import load_reference_release_manifest
 from lower_limb_sim.reference_measured_asymmetric import (
     MEASURED_ASYMMETRIC_CLOSED_REFERENCE,
 )
@@ -35,17 +40,21 @@ from lower_limb_sim.run_robot_trajectory_export import (
 ABSOLUTE_CALIBRATED_MODE = "absolute_calibrated"
 START_ANCHORED_RELATIVE_MODE = "start_anchored_relative"
 FIRST_ROBOT_TRIAL_TRAJECTORY_ID = (
-    "reference_measured_asymmetric_closed_slow"
+    ACTIVE_REFERENCE_ID
 )
 APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256 = (
-    "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    ACTIVE_REFERENCE_SHA256
 )
 APPROVED_FIRST_ROBOT_TRIAL_L1_M = 0.42
 APPROVED_FIRST_ROBOT_TRIAL_L2_M = 0.30
+# Candidate whitelist only.  Membership does not constitute physical-motion
+# approval; the release manifest and output metadata remain NO-GO.
 ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES = frozenset(
     {FIRST_ROBOT_TRIAL_TRAJECTORY_ID}
 )
-MODEL_ANGLE_DEFINITION = "theta_shank = q_hip - q_knee"
+MODEL_ANGLE_DEFINITION = f"theta_shank = {THETA_SHANK_DEFINITION}"
+APPROVED_HIP_ROM_DEG = FORMAL_HIP_ROM_DEG
+APPROVED_KNEE_ROM_DEG = FORMAL_KNEE_ROM_DEG
 DEFAULT_FRAME_INPUT_TOLERANCE = 1e-3
 DEFAULT_NUMERICAL_TOLERANCE = 1e-10
 
@@ -475,6 +484,10 @@ def build_start_anchored_relative_trajectory(
         "experiment_mode": START_ANCHORED_RELATIVE_MODE,
         "trajectory_id": trajectory_id,
         "reference": source_metadata,
+        "parent_reference_id": source_metadata.get("parent_reference_id"),
+        "parent_reference_sha256": source_metadata.get(
+            "parent_reference_sha256"
+        ),
         "approved_first_robot_trial_reference_sha256": (
             APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
         ),
@@ -482,10 +495,19 @@ def build_start_anchored_relative_trajectory(
             trajectory_id == FIRST_ROBOT_TRIAL_TRAJECTORY_ID
             and source_metadata.get("sha256")
             == APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
+            and load_reference_release_manifest()[
+                "approved_for_first_robot_trial"
+            ]
+        ),
+        "reference_sha256_matches_frozen_release": bool(
+            trajectory_id == FIRST_ROBOT_TRIAL_TRAJECTORY_ID
+            and source_metadata.get("sha256")
+            == APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
         ),
         "model_angle_definition": MODEL_ANGLE_DEFINITION,
         "approved_hip_rom_deg": list(APPROVED_HIP_ROM_DEG),
         "approved_knee_rom_deg": list(APPROVED_KNEE_ROM_DEG),
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
         "rehab_frame": rehab_frame.as_metadata(),
         "start_tcp_pose_base": anchor_pose.tolist(),
         "tcp_orientation_strategy": "fixed_at_start_anchor",
@@ -504,7 +526,10 @@ def build_start_anchored_relative_trajectory(
         "observed_ankle_used_as_pull_point": False,
         "tool_offset_applied_to_relative_increment": False,
         "tool_offset_retained_for_mode": ABSOLUTE_CALIBRATED_MODE,
-        "allowed_for_first_robot_trial": (
+        "allowed_for_first_robot_trial": bool(
+            load_reference_release_manifest()["approved_for_first_robot_trial"]
+        ),
+        "first_robot_trial_candidate_whitelisted": bool(
             trajectory_id in ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES
         ),
         "trajectory_audit": audit.as_dict(),

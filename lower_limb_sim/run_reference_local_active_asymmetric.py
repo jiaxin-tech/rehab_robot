@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from . import config
+from .formal_protocol import ROM_PROTOCOL_VERSION, THETA_SHANK_DEFINITION
 from .parameter_estimator import PARAMETER_NAMES
 from .reference_local_active_asymmetric import (
     ACTIVE_REFERENCE_ID,
@@ -111,6 +112,8 @@ def _provenance_frame(
         "split_definition_id": SPLIT_DEFINITION_ID,
         "active_reference_identifier": ACTIVE_REFERENCE_ID,
         "active_reference_sha256": reference_sha256,
+        "parent_reference_id": ACTIVE_REFERENCE_ID,
+        "parent_reference_sha256": reference_sha256,
         "random_seed": RANDOM_SEED,
     }
     for column, value in provenance.items():
@@ -307,6 +310,7 @@ def _experiment_config(
             "theta_shank_convention": "theta_shank = q_hip - q_knee",
             "active_hip_rom_deg": result.reference.metadata["approved_hip_rom_deg"],
             "active_knee_rom_deg": result.reference.metadata["approved_knee_rom_deg"],
+            "rom_protocol_version": ROM_PROTOCOL_VERSION,
             "jacobian_determinant_threshold": config.jacobian_det_threshold,
             "jacobian_condition_limit": config.jacobian_condition_limit,
             "force_magnitude_software_anomaly_limit_n": config.force_magnitude_limit_n,
@@ -357,7 +361,11 @@ def save_formal_result(
         "split_definition_id": SPLIT_DEFINITION_ID,
         "active_reference_identifier": ACTIVE_REFERENCE_ID,
         "active_reference_sha256": reference_sha,
+        "parent_reference_id": ACTIVE_REFERENCE_ID,
+        "parent_reference_sha256": reference_sha,
         "random_seed": RANDOM_SEED,
+        "rom_protocol_version": ROM_PROTOCOL_VERSION,
+        "theta_shank_definition": THETA_SHANK_DEFINITION,
     }
     paths: dict[str, Path] = {}
 

@@ -7,7 +7,7 @@ import inspect
 import numpy as np
 
 import lower_limb_sim.parameter_estimator as parameter_estimator
-from lower_limb_sim.config import L1
+from lower_limb_sim.config import L1, hip_range_deg, knee_range_deg
 from lower_limb_sim.dynamic_subject import get_dynamic_subject
 from lower_limb_sim.mismatch_dynamics import mismatch_inverse_dynamics
 from lower_limb_sim.mismatch_scenarios import (
@@ -145,8 +145,8 @@ def test_every_scenario_has_complete_metadata() -> None:
 
 def test_all_scenarios_remain_finite_over_configured_motion_range() -> None:
     base = get_dynamic_subject("baseline")
-    q_hip = np.deg2rad(np.linspace(0.0, 120.0, 61))
-    q_knee = np.deg2rad(np.linspace(5.0, 130.0, 61))
+    q_hip = np.deg2rad(np.linspace(*hip_range_deg, 61))
+    q_knee = np.deg2rad(np.linspace(*knee_range_deg, 61))
     dq_hip = np.linspace(-2.0, 2.0, 61)
     dq_knee = np.linspace(2.0, -2.0, 61)
     ddq_hip = np.linspace(-4.0, 4.0, 61)
@@ -202,4 +202,3 @@ def test_building_scenario_subject_does_not_modify_base_subject() -> None:
     assert generated.mismatch_parameters_dict() == dict(
         get_mismatch_scenario("combined_strong").generator_parameters,
     )
-

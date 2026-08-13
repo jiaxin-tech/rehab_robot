@@ -6,13 +6,13 @@
 
 ```text
 theta_shank = q_hip - q_knee
-approved ROM: hip 0–120 deg, knee 5–145 deg
+ROM_PROTOCOL_V2: hip 0–120 deg, knee 5–145 deg
 ```
 
 正式参考现在保留 CSV 中实测的屈曲和实测的伸展两条不同路径，并用小幅
 periodic cubic B-spline 修正达到 C2 周期闭合：
 
-- `reference_measured_asymmetric_closed_slow`：24 s，401 点；冻结域覆盖 100%，第一轮机器人运动唯一白名单。
+- `reference_measured_asymmetric_closed_slow`：24 s，401 点；冻结域覆盖 100%，是唯一 first-trial candidate，但 reference freeze 本身不批准物理机器人运动。
 - `reference_measured_asymmetric_closed_nominal`：12 s，401 点；冻结域覆盖 66.334%，低于既有 90% 门，保留离线且 fail closed。
 
 旧 `reference_closed_symmetric` 和 `reference_closed_c2` 都保留为
@@ -21,7 +21,11 @@ legacy/software comparison，`active_reference=false`；它们的反向屈曲构
 
 仓库仍保留 Stage 1–6 离线研究代码与结果作为论文证据，但默认入口已经切换到真实 ROKAE 的观察型诊断、锚点、预览、采集和严格门控执行。
 
-第一轮 slow CSV 绑定的 SHA-256 为：`f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881`；等效牵引点几何固定为 `L1=0.42 m`、`L2=0.30 m`。文件内容或几何参数变化都会使 execute fail closed，而不是与同一份可变文件自我比较后放行。
+正式协议的唯一可编辑来源是 `config/formal_experiment_manifest.json`；
+workspace、IK、reference、candidate、identification、preview/preflight 均读取
+这一协议。迁移前 5–130° 数据只作 legacy provenance，不是默认 active 输入。
+
+tracked release bundle 位于 `reference_release/`；默认 active loader 只接受其中的 slow CSV，并同时校验 release/source SHA、source skeleton SHA、ROM、闭合、C2、asymmetry 和 duration。SHA-256 为：`f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881`；等效牵引点几何固定为 `L1=0.42 m`、`L2=0.30 m`。文件内容或几何参数变化都会 fail closed。
 
 > 当前软件收口已完成，但真机运动状态仍为 **NO-GO**。macOS 环境只能完成离线/fake 回归；xCoreSDK 运动 API 已由本地 `.pyi` 和厂商 examples 静态确认，尚未完成 Windows 空载/真机验证。任何软件 stop 都不能替代急停、安全控制器和现场实验人员。
 
@@ -69,7 +73,7 @@ python3 -m pip install -r requirements.txt
 python3 -B -m pytest -q
 ```
 
-当前最终离线结果为 `640 passed, 5 skipped in 96.90 s`（645 项已收集）。跳过项是 Windows 原生 SDK 和显式真机 opt-in 测试；该结果不是实机证据。
+final reference freeze 后的完整离线结果为 `667 passed, 5 skipped in 100.64 s`。跳过项是 Windows 原生 SDK 和显式真机 opt-in 测试；该结果不是实机证据。
 
 平台边界：
 
@@ -188,7 +192,7 @@ python -m scripts.run_rehab_experiment `
   --operator-confirmation "I CONFIRM SUPERVISED SLOW ROBOT MOTION"
 ```
 
-必须同时通过：显式 execute/enable、精确 operator confirmation、本机 RT 网卡 IP、SDK connected、frame/anchor/safety reviewed、runtime↔anchor↔config 的 model/serial/controller/payload/软限位一致、anchor↔config 的 tool/workpiece 声明一致且名称存在于 SDK available lists、collision 查询有效且未触发、起点一致、pinned slow 白名单、C2/ROM/FK/闭合/有限性、由 xyz/time 重算而非信任 CSV 声明的速度/加速度、workspace、state/wrench thread 和新鲜度、力/力矩阈值、reviewed RT 配置与 logger healthy。live preflight 同时绑定 exact trajectory digest 和完整 safety digest；offline preflight、手工 dataclass、事后改表或更换 safety snapshot 都不能交给 executor。SDK 不能证明当前 HMI 激活的是哪个 tool/workobject，必须由操作员另行审核。attach 后以及首个 hold 紧邻启动前会再次检查 collision、identity/payload/软限位/current joint、idle、stream 和 anchor；首个 RT hold target 及所有后续 command 都必须在审核的 lateness 内完成 flush + `fsync`，否则不会开始/下发并进入 `request_stop(reason)`。
+必须同时通过：显式 execute/enable、精确 operator confirmation、本机 RT 网卡 IP、SDK connected、frame/anchor/safety reviewed、runtime↔anchor↔config 的 model/serial/controller/payload/软限位一致、anchor↔config 的 tool/workpiece 声明一致且名称存在于 SDK available lists、collision 查询有效且未触发、起点一致、pinned slow candidate 白名单、release manifest 的单独 first-trial approval、C2/ROM/FK/闭合/有限性、由 xyz/time 重算而非信任 CSV 声明的速度/加速度、workspace、state/wrench thread 和新鲜度、力/力矩阈值、reviewed RT 配置与 logger healthy。当前 release approval=false，因此 execute 在连接前 fail closed。live preflight 同时绑定 exact trajectory digest 和完整 safety digest；offline preflight、手工 dataclass、事后改表或更换 safety snapshot 都不能交给 executor。SDK 不能证明当前 HMI 激活的是哪个 tool/workobject，必须由操作员另行审核。attach 后以及首个 hold 紧邻启动前会再次检查 collision、identity/payload/软限位/current joint、idle、stream 和 anchor；首个 RT hold target 及所有后续 command 都必须在审核的 lateness 内完成 flush + `fsync`，否则不会开始/下发并进入 `request_stop(reason)`。
 
 执行器和 motion facade 都是 single-use；stop intent 一旦发布就不能再 attach/start/send，native stop 失败可重试，且 `stopLoop`/`stopMove` 未确认成功时不会报告 completed。调度器不会为追赶进度突发补发过期点，并在每次持久化 command 后重新检查缓存健康和绝对 deadline。execute 当前完全不消费 wrapper 的 `has_motion_error()`；collision 只在 live preflight、attach 后和紧邻 start 前查询，不在 command 热路径连续轮询。控制器碰撞保护必须由现场预先配置并保持有效，这也是当前仍为真机 **NO-GO** 的证据缺口之一。
 

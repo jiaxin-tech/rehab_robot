@@ -24,11 +24,12 @@ import pandas as pd
 from scipy.signal import find_peaks, savgol_filter
 
 from .config import L1, L2
+from .formal_protocol import FORMAL_HIP_ROM_DEG, FORMAL_KNEE_ROM_DEG
 from .kinematics import forward_kinematics
 
 
-APPROVED_HIP_ROM_DEG = (0.0, 120.0)
-APPROVED_KNEE_ROM_DEG = (5.0, 145.0)
+APPROVED_HIP_ROM_DEG = FORMAL_HIP_ROM_DEG
+APPROVED_KNEE_ROM_DEG = FORMAL_KNEE_ROM_DEG
 
 CLOSURE_AUDIT_COLUMNS = (
     "cycle_candidate_id",

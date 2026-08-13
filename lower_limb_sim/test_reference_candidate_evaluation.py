@@ -91,8 +91,7 @@ def unapproved_result():
 
 @pytest.fixture(scope="module")
 def approved_result():
-    # This explicit, run-local approval is test input only.  It is deliberately
-    # wider than config's 130 deg ceiling so the no-mapping branch is audited.
+    # This explicit run-local approval matches the one formal protocol.
     return run_reference_candidate_evaluation(
         processed_directory=reference_trajectory_data_dir,
         approved_hip_range_deg=EXPLICIT_HIP_APPROVAL,
@@ -137,18 +136,35 @@ def test_missing_knee_approval_blocks_all_formal_stage5c_work(
     assert unapproved_result.metadata["formal_outputs_generated"] is False
 
 
+def test_stage5c_runner_rejects_nonformal_or_mapped_rom() -> None:
+    with pytest.raises(ValueError, match="exactly match ROM_PROTOCOL_V2"):
+        run_reference_candidate_evaluation(
+            processed_directory=reference_trajectory_data_dir,
+            approved_knee_range_deg=(5.0, 130.0),
+            save_outputs=False,
+            generate_plots=False,
+        )
+    with pytest.raises(ValueError, match="forbids ROM amplitude mapping"):
+        run_reference_candidate_evaluation(
+            processed_directory=reference_trajectory_data_dir,
+            apply_smooth_rom_mapping=True,
+            save_outputs=False,
+            generate_plots=False,
+        )
+
+
 def test_run_local_approval_does_not_modify_global_knee_or_hip_limits(
     approved_result,
 ) -> None:
-    assert tuple(float(value) for value in knee_range_deg) == (5.0, 130.0)
+    assert tuple(float(value) for value in knee_range_deg) == (5.0, 145.0)
     assert tuple(float(value) for value in knee_range_deg) == CONFIGURED_KNEE_ROM_AT_IMPORT
     assert tuple(float(value) for value in hip_range_deg) == (0.0, 120.0)
     assert approved_result.rom_audit.approved_hip_range_deg == EXPLICIT_HIP_APPROVAL
     assert approved_result.rom_audit.approved_knee_range_deg == EXPLICIT_TEST_APPROVAL
-    assert approved_result.rom_audit.configured_knee_range_deg == (5.0, 130.0)
-    assert approved_result.metadata["configured_knee_range_deg_unchanged"] == [
+    assert approved_result.rom_audit.configured_knee_range_deg == (5.0, 145.0)
+    assert approved_result.metadata["configured_knee_range_deg"] == [
         5.0,
-        130.0,
+        145.0,
     ]
     assert approved_result.metadata["approved_hip_rom_deg"] == [0.0, 120.0]
     assert approved_result.metadata["approved_knee_rom_deg"] == [5.0, 145.0]
@@ -286,6 +302,7 @@ def test_all_local_adjustments_are_zero_at_cycle_endpoints(
 def test_authorized_rom_mapping_is_one_whole_path_affine_map_not_clip(
     raw_execution_versions: pd.DataFrame,
 ) -> None:
+    # Historical 5--130 protocol regression only; never an active loader input.
     mapped, audit = apply_execution_rom_policy(
         raw_execution_versions,
         approved_knee_rom=KneeRomApproval(5.0, 130.0),
