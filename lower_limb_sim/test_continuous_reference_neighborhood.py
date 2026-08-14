@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from pathlib import Path
+from dataclasses import replace
 
 import numpy as np
 import pandas as pd
@@ -168,6 +168,45 @@ def test_constraint_fields_and_domain_coverage_are_computed(representatives):
         assert result.constraints.invalid_reason == ""
 
 
+def test_failed_gate_is_reported_infeasible_without_clipping(representatives):
+    trajectory = representatives["neutral"].trajectory.copy(deep=True)
+    trajectory.loc[10, "q_knee_rad"] = np.deg2rad(146.0)
+    trajectory.loc[10, "theta_shank_rad"] = (
+        trajectory.loc[10, "q_hip_rad"] - trajectory.loc[10, "q_knee_rad"]
+    )
+    q_hip = trajectory["q_hip_rad"].to_numpy(float)
+    q_knee = trajectory["q_knee_rad"].to_numpy(float)
+    x_knee, z_knee, x_pull, z_pull = forward_kinematics(q_hip, q_knee, 0.42, 0.30)
+    trajectory["x_knee_m"] = x_knee
+    trajectory["z_knee_m"] = z_knee
+    trajectory["x_pull_m"] = x_pull
+    trajectory["z_pull_m"] = z_pull
+    from .continuous_reference_neighborhood import evaluate_trajectory_constraints
+
+    audit = evaluate_trajectory_constraints(
+        trajectory,
+        asymmetry_audit=representatives["neutral"].asymmetry_audit,
+        continuity_audit=representatives["neutral"].continuity_audit,
+    )
+    assert audit.rom_valid is False
+    assert audit.trajectory_feasible is False
+    assert "rom_invalid" in audit.invalid_reason
+    assert np.rad2deg(trajectory.loc[10, "q_knee_rad"]) == pytest.approx(146.0)
+
+
+def test_generated_validity_columns_are_candidate_specific_and_fail_closed(parent):
+    infeasible = generate_personalized_trajectory(parent, 2.0, 2.0, 0.03)
+    assert infeasible.constraints.domain_coverage_valid is False
+    assert infeasible.constraints.trajectory_feasible is False
+    assert not infeasible.trajectory["trajectory_sample_valid"].astype(bool).any()
+    assert not infeasible.trajectory["trajectory_feasible"].astype(bool).any()
+    assert infeasible.trajectory["invalid_reason"].eq(
+        "domain_coverage_insufficient"
+    ).all()
+    assert not infeasible.trajectory["formal_execution_allowed"].astype(bool).any()
+    assert not infeasible.trajectory["allowed_for_first_robot_trial"].astype(bool).any()
+
+
 @pytest.mark.parametrize(
     "parameters,token",
     [
@@ -218,6 +257,22 @@ def test_parent_loader_rejects_legacy_or_forged_parent():
         generate_personalized_trajectory(pd.read_csv(RELEASE_ACTIVE_REFERENCE_PATH))
 
 
+def test_parent_sha_mismatch_fails_closed(parent):
+    forged_manifest = dict(parent.manifest)
+    forged_manifest["sha256"] = "0" * 64
+    forged = replace(parent, manifest=forged_manifest)
+    with pytest.raises(RuntimeError, match="REFERENCE_HASH_MISMATCH"):
+        generate_personalized_trajectory(forged)
+
+
+def test_in_memory_parent_content_mismatch_fails_closed(parent):
+    forged_trajectory = parent.trajectory.copy(deep=True)
+    forged_trajectory.loc[10, "q_knee_rad"] += 1e-6
+    forged = replace(parent, trajectory=forged_trajectory)
+    with pytest.raises(RuntimeError, match="REFERENCE_HASH_MISMATCH"):
+        generate_personalized_trajectory(forged)
+
+
 def test_grid_artifacts_and_figures_are_generated_without_parent_change(tmp_path):
     before = sha256_file(RELEASE_ACTIVE_REFERENCE_PATH)
     paths = run_continuous_reference_neighborhood(tmp_path)
@@ -239,9 +294,15 @@ def test_grid_artifacts_and_figures_are_generated_without_parent_change(tmp_path
     assert metadata["grid_sample_count"] == 27
     assert metadata["parent_reference_id"] == ACTIVE_REFERENCE_ID
     assert metadata["parent_reference_sha256"] == ACTIVE_REFERENCE_SHA256
+    assert metadata["neutral_reference_max_abs_state_error"] == 0.0
+    assert metadata["neutral_exact_numeric_state_copy"] is True
+    assert metadata["trajectory_sha256_definition"].startswith("sha256_of_utf8")
+    assert metadata["theta_shank_definition"] == "q_hip - q_knee"
     assert metadata["optimizer_implemented"] is False
     assert metadata["robot_connection_performed"] is False
     assert metadata["hardware_safety_thresholds_modified"] is False
+    for filename, expected_sha in metadata["artifact_sha256"].items():
+        assert sha256_file(paths[filename]) == expected_sha
     for filename in expected:
         assert paths[filename].is_file() and paths[filename].stat().st_size > 0
 
@@ -256,4 +317,3 @@ def test_module_has_no_hardware_or_motion_imports():
     assert not any(token in source for token in forbidden)
     assert "def optimize" not in source
     assert "def select_best" not in source
-

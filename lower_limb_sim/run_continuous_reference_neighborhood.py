@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path
 from typing import Iterable
@@ -46,9 +47,16 @@ REPRESENTATIVE_POINTS = {
 }
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def _summary(result: GeneratedTrajectory, *, label: str) -> dict[str, object]:
     metadata = result.metadata
-    constraints = result.constraints
     return {
         "label": label,
         "trajectory_id": metadata["trajectory_id"],
@@ -65,22 +73,11 @@ def _summary(result: GeneratedTrajectory, *, label: str) -> dict[str, object]:
         "knee_rms_deviation_deg": metadata["knee_rms_deviation_deg"],
         "pull_max_deviation_mm": metadata["pull_max_deviation_mm"],
         "pull_rms_deviation_mm": metadata["pull_rms_deviation_mm"],
-        "closure_valid": constraints.closure_valid,
-        "rom_valid": constraints.rom_valid,
-        "workspace_valid": constraints.workspace_valid,
-        "jacobian_valid": constraints.jacobian_valid,
-        "force_mapping_valid": constraints.force_mapping_valid,
-        "domain_coverage": constraints.domain_coverage,
-        "velocity_valid": constraints.velocity_valid,
-        "acceleration_valid": constraints.acceleration_valid,
-        "asymmetry_valid": constraints.asymmetry_valid,
-        "finite_valid": constraints.finite_valid,
-        "trajectory_feasible": constraints.trajectory_feasible,
-        "invalid_reason": constraints.invalid_reason,
-        "maximum_jacobian_condition": constraints.maximum_jacobian_condition,
-        "maximum_offline_baseline_force_n": (
-            constraints.maximum_offline_baseline_force_n
-        ),
+        "generator_version": metadata["generator_version"],
+        "generator_git_commit": metadata["generator_git_commit"],
+        "generator_source_sha256": metadata["generator_source_sha256"],
+        "domain_bounds_sha256": metadata["domain_bounds_sha256"],
+        **result.constraints.as_dict(),
     }
 
 
@@ -221,6 +218,10 @@ def run_continuous_reference_neighborhood(
             plotter(path)
             paths[filename] = path
 
+    neutral_metadata = representative["neutral"].metadata
+    artifact_sha256 = {
+        name: _sha256_file(path) for name, path in sorted(paths.items())
+    }
     metadata = {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "artifact_status": "offline_generator_verification_only",
@@ -228,6 +229,10 @@ def run_continuous_reference_neighborhood(
         "parent_reference_id": ACTIVE_REFERENCE_ID,
         "parent_reference_sha256": ACTIVE_REFERENCE_SHA256,
         "parent_sha_verified_before_generation": True,
+        "generator_git_commit": neutral_metadata["generator_git_commit"],
+        "generator_source_sha256": neutral_metadata["generator_source_sha256"],
+        "domain_bounds_source": neutral_metadata["domain_bounds_source"],
+        "domain_bounds_sha256": neutral_metadata["domain_bounds_sha256"],
         "offline_personalization_search_bounds": {
             key: list(value)
             for key, value in OFFLINE_PERSONALIZATION_SEARCH_BOUNDS.items()
@@ -242,12 +247,32 @@ def run_continuous_reference_neighborhood(
         "grid_sample_count": int(len(grid)),
         "grid_feasible_count": int(grid["trajectory_feasible"].astype(bool).sum()),
         "representative_points": REPRESENTATIVE_POINTS,
+        "neutral_generator_sha": neutral_metadata["neutral_generator_sha"],
+        "neutral_reference_max_abs_state_error": neutral_metadata[
+            "neutral_reference_max_abs_state_error"
+        ],
+        "neutral_exact_numeric_state_copy": neutral_metadata[
+            "neutral_exact_numeric_state_copy"
+        ],
+        "trajectory_sha256_definition": neutral_metadata[
+            "trajectory_sha256_definition"
+        ],
+        "trajectory_sha256_columns": neutral_metadata[
+            "trajectory_sha256_columns"
+        ],
+        "rom_protocol_version": neutral_metadata["rom_protocol_version"],
+        "hip_rom_deg": neutral_metadata["hip_rom_deg"],
+        "knee_rom_deg": neutral_metadata["knee_rom_deg"],
+        "theta_shank_definition": neutral_metadata["theta_shank_definition"],
+        "continuity_audit_neutral": representative["neutral"].continuity_audit,
+        "asymmetry_audit_neutral": representative["neutral"].asymmetry_audit,
         "measured_extension_is_reversed_flexion": False,
         "optimizer_implemented": False,
         "robot_connection_performed": False,
         "robot_motion_authorized": False,
         "hardware_safety_thresholds_modified": False,
         "files": sorted(paths),
+        "artifact_sha256": artifact_sha256,
     }
     metadata_path = output / "continuous_generator_metadata.json"
     metadata_path.write_text(

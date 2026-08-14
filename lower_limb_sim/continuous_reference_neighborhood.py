@@ -44,7 +44,12 @@ from .full_dynamics import inverse_dynamics
 from .geometry_error_metrics import StateDomainBounds, classify_state_domain
 from .jacobian import jacobian_diagnostics
 from .kinematics import forward_kinematics
-from .reference_release import FrozenReferenceBundle, load_frozen_active_reference
+from .reference_release import (
+    RELEASE_ACTIVE_REFERENCE_PATH,
+    FrozenReferenceBundle,
+    load_frozen_active_reference,
+    verify_reference_sha256,
+)
 from .run_reference_candidate_evaluation import LOCAL_DOMAIN_MINIMUM_PERCENT
 
 
@@ -185,6 +190,7 @@ def _validate_parameters(parameters: ContinuousParameters) -> None:
 
 
 def _build_parent_model(bundle: FrozenReferenceBundle) -> _ParentModel:
+    verify_reference_sha256(RELEASE_ACTIVE_REFERENCE_PATH)
     if bundle.manifest["reference_id"] != ACTIVE_REFERENCE_ID:
         raise PermissionError("only the frozen active asymmetric reference is allowed")
     if bundle.manifest["sha256"] != ACTIVE_REFERENCE_SHA256:
@@ -194,6 +200,11 @@ def _build_parent_model(bundle: FrozenReferenceBundle) -> _ParentModel:
     if bundle.manifest["approved_for_offline_personalization"] is not True:
         raise PermissionError("parent is not approved for offline personalization")
     parent = bundle.trajectory.copy(deep=True)
+    canonical = pd.read_csv(RELEASE_ACTIVE_REFERENCE_PATH)
+    if not parent.equals(canonical):
+        raise RuntimeError(
+            "REFERENCE_HASH_MISMATCH: supplied parent content differs from canonical release"
+        )
     phase = parent["global_phase"].to_numpy(dtype=float)
     if not np.all(np.diff(phase) > 0.0):
         raise RuntimeError("parent global phase must be strictly increasing")
@@ -683,6 +694,36 @@ def evaluate_trajectory_constraints(
     )
 
 
+def _annotate_constraint_result(
+    trajectory: pd.DataFrame,
+    constraints: TrajectoryConstraintAudit,
+) -> None:
+    """Overwrite inherited parent validity with this candidate's fail-closed result."""
+
+    for field in (
+        "closure_valid",
+        "rom_valid",
+        "workspace_valid",
+        "jacobian_valid",
+        "force_mapping_valid",
+        "domain_coverage_valid",
+        "velocity_valid",
+        "acceleration_valid",
+        "asymmetry_valid",
+        "finite_valid",
+        "trajectory_feasible",
+    ):
+        trajectory[field] = bool(getattr(constraints, field))
+    trajectory["domain_coverage"] = float(constraints.domain_coverage)
+    trajectory["invalid_reason"] = str(constraints.invalid_reason)
+    trajectory["joint_limit_valid"] = bool(constraints.rom_valid)
+    trajectory["trajectory_sample_valid"] = bool(
+        constraints.trajectory_feasible
+    )
+    trajectory["formal_execution_allowed"] = False
+    trajectory["allowed_for_first_robot_trial"] = False
+
+
 def generate_personalized_trajectory(
     parent_reference: FrozenReferenceBundle | None = None,
     hip_amplitude_delta_deg: float = 0.0,
@@ -809,6 +850,7 @@ def generate_personalized_trajectory(
         continuity_audit=continuity,
         domain_bounds_path=domain_bounds_path,
     )
+    _annotate_constraint_result(trajectory, constraints)
     deviation = _reference_deviation(parent, trajectory)
     candidate_sha = _trajectory_sha256(trajectory)
     neutral_max_error = float(
@@ -858,6 +900,11 @@ def generate_personalized_trajectory(
         "domain_bounds_source": str(Path(domain_bounds_path).resolve()),
         "domain_bounds_sha256": _file_sha256(domain_bounds_path),
         "trajectory_sha256": candidate_sha,
+        "trajectory_sha256_definition": (
+            "sha256_of_utf8_canonical_csv_selected_trajectory_columns_"
+            "float17g_lf"
+        ),
+        "trajectory_sha256_columns": list(_TRAJECTORY_HASH_COLUMNS),
         "neutral_generator_sha": candidate_sha if parameters.neutral else None,
         "neutral_reference_max_abs_state_error": neutral_max_error,
         "neutral_exact_numeric_state_copy": parameters.neutral,
