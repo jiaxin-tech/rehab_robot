@@ -1,0 +1,183 @@
+{
+  "protocol_id": "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_V1",
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "five_parameter_names": [
+    "mass_scale",
+    "k_hip_nm_per_rad",
+    "k_knee_nm_per_rad",
+    "b_hip_nm_s_per_rad",
+    "b_knee_nm_s_per_rad"
+  ],
+  "maximum_initial_identification_trials": 5,
+  "validation_trajectory_specs": [
+    [
+      "hip_dominant",
+      "slow"
+    ],
+    [
+      "knee_dominant",
+      "fast"
+    ]
+  ],
+  "heldout_final_test_trajectory_specs": [
+    [
+      "coupled",
+      "nominal"
+    ],
+    [
+      "hip_dominant",
+      "fast"
+    ],
+    [
+      "knee_dominant",
+      "slow"
+    ]
+  ],
+  "heldout_final_test_generated_or_read": false,
+  "acceptance_rule_status": "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_REQUIRES_REVIEW",
+  "real_robot_connected": false,
+  "personalization_executed": false,
+  "global_prediction_reliability_rule_frozen": false,
+  "created_at_utc": "2026-08-15T07:24:18.195829+00:00",
+  "software_version_or_git_commit": "f868b9d1bb74696345f35838c80e64d3e0a4f27c",
+  "task_start_git_status_short": [
+    "?? lower_limb_sim/.DS_Store",
+    "?? lower_limb_sim/formal_artifacts/safeguarded_sequential_initial_identification_v1/",
+    "?? lower_limb_sim/run_safeguarded_sequential_initial_identification.py",
+    "?? lower_limb_sim/safeguarded_sequential_initial_identification.py",
+    "?? lower_limb_sim/test_safeguarded_sequential_initial_identification.py"
+  ],
+  "task_start_git_status_source": "captured_before_task_edits",
+  "artifact_generation_start_git_status_short": [
+    "?? lower_limb_sim/.DS_Store",
+    "?? lower_limb_sim/formal_artifacts/initial_identification_acceptance_rule_v1/",
+    "?? lower_limb_sim/formal_artifacts/safeguarded_sequential_initial_identification_v1/",
+    "?? lower_limb_sim/initial_identification_acceptance_rule.py",
+    "?? lower_limb_sim/run_initial_identification_acceptance_rule.py",
+    "?? lower_limb_sim/run_safeguarded_sequential_initial_identification.py",
+    "?? lower_limb_sim/safeguarded_sequential_initial_identification.py",
+    "?? lower_limb_sim/test_initial_identification_acceptance_rule.py",
+    "?? lower_limb_sim/test_safeguarded_sequential_initial_identification.py"
+  ],
+  "prerequisite_checkpoint_committed_at_task_start": false,
+  "prerequisite_untracked_paths": [
+    "lower_limb_sim/formal_artifacts/safeguarded_sequential_initial_identification_v1/",
+    "lower_limb_sim/run_safeguarded_sequential_initial_identification.py",
+    "lower_limb_sim/safeguarded_sequential_initial_identification.py",
+    "lower_limb_sim/test_safeguarded_sequential_initial_identification.py"
+  ],
+  "ds_store_excluded_from_task": true,
+  "analysis_case_count": 9,
+  "analysis_cases": [
+    {
+      "subject_id": "baseline",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "hip_stiff",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "knee_stiff",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "heavy_leg",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_stiffness_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "hip_knee_coupling_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_damping_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "structured_residual",
+      "evidence_role": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "combined_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH"
+    }
+  ],
+  "diagnostic_trials_executed_per_case": 5,
+  "diagnostic_five_trial_rollout_reason": "marginal_gain_analysis_only",
+  "formal_theta_hat_0_count": 0,
+  "personalization_prerequisite_pass_count": 0,
+  "parameter_identifiability_threshold_status": "PARAMETER_IDENTIFIABILITY_THRESHOLD_REQUIRES_REVIEW",
+  "model_adequacy_threshold_status": "MODEL_ADEQUACY_THRESHOLD_REQUIRES_REVIEW",
+  "legacy_0p20_nm_status": "RESEARCH_ONLY_UNJUSTIFIED_NOT_FORMAL",
+  "legacy_0p20_nm_changed_to_0p45": false,
+  "candidate_threshold_selected_or_frozen": false,
+  "candidate_false_accept_false_reject_computable": false,
+  "matched_trial2_candidate_envelope": {
+    "minimum_rank": 5,
+    "minimum_singular_value": 20.963690066710956,
+    "maximum_condition_number": 35.45718964661014,
+    "maximum_abs_parameter_correlation": 0.26672554380596675,
+    "maximum_uncertainty_proxy": 0.04770126000272871,
+    "minimum_parameter_sensitivity": 21.067708593320702,
+    "maximum_normalized_parameter_change": 0.0,
+    "maximum_hip_rmse_nm": 4.365440634226609e-09,
+    "maximum_knee_rmse_nm": 1.2061360733182371e-10,
+    "maximum_combined_rmse_nm": 3.0880106519594794e-09,
+    "maximum_combined_nrmse_percent": 7.50995439879882e-09,
+    "maximum_validation_e_j": 8.639311488423118e-12,
+    "maximum_validation_relative_e_j_percent": 8.639311488423118e-10
+  },
+  "diagnostic_state_lens_candidate_id": "separated_gate_trial2_diagnostic_envelope",
+  "validation_mechanical_objective_definition": "duration_weighted_mean_of_per_trajectory_J; actual trajectory torque metrics are each validation reference",
+  "validation_mechanical_objective_status": "PRECURSOR_ONLY_NOT_GLOBAL_RELIABILITY_RULE",
+  "truth_parameters_used_by_decision": false,
+  "heldout_final_test_used": false,
+  "heldout_final_test_files_read": false,
+  "heldout_final_test_trajectories_generated": false,
+  "estimator_modified": false,
+  "excitation_selection_modified": false,
+  "mechanical_objective_modified": false,
+  "hardware_or_safety_modified": false,
+  "explore_exploit_personalization_executed": false,
+  "artifact_sha256": {
+    "CURRENT_INITIAL_ID_STOP_RULE_AUDIT.md": "edcbab4eb316ff95339fe09f35ae46623fc3fcd06176ce9dc8ab7853948fe972",
+    "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_REPORT.md": "4c796731e61c578b7af6318f41a263f90f2f378292bb0f5439eda05c43e9aeb3",
+    "INITIAL_ID_ACCEPTANCE_DATA_LEAKAGE_AUDIT.md": "0d3dd0007d7d26fdf2ea82b983bb92b8d37b4fe03c1ef09295ae96e7048ab6ae",
+    "acceptance_rule_candidate_table.csv": "87a0b772028796f1d59a19e959422776ba35a1cc1a6e3be63e85ca41e320b179",
+    "identifiability_vs_model_adequacy.png": "695e7f5bfa775b1ac88d667921dfd81b1cdba90d899466d9236370ab3c307efb",
+    "identification_marginal_gain_by_trial.csv": "64b8d4c72101bd4b9cb7a671f5fc40a65bdbab65ff360bb1d72d9afa713f0a31",
+    "information_gain_vs_model_error.png": "b2e831b7d9e796884ac1289dcf08a0e28a46405fd0a86f3b6bdd0ad2d864911f",
+    "initial_identification_acceptance_summary.csv": "02832aac52021031909b3f0db8f63fd53d196ef7166c4e9ac939ece2036a99c7",
+    "model_adequacy_by_trial.csv": "c681061d923819111fb5f3cf1db2a3db592023a5d4678e2ff98ea6d21a9658c1",
+    "parameter_identifiability_by_trial.csv": "02aea81cbe99766bd85504a745979e1834cf376ae582e036fc96e467e3d82840",
+    "parameter_identifiability_vs_trial.png": "f2e7d8392bae66bc988c7d96c01b0dbe78ebb9e76d57d815143f1520cbd2b3fd",
+    "parameter_stability_by_trial.csv": "20a02bd27049fd04d3da865bc64d7a2f9873e257024e9292ea6e86dd5c0bc3e0",
+    "parameter_stability_vs_trial.png": "99ebd7cc95d19450547d91777a7f79af97384fd984be24aa815ad4db4d829aec",
+    "validation_error_vs_trial.png": "15dfd59cb6774d8c6481544cd49848280df31b605bd0e26c0e1001eaad7e01fc"
+  },
+  "runtime_seconds": 24.146213666997937
+}
