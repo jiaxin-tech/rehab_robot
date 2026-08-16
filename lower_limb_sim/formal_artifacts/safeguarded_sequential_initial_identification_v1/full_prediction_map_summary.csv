@@ -1,0 +1,7 @@
+case_id,subject_id,truth_scenario,theta_hat_0_available,full_prediction_map_generated,geometrically_admissible_points,supported_prediction_points,unsupported_extrapolation_points,minimum_J_pred,maximum_J_pred,can_calculate_equals_can_trust,reason
+baseline__matched_linear,baseline,matched_linear,True,True,21025,7650,13375,0.9676330753356648,1.0231061228663387,False,
+hip_stiff__matched_linear,hip_stiff,matched_linear,True,True,21025,7650,13375,0.970905205669022,1.014973169079772,False,
+knee_stiff__matched_linear,knee_stiff,matched_linear,True,True,21025,7650,13375,0.9747738730941182,1.0169334467358653,False,
+heavy_leg__matched_linear,heavy_leg,matched_linear,True,True,21025,7650,13375,0.9632031171674545,1.0285222696614982,False,
+baseline__combined_mild,baseline,combined_mild,False,False,0,0,0,,,,theta_hat_0_not_available
+LIMITED_ROM_VIRTUAL_SUBJECT__matched_linear,LIMITED_ROM_VIRTUAL_SUBJECT,matched_linear,True,True,11025,7650,3375,0.9711381174044914,1.0107063017820197,False,

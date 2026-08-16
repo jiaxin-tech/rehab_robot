@@ -1,0 +1,157 @@
+{
+  "LIMITED_ROM_VIRTUAL_SUBJECT__matched_linear": {
+    "D_init_sha256": "0ef1cf8055f483d5c7ecc2d0be5dc6739d7f3ac835b42357b53e4b51bc7eda56",
+    "classification": "INITIAL_KNOWN_IDENTIFICATION_REGION_FROM_D_INIT",
+    "columns": [
+      "q_hip_est_rad",
+      "q_knee_est_rad",
+      "dq_hip_est_rad_s",
+      "dq_knee_est_rad_s",
+      "ddq_hip_est_rad_s2",
+      "ddq_knee_est_rad_s2"
+    ],
+    "does_not_expand_patient_operational_envelope": true,
+    "is_patient_safety_envelope": false,
+    "lower": [
+      0.5045631112514893,
+      0.3197290416428389,
+      -0.6561629342087781,
+      -0.8909978049510898,
+      -0.7092630374597347,
+      -1.0238282742003126
+    ],
+    "upper": [
+      1.9377594565565512,
+      2.16048717811808,
+      0.43961043994507654,
+      0.7060059079903492,
+      0.7496935232054315,
+      0.8197614219333362
+    ],
+    "valid_executed_samples": 802
+  },
+  "baseline__matched_linear": {
+    "D_init_sha256": "0ef1cf8055f483d5c7ecc2d0be5dc6739d7f3ac835b42357b53e4b51bc7eda56",
+    "classification": "INITIAL_KNOWN_IDENTIFICATION_REGION_FROM_D_INIT",
+    "columns": [
+      "q_hip_est_rad",
+      "q_knee_est_rad",
+      "dq_hip_est_rad_s",
+      "dq_knee_est_rad_s",
+      "ddq_hip_est_rad_s2",
+      "ddq_knee_est_rad_s2"
+    ],
+    "does_not_expand_patient_operational_envelope": true,
+    "is_patient_safety_envelope": false,
+    "lower": [
+      0.5045631112514893,
+      0.3197290416428389,
+      -0.6561629342087781,
+      -0.8909978049510898,
+      -0.7092630374597347,
+      -1.0238282742003126
+    ],
+    "upper": [
+      1.9377594565565512,
+      2.16048717811808,
+      0.43961043994507654,
+      0.7060059079903492,
+      0.7496935232054315,
+      0.8197614219333362
+    ],
+    "valid_executed_samples": 802
+  },
+  "heavy_leg__matched_linear": {
+    "D_init_sha256": "6320b14027cb7d4e37d658296199565f513aca4c754a049467acc3a1b64a02ff",
+    "classification": "INITIAL_KNOWN_IDENTIFICATION_REGION_FROM_D_INIT",
+    "columns": [
+      "q_hip_est_rad",
+      "q_knee_est_rad",
+      "dq_hip_est_rad_s",
+      "dq_knee_est_rad_s",
+      "ddq_hip_est_rad_s2",
+      "ddq_knee_est_rad_s2"
+    ],
+    "does_not_expand_patient_operational_envelope": true,
+    "is_patient_safety_envelope": false,
+    "lower": [
+      0.5045631112514893,
+      0.3197290416428389,
+      -0.6561629342087781,
+      -0.8909978049510898,
+      -0.7092630374597347,
+      -1.0238282742003126
+    ],
+    "upper": [
+      1.9377594565565512,
+      2.16048717811808,
+      0.43961043994507654,
+      0.7060059079903492,
+      0.7496935232054315,
+      0.8197614219333362
+    ],
+    "valid_executed_samples": 802
+  },
+  "hip_stiff__matched_linear": {
+    "D_init_sha256": "fd716f99cbf59a29cdcba64b01b0778433fd7429507de9dd4846e3a78477a802",
+    "classification": "INITIAL_KNOWN_IDENTIFICATION_REGION_FROM_D_INIT",
+    "columns": [
+      "q_hip_est_rad",
+      "q_knee_est_rad",
+      "dq_hip_est_rad_s",
+      "dq_knee_est_rad_s",
+      "ddq_hip_est_rad_s2",
+      "ddq_knee_est_rad_s2"
+    ],
+    "does_not_expand_patient_operational_envelope": true,
+    "is_patient_safety_envelope": false,
+    "lower": [
+      0.5045631112514893,
+      0.3197290416428389,
+      -0.6561629342087781,
+      -0.8909978049510898,
+      -0.7092630374597347,
+      -1.0238282742003126
+    ],
+    "upper": [
+      1.9377594565565512,
+      2.16048717811808,
+      0.43961043994507654,
+      0.7060059079903492,
+      0.7496935232054315,
+      0.8197614219333362
+    ],
+    "valid_executed_samples": 802
+  },
+  "knee_stiff__matched_linear": {
+    "D_init_sha256": "0dec463027845c2ffc335f9e9ecff86d4d0b9856dd80b61267412368aff345b2",
+    "classification": "INITIAL_KNOWN_IDENTIFICATION_REGION_FROM_D_INIT",
+    "columns": [
+      "q_hip_est_rad",
+      "q_knee_est_rad",
+      "dq_hip_est_rad_s",
+      "dq_knee_est_rad_s",
+      "ddq_hip_est_rad_s2",
+      "ddq_knee_est_rad_s2"
+    ],
+    "does_not_expand_patient_operational_envelope": true,
+    "is_patient_safety_envelope": false,
+    "lower": [
+      0.5045631112514893,
+      0.3197290416428389,
+      -0.6561629342087781,
+      -0.8909978049510898,
+      -0.7092630374597347,
+      -1.0238282742003126
+    ],
+    "upper": [
+      1.9377594565565512,
+      2.16048717811808,
+      0.43961043994507654,
+      0.7060059079903492,
+      0.7496935232054315,
+      0.8197614219333362
+    ],
+    "valid_executed_samples": 802
+  }
+}

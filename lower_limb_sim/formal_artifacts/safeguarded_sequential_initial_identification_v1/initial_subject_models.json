@@ -1,0 +1,107 @@
+{
+  "LIMITED_ROM_VIRTUAL_SUBJECT__matched_linear": {
+    "initial_identification_dataset_sha": "0ef1cf8055f483d5c7ecc2d0be5dc6739d7f3ac835b42357b53e4b51bc7eda56",
+    "initial_identification_trial_count": 2,
+    "initial_subject_model": {
+      "b_hip_nm_s_per_rad": 2.0000000236898585,
+      "b_knee_nm_s_per_rad": 1.4999999999917641,
+      "k_hip_nm_per_rad": 14.99999999980913,
+      "k_knee_nm_per_rad": 12.000000000127748,
+      "mass_scale": 1.0000000000345897
+    },
+    "is_tissue_material_constant": false,
+    "parameter_interpretation": "local_equivalent_dynamics_parameters",
+    "parameter_order": [
+      "mass_scale",
+      "k_hip_nm_per_rad",
+      "k_knee_nm_per_rad",
+      "b_hip_nm_s_per_rad",
+      "b_knee_nm_s_per_rad"
+    ],
+    "stop_rule_status": "VIRTUAL_RESEARCH_COMPARISON_ONLY_NOT_FROZEN"
+  },
+  "baseline__matched_linear": {
+    "initial_identification_dataset_sha": "0ef1cf8055f483d5c7ecc2d0be5dc6739d7f3ac835b42357b53e4b51bc7eda56",
+    "initial_identification_trial_count": 2,
+    "initial_subject_model": {
+      "b_hip_nm_s_per_rad": 2.0000000236898585,
+      "b_knee_nm_s_per_rad": 1.4999999999917641,
+      "k_hip_nm_per_rad": 14.99999999980913,
+      "k_knee_nm_per_rad": 12.000000000127748,
+      "mass_scale": 1.0000000000345897
+    },
+    "is_tissue_material_constant": false,
+    "parameter_interpretation": "local_equivalent_dynamics_parameters",
+    "parameter_order": [
+      "mass_scale",
+      "k_hip_nm_per_rad",
+      "k_knee_nm_per_rad",
+      "b_hip_nm_s_per_rad",
+      "b_knee_nm_s_per_rad"
+    ],
+    "stop_rule_status": "VIRTUAL_RESEARCH_COMPARISON_ONLY_NOT_FROZEN"
+  },
+  "heavy_leg__matched_linear": {
+    "initial_identification_dataset_sha": "6320b14027cb7d4e37d658296199565f513aca4c754a049467acc3a1b64a02ff",
+    "initial_identification_trial_count": 2,
+    "initial_subject_model": {
+      "b_hip_nm_s_per_rad": 2.0000000000159313,
+      "b_knee_nm_s_per_rad": 1.4999999999999958,
+      "k_hip_nm_per_rad": 15.000000000000258,
+      "k_knee_nm_per_rad": 12.000000000000046,
+      "mass_scale": 1.3000000000000123
+    },
+    "is_tissue_material_constant": false,
+    "parameter_interpretation": "local_equivalent_dynamics_parameters",
+    "parameter_order": [
+      "mass_scale",
+      "k_hip_nm_per_rad",
+      "k_knee_nm_per_rad",
+      "b_hip_nm_s_per_rad",
+      "b_knee_nm_s_per_rad"
+    ],
+    "stop_rule_status": "VIRTUAL_RESEARCH_COMPARISON_ONLY_NOT_FROZEN"
+  },
+  "hip_stiff__matched_linear": {
+    "initial_identification_dataset_sha": "fd716f99cbf59a29cdcba64b01b0778433fd7429507de9dd4846e3a78477a802",
+    "initial_identification_trial_count": 2,
+    "initial_subject_model": {
+      "b_hip_nm_s_per_rad": 1.9999999999999998,
+      "b_knee_nm_s_per_rad": 1.4999999999950528,
+      "k_hip_nm_per_rad": 30.0,
+      "k_knee_nm_per_rad": 11.999999999999893,
+      "mass_scale": 0.9999999999999999
+    },
+    "is_tissue_material_constant": false,
+    "parameter_interpretation": "local_equivalent_dynamics_parameters",
+    "parameter_order": [
+      "mass_scale",
+      "k_hip_nm_per_rad",
+      "k_knee_nm_per_rad",
+      "b_hip_nm_s_per_rad",
+      "b_knee_nm_s_per_rad"
+    ],
+    "stop_rule_status": "VIRTUAL_RESEARCH_COMPARISON_ONLY_NOT_FROZEN"
+  },
+  "knee_stiff__matched_linear": {
+    "initial_identification_dataset_sha": "0dec463027845c2ffc335f9e9ecff86d4d0b9856dd80b61267412368aff345b2",
+    "initial_identification_trial_count": 2,
+    "initial_subject_model": {
+      "b_hip_nm_s_per_rad": 2.000000000000028,
+      "b_knee_nm_s_per_rad": 1.5,
+      "k_hip_nm_per_rad": 15.0,
+      "k_knee_nm_per_rad": 30.0,
+      "mass_scale": 0.9999999999999999
+    },
+    "is_tissue_material_constant": false,
+    "parameter_interpretation": "local_equivalent_dynamics_parameters",
+    "parameter_order": [
+      "mass_scale",
+      "k_hip_nm_per_rad",
+      "k_knee_nm_per_rad",
+      "b_hip_nm_s_per_rad",
+      "b_knee_nm_s_per_rad"
+    ],
+    "stop_rule_status": "VIRTUAL_RESEARCH_COMPARISON_ONLY_NOT_FROZEN"
+  }
+}
