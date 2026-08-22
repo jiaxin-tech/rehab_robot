@@ -1,0 +1,5 @@
+guard_id,candidate_count,would_exploit_count,missed_improvement_count,false_improvement_count,conservative_rejection_count,uncertainty_bound_min,uncertainty_bound_max,change_vs_G0_missed_improvement_count,change_vs_G0_false_improvement_count,change_vs_G0_conservative_rejection_count,shadow_only,threshold_frozen,formal_policy_modified,truth_used_to_modify_formal_policy
+G0_CURRENT_GLOBAL_UNCERTAINTY_REPLAY,341,20,7,0,314,0,0.216052982758,0,0,0,True,False,False,False
+G1_DESIGNATED_LOCAL_MAX_SHADOW,341,0,27,0,314,0.00168273790494,0.00168273790494,20,0,0,True,False,False,False
+G2_DESIGNATED_LOCAL_P95_SHADOW,341,24,3,0,314,0.000430956758924,0.000430956758924,-4,0,0,True,False,False,False
+G3_DESIGNATED_LOCAL_P99_SHADOW,341,4,23,0,314,0.00127694201359,0.00127694201359,16,0,0,True,False,False,False

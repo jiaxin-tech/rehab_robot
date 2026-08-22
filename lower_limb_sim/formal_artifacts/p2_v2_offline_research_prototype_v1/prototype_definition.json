@@ -1,0 +1,58 @@
+{
+  "prototype_id": "P2_V2_OFFLINE_RESEARCH_PROTOTYPE_IMPLEMENTATION_V1",
+  "status": "DEFAULT_OFF_SHADOW_EVALUATION_NOT_FORMAL_POLICY",
+  "controls": {
+    "p2_v1_remains_default": true,
+    "local_guard_policy_override_enabled": false,
+    "cumulative_rule_enabled": false,
+    "automatic_stopping_enabled": false,
+    "truth_policy_input_enabled": false,
+    "formal_personalization_enabled": false,
+    "robot_execution_enabled": false
+  },
+  "designated_local_validation": {
+    "protocol_id": "DESIGNATED_LOCAL_VALIDATION_PROTOCOL_V1",
+    "pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+    "pair_count": 324,
+    "result_sha256": "57dcaba346e55b85b0ad59ae44ee2af2302746bf582e88e8eda9708a6407b94e",
+    "case_assignment": "balanced_hash_only_assignment_to_nine_pre_existing_cases",
+    "pair_reselection_after_truth": false,
+    "metrics": {
+      "local_max": 0.0016827379049442204,
+      "local_P95": 0.000430956758923898,
+      "local_P99": 0.001276942013587856
+    },
+    "metric_frozen_as_formal_threshold": false
+  },
+  "local_guard_shadow": {
+    "guards": [
+      "G0",
+      "G1_local_max",
+      "G2_local_P95",
+      "G3_local_P99"
+    ],
+    "policy_override": false
+  },
+  "cumulative_shadow": {
+    "sequence_lengths": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "bundle_uncertainty_aggregation_frozen": false,
+    "rule_enabled": false
+  },
+  "decision_value_stopping_shadow": {
+    "K_candidates": [
+      1,
+      2,
+      3
+    ],
+    "automatic_stop_enabled": false
+  },
+  "truth_role": "POST_SELECTION_OFFLINE_EVALUATION_LABEL_ONLY",
+  "truth_used_to_modify_formal_policy": false,
+  "formal_personalization_executed": false,
+  "robot_connected": false
+}
