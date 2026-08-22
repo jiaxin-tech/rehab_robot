@@ -1,0 +1,7 @@
+subject_a,subject_b,common_iteration_count_including_reference,mean_best_path_difference_formal_steps,max_best_path_difference_formal_steps,final_alpha_difference_formal_steps,final_paths_identical
+baseline,heavy_leg,14,0,0,0,True
+baseline,hip_stiff,14,0,0,0,True
+baseline,knee_stiff,9,11.1111111111,20,20,False
+heavy_leg,hip_stiff,14,0,0,0,True
+heavy_leg,knee_stiff,9,11.1111111111,20,20,False
+hip_stiff,knee_stiff,9,11.1111111111,20,20,False

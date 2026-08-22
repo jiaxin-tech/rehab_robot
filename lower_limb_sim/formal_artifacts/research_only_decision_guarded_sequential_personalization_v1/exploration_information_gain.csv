@@ -1,0 +1,10 @@
+case_id,subject_id,scenario_name,policy_id,iteration,trajectory_id,incremental_log_information_gain,new_supported_point_count,parameter_uncertainty_trace_change,validation_e_delta_J_change,actual_J,accepted_as_best,later_enabled_reliable_exploit,truth_used_for_ranking
+baseline__matched_linear,baseline,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,1,asym_h+0.250_k+0.000_p+0.00000,1.86854077195,4450,-0.000636382438143,0,0.999510094092,False,True,False
+hip_stiff__matched_linear,hip_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,1,asym_h+0.250_k+0.000_p+0.00000,1.86854077184,4450,-0.000636382437791,0,0.999930463492,False,True,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,1,asym_h+0.250_k+0.000_p+0.00000,1.86854077175,4450,-0.000636382437673,0,0.999624243777,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,2,asym_h+0.500_k+0.000_p+0.00000,1.31547778803,550,-0.000442868416539,0,0.999254254544,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,3,asym_h+0.750_k+0.000_p+0.00000,1.02569758574,550,-0.000326430789857,0,0.998885642027,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,4,asym_h+1.000_k+0.000_p+0.00000,0.844550356014,550,-0.000250677810757,0,0.998518418444,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,5,asym_h+1.250_k+0.000_p+0.00000,0.719639008175,550,-0.000198582369602,0,0.998152595928,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,6,asym_h+1.500_k+0.000_p+0.00000,0.627903553845,550,-0.00016120821037,0,0.997788186528,False,False,False
+heavy_leg__matched_linear,heavy_leg,matched_linear,P2_DECISION_GUARDED_EXPLORE_EXPLOIT,1,asym_h+0.250_k+0.000_p+0.00000,1.86854077191,4450,-0.000636382438035,0,0.99934768035,False,True,False

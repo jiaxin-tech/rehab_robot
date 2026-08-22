@@ -1,0 +1,8 @@
+case_id,subject_id,scenario_name,explore_run_id,start_iteration,end_iteration,consecutive_explore_count,information_gain_first,information_gain_last,information_gain_trend_per_round,known_region_growth_total,known_region_growth_trend_per_round,map_change_RMS_mean,map_change_RMS_trend_per_round,best_improvement_observed,future_exploit_within_2_rounds_observed,diminishing_return_stop_created
+baseline__matched_linear,baseline,matched_linear,1,1,1,1,1.86854077195,1.86854077195,0,4450,0,0,0,False,True,False
+baseline__matched_linear,baseline,matched_linear,2,7,13,7,0.560015947566,0.336890230185,-0.0366275775209,3850,0,0,0,False,False,False
+hip_stiff__matched_linear,hip_stiff,matched_linear,1,1,1,1,1.86854077184,1.86854077184,0,4450,0,0,0,False,True,False
+hip_stiff__matched_linear,hip_stiff,matched_linear,2,7,13,7,0.560015947591,0.336890230122,-0.0366275775341,3850,0,0,0,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,1,1,8,8,1.86854077175,0.501656455078,-0.174719056392,8300,-325,0,0,False,False,False
+heavy_leg__matched_linear,heavy_leg,matched_linear,1,1,1,1,1.86854077191,1.86854077191,0,4450,0,0,0,False,True,False
+heavy_leg__matched_linear,heavy_leg,matched_linear,2,7,13,7,0.560015947538,0.336890230175,-0.0366275775186,3850,0,0,0,False,False,False

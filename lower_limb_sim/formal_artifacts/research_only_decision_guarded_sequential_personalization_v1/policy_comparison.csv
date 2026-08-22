@@ -1,0 +1,4 @@
+policy_id,scenario_count,executed_trial_count,exploit_trial_count,explore_trial_count,accepted_improvement_count,executed_false_improvement_count,mean_final_best_actual_J,mean_actual_J_reduction_from_reference,mean_cumulative_regret,mean_final_local_regret,mean_known_region_growth,research_only,recommended_for_human_or_robot
+P0_SUPPORTED_ONLY_GREEDY,9,30,30,0,25,0,0.982822791657,0.0171772083429,0,0.00299446782024,0,True,False
+P1_DECISION_GUARDED_EXPLOIT_ONLY,9,5,5,0,5,0,0.996803659125,0.00319634087455,0,0.00563749573679,0,True,False
+P2_DECISION_GUARDED_EXPLORE_EXPLOIT,9,29,20,9,20,0,0.986813279244,0.0131867207562,0,0.00404454529088,2283.33333333,True,False

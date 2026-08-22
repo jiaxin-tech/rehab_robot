@@ -1,0 +1,129 @@
+{
+  "protocol_id": "RESEARCH_ONLY_DECISION_GUARDED_SEQUENTIAL_PERSONALIZATION_V1",
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "theta_shank_definition": "q_hip - q_knee",
+  "five_parameter_names": [
+    "mass_scale",
+    "k_hip_nm_per_rad",
+    "k_knee_nm_per_rad",
+    "b_hip_nm_s_per_rad",
+    "b_knee_nm_s_per_rad"
+  ],
+  "mechanical_objective_version": "mechanical_joint_torque_objective_v1",
+  "mechanical_objective_formula": "sqrt((R_h^2 + R_k^2) / 2)",
+  "algorithm_equivalence_tolerance": 0.005,
+  "support_coverage_gate_percent": 90.0,
+  "distance_definition": "euclidean_distance_to_nearest_supported_alpha_after_scaling_hip_by_0.25_deg_knee_by_0.25_deg_and_phase_by_0.0025",
+  "distance_role": "LOCALITY_CONTROL_NOT_RELIABILITY_SCORE",
+  "support_role": "DATA_PROVENANCE_NOT_RELIABILITY_APPROVAL",
+  "initial_identification_acceptance_status": "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_REQUIRES_REVIEW",
+  "global_model_reliability_rule_status": "GLOBAL_MODEL_RELIABILITY_RULE_NOT_FROZEN",
+  "real_robot_hard_safeguard_status": "NOT_DEFINED_NOT_APPROVED",
+  "formal_human_ready_theta_0_created": false,
+  "formal_personalization_approval_created": false,
+  "real_robot_connected": false,
+  "created_at_utc": "2026-08-21T05:44:36.813411+00:00",
+  "git_branch": "sync/mac-20260813",
+  "git_commit": "0ae022c0f8a3cd8b154de83f0606c30ceb0850cf",
+  "core_source_sha256": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+  "runner_source_sha256": "fff88198ac66d3a5d469a1d2bb3d323c3b4311f52d0e6819e26934fdbbcb9a6c",
+  "parameter_map_path": "lower_limb_sim/formal_artifacts/admissible_personalization_region_v1/parameter_space_admissibility.csv",
+  "parameter_map_sha256": "f5eddf4c3a05e9e638bf9254c9f74acf36c80420a1b1ea5f4580e5ce4721a16b",
+  "active_reference_path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+  "active_reference_sha256_observed": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "analysis_cases": [
+    {
+      "subject_id": "baseline",
+      "scenario_name": "matched_linear",
+      "case_class": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "hip_stiff",
+      "scenario_name": "matched_linear",
+      "case_class": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "knee_stiff",
+      "scenario_name": "matched_linear",
+      "case_class": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "heavy_leg",
+      "scenario_name": "matched_linear",
+      "case_class": "MATCHED_POSITIVE_CONTROL"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_stiffness_mild",
+      "case_class": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "hip_knee_coupling_mild",
+      "case_class": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_damping_mild",
+      "case_class": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "structured_residual",
+      "case_class": "MILD_MODEL_MISMATCH"
+    },
+    {
+      "subject_id": "baseline",
+      "scenario_name": "combined_mild",
+      "case_class": "MILD_MODEL_MISMATCH"
+    }
+  ],
+  "policy_ids": [
+    "P0_SUPPORTED_ONLY_GREEDY",
+    "P1_DECISION_GUARDED_EXPLOIT_ONLY",
+    "P2_DECISION_GUARDED_EXPLORE_EXPLOIT"
+  ],
+  "geometrically_admissible_point_count": 21025,
+  "whole_map_recomputed_after_every_successful_update": true,
+  "trial_budget": 6,
+  "trial_budget_is_human_safety_threshold": false,
+  "heldout_final_test_used": false,
+  "virtual_truth_used_before_selection": false,
+  "hardware_control_collection_safety_imported_or_modified": false,
+  "research_status": "RESEARCH_ONLY",
+  "approval_status": "NOT_APPROVED_FOR_ROBOT_PERSONALIZATION",
+  "runtime_seconds": 133.88689383299788,
+  "output_sha256": {
+    "research_decision_uncertainty.csv": "5505270b67f5522b5ba0a85fac18e971351304369911fe6b5e8d4d0b2de701d5",
+    "decision_guard_candidate_audit.csv": "0522582eac4def7a89c2f3f1ac20bc506ccc7d7817ce8c05240087c467218b3e",
+    "sequential_trial_history.csv": "0e666db8cfb353b7977bbcba2acf47b6f47e5c9a71dd81b2afbe01c0784b0e3f",
+    "model_parameter_history.csv": "3f311d1a6be60545ff42980862ec4a81a2813eae3948abd608690fe2f6348580",
+    "prediction_map_history_summary.csv": "e2ce1c816b22e9ddcba9d5ffe1d35aee9a27cd975e356ad2a9b91f2c245575ce",
+    "known_region_history.csv": "60b54ef3d18bf5df24c5ded17181e4e1210465c25df92d9333fd98cd7e87dbd1",
+    "exploration_information_gain.csv": "361bacc054f339d6f43f08a33adc7ae8ea2396b456096a988381f2affbbcaf01",
+    "false_improvement_execution_audit.csv": "76c0fe5cfc336ab5e0084e47573e56de368d5911d4ac35127267f756c77cb917",
+    "policy_comparison.csv": "ea537a048b7310d7cc904d3a5faf650cf0d8ade36366f0e551033f4f84670804",
+    "scenario_sequential_summary.csv": "a83a647abf2e8cbf81d7bacb65794b07a88a9e78e6c7651c8e2a59a42d6c8cd2",
+    "policy_definition.json": "a29a1510b37ac292587daaef4bc5933694dd2c01282e7b8dad3f4be3c2d77757",
+    "DECISION_GUARDED_SEQUENTIAL_PERSONALIZATION_METHOD.md": "f1c008601eaaeda61ff880c168ae2507c2f1b63b629488082ca94ff9e3eb8aeb",
+    "DATA_LEAKAGE_AUDIT.md": "1d2e510a5aa91f80739a64c43b68c6d5911d817b26159bd550107fb8311a1368",
+    "sequential_personalization_flowchart.png": "f52a3190dff1f1d9590b00093d5ae78fea73c2d99ef96e73840d86253ecb44a8",
+    "trial_history_J.png": "befa2a1b5463e3d8c27fcb147247e93c16ba2172aca61de7e899996b09eda319",
+    "parameter_evolution_by_trial.png": "d560b9fae73c6318f5152adb3f17542ec940981b27549ed8113d4046dae8902f",
+    "known_region_growth_by_trial.png": "b40baae2e26303e32aedaa50659b5be631db98ee4a0f8afe95919ca0b31005e5",
+    "prediction_landscape_iteration_0.png": "990a13bf8752a3c0d46d6999d33b23b147c3fa1a4e7c2cd86111fffca32eaa18",
+    "prediction_landscape_final.png": "4bd4a995c31b4643abda28967970897bc6af9c5b2779dec243c55fa97770a743",
+    "explore_exploit_path_in_parameter_space.png": "2120e728cfc84f17ab43dce6cdb19cf7bae4abc3d108ef967a123b7d43637ee3",
+    "policy_comparison.png": "725601dfded7a7348d1d7f48f301e39276b77e272da930ca2a35718f4450a61a"
+  }
+}

@@ -1,0 +1,4 @@
+scenario_group,evaluated_round_count,rounds_with_true_local_improvement_available,missed_opportunity_rounds,missed_improvement_rate,metric_role,threshold_tuned_from_metric
+ALL_SCENARIOS,61,27,7,0.259259259259,OFFLINE_CONSERVATIVENESS_DIAGNOSTIC_ONLY,False
+MATCHED_POSITIVE_CONTROL,51,18,3,0.166666666667,OFFLINE_CONSERVATIVENESS_DIAGNOSTIC_ONLY,False
+MILD_MODEL_MISMATCH,10,9,4,0.444444444444,OFFLINE_CONSERVATIVENESS_DIAGNOSTIC_ONLY,False
