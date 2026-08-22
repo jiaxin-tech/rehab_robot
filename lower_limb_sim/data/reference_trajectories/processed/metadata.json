@@ -1,0 +1,254 @@
+{
+  "source_name": "/Users/fengjiaxin/VScodeprojects/rehab_robot/bone_return_3_leg.csv",
+  "source_coordinate_unit": "mm",
+  "coordinate_scale_to_m": 0.001,
+  "required_columns": [
+    "Frame",
+    "LHip_X",
+    "LHip_Y",
+    "LHip_Z",
+    "RHip_X",
+    "RHip_Y",
+    "RHip_Z",
+    "LKnee_X",
+    "LKnee_Y",
+    "LKnee_Z",
+    "RKnee_X",
+    "RKnee_Y",
+    "RKnee_Z",
+    "LAnkle_X",
+    "LAnkle_Y",
+    "LAnkle_Z",
+    "RAnkle_X",
+    "RAnkle_Y",
+    "RAnkle_Z"
+  ],
+  "frame_audit": {
+    "first_frame": 5550,
+    "last_frame": 6099,
+    "sample_count": 550,
+    "strictly_increasing": true,
+    "continuous_unit_steps": true,
+    "gap_count": 0,
+    "missing_frame_count": 0,
+    "largest_step": 1,
+    "gap_after_frames": []
+  },
+  "motion_leg_audit": {
+    "primary_motion_leg": "right",
+    "selection_mode": "explicit",
+    "left_motion_score_m": 2.231998696643277e-05,
+    "right_motion_score_m": 0.31248299609244196,
+    "dominant_to_contralateral_score_ratio": 14000.142408792082
+  },
+  "segment_lengths": {
+    "left_thigh": {
+      "mean_m": 0.37657567740806724,
+      "median_m": 0.37657584070144473,
+      "standard_deviation_m": 6.880167358282342e-07,
+      "minimum_m": 0.37657450006605586,
+      "maximum_m": 0.3765771815976108
+    },
+    "left_shank_to_ankle": {
+      "mean_m": 0.35036071285578596,
+      "median_m": 0.35036100653468855,
+      "standard_deviation_m": 2.1470999115897803e-05,
+      "minimum_m": 0.3499985298540554,
+      "maximum_m": 0.3506114249422002
+    },
+    "right_thigh": {
+      "mean_m": 0.37657837464372645,
+      "median_m": 0.37657821916568673,
+      "standard_deviation_m": 3.9263829892321466e-06,
+      "minimum_m": 0.37656748067245527,
+      "maximum_m": 0.37658833824217125
+    },
+    "right_shank_to_ankle": {
+      "mean_m": 0.3503597302398272,
+      "median_m": 0.3503593117786368,
+      "standard_deviation_m": 2.1944207397814602e-05,
+      "minimum_m": 0.35010329704245857,
+      "maximum_m": 0.35071716025880456
+    }
+  },
+  "local_sagittal_frame": {
+    "x_axis_world": [
+      -0.02735439073123901,
+      -0.8912060034623017,
+      -0.45277322878067167
+    ],
+    "z_axis_world": [
+      0.13192862122947446,
+      -0.452199286336731,
+      0.8821058011015691
+    ],
+    "lateral_axis_world": [
+      0.9908817165576387,
+      0.03560428105302647,
+      -0.1299452152350541
+    ],
+    "sagittal_plane_normal_world": [
+      0.9908817165576387,
+      0.03560428105302647,
+      -0.1299452152350541
+    ],
+    "reference_origin_world_m": [
+      -0.10268,
+      1.0874300000000001,
+      0.016015
+    ],
+    "origin_policy": "fixed_median_primary_hip_for_plane_distance; per-frame primary hip only for relative sagittal x/z coordinates",
+    "primary_motion_leg": "right",
+    "contralateral_leg": "left",
+    "z_axis_sign_flipped": false,
+    "x_axis_definition": "contralateral hip-to-ankle vector projected orthogonal to the bilateral hip axis; positive toward the feet",
+    "z_axis_definition": "cross(x_axis, lateral_axis), sign-selected so moving-knee elevation/flexion is positive"
+  },
+  "model_angle_definition": "theta_shank = q_hip - q_knee",
+  "joint_angle_clipping_applied": false,
+  "configured_hip_range_deg": [
+    0.0,
+    120.0
+  ],
+  "configured_knee_range_deg": [
+    5.0,
+    130.0
+  ],
+  "out_of_range_samples": 105,
+  "angle_invalid_samples": 54,
+  "theta_shank_projection_closure_max_abs_rad": 0.43465689055095563,
+  "primary_leg_planarity_rmse_m": 0.03798603923034157,
+  "primary_leg_planarity_max_m": 0.09293690465647939,
+  "observed_ankle_retained": true,
+  "observed_ankle_is_pull_point": false,
+  "pull_point_reconstruction_performed": false,
+  "dynamics_used": false,
+  "hardware_used": false,
+  "stage": "5A",
+  "model_version": "lower_limb_sim_reference_import_v1",
+  "software_version_or_git_commit": "8e0c3de507e0f08ee35818c83c259c227add7d36",
+  "created_at": "2026-08-04T04:41:34.816077+00:00",
+  "input_path": "/Users/fengjiaxin/VScodeprojects/rehab_robot/bone_return_3_leg.csv",
+  "source_unit": "mm",
+  "source_unit_declared_by_caller": true,
+  "source_unit_present_in_csv_metadata": false,
+  "unit_uncertainty_remains": true,
+  "fps": null,
+  "fps_declared_by_caller": false,
+  "fps_present_in_csv_metadata": false,
+  "timing_uncertainty_remains": true,
+  "primary_motion_leg": "right",
+  "L1_m": 0.42,
+  "L2_m": 0.3,
+  "L2_definition": "knee_to_equivalent_strap_pull_point_not_anatomical_ankle",
+  "source_trajectory_type": "provided_rehabilitation_reference",
+  "simulation_status": "software_only",
+  "clinical_validation_status": "not_established_from_source_csv",
+  "angle_filter": {
+    "method": "savitzky_golay_offline_by_frame",
+    "window_length": 21,
+    "polynomial_order": 3,
+    "uses_future_samples": true
+  },
+  "derivatives_available": false,
+  "dynamics_available": false,
+  "derivative_estimation": {
+    "method": null,
+    "offline_only": null,
+    "uses_future_samples": null,
+    "fps_required": true,
+    "status": "not_computed_without_explicit_fps"
+  },
+  "dynamic_gate_reason": "fps_not_provided",
+  "cycle_detection_config": {
+    "smoothing_window_frames": 21,
+    "smoothing_polynomial_order": 3,
+    "minimum_extrema_distance_frames": 30,
+    "minimum_cycle_duration_frames": 50,
+    "minimum_peak_prominence_rad": 0.2617993877991494,
+    "minimum_knee_excursion_rad": 0.4363323129985824,
+    "maximum_smoothing_residual_fraction": 0.2,
+    "minimum_monotonic_fraction": 0.85,
+    "minimum_quality_score": 0.6,
+    "maximum_time_gap_factor": 1.01,
+    "include_incomplete_tail": true
+  },
+  "detected_cycle_count": 5,
+  "complete_cycle_count": 4,
+  "incomplete_cycle_count": 1,
+  "selected_cycle": {
+    "cycle_index": 3,
+    "start_frame": 5937,
+    "peak_flexion_frame": 5997,
+    "end_frame": 6040,
+    "duration_frames": 104,
+    "q_hip_range_rad": 1.8053982367381245,
+    "q_knee_range_rad": 2.2164862216048213,
+    "cycle_complete": true,
+    "cycle_continuous": true,
+    "cycle_smooth": true,
+    "cycle_quality_score": 0.9830272777915802,
+    "selection_reason": "automatically selected the highest-quality cycle among complete, continuous, smooth candidates with quality >= 0.600; stable ties prefer larger knee range then smaller cycle_index",
+    "manual_selection": false,
+    "selection_mode": "automatic_representative",
+    "start_position": 387,
+    "peak_flexion_position": 447,
+    "end_position": 490
+  },
+  "selection_reason": "automatically selected the highest-quality cycle among complete, continuous, smooth candidates with quality >= 0.600; stable ties prefer larger knee range then smaller cycle_index",
+  "planarity_rmse_m": 0.03798603923034157,
+  "planarity_max_error_m": 0.09293690465647939,
+  "planarity_by_joint": {
+    "hip": {
+      "rmse_m": 0.01783438178662073,
+      "max_error_m": 0.046255782596046624
+    },
+    "knee": {
+      "rmse_m": 0.049949709885222425,
+      "max_error_m": 0.09293690465647939
+    },
+    "ankle": {
+      "rmse_m": 0.038933004480752716,
+      "max_error_m": 0.07265856446229126
+    }
+  },
+  "raw_angle_ranges_deg": {
+    "q_hip_min": 1.2466704932049106,
+    "q_hip_max": 118.98171521829876,
+    "q_knee_min": 0.0008383592051915082,
+    "q_knee_max": 147.38048456177845
+  },
+  "joint_limit_invalid_samples": 105,
+  "angle_jump_threshold_deg": 20.0,
+  "angle_jump_samples": 0,
+  "dynamics_subjects": [],
+  "dynamic_peak_summary": {},
+  "real_robot_code_used": false,
+  "real_robot_code_modified": false,
+  "skipped_dynamic_files": {
+    "reference_dynamic_baseline.csv": "fps_not_provided; dynamics were not computed",
+    "reference_dynamic_hip_stiff.csv": "fps_not_provided; dynamics were not computed",
+    "reference_dynamic_knee_stiff.csv": "fps_not_provided; dynamics were not computed",
+    "reference_dynamic_heavy_leg.csv": "fps_not_provided; dynamics were not computed"
+  },
+  "skipped_visualizations": {
+    "reference_torque_components.png": "source fps is unavailable; dynamics were not estimated and no synthetic dynamic curve was drawn",
+    "reference_endpoint_force.png": "source fps is unavailable; dynamics were not estimated and no synthetic dynamic curve was drawn",
+    "reference_subject_comparison.png": "source fps is unavailable; dynamics were not estimated and no synthetic dynamic curve was drawn"
+  },
+  "generated_files": [
+    "3d_right_leg_trajectory.png",
+    "detected_cycles.csv",
+    "detected_cycles.png",
+    "metadata.json",
+    "raw_and_filtered_joint_angles.png",
+    "reference_full_angles.csv",
+    "reference_full_raw.csv",
+    "reference_selected_cycle.csv",
+    "reference_selected_cycle.npz",
+    "sagittal_plane_projection.png",
+    "selected_cycle_angles.png",
+    "selected_cycle_leg_animation.gif",
+    "selected_cycle_pull_path.png"
+  ]
+}

@@ -3,7 +3,33 @@ __pycache__/
 # xCoreSDK is a native Python extension, not a generated Python cache file.
 !hardware/windows/xcoresdk/*.pyd
 data/
+# Four small frozen prerequisites are required by the tracked active-reference
+# loader and P2 generator in a fresh checkout.  Keep every other data output
+# ignored; these are provenance inputs, not newly assigned P2 results.
+!lower_limb_sim/data/
+lower_limb_sim/data/*
+!lower_limb_sim/data/reference_trajectories/
+lower_limb_sim/data/reference_trajectories/*
+!lower_limb_sim/data/reference_trajectories/processed/
+lower_limb_sim/data/reference_trajectories/processed/*
+!lower_limb_sim/data/reference_trajectories/processed/reference_full_angles.csv
+!lower_limb_sim/data/reference_trajectories/processed/detected_cycles.csv
+!lower_limb_sim/data/reference_trajectories/processed/metadata.json
+!lower_limb_sim/data/reference_local_active_asymmetric/
+lower_limb_sim/data/reference_local_active_asymmetric/*
+!lower_limb_sim/data/reference_local_active_asymmetric/state_domain_bounds.json
 logs/
 _rokae_log_/
 hardware/windows/xcoresdk_python-v*/
 *.pth
+
+# Local macOS metadata is never a scientific artifact.
+.DS_Store
+
+# Content-addressed, deterministically regenerated formal truth artifacts.
+# Small reports, protocols, tables, figures, and metadata remain visible to Git.
+lower_limb_sim/formal_artifacts/decision_relevant_global_model_reliability_v1/global_prediction_truth_comparison.csv
+lower_limb_sim/formal_artifacts/p2_revision_root_cause_audit_v1/truth_landscape_baseline.csv
+lower_limb_sim/formal_artifacts/p2_revision_root_cause_audit_v1/truth_landscape_hip_stiff.csv
+lower_limb_sim/formal_artifacts/p2_revision_root_cause_audit_v1/truth_landscape_knee_stiff.csv
+lower_limb_sim/formal_artifacts/p2_revision_root_cause_audit_v1/truth_landscape_heavy_leg.csv

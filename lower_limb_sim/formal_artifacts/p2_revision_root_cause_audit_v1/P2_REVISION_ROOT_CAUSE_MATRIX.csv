@@ -1,0 +1,11 @@
+problem,possible_root,evidence,conclusion,policy_modified,new_threshold_created,truth_fed_back_to_policy
+same_subject_path,objective_truth_landscape,all 4/4 truth minima use knee=-5; complete truth alpha count=3,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM,False,False,False
+same_subject_path,policy,"P2 final alpha is identical (0,-5,0) while matched truth-global hip/phase components differ",POLICY_COLLAPSES_SUBJECT_DIFFERENCES,False,False,False
+same_subject_path,normalization,"per-subject normalization removes absolute torque scale by design, but distinct truth-global alpha remains",NORMALIZATION_COMPRESSION_CONTRIBUTES_BUT_DOES_NOT_ERASE_ALL_DISCRIMINATION,False,False,False
+same_subject_path,virtual_subject_selection,registered-value synthetic scan has 5 distinct truth-global alpha,CURRENT_FOUR_VIRTUAL_SUBJECTS_DO_NOT_SPAN_ALL_SYNTHETIC_OPTIMA,False,False,False
+premature_mismatch_stop,global_decision_uncertainty,G0 missed-improvement candidate count=7; four mild-mismatch stop cases are supported with correct predicted direction,GLOBAL_TO_LOCAL_CALIBRATION_MISMATCH,False,False,False
+premature_mismatch_stop,local_calibration_mismatch,zero designated validation pairs have personalization alpha coordinates; G1/G2 cannot be estimated,LOCAL_CALIBRATION_NOT_SUFFICIENT,False,False,False
+premature_mismatch_stop,model_direction_error,"the four stopped mismatch candidates were predicted and post-hoc confirmed as improving; the bound, not sign, rejected them",MODEL_DIRECTION_ERROR_NOT_PRIMARY_FOR_THE_FOUR_PREMATURE_STOPS,False,False,False
+low_value_exploration,support_overvalued_continuation,support-only EXPLORE=29/32; decision-value EXPLORE=3/32,EXPLORATION_CONTINUATION_OVERVALUE_SUPPORT,False,False,False
+low_value_exploration,model_or_map_update,all 32 matched-case EXPLORE rows have exact zero parameter and prediction-map change,POST_OPTIMUM_LOW_DECISION_VALUE_EXPLORATION,False,False,False
+low_value_exploration,frontier_ranking_and_stop_architecture,positive information gain and unexecuted unsupported frontier permit continuation without an observable diminishing-value stop,DECISION_VALUE_AWARE_STOPPING_REVISION_CANDIDATE_JUSTIFIED,False,False,False

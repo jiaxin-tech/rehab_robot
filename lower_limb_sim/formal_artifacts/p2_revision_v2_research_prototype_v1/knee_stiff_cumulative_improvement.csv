@@ -1,0 +1,7 @@
+step_index,trajectory_id,alpha_hip,alpha_knee,alpha_phase,J_truth_posthoc,single_step_delta_J_truth,single_step_improvement_magnitude,single_step_exceeds_existing_0p005,cumulative_delta_J_truth_from_reference,cumulative_improvement_magnitude,cumulative_exceeds_existing_0p005,mechanical_objective_modified,generator_direction_modified,truth_used_by_policy,truth_role
+0,asym_h+0.000_k+0.000_p+0.00000,0,0,0,1,,,False,0,0,False,False,False,False,POST_HOC_CUMULATIVE_METHOD_DIAGNOSTIC_ONLY
+1,asym_h+0.000_k-1.000_p+0.00000,0,-1,0,0.995532812069,-0.004467187931,0.004467187931,False,-0.004467187931,0.004467187931,False,False,False,False,POST_HOC_CUMULATIVE_METHOD_DIAGNOSTIC_ONLY
+2,asym_h+0.000_k-2.000_p+0.00000,0,-2,0,0.991094714891,-0.004438097178,0.004438097178,False,-0.008905285109,0.008905285109,True,False,False,False,POST_HOC_CUMULATIVE_METHOD_DIAGNOSTIC_ONLY
+3,asym_h+0.000_k-3.000_p+0.00000,0,-3,0,0.986686214535,-0.004408500356,0.004408500356,False,-0.013313785465,0.013313785465,True,False,False,False,POST_HOC_CUMULATIVE_METHOD_DIAGNOSTIC_ONLY
+4,asym_h+0.000_k-4.000_p+0.00000,0,-4,0,0.982307252626,-0.004378961909,0.004378961909,False,-0.017692747374,0.017692747374,True,False,False,False,POST_HOC_CUMULATIVE_METHOD_DIAGNOSTIC_ONLY
+5,asym_h+0.000_k-5.000_p+0.00000,0,-5,0,0.977957767831,-0.004349484795,0.004349484795,False,-0.022042232169,0.022042232169,True,False,False,False,POST_HOC_CUMULATIVE_METHOD_DIAGNOSTIC_ONLY

@@ -1,0 +1,201 @@
+{
+  "protocol_id": "P2_REVISION_V2_DESIGN_ANALYSIS_V1",
+  "created_at_utc": "2026-08-21T08:09:46.173130+00:00",
+  "git_branch": "sync/mac-20260813",
+  "git_commit": "0ae022c0f8a3cd8b154de83f0606c30ceb0850cf",
+  "checkpoint_boundary_note": "P2_and_prior_audit_sources_artifacts_are_untracked_after_HEAD_0ae022c;this_design_did_not_stage_or_commit",
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "active_reference_sha256_observed": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "five_parameter_names": [
+    "mass_scale",
+    "k_hip_nm_per_rad",
+    "k_knee_nm_per_rad",
+    "b_hip_nm_s_per_rad",
+    "b_knee_nm_s_per_rad"
+  ],
+  "mechanical_objective_version": "mechanical_joint_torque_objective_v1",
+  "algorithm_equivalence_tolerance": 0.005,
+  "support_coverage_gate_percent": 90.0,
+  "generator_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "formal_grid_steps": {
+    "hip_deg": 0.25,
+    "knee_deg": 0.25,
+    "phase": 0.0025
+  },
+  "local_decision_validation_protocol": "LOCAL_DECISION_VALIDATION_PROTOCOL_V1",
+  "local_pair_instance_count": 341,
+  "global_pair_instance_count": 61,
+  "local_pair_is_designated_validation": false,
+  "local_candidate_threshold_frozen": false,
+  "current_research_guard_modified": false,
+  "current_P2_executed": false,
+  "current_P2_behavior_modified": false,
+  "formal_personalization_executed": false,
+  "counterfactual_trajectory_executed": false,
+  "exploration_stopping_protocol": "EXPLORATION_VALUE_AWARE_STOPPING_CANDIDATE_V1",
+  "explore_trial_count": 32,
+  "model_value_trial_count": 0,
+  "support_value_trial_count": 32,
+  "decision_value_trial_count": 3,
+  "support_only_exact_zero_decision_trial_count": 29,
+  "knee_stiff_explore_count": 8,
+  "matched_trial_7_to_13_count": 21,
+  "guard_counterfactual_summary": {
+    "G0_CURRENT_GLOBAL_MAX": {
+      "would_exploit_candidate_count": 20,
+      "missed_improvement_candidate_count": 7,
+      "false_improvement_candidate_count": 0,
+      "conservative_stop_round_count": 7
+    },
+    "G1_LOCAL_MAX_CANDIDATE": {
+      "would_exploit_candidate_count": 0,
+      "missed_improvement_candidate_count": 27,
+      "false_improvement_candidate_count": 0,
+      "conservative_stop_round_count": 27
+    },
+    "G2_LOCAL_P95_CANDIDATE": {
+      "would_exploit_candidate_count": 24,
+      "missed_improvement_candidate_count": 3,
+      "false_improvement_candidate_count": 0,
+      "conservative_stop_round_count": 3
+    },
+    "G2_LOCAL_P99_CANDIDATE": {
+      "would_exploit_candidate_count": 8,
+      "missed_improvement_candidate_count": 19,
+      "false_improvement_candidate_count": 0,
+      "conservative_stop_round_count": 19
+    }
+  },
+  "stopping_counterfactual_summary": {
+    "S0_CURRENT_P2": {
+      "executed_trials_avoided": 0,
+      "later_exploit_trials_in_frozen_history": 0,
+      "later_accepted_best_changes_in_frozen_history": 0
+    },
+    "S1_STOP_AFTER_FIRST_EXACT_ZERO_DECISION_VALUE_EXPLORE": {
+      "executed_trials_avoided": 25,
+      "later_exploit_trials_in_frozen_history": 0,
+      "later_accepted_best_changes_in_frozen_history": 0
+    },
+    "S2_STOP_AFTER_TWO_CONSECUTIVE_EXACT_ZERO_DECISION_VALUE_EXPLORES": {
+      "executed_trials_avoided": 21,
+      "later_exploit_trials_in_frozen_history": 0,
+      "later_accepted_best_changes_in_frozen_history": 0
+    }
+  },
+  "truth_role": "POST_HOC_COUNTERFACTUAL_AND_SPECIFICITY_GAP_ONLY",
+  "truth_used_to_modify_policy": false,
+  "truth_used_for_model_fitting": false,
+  "truth_used_for_candidate_proposal": false,
+  "truth_used_as_stopping_feature": false,
+  "heldout_final_test_used": false,
+  "mechanical_objective_modified": false,
+  "generator_modified": false,
+  "five_parameter_model_modified": false,
+  "active_reference_modified": false,
+  "rom_protocol_modified": false,
+  "design_recommendation": {
+    "local_uncertainty_next_version": "PROMISING_AS_AN_ARCHITECTURE;P95_RETROSPECTIVE_CANDIDATE_REQUIRES_INDEPENDENT_DESIGNATED_LOCAL_VALIDATION",
+    "local_P95_change_in_missed_candidates_vs_G0": -4,
+    "local_P95_change_in_false_candidates_vs_G0": 0,
+    "decision_value_aware_exploration_next_version": "PROMISING_AS_RESEARCH_CANDIDATE_NO_STOP_RULE_FROZEN",
+    "S1_historical_trials_avoided": 25,
+    "S1_later_exploits_in_frozen_history": 0,
+    "objective_change_needed": false,
+    "objective_reason": "retains_subject_discrimination_and_is_frozen;boundary_interpretation_not_an_authorization_to_change_formula",
+    "generator_direction_expansion_needed": false,
+    "generator_reason": "observed_truth_optima_are_already_inside_current_space;expansion_would_extend_boundary_chasing_without_scientific_review",
+    "meaningful_subject_gap_count": 1,
+    "minimum_revision_set": [
+      "add_a_reviewed_local_decision_uncertainty_provider_but_keep_current_G0_default_until_frozen",
+      "add_separate_MODEL_VALUE_SUPPORT_VALUE_DECISION_VALUE_observability",
+      "add_a_disabled_decision_value_stopping_candidate_with_audit_output",
+      "retain_all_frozen_objective_model_generator_reference_ROM_tolerance_and_support_gates"
+    ],
+    "implementation_status": "P2_V2_RESEARCH_PROTOTYPE_WORTH_IMPLEMENTING_AFTER_DESIGN_FREEZE",
+    "design_status": "REVISION_DESIGN_NOT_FROZEN",
+    "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+    "formal_personalization_executed": false,
+    "current_P2_modified": false
+  },
+  "design_status": "REVISION_DESIGN_NOT_FROZEN",
+  "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+  "research_status": "RESEARCH_ONLY",
+  "not_human_ready": true,
+  "not_robot_motion_approved": true,
+  "real_robot_connected": false,
+  "human_threshold_created": false,
+  "protected_package_diff_unchanged": true,
+  "protected_package_git_diff_empty": true,
+  "protected_package_git_diff": "",
+  "policy_definition_source_sha256": "a29a1510b37ac292587daaef4bc5933694dd2c01282e7b8dad3f4be3c2d77757",
+  "decision_guard_source_sha256": "c0cd519fe8901040514ef3b9df31c0f64d1fd0f54a8de1a0464697e2a0015476",
+  "exploit_selector_source_sha256": "1c19dbbef2a763aa48bcfd117c63e806c729755c886c07de18dd5a97a5271886",
+  "exploration_ranker_source_sha256": "d43e04d9ff9594d0061c1e165f92df031d4efe65c38b516c65b55e76221e0e2f",
+  "policy_core_source_sha256": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+  "mechanical_objective_source_sha256": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+  "generator_source_sha256": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+  "estimator_source_sha256": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+  "design_core_source_sha256": "ca700e15f7c102104a5e83df5ac510f532c137b89714ccb31eb33202cdd7495f",
+  "runner_source_sha256": "4b3309f3c21b43fc0fb0a733de536d39b9956872a3c6d93d142188337dc96a65",
+  "source_input_sha256": {
+    "root_counterfactual": "ea4089394be4b0cd12a560cdba69c4c22d3e1f56d1806fb280d972e6444d48f0",
+    "root_global_provenance": "5330fe65f8f673da7b8864cd850ff1d337b328c4b88bbcc35168058284b2fbf3",
+    "root_exploration": "967493f50243bb6e979c63dc0c7236a59ecb2c5ddfb736293abdefa1de4f1d2d",
+    "root_truth_summary": "18dd68e2af230e066a85da2eb58bf84284192bb131ea1f54f5eba253a28ffa25",
+    "convergence_best_history": "36d1c9d1c4ea15fcbcbdfec82176768ab235327758e9ce7f2feb63b1a05ee8b1",
+    "convergence_executed_history": "81b8b4cb2928df585cd64eec4b3d08dfa383fd6dd793faac7b1cbce1f6a18c48",
+    "convergence_natural_stopping": "2fe07268aa2a79af807819840c9cdc46ffe83a16cacb5575d19b8a3dbcbae662"
+  },
+  "root_cause_metadata_sha256": "9f525b6c355e0d6b6b944c250cb7b40bbac27194790410586eea202104bace86",
+  "convergence_metadata_sha256": "ab804617f98ff08097030e8bf7efd1ce242ffcf4f0982de205450447933f868a",
+  "runtime_seconds": 0.4866018750180956,
+  "output_sha256": {
+    "retrospective_local_decision_pair_errors.csv": "db6453b2b4359b3db8674e0327b3e7da6892e863a5133ecf8f91824874ce6bee",
+    "global_vs_local_pair_error_distribution.csv": "7c605c649377ec62742c42e738ccd45138e658189d93bdd28cdeb0b5ddbeed96",
+    "local_pair_stratum_summary.csv": "a3be911aa25aa46dc1a0fed3a8c9dc70e56e78e922d487ebdfc6272a66ebdab7",
+    "local_uncertainty_candidates.csv": "8d99dda213b8d7e03709d3a5d45afc504abd6c14ee9ea02ef209146b6171af99",
+    "local_guard_counterfactual_detail.csv": "957635b177ec227d96775c6875fea4eca0fa01ff93d3989db8c2287c381e64cb",
+    "local_guard_counterfactual_summary.csv": "312c3c213957097ed188b59723522c3f4bf01320d3249d90adf78ea8825665b5",
+    "exploration_value_components.csv": "cf2ec95d43c435887300a687e340f823d2a0fbc956d24957ad539d3408588911",
+    "exploration_stopping_counterfactual.csv": "54dcdeb9ec02540263025b24b9bc962b51592ec9d3c3b1213bb2b9811e6f7e40",
+    "knee_stiff_exploration_design_audit.csv": "5e22831705445ca3ce3ced96ae8691541af43a9ee5ffcca17f0fc33a0399f471",
+    "matched_late_exploration_design_audit.csv": "493f8e2376982ffddbea5433cfacbfe057d9d9208d59417cf12898ec3c5c5dd9",
+    "subject_specificity_gap.csv": "c0867b1cc0c1bb6511b8fb4e8d5b9d4cd571927cf65ac0d0a40df7e0a326e6fe",
+    "P2_REVISION_V2_DESIGN_DECISION_MATRIX.csv": "fc0c30bd21fa7257ae6fc0cb3bf2e6ef6f7e4c271aa14c7ec0e6890464e7e762",
+    "LOCAL_DECISION_VALIDATION_PROTOCOL_V1.json": "64c2f973214be46f5ec89c8a740de06517010b791f1811d5b1a00839f236ccd7",
+    "P2_REVISION_V2_RECOMMENDATION.json": "e117cb8d5a0132c1408cadb9b9d54955d5216ab947d041737dfc4de7382e2602",
+    "P2_REVISION_V2_DESIGN_REPORT.md": "77d828aed6fe4c9460cf6fd05ee15c966dcd05d96232f59ee26816b9e3616299",
+    "P2_REVISION_V2_IMPLEMENTATION_PROMPT.md": "e95bd61366421311e2b5d8ee3a1fcd0f0117f18b39a5e25ae8d3e8fae7edf4a9",
+    "DATA_LEAKAGE_AUDIT.md": "8549d9ca8ac6feb5b8082c17c2a641761b0a385eaf1001f6aea599d1108ece49",
+    "global_vs_local_pair_error_distribution.png": "d9729fccba604ac8948b8a246795f1e362c25e9d54bd5b51b0b5a369a9b299c6",
+    "local_guard_counterfactual_summary.png": "260578076943d0c1e86aecc0fedf2206539f0d4e6f74229439d9f08997587ce7",
+    "exploration_value_components.png": "ecc845af5fde1c7d9717704dd78ce7b6818bac1708369836eaa575004a64f0c7",
+    "exploration_stopping_counterfactual.png": "1db0a24077479c7b3244129ea332625a67801aa0435767b2700781cd6411a99b",
+    "subject_specificity_gap.png": "edeaf9fe3f901960ed26511a344bba2981059fa0b9d6bf054255b2935e540804"
+  }
+}

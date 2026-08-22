@@ -1,0 +1,17 @@
+{
+  "prototype_id": "P2_REVISION_V2_RESEARCH_PROTOTYPE_V1",
+  "prototype_status": "DEFAULT_OFF_RESEARCH_SHADOW_ONLY",
+  "current_p2_remains_default": true,
+  "local_uncertainty_policy_override_enabled": false,
+  "exploration_automatic_stop_enabled": false,
+  "cumulative_decision_rule_enabled": false,
+  "truth_policy_input_enabled": false,
+  "robot_execution_enabled": false,
+  "shadow_artifact_generation_enabled": true,
+  "formal_policy_created": false,
+  "threshold_frozen": false,
+  "automatic_stop_created": false,
+  "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+  "human_readiness": "NOT_HUMAN_READY",
+  "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED"
+}

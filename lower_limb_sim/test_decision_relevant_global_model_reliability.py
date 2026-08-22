@@ -58,6 +58,7 @@ from lower_limb_sim.mechanical_objective import (
     OBJECTIVE_EQUIVALENCE_TOLERANCE,
     compute_torque_metrics,
 )
+from lower_limb_sim.large_artifact_reproduction import artifact_entry
 from lower_limb_sim.parameter_estimator import PARAMETER_NAMES
 from lower_limb_sim.run_decision_relevant_global_model_reliability import (
     ANALYSIS_CASES,
@@ -475,8 +476,11 @@ def test_formal_artifact_set_is_exactly_twenty_one_files() -> None:
     observed = {
         path.name for path in DEFAULT_OUTPUT_DIRECTORY.iterdir() if path.is_file()
     }
-    assert observed == expected
-    assert len(observed) == 21
+    large_name = artifact_entry("global_prediction_truth_comparison")[
+        "expected_filename"
+    ]
+    assert observed - {large_name} == expected - {large_name}
+    assert len(expected - {large_name}) == 20
 
 
 def test_formal_metadata_keeps_all_release_boundaries_closed() -> None:
@@ -498,13 +502,10 @@ def test_formal_map_contains_all_cases_and_all_geometric_points() -> None:
     )
     assert metadata["analysis_case_count"] == 9
     assert metadata["evaluated_point_count_per_case"] == 21025
-    row_count = sum(
-        1
-        for _ in (DEFAULT_OUTPUT_DIRECTORY / "global_prediction_truth_comparison.csv").open(
-            encoding="utf-8"
-        )
-    ) - 1
-    assert row_count == 9 * 21025
+    entry = artifact_entry("global_prediction_truth_comparison")
+    assert entry["expected_row_count"] == 9 * 21025
+    assert entry["required_for_normal_pytest"] is False
+    assert entry["required_for_formal_reproduction"] is True
 
 
 def test_formal_figures_are_nonempty_png_files() -> None:
@@ -535,4 +536,3 @@ def test_heldout_final_test_is_absent_from_new_runtime_imports() -> None:
         for alias in node.names
     }
     assert "HELD_OUT_FINAL_TEST_TRAJECTORY_SPECS" not in imported_names
-

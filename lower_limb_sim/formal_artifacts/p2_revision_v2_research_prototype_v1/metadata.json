@@ -1,0 +1,181 @@
+{
+  "protocol_id": "P2_REVISION_V2_RESEARCH_PROTOTYPE_V1",
+  "created_at_utc": "2026-08-21T09:07:16.300765+00:00",
+  "git_branch": "sync/mac-20260813",
+  "git_commit": "0ae022c0f8a3cd8b154de83f0606c30ceb0850cf",
+  "checkpoint_boundary_note": "P2_prior_audits_design_and_this_prototype_are_untracked_after_HEAD_0ae022c;this_runner_did_not_stage_or_commit",
+  "prototype_status": "DEFAULT_OFF_RESEARCH_SHADOW_ONLY",
+  "prototype_controls": {
+    "prototype_id": "P2_REVISION_V2_RESEARCH_PROTOTYPE_V1",
+    "prototype_status": "DEFAULT_OFF_RESEARCH_SHADOW_ONLY",
+    "current_p2_remains_default": true,
+    "local_uncertainty_policy_override_enabled": false,
+    "exploration_automatic_stop_enabled": false,
+    "cumulative_decision_rule_enabled": false,
+    "truth_policy_input_enabled": false,
+    "robot_execution_enabled": false,
+    "shadow_artifact_generation_enabled": true,
+    "formal_policy_created": false,
+    "threshold_frozen": false,
+    "automatic_stop_created": false,
+    "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+    "human_readiness": "NOT_HUMAN_READY",
+    "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED"
+  },
+  "current_P2_remains_default": true,
+  "current_P2_executed_by_runner": false,
+  "current_P2_behavior_modified": false,
+  "local_uncertainty_policy_override_enabled": false,
+  "exploration_automatic_stop_enabled": false,
+  "cumulative_decision_rule_enabled": false,
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "active_reference_sha256_observed": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "five_parameter_names": [
+    "mass_scale",
+    "k_hip_nm_per_rad",
+    "k_knee_nm_per_rad",
+    "b_hip_nm_s_per_rad",
+    "b_knee_nm_s_per_rad"
+  ],
+  "mechanical_objective_version": "mechanical_joint_torque_objective_v1",
+  "algorithm_equivalence_tolerance": 0.005,
+  "support_coverage_gate_percent": 90.0,
+  "generator_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "formal_generator_lattice_point_count": 21025,
+  "local_protocol_id": "LOCAL_DECISION_VALIDATION_PROTOCOL_V1",
+  "local_validation_pair_count": 341,
+  "local_metric_threshold_frozen": false,
+  "guard_counterfactual": {
+    "G0_CURRENT_GLOBAL_GUARD_REPLAY": {
+      "missed": 7,
+      "false": 0,
+      "conservative_stop": 7
+    },
+    "G1_LOCAL_MAX_RESEARCH_METRIC": {
+      "missed": 27,
+      "false": 0,
+      "conservative_stop": 27
+    },
+    "G2_LOCAL_P95_RESEARCH_METRIC": {
+      "missed": 3,
+      "false": 0,
+      "conservative_stop": 3
+    }
+  },
+  "exploration_value_protocol_id": "DECISION_VALUE_AWARE_EXPLORATION_SHADOW_V1",
+  "exploration_value_summary": {
+    "explore_trial_count": 32,
+    "support_value_trial_count": 32,
+    "model_value_trial_count": 0,
+    "decision_value_trial_count": 3,
+    "zero_model_and_decision_value_trial_count": 29,
+    "actual_explore_trials_avoided_by_prototype": 0,
+    "automatic_stop_enabled": false,
+    "scoring_reduces_exploration_by_itself": false,
+    "research_interpretation": "IDENTIFIES_LOW_DECISION_VALUE_EXPLORES_BUT_DOES_NOT_STOP",
+    "formal_policy_modified": false
+  },
+  "cumulative_improvement_assessment": {
+    "analysis_id": "KNEE_STIFF_CUMULATIVE_IMPROVEMENT_AUDIT_V1",
+    "subject_id": "knee_stiff",
+    "path_definition": "existing_generator_knee_direction_from_0_to_minus5_in_existing_1deg_trust_steps",
+    "single_step_count": 5,
+    "all_single_steps_below_existing_0p005": true,
+    "maximum_single_step_improvement": 0.004467187930999983,
+    "final_five_step_cumulative_improvement": 0.02204223216900003,
+    "cumulative_improvement_crosses_existing_0p005": true,
+    "first_step_count_crossing_existing_0p005": 2,
+    "first_cumulative_improvement_crossing_existing_0p005": 0.008905285109000016,
+    "cumulative_decision_rule_research_design_required": true,
+    "assessment": "CUMULATIVE_RULE_RESEARCH_CANDIDATE_REQUIRED_TO_ADDRESS_OBSERVED_KNEE_GAP_NOT_FORMAL_POLICY_APPROVAL",
+    "cumulative_rule_enabled": false,
+    "objective_modified": false,
+    "truth_used_to_modify_policy": false,
+    "formal_policy_approval": false
+  },
+  "truth_role": "POST_HOC_RESEARCH_METRIC_AND_CUMULATIVE_DIAGNOSTIC_ONLY",
+  "truth_used_to_modify_formal_policy": false,
+  "truth_used_for_proposal_or_ranking": false,
+  "truth_used_for_automatic_stop": false,
+  "heldout_final_test_used": false,
+  "formal_personalization_executed": false,
+  "mechanical_objective_modified": false,
+  "generator_modified": false,
+  "five_parameter_model_modified": false,
+  "active_reference_modified": false,
+  "rom_protocol_modified": false,
+  "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+  "human_readiness": "NOT_HUMAN_READY",
+  "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED",
+  "real_robot_connected": false,
+  "formal_threshold_created": false,
+  "protected_package_diff_unchanged": true,
+  "protected_package_git_diff_empty": true,
+  "protected_package_git_diff": "",
+  "policy_definition_source_sha256": "a29a1510b37ac292587daaef4bc5933694dd2c01282e7b8dad3f4be3c2d77757",
+  "decision_guard_source_sha256": "c0cd519fe8901040514ef3b9df31c0f64d1fd0f54a8de1a0464697e2a0015476",
+  "exploit_selector_source_sha256": "1c19dbbef2a763aa48bcfd117c63e806c729755c886c07de18dd5a97a5271886",
+  "exploration_ranker_source_sha256": "d43e04d9ff9594d0061c1e165f92df031d4efe65c38b516c65b55e76221e0e2f",
+  "policy_core_source_sha256": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+  "mechanical_objective_source_sha256": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+  "generator_source_sha256": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+  "estimator_source_sha256": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+  "prototype_core_source_sha256": "ac92479b65f26f816877163af945f10d1c14973bc09810e80a94c89a77710876",
+  "runner_source_sha256": "91b5dd129489466a98bfebf107b350b2036a6b67612ba18e1c2a586821d42917",
+  "source_input_sha256": {
+    "parameter_map": "f5eddf4c3a05e9e638bf9254c9f74acf36c80420a1b1ea5f4580e5ce4721a16b",
+    "root_counterfactual": "ea4089394be4b0cd12a560cdba69c4c22d3e1f56d1806fb280d972e6444d48f0",
+    "root_exploration": "967493f50243bb6e979c63dc0c7236a59ecb2c5ddfb736293abdefa1de4f1d2d",
+    "root_knee_truth_landscape": "d960832d7601c80fe2c31dc7da5a882f0ffa5b0504ee05e64d73e388ccd1c2ff",
+    "convergence_best_history": "36d1c9d1c4ea15fcbcbdfec82176768ab235327758e9ce7f2feb63b1a05ee8b1",
+    "convergence_landscape_evolution": "f3fb4cbde17da972e118e9d54b4b7333f9451b103eac5307213c183ee8c999be",
+    "v2_design_metadata": "bba2a5098182352b6acf0326fdf5c653a2821d72ed24e744059fb0c24cbb36bd",
+    "current_policy_definition": "a29a1510b37ac292587daaef4bc5933694dd2c01282e7b8dad3f4be3c2d77757",
+    "current_policy_summary": "a83a647abf2e8cbf81d7bacb65794b07a88a9e78e6c7651c8e2a59a42d6c8cd2",
+    "current_policy_trial_history": "0e666db8cfb353b7977bbcba2acf47b6f47e5c9a71dd81b2afbe01c0784b0e3f"
+  },
+  "runtime_seconds": 2.368973125005141,
+  "output_sha256": {
+    "local_neighborhood_history.csv": "fcc11bdc24075f04204f892e85bbdfd855a03236f2a54cee1b2305234c102f05",
+    "local_neighborhood_protocol_examples.csv": "5ea6271031fad667d951a1a525c7373782b8532996a5e73576c9511d1dbadced",
+    "local_validation_pairs.csv": "ebf8836077a21419c169a98216c72aecbc233d3664a4b457e8bdbed180d1e185",
+    "local_uncertainty_metrics.csv": "d647668afa22f113abca6c54a53128d4278837ae6c69228668857474f7c87a4e",
+    "local_guard_counterfactual_detail.csv": "cdee8c12bd02c7c893303e4158c1f8e18b65a6382e21f9e64163b4b0e4f6b7e0",
+    "local_guard_counterfactual_summary.csv": "511928b947bdf6e79db16d581a7941d31ff7feb7720d1b745659fde09ee44e1a",
+    "exploration_value_history.csv": "3adb4262623ec17913debd6b75d70b6dd10a43ea556f2fe1edb7ed0fd5a70d2e",
+    "exploration_value_summary.csv": "e76202cdafec2c65dc7ef41686bb87577219da3ce2a31e2a1327c8d5ca7d288a",
+    "knee_stiff_cumulative_improvement.csv": "1b2b4f514cf2cbaa52feb36881b2ac35e12be8a7a0ee5565029313fbd7962236",
+    "P2_REVISION_V2_PROTOTYPE_DECISION_MATRIX.csv": "1d2d6f151cced921a2dfa05fb96d26c5db93cea4dca90131796eb61fb0397dff",
+    "prototype_configuration.json": "7f5ccc7114dd883cc30b9575ba4394dded3e65da9d4155c263ac6b9196c72a6b",
+    "cumulative_improvement_assessment.json": "4579fede4fb7baba87d42c60dfb783ae689d9c9e4c8c117fa0250efe53275e10",
+    "P2_REVISION_V2_PROTOTYPE_REPORT.md": "7dd9f95e49d801cc352f45daccb0834adfe9f4068e49f8212f06866e5a74a376",
+    "DATA_LEAKAGE_AUDIT.md": "86da12948ee1be1bd8aab9cf8155305b314d5c6c2cfee79355b812e85cacf141",
+    "local_guard_counterfactual.png": "348326697c971db70cedb88e966348789356df47ddd5a4e6b7c1b5827d50ecc3",
+    "exploration_value_history.png": "ab7740412237023aac037d60a812973801243496814b3e084fb8f0f1a8098293",
+    "knee_stiff_cumulative_improvement.png": "abab03465a6bebb8df290aab334773eae843940c1833e8da0f194ac607781e21"
+  }
+}
