@@ -1,0 +1,35 @@
+{
+  "rule_id": "DECISION_VALUE_EXPLORATION_STOPPING_V1",
+  "status": "FORMAL_RESEARCH_PROTOCOL_DESIGNED_NOT_POLICY_FROZEN",
+  "per_explore_record": {
+    "SUPPORT_VALUE": "coverage_increase",
+    "MODEL_VALUE": "parameter_change",
+    "PREDICTION_VALUE": "prediction_map_change",
+    "DECISION_VALUE": [
+      "predicted_ranking_change",
+      "best_trajectory_change_under_existing_0p005",
+      "exploit_eligibility_change_as_supplemental_signal"
+    ]
+  },
+  "continue_candidate": [
+    "continue_if_DECISION_VALUE",
+    "continue_shadow_observation_if_MODEL_VALUE_or_PREDICTION_VALUE",
+    "support_growth_alone_is_not_a_continue_reason"
+  ],
+  "stop_candidate": {
+    "condition": "K_consecutive_explores_with_zero_MODEL_PREDICTION_DECISION_value_and_no_pending_exploit",
+    "consecutive_K_candidates": [
+      1,
+      2,
+      3
+    ],
+    "requires_valid_observation_and_no_failure": true
+  },
+  "change_detection_numeric_tolerance": null,
+  "change_detection_tolerance_requires_review": true,
+  "consecutive_K_frozen": false,
+  "automatic_stop_enabled": false,
+  "support_used_as_decision_value": false,
+  "truth_feature_used": false,
+  "current_P2_modified": false
+}

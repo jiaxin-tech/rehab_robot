@@ -1,0 +1,3 @@
+validation_class,pair_instance_count,alpha_pair_mappable,coordinates_covered,trust_levels_covered,selection_uses_final_truth_landscape,outcomes_available,mean_e_delta_J,P95_e_delta_J,P99_e_delta_J,max_e_delta_J,role
+CURRENT_GLOBAL_IDENTIFICATION_PAIR,61,False,IDENTIFICATION_EXCITATION_NOT_ALPHA,NONE,False,True,0.00850543051743,0.00753215325456,0.193060871556,0.216052982758,CURRENT_G0_PROVENANCE_NOT_LOCAL_DECISION_SCALE
+DESIGNATED_LOCAL_PAIR_PLAN,324,True,hip;knee;phase,INITIAL;HALF;MINIMUM,False,False,,,,,PRE_REGISTERED_PLAN_PENDING_INDEPENDENT_OUTCOMES

@@ -1,0 +1,13 @@
+case_id,subject_id,scenario_name,consecutive_zero_value_candidate,trigger_observed,shadow_stop_after_iteration,current_executed_trial_count,shadow_executed_trial_count,historical_trials_potentially_avoided,later_exploit_trials_in_frozen_history,later_accepted_best_changes_in_frozen_history,support_alone_causes_continue,automatic_stop_executed,candidate_frozen,truth_feature_used,current_P2_modified
+baseline__matched_linear,baseline,matched_linear,1,True,7,13,7,6,0,0,False,False,False,False,False
+baseline__matched_linear,baseline,matched_linear,2,True,8,13,8,5,0,0,False,False,False,False,False
+baseline__matched_linear,baseline,matched_linear,3,True,9,13,9,4,0,0,False,False,False,False,False
+heavy_leg__matched_linear,heavy_leg,matched_linear,1,True,7,13,7,6,0,0,False,False,False,False,False
+heavy_leg__matched_linear,heavy_leg,matched_linear,2,True,8,13,8,5,0,0,False,False,False,False,False
+heavy_leg__matched_linear,heavy_leg,matched_linear,3,True,9,13,9,4,0,0,False,False,False,False,False
+hip_stiff__matched_linear,hip_stiff,matched_linear,1,True,7,13,7,6,0,0,False,False,False,False,False
+hip_stiff__matched_linear,hip_stiff,matched_linear,2,True,8,13,8,5,0,0,False,False,False,False,False
+hip_stiff__matched_linear,hip_stiff,matched_linear,3,True,9,13,9,4,0,0,False,False,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,1,True,1,8,1,7,0,0,False,False,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,2,True,2,8,2,6,0,0,False,False,False,False,False
+knee_stiff__matched_linear,knee_stiff,matched_linear,3,True,3,8,3,5,0,0,False,False,False,False,False

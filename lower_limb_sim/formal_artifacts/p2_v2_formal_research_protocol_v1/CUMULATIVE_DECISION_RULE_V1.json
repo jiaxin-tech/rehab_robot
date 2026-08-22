@@ -1,0 +1,51 @@
+{
+  "rule_id": "CUMULATIVE_DECISION_RULE_V1",
+  "status": "FORMAL_RESEARCH_PROTOCOL_DESIGNED_NOT_POLICY_FROZEN",
+  "Rule_A": {
+    "name": "single_step_improvement",
+    "existing_margin": "-delta_J_pred-U_step-0.005>0",
+    "limitation": "cannot_accumulate_repeated_sub_0p005_same_direction_moves"
+  },
+  "Rule_B": {
+    "name": "multi_step_accumulated_improvement_bundle",
+    "candidate_formula": "-sum(delta_J_pred)-U_bundle-0.005>0",
+    "maximum_accumulation_step_candidates": [
+      2,
+      3,
+      5
+    ],
+    "direction_consistency": [
+      "same_generator_coordinate",
+      "same_signed_direction",
+      "each_step_is_an_existing_trust_neighbor",
+      "predicted_step_delta_J_must_remain_improving",
+      "predicted_endpoint_ranking_must_not_reverse"
+    ],
+    "path_constraints": [
+      "every_intermediate_alpha_inside_existing_generator_bounds",
+      "every_intermediate_trajectory_geometry_valid",
+      "every_intermediate_candidate_model_supported",
+      "model_checkpoint_fixed_within_a_shadow_bundle"
+    ],
+    "uncertainty_aggregation_candidates": [
+      "SUM_OF_STEPWISE_LOCAL_BOUNDS_WORST_CASE",
+      "EMPIRICAL_BLOCK_P95_REQUIRES_NEW_DESIGNATED_BUNDLES",
+      "RSS_ONLY_AFTER_RESIDUAL_INDEPENDENCE_VALIDATED"
+    ],
+    "wrong_direction_prevention": [
+      "predeclare_direction_from_prediction_before_truth",
+      "reject_bundle_on_predicted_sign_or_rank_reversal",
+      "reject_bundle_on_support_or_uncertainty_failure",
+      "never_use_posthoc_truth_to_extend_or_reselect_bundle",
+      "evaluate_truth_only_after_shadow_bundle_selection_is_frozen"
+    ]
+  },
+  "maximum_steps_frozen": false,
+  "uncertainty_aggregation_frozen": false,
+  "numeric_threshold_created": false,
+  "rule_enabled": false,
+  "objective_modified": false,
+  "generator_modified": false,
+  "truth_used_to_modify_policy": false,
+  "current_P2_modified": false
+}
