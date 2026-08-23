@@ -1,0 +1,68 @@
+{
+  "protocol_id": "DESIGNATED_BUNDLE_VALIDATION_PROTOCOL_V1",
+  "status": "PLAN_FROZEN_BEFORE_FUTURE_BUNDLE_TRUTH",
+  "data_role": "FUTURE_INDEPENDENT_BUNDLE_CALIBRATION_PLAN_ONLY",
+  "source_space": "EXISTING_GEOMETRICALLY_ADMISSIBLE_GENERATOR_LATTICE",
+  "formal_grid_steps": {
+    "hip_deg": 0.25,
+    "knee_deg": 0.25,
+    "phase": 0.0025
+  },
+  "bundle_lengths": {
+    "primary": [
+      2,
+      3
+    ],
+    "optional_diagnostic": [
+      5
+    ]
+  },
+  "strata": [
+    "coordinate",
+    "direction",
+    "bundle_length",
+    "location_class"
+  ],
+  "coordinates": [
+    "hip",
+    "knee",
+    "phase"
+  ],
+  "directions": [
+    "NEGATIVE",
+    "POSITIVE"
+  ],
+  "location_classes": [
+    "LOWER_BOUNDARY",
+    "INTERIOR",
+    "UPPER_BOUNDARY"
+  ],
+  "pairs_per_stratum": 12,
+  "planned_pair_count": 648,
+  "stratum_count": 54,
+  "pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+  "selection_rule": "LOWEST_SHA256_WITHIN_GEOMETRY_DIRECTION_LENGTH_LOCATION_STRATUM",
+  "plan_inputs": [
+    "generator_geometry",
+    "formal_grid",
+    "formal_trust_step_definitions",
+    "boundary_interior_labels",
+    "direction_identity"
+  ],
+  "forbidden_plan_inputs": [
+    "prospective_truth_error_magnitude",
+    "prospective_successful_bundle_location",
+    "future_bundle_truth",
+    "predicted_objective"
+  ],
+  "formal_neighbor_continuity_required": true,
+  "direction_consistency_required": true,
+  "generator_bounds_expanded": false,
+  "future_required_outcome": "e_deltaJ_bundle=abs(deltaJ_pred_start_to_endpoint-deltaJ_truth_start_to_endpoint)",
+  "future_truth_generated_in_this_task": false,
+  "bundle_uncertainty_calibrated_in_this_task": false,
+  "current_324_pair_plan_modified": false,
+  "current_324_pair_plan_limitation": "single-pair trust-level comparisons lack predeclared bundle identity, continuous intermediate path, and 2/3/5-step bundle residual strata",
+  "prospective_outcomes_used_to_select_plan": false,
+  "truth_used_to_select_plan": false
+}
