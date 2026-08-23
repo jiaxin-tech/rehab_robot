@@ -1,0 +1,249 @@
+{
+  "calibration_id": "P2_NEXT_REVISION_INDEPENDENT_CALIBRATION_V1",
+  "data_role": "INDEPENDENT_CALIBRATION_DECISION_ERROR_ONLY",
+  "calibration_only": true,
+  "checkpoint": {
+    "checkpoint_commit": "2e276b50d3e91219ddd17ea2aa86562cbdbb858d",
+    "checkpoint_subject": "audit post-prospective rejection root cause",
+    "post_audit_checkpointed": true,
+    "required_checkpoint_paths": [
+      "lower_limb_sim/post_prospective_rejection_root_cause_audit.py",
+      "lower_limb_sim/run_post_prospective_rejection_root_cause_audit.py",
+      "lower_limb_sim/formal_artifacts/post_prospective_rejection_root_cause_audit_v1/DESIGNATED_BUNDLE_VALIDATION_PROTOCOL_V1.json",
+      "lower_limb_sim/formal_artifacts/post_prospective_rejection_root_cause_audit_v1/designated_bundle_validation_pair_plan.csv"
+    ],
+    "committed_bundle_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+    "git_log": [
+      "2e276b5 audit post-prospective rejection root cause",
+      "da5bba5 validate P2 V2 on prospective offline cohort",
+      "d7fe809 evaluate P2 V2 offline research prototype",
+      "e6a8abc freeze P2 V2 offline research protocol",
+      "3de0533 add P2 revision root-cause and design evidence",
+      "9908054 implement decision-guarded sequential personalization and convergence audit",
+      "0ae022c characterize decision-relevant model reliability",
+      "9997f7c add initial identification acceptance architecture"
+    ]
+  },
+  "calibration_manifest_sha256": "08f930692704c24f10f85f094eabf45fc5e0842ec3f479345e62bee892df1729",
+  "calibration_manifest_frozen_before_truth": true,
+  "case_manifest_frozen_before_truth": true,
+  "pair_assignments_frozen_before_truth": true,
+  "calibration_case_ids": [
+    "calibration_subject_001__matched_linear",
+    "calibration_subject_001__nonlinear_stiffness_strong",
+    "calibration_subject_002__hip_knee_coupling_strong",
+    "calibration_subject_002__matched_linear",
+    "calibration_subject_003__combined_strong",
+    "calibration_subject_003__matched_linear",
+    "calibration_subject_004__matched_linear",
+    "calibration_subject_004__nonlinear_stiffness_strong",
+    "calibration_subject_005__hip_knee_coupling_strong",
+    "calibration_subject_005__matched_linear",
+    "calibration_subject_006__combined_strong",
+    "calibration_subject_006__matched_linear"
+  ],
+  "calibration_case_count": 12,
+  "development_used_after_rejection": true,
+  "rejected_prospective_cases_used_in_residual_estimate": false,
+  "old_development_cases_used_in_residual_estimate": false,
+  "future_prospective_created": false,
+  "reserved_for_future_prospective": false,
+  "heldout_final_test_status": "HELD_OUT_FINAL_TEST_NOT_READ",
+  "heldout_final_test_truth_access_count": 0,
+  "calibration_truth_gate_access_count": 24,
+  "truth_used_for_case_selection": false,
+  "truth_used_for_pair_selection_or_assignment": false,
+  "local_source_pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+  "bundle_source_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+  "old_prospective_manifest_sha256": "94d33675b2ae51ef80154c3bba92f31b87852267f3cffbaaacc75c3ce0aa1876",
+  "old_prospective_conclusion": "P2_V2_PROSPECTIVE_EVIDENCE_REJECTS_CURRENT_REVISION",
+  "old_prospective_conclusion_revised": false,
+  "new_percentile_selected": false,
+  "new_K_selected": false,
+  "new_policy_implemented": false,
+  "prospective_personalization_run": false,
+  "cumulative_rule_enabled": false,
+  "analytic_uncertainty_scaling_used": false,
+  "one_step_canonical_pair_count": 324,
+  "one_step_negative_direction_independent_pair_count": 0,
+  "one_step_reverse_direction_summary_is_symmetric_view_only": true,
+  "development_and_calibration_residuals_pooled": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "algorithm_equivalence_tolerance": 0.005,
+  "support_gate_percent": 90.0,
+  "P2_V2_default_enabled": false,
+  "human_readiness": "NOT_HUMAN_READY",
+  "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED",
+  "robot_connected": false,
+  "protected_source_sha256_before": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1",
+    "P2_V2A_definition": "f6ebaeb91c8b42b2f1d8144cfed347d0164d844bd91aec597dd76356bc1450a2",
+    "rejected_post_prospective_audit": "ffe5f1f8282e15ab5e1d57bb4fc5519ae2b1289c8635b28200afb99f3cc2d264"
+  },
+  "protected_source_sha256_after": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1",
+    "P2_V2A_definition": "f6ebaeb91c8b42b2f1d8144cfed347d0164d844bd91aec597dd76356bc1450a2",
+    "rejected_post_prospective_audit": "ffe5f1f8282e15ab5e1d57bb4fc5519ae2b1289c8635b28200afb99f3cc2d264"
+  },
+  "bundle_scale_status": {
+    "2": "BUNDLE_SCALE_CALIBRATED_FOR_RESEARCH",
+    "3": "BUNDLE_SCALE_CALIBRATED_FOR_RESEARCH",
+    "5": "BUNDLE_SCALE_CALIBRATED_FOR_RESEARCH"
+  },
+  "next_revision_policy_design_evidence_available": true,
+  "bundle_2_3_5_P95_strictly_increasing": true,
+  "all_1_2_3_5_P95_strictly_increasing": false,
+  "next_revision_policy_designed_or_enabled": false,
+  "artifact_manifest": {
+    "calibration_case_manifest.csv": {
+      "sha256": "a5c4c55174bb548eb4602f6df6e695fc54615c7f5660d1b8fdc23e98059a0747",
+      "bytes": 5561
+    },
+    "independent_local_calibration_pair_plan.csv": {
+      "sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+      "bytes": 146581
+    },
+    "local_pair_assignment_manifest.csv": {
+      "sha256": "6ae1ec751b4242fa97f9dd220f370d3fd84a7152f221eb5f6d0803aaf105c15a",
+      "bytes": 109750
+    },
+    "bundle_pair_assignment_manifest.csv": {
+      "sha256": "a7ec2254fd8c5342ef3550212c24049477107220bc06428a6a4d81b0464af725",
+      "bytes": 220304
+    },
+    "independent_one_step_residuals.csv": {
+      "sha256": "a8ccc5b84666a30006db9c8833cfa080cd1ce161e8899d1f54863495ef4c1660",
+      "bytes": 149361
+    },
+    "independent_bundle_2step_residuals.csv": {
+      "sha256": "df6fa2a076adb0bbad570c7c13a3c0c04dc8ca25a02f2909ae9a77bce0603ab3",
+      "bytes": 96215
+    },
+    "independent_bundle_3step_residuals.csv": {
+      "sha256": "55a25d63ce1854ecefb808882f4c0cd8b987804ce48b209d8737fcaed9fa307e",
+      "bytes": 102962
+    },
+    "independent_bundle_5step_residuals.csv": {
+      "sha256": "9674e276f5b5ae50165876a255d96fdcf574d496e79ea2345c3263464773227d",
+      "bytes": 116468
+    },
+    "one_step_residual_summary.csv": {
+      "sha256": "8d588f140aa90c31081834392838b3fef6ee19a4e88375ffb81255c2cf1748b3",
+      "bytes": 12020
+    },
+    "bundle_residual_summary.csv": {
+      "sha256": "f1bec0f737a4b60eb4e56191e0512b3459862330769d6b62925ee74eabfba7f4",
+      "bytes": 663
+    },
+    "decision_scale_residual_comparison.csv": {
+      "sha256": "841ced595efdc5ebb0431b523a5d99f3da5d6597694c951ea85d5b3f91ca50d1",
+      "bytes": 940
+    },
+    "axis_direction_residual_summary.csv": {
+      "sha256": "06a80dfd8636ab6d7b7540d516e126656212cd5320f89fed9f5b83b19b65b19d",
+      "bytes": 23705
+    },
+    "matched_mismatch_residual_summary.csv": {
+      "sha256": "d4b8bccb83daef4ebcda5a9af44bd8f4ad018f1bbd82c59079d9c2780b58192f",
+      "bytes": 1694
+    },
+    "calibration_identification_audit.csv": {
+      "sha256": "7169d070372a0110c9bb4f1eeb182fd5416c324862866fbb477403eb2b21ea20",
+      "bytes": 3792
+    },
+    "calibration_truth_access_audit.csv": {
+      "sha256": "7ced62aeb0b170dbe00c24c808c9c9c0530bc0168d63c0ae39d8b1226d0a2cdb",
+      "bytes": 3924
+    },
+    "bundle_scale_feasibility.csv": {
+      "sha256": "d866e2d9453c731805f1c13f1146bc027d5be19bbcebd6798c95c92d6ef02204",
+      "bytes": 667
+    },
+    "development_vs_independent_calibration.csv": {
+      "sha256": "5529f7579e03b453ae139975a475e0e597de573cdee97e491452a6fe66f22e7d",
+      "bytes": 1763
+    },
+    "P2_NEXT_REVISION_CALIBRATION_MANIFEST_V1.json": {
+      "sha256": "08f930692704c24f10f85f094eabf45fc5e0842ec3f479345e62bee892df1729",
+      "bytes": 5759
+    },
+    "local_pair_plan_provenance.json": {
+      "sha256": "bb05a41de6b68e2639fcc9f8f6e953d4c393d8f172b214a4b40c1a39f3d8172e",
+      "bytes": 791
+    },
+    "bundle_pair_plan_provenance.json": {
+      "sha256": "3c19f4a4ac2971b79f6e7c200f325584ddffb6769c1a5af45e3e8d62c4f84e26",
+      "bytes": 908
+    },
+    "CALIBRATION_DATA_SPLIT_AUDIT.md": {
+      "sha256": "25e444049ce89bb55dc3f56de6c075f6bc37d6c67e3611c7a11ea14f6be17681",
+      "bytes": 974
+    },
+    "CUMULATIVE_DECISION_CALIBRATION_FEASIBILITY.md": {
+      "sha256": "7f23219c72f3aeb7a6b280be86c29569c47d59cd9656eb7370cd2803f0378df4",
+      "bytes": 582
+    },
+    "INDEPENDENT_CALIBRATION_REPORT.md": {
+      "sha256": "3b3a793a081942a3c6dd460163a33a5b626a94b6729aa6ba7870b501bdf86b2b",
+      "bytes": 3512
+    },
+    "DATA_PROVENANCE_AUDIT.md": {
+      "sha256": "e4a838cc2e248a44a3c2e59e98258a95df66c454f95f9bac84add7381ee6d178",
+      "bytes": 1030
+    },
+    "decision_residual_by_step_scale.png": {
+      "sha256": "d27714776d15f954b0bb63933b01637c3371eb3310ab64cb05c5336d48732abe",
+      "bytes": 65621
+    },
+    "one_step_residual_distribution.png": {
+      "sha256": "a52936ededd638ade9756bfaa7175e853bd4d27335d35ae15bb93e25952833aa",
+      "bytes": 30253
+    },
+    "bundle_residual_distribution.png": {
+      "sha256": "97cbe065496c1d6f4ffc79c57150adb7c3a3bfd92a1fa48e696b6cc069c77650",
+      "bytes": 39146
+    },
+    "axis_direction_residual_comparison.png": {
+      "sha256": "ab4fa2a47644e3d0c7718429481cde94d8ed1abb38b85c8ea67e6b26fa5c82b3",
+      "bytes": 101245
+    },
+    "matched_vs_mismatch_residual.png": {
+      "sha256": "2e8a07f257e2f3e32a1d9819f668c8fdbaf8531a5ac086c4dd33096eeb558a42",
+      "bytes": 53160
+    },
+    "development_vs_independent_calibration.png": {
+      "sha256": "b9645a3e159610fbaa081ab5ecce51a640577dba79f7c5f2302bbec459f926c6",
+      "bytes": 67640
+    }
+  },
+  "runtime_seconds": 50.92188912499114,
+  "generated_at_utc": "2026-08-23T02:28:44.132324+00:00"
+}
