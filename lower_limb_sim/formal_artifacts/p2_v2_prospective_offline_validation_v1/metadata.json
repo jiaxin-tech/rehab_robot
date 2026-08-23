@@ -1,0 +1,158 @@
+{
+  "protocol_id": "P2_V2_PROSPECTIVE_OFFLINE_VALIDATION_V1",
+  "manifest_id": "P2_V2_PROSPECTIVE_EVALUATION_MANIFEST_V1",
+  "prospective_manifest_sha256": "94d33675b2ae51ef80154c3bba92f31b87852267f3cffbaaacc75c3ce0aa1876",
+  "manifest_frozen_at_utc": "2026-08-22T23:44:13.304274+00:00",
+  "first_truth_after_manifest_freeze": true,
+  "prospective_start_commit_sha": "d7fe80945ae625fffc7919e1735e9e2df8c8fa00",
+  "git_branch": "sync/mac-20260813",
+  "git_log_at_start": [
+    "d7fe809 evaluate P2 V2 offline research prototype",
+    "e6a8abc freeze P2 V2 offline research protocol",
+    "3de0533 add P2 revision root-cause and design evidence",
+    "9908054 implement decision-guarded sequential personalization and convergence audit",
+    "0ae022c characterize decision-relevant model reliability",
+    "9997f7c add initial identification acceptance architecture",
+    "25ee0a0 implement safeguarded sequential initial identification",
+    "f868b9d 8.14",
+    "f5a73d2 reability range",
+    "115bb97 。"
+  ],
+  "checkpoint_preflight_status": "PASSED_CLEAN_BEFORE_PROSPECTIVE_IMPLEMENTATION",
+  "case_count": 6,
+  "matched_case_count": 3,
+  "mismatch_case_count": 3,
+  "policy_variant_count": 5,
+  "executed_case_policy_runs": 30,
+  "prospective_truth_gate_access_count": 175,
+  "local_uncertainty_metrics": {
+    "local_max": 0.00168273790494,
+    "local_P95": 0.0004309567589238975,
+    "local_P99": 0.0012769420135850976
+  },
+  "bundle_uncertainty_calibration": {
+    "C2": "SHADOW_ONLY_NOT_CALIBRATED",
+    "C3": "SHADOW_ONLY_NOT_CALIBRATED",
+    "C5": "SHADOW_ONLY_NOT_CALIBRATED"
+  },
+  "P2_V2B_executed": false,
+  "final_status": "P2_V2_PROSPECTIVE_EVIDENCE_REJECTS_CURRENT_REVISION",
+  "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+  "P2_V2_default_enabled": false,
+  "human_readiness": "NOT_HUMAN_READY",
+  "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED",
+  "initial_identification_acceptance_rule": "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_REQUIRES_REVIEW",
+  "global_model_reliability_rule": "GLOBAL_MODEL_RELIABILITY_RULE_NOT_FROZEN_FOR_HUMANS",
+  "heldout_final_test": "HELD_OUT_FINAL_TEST_NOT_READ",
+  "hardware_control_collection_safety_unchanged": true,
+  "robot_connected": false,
+  "prospective_outcome_used_to_tune_policy": false,
+  "protected_source_sha256_before": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "protected_source_sha256_after": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "artifacts": {
+    "P2_V2_PROSPECTIVE_EVALUATION_MANIFEST_V1.json": {
+      "sha256": "94d33675b2ae51ef80154c3bba92f31b87852267f3cffbaaacc75c3ce0aa1876",
+      "bytes": 14578
+    },
+    "prospective_case_manifest.csv": {
+      "sha256": "e78512b24a0235e4632c27df42ab03cc799818e349c1d2b8e0c52c11c6c694e5",
+      "bytes": 1717
+    },
+    "designated_local_validation_provenance.csv": {
+      "sha256": "c747e6ed2562e6a4b17995318fa5bb6ae903894fa9484822a964e76a310a4db7",
+      "bytes": 906
+    },
+    "bundle_uncertainty_audit.csv": {
+      "sha256": "15fd5444f707ff7cd3b10b2a1b8498ce9cb74f1efaca551e46e83b01cdde4e3d",
+      "bytes": 548
+    },
+    "prospective_trial_history.csv": {
+      "sha256": "c54b0b4dd9b3bd40d01954a9b39a20f505fe7ae525610a4e23773219fb7634be",
+      "bytes": 35415
+    },
+    "prospective_policy_summary.csv": {
+      "sha256": "3c3049dc9992e2cb95a41149397972cb5291bc6215c3c7f820084ef697c51bd9",
+      "bytes": 15867
+    },
+    "guard_prospective_comparison.csv": {
+      "sha256": "dbe226c8aa78f0fd9307a05b82426a097543a17934c30a32b31f09062593f3f5",
+      "bytes": 550
+    },
+    "cumulative_prospective_comparison.csv": {
+      "sha256": "c5ed2612a15f49450a5497976d93a465d2178df6fe8a0355017a8798de992a49",
+      "bytes": 18765
+    },
+    "stopping_prospective_comparison.csv": {
+      "sha256": "54fda5e44aa1ec9c637ccdfd6d1f9743b6823775ec6ab30201496e93c66569b5",
+      "bytes": 574
+    },
+    "prospective_false_improvement_audit.csv": {
+      "sha256": "caaf5cbafe3b36265de07ecf03c69089833bffc2179419b232f76b510d2bd0dc",
+      "bytes": 14946
+    },
+    "prospective_missed_improvement_audit.csv": {
+      "sha256": "7467b69017f05252e755a8c8bab8c2f04970e12d2ee0821f23b2a9a21433a72b",
+      "bytes": 154949
+    },
+    "prospective_trial_efficiency.csv": {
+      "sha256": "b4e809b3d9039a890c29f75a1b59f064e926e45e1b50075387dc8337932bd412",
+      "bytes": 2701
+    },
+    "prospective_subject_specificity.csv": {
+      "sha256": "65b786576b4f1eef7671e4c4435af1d54f783b3b54c1311e5787d10d18593aef",
+      "bytes": 3176
+    },
+    "prospective_failure_mode_audit.csv": {
+      "sha256": "1e62e1f5e4bbffd6f1ae3bfabd419d50a61d813a273abc7bf95e17ab9dcc4a7d",
+      "bytes": 29190
+    },
+    "prospective_exploration_value_history.csv": {
+      "sha256": "7991fee62c19221a9e51183ad07ca92975fd60da34f4db076b70d03b8bfdb37b",
+      "bytes": 11931
+    },
+    "PROSPECTIVE_VALIDATION_REPORT.md": {
+      "sha256": "19b7025ca18c47822a88c584da0952fcd0edeb124806b959638d56574a74e7b9",
+      "bytes": 3112
+    },
+    "DATA_SPLIT_AND_LEAKAGE_AUDIT.md": {
+      "sha256": "cbf0b38bf0d888abfe943c3d4d1c8cb2f514db12dfcd314123c614e1abf449ff",
+      "bytes": 1279
+    },
+    "prospective_trial_efficiency.png": {
+      "sha256": "44ca79df78182b6bf233adb9d17c814af31e746501aa6ed69ec92f9609d05af4",
+      "bytes": 60449
+    },
+    "prospective_guard_outcomes.png": {
+      "sha256": "07bbffdd4f9e68d024b31749b09890cd61d615fd621a135a38d6c5e2ff0d3bdf",
+      "bytes": 65774
+    },
+    "prospective_final_J_and_regret.png": {
+      "sha256": "4a5f797b01774c127a0801c22a48e5159d0763765cbab08827e666de989f612e",
+      "bytes": 63458
+    }
+  },
+  "runtime_seconds": 238.81201233298634,
+  "generated_at_utc": "2026-08-22T23:47:47.699655+00:00"
+}
