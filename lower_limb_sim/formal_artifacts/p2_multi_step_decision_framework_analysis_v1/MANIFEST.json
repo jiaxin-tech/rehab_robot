@@ -1,0 +1,144 @@
+{
+  "P2_V1_modified": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "analysis_id": "P2_MULTI_STEP_DECISION_FRAMEWORK_ANALYSIS_V1",
+  "benefit_uncertainty_analysis": {
+    "benefit_metrics": [
+      "small_step_recovery",
+      "final_J_reduction_vs_SINGLE_STEP",
+      "global_regret_reduction_vs_SINGLE_STEP"
+    ],
+    "inferential_statistics_claimed": false,
+    "monotonic_claim_limited_to_bundle_2_3_5": true,
+    "uncertainty_metric": "independent_scale_P95_endpoint_residual"
+  },
+  "bundle_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+  "calibration_manifest_sha256": "08f930692704c24f10f85f094eabf45fc5e0842ec3f479345e62bee892df1729",
+  "candidate_relationship": {
+    "endpoint_distance": "horizon_steps * existing_formal_generator_grid_unit",
+    "generator_bounds_expanded": false,
+    "one_coordinate_only": true,
+    "physical_distance_invented": false,
+    "same_signed_direction": true
+  },
+  "checkpoint_commit": "139fed4ddd5bad17868aaf3ca8a2dafa943dce2d",
+  "data_roles": {
+    "development": "ORIGINAL_9_PLUS_POST_REJECTION_DEVELOPMENT_6_SHADOW_ONLY",
+    "heldout_final_test": "NOT_READ",
+    "independent_calibration": "RESIDUAL_SCALE_ONLY",
+    "prospective": "NOT_RUN"
+  },
+  "decision_rule_common_to_all_frameworks": {
+    "additive_margin_used": false,
+    "direction_gate": "deltaJ_pred + U_scale_P95 < 0",
+    "direction_interval": "[deltaJ_pred-U_scale_P95, deltaJ_pred+U_scale_P95]",
+    "magnitude_gate": "predicted_endpoint_improvement > 0.005",
+    "objective_tolerance_changed": false,
+    "percentile_searched": false
+  },
+  "default_enabled": false,
+  "endpoint_authorization": {
+    "authorization_expires_after_endpoint_execution": true,
+    "authorization_scope": "DIRECT_ENDPOINT_CANDIDATE_ONLY",
+    "future_truth_used_for_authorization": false,
+    "intermediate_trajectories_executed": false,
+    "latent_intermediate_nodes_geometry_valid": true,
+    "latent_intermediate_nodes_model_supported_at_90_percent": true,
+    "latent_intermediate_nodes_must_exist": true,
+    "latent_intermediate_nodes_patient_envelope_valid": true,
+    "latent_intermediate_nodes_reference_provenance_valid": true,
+    "model_refit_after_endpoint_execution": true,
+    "whole_map_recomputed_after_endpoint_execution": true
+  },
+  "evidence_level": "OFFLINE_ONLY",
+  "formal_generator_grid_unit": {
+    "hip_delta_deg": 0.25,
+    "knee_delta_deg": 0.25,
+    "phase_delta": 0.0025
+  },
+  "framework_uncertainty_P95": {
+    "BUNDLE_2": 0.00164217053717,
+    "BUNDLE_3": 0.00244544326845,
+    "BUNDLE_5": 0.00400496043747,
+    "SINGLE_STEP": 0.00196762280892
+  },
+  "frameworks": [
+    {
+      "default_enabled": false,
+      "framework_id": "SINGLE_STEP",
+      "horizon_steps": 1,
+      "residual_scale": "INDEPENDENT_ONE_STEP_P95",
+      "role": "BASELINE_HORIZON"
+    },
+    {
+      "default_enabled": false,
+      "framework_id": "BUNDLE_2",
+      "horizon_steps": 2,
+      "residual_scale": "INDEPENDENT_2_STEP_ENDPOINT_P95",
+      "role": "SHORT_BUNDLE"
+    },
+    {
+      "default_enabled": false,
+      "framework_id": "BUNDLE_3",
+      "horizon_steps": 3,
+      "residual_scale": "INDEPENDENT_3_STEP_ENDPOINT_P95",
+      "role": "MEDIUM_BUNDLE"
+    },
+    {
+      "default_enabled": false,
+      "framework_id": "BUNDLE_5",
+      "horizon_steps": 5,
+      "residual_scale": "INDEPENDENT_5_STEP_ENDPOINT_P95",
+      "role": "LONG_BUNDLE"
+    }
+  ],
+  "human_ready": "NOT_HUMAN_READY",
+  "manifest_id": "P2_MULTI_STEP_DECISION_FRAMEWORK_ANALYSIS_MANIFEST_V1",
+  "model_support_gate_percent": 90.0,
+  "new_policy_implemented": false,
+  "objective_equivalence_tolerance": 0.005,
+  "prior_semantics_manifest_sha256": "2e97a2b812acff15284c469756e5a0b0dedad307a7f8b8410276dd415c593b65",
+  "protected_source_sha256": {
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "multi_step_core": "e7bc892204978a39105136e0ceba7d0766dc16e0220bc41279956c5c9eee71c5",
+    "multi_step_runner": "f237c188c91562b276c11f1c8704bf4b6d45b71e182c72ebe9bf012a83c4a85b",
+    "prior_semantics_core": "98652247e1e800806ef94fe3044acd5586d8afd066b2a41752ce65b0e95bb0c5",
+    "prior_semantics_manifest": "2e97a2b812acff15284c469756e5a0b0dedad307a7f8b8410276dd415c593b65",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "recommendation_rule_frozen_before_shadow": {
+    "prototype_eligible_if": [
+      "small_step_recovery_greater_than_SINGLE_STEP",
+      "total_false_improvement_not_greater_than_SINGLE_STEP",
+      "mean_final_J_not_worse_than_SINGLE_STEP_by_0.005",
+      "mean_global_regret_not_worse_than_SINGLE_STEP_by_0.005"
+    ],
+    "ranking_for_eligible_bundles": [
+      "largest_small_step_recovery",
+      "lowest_mean_final_J",
+      "fewest_total_trials",
+      "lowest_calibrated_uncertainty",
+      "shortest_horizon"
+    ],
+    "results_may_change_rule": false,
+    "single_step_failure_is_horizon_limited_if": [
+      "at_least_one_bundle_recovers_more_small_step_paths",
+      "that_bundle_does_not_increase_false_improvement",
+      "that_bundle_improves_or_preserves_final_J_and_regret_within_0.005"
+    ]
+  },
+  "robot_approved": "NOT_ROBOT_APPROVED",
+  "selection_rule": "lowest_J_pred_then_trajectory_id_among_gate_passed_unexecuted_endpoints",
+  "small_step_source_sha256": "4fd0f87335ff6a4e114d17410bf1d5c6acc2f97e142600dea52ee4e6569752d9",
+  "status": "FROZEN_BEFORE_DEVELOPMENT_SHADOW_TRUTH",
+  "trial_budget": 20,
+  "truth_used_to_define_or_rank_frameworks": false
+}

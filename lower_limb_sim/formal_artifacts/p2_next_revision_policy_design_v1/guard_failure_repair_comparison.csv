@@ -1,0 +1,7 @@
+comparison_id,comparison_type,evaluated_candidate_count,authorized_count,true_meaningful_opportunity_count,missed_improvement,false_improvement,development_truth_used_to_define_rule
+D0_CURRENT_GLOBAL_GUARD,DIRECT_ONE_STEP,571,31,44,13,0,False
+OLD_G2_DEVELOPMENT_LOCAL_P95,DIRECT_ONE_STEP,571,29,44,15,0,False
+D1_INDEPENDENT_ONE_STEP_P95,DIRECT_ONE_STEP,571,0,44,44,0,False
+R1_G0_BUNDLE_SCALE_P95_S0,BUNDLE_SUPPORTED,1278,0,30,30,0,False
+R3_G0_BUNDLE_SCALE_P99_S2,BUNDLE_SUPPORTED,504,0,17,17,0,False
+R4_G0_BUNDLE_SCALE_AXIS_P95_S2,BUNDLE_SUPPORTED,504,0,17,17,0,False

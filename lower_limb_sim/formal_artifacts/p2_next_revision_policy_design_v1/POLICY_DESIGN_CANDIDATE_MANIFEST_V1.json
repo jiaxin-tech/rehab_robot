@@ -1,0 +1,172 @@
+{
+  "P2_V1_replaced": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "bundle_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+  "bundle_rule": {
+    "all_intermediate_nodes_admissible": true,
+    "all_nodes_model_supported_at_90_percent": true,
+    "all_nodes_patient_envelope_compliant": true,
+    "allowed_lengths": [
+      2,
+      3,
+      5
+    ],
+    "authorization_invalidated_after_execution": true,
+    "authorization_scope": "NEXT_ONE_FORMAL_GRID_STEP_ONLY",
+    "formal_adjacent_grid_required": true,
+    "full_map_recomputed_after_every_execution": true,
+    "id": "BUNDLE_SUPPORTED_ONE_STEP_COMMITMENT_V1",
+    "lower_bound_margin": "-deltaJ_pred_start_endpoint-U_bundle-0.005",
+    "model_refit_after_every_execution": true,
+    "same_axis_required": true,
+    "same_direction_required": true
+  },
+  "bundle_uncertainty_candidates": {
+    "analytic_n_times_U1_used": false,
+    "analytic_sqrt_n_U1_used": false,
+    "percentile_levels": [
+      "P95",
+      "P99"
+    ],
+    "percentile_search_performed": false,
+    "scale_axis_p95": {
+      "2": {
+        "hip": 0.0008568324959500001,
+        "knee": 0.0027967327655350005,
+        "phase": 6.276490607421002e-05
+      },
+      "3": {
+        "hip": 0.0013471624948360001,
+        "knee": 0.004281666698008501,
+        "phase": 9.186741969235503e-05
+      },
+      "5": {
+        "hip": 0.0021259711868545,
+        "knee": 0.007063446721036,
+        "phase": 0.0001634893309855
+      }
+    },
+    "scale_p95": {
+      "2": 0.00164217053717,
+      "3": 0.00244544326845,
+      "5": 0.00400496043747
+    },
+    "scale_p99": {
+      "2": 0.00338315735589,
+      "3": 0.00519358473251,
+      "5": 0.00792314538021
+    }
+  },
+  "calibration_cases_used_for_policy_outcomes": false,
+  "calibration_manifest_sha256": "08f930692704c24f10f85f094eabf45fc5e0842ec3f479345e62bee892df1729",
+  "checkpoint_commit": "139fed4ddd5bad17868aaf3ca8a2dafa943dce2d",
+  "data_roles": {
+    "development": "ORIGINAL_9_PLUS_REJECTED_PROSPECTIVE_6_POLICY_SHADOW",
+    "future_prospective": "NOT_CREATED",
+    "held_out_final_test": "NOT_READ",
+    "independent_calibration": "TWELVE_CASES_RESIDUAL_DISTRIBUTIONS_ONLY"
+  },
+  "default_enabled": false,
+  "design_id": "P2_NEXT_REVISION_POLICY_DESIGN_V1",
+  "direct_comparators": [
+    {
+      "id": "D0_CURRENT_P2_V1_ONE_STEP",
+      "policy_branch": true,
+      "uncertainty": "CURRENT_GLOBAL_PAIRWISE_MAX"
+    },
+    {
+      "id": "D1_INDEPENDENT_ONE_STEP_P95_RESEARCH_COMPARATOR",
+      "percentile": "P95",
+      "policy_branch": false,
+      "threshold_frozen": false,
+      "uncertainty": 0.00196762280892
+    }
+  ],
+  "held_out_final_test_read_allowed": false,
+  "human_ready": "NOT_HUMAN_READY",
+  "local_pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+  "manifest_id": "POLICY_DESIGN_CANDIDATE_MANIFEST_V1",
+  "model_support_gate_percent": 90.0,
+  "objective_equivalence_tolerance": 0.005,
+  "policy_variants": [
+    {
+      "bundle_axis_stratified": false,
+      "bundle_decision_id": null,
+      "bundle_percentile": null,
+      "default_enabled": false,
+      "direct_decision_id": "D0_CURRENT_P2_V1_ONE_STEP",
+      "policy_id": "R0_P2_V1_G0_NO_BUNDLE_S0",
+      "role": "P2_V1_COMPARATOR",
+      "stopping_k": null,
+      "stopping_rule_id": "S0_CURRENT_CONTINUATION"
+    },
+    {
+      "bundle_axis_stratified": false,
+      "bundle_decision_id": "BUNDLE_SUPPORTED_ONE_STEP_COMMITMENT_V1",
+      "bundle_percentile": "P95",
+      "default_enabled": false,
+      "direct_decision_id": "D0_CURRENT_P2_V1_ONE_STEP",
+      "policy_id": "R1_G0_BUNDLE_SCALE_P95_S0",
+      "role": "PRIMARY_BUNDLE_EFFECT",
+      "stopping_k": null,
+      "stopping_rule_id": "S0_CURRENT_CONTINUATION"
+    },
+    {
+      "bundle_axis_stratified": false,
+      "bundle_decision_id": "BUNDLE_SUPPORTED_ONE_STEP_COMMITMENT_V1",
+      "bundle_percentile": "P95",
+      "default_enabled": false,
+      "direct_decision_id": "D0_CURRENT_P2_V1_ONE_STEP",
+      "policy_id": "R2_G0_BUNDLE_SCALE_P95_S2",
+      "role": "PRIMARY_MINIMAL_NEXT_REVISION",
+      "stopping_k": 2,
+      "stopping_rule_id": "S2_DECISION_VALUE_K2"
+    },
+    {
+      "bundle_axis_stratified": false,
+      "bundle_decision_id": "BUNDLE_SUPPORTED_ONE_STEP_COMMITMENT_V1",
+      "bundle_percentile": "P99",
+      "default_enabled": false,
+      "direct_decision_id": "D0_CURRENT_P2_V1_ONE_STEP",
+      "policy_id": "R3_G0_BUNDLE_SCALE_P99_S2",
+      "role": "P99_SENSITIVITY",
+      "stopping_k": 2,
+      "stopping_rule_id": "S2_DECISION_VALUE_K2"
+    },
+    {
+      "bundle_axis_stratified": true,
+      "bundle_decision_id": "BUNDLE_SUPPORTED_ONE_STEP_COMMITMENT_V1",
+      "bundle_percentile": "P95",
+      "default_enabled": false,
+      "direct_decision_id": "D0_CURRENT_P2_V1_ONE_STEP",
+      "policy_id": "R4_G0_BUNDLE_SCALE_AXIS_P95_S2",
+      "role": "SCALE_AXIS_SENSITIVITY",
+      "stopping_k": 2,
+      "stopping_rule_id": "S2_DECISION_VALUE_K2"
+    }
+  ],
+  "prospective_cohort_created": false,
+  "protected_source_sha256": {
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "robot_motion_approved": "NOT_ROBOT_MOTION_APPROVED",
+  "status": "FROZEN_BEFORE_DEVELOPMENT_SHADOW_TRUTH",
+  "stopping_candidates": [
+    "S0_CURRENT_CONTINUATION",
+    "S2_DECISION_VALUE_K2"
+  ],
+  "stopping_k_values": [
+    2
+  ],
+  "truth_may_modify_candidates_in_this_task": false,
+  "truth_used_to_create_candidates": false
+}
