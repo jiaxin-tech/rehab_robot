@@ -1,0 +1,132 @@
+{
+  "prototype_id": "P2_ADAPTIVE_HORIZON_DECISION_PROTOTYPE_V1",
+  "manifest_id": "P2_ADAPTIVE_HORIZON_DECISION_PROTOTYPE_MANIFEST_V1",
+  "manifest_sha256": "ace9586f98bfc5142ee310539e6c42b02d7164a3fbb91fdad8d7352110c96f9b",
+  "checkpoint": {
+    "checkpoint_commit": "5e8cea91d056c27605d78515b170c0ad02cbc7a2",
+    "checkpoint_subject": "\tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/DATA_ROLE_AUDIT.md \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/DECISION_RULE_SEMANTICS_CANDIDATE_MANIFEST_V1.json \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/DECISION_RULE_SEMANTICS_REPORT.md \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/calibration_direction_evidence.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/current_rule_semantics.md \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/false_improvement_semantic_audit.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/metadata.json \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/semantic_bundle_authorization_history.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/semantic_shadow_case_summary.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/semantic_shadow_comparison.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/semantic_shadow_trial_history.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/semantic_shadow_truth_rounds.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_decision_rule_semantics_audit_v1/small_step_semantic_recovery.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/DECISION_FRAMEWORK_REPORT.md \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/MANIFEST.json \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/framework_case_summary.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/framework_recommendation_audit.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/framework_trial_history.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/framework_truth_rounds.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/metadata.json \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/single_vs_bundle_comparison.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/small_step_recovery.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/subject_specificity_analysis.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_multi_step_decision_framework_analysis_v1/trial_efficiency_analysis.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/NEXT_REVISION_POLICY_DESIGN_REPORT.md \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/POLICY_DESIGN_CANDIDATE_MANIFEST_V1.json \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/POLICY_DESIGN_DATA_ROLE_AUDIT.md \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/axis_scale_uncertainty_shadow.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/bundle_authorization_history.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/bundle_supported_decision_definition.md \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/direct_one_step_comparator_history.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/guard_failure_repair_comparison.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/matched_mismatch_policy_comparison.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/metadata.json \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/new_failure_mode_audit.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/policy_candidate_manifest_sha.txt \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/policy_shadow_case_summary.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/policy_shadow_final_J_and_regret.png \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/policy_shadow_summary.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/policy_shadow_trial_history.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/policy_shadow_truth_rounds.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/small_step_recovery.png \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/small_step_recovery_audit.csv \tnew file:   lower_limb_sim/formal_artifacts/p2_next_revision_policy_design_v1/stopping_shadow_comparison.csv \tnew file:   lower_limb_sim/p2_decision_rule_semantics_audit.py \tnew file:   lower_limb_sim/p2_multi_step_decision_framework_analysis.py \tnew file:   lower_limb_sim/p2_next_revision_policy_design.py \tnew file:   lower_limb_sim/run_p2_decision_rule_semantics_audit.py \tnew file:   lower_limb_sim/run_p2_multi_step_decision_framework_analysis.py \tnew file:   lower_limb_sim/run_p2_next_revision_policy_design.py \tnew file:   lower_limb_sim/test_p2_decision_rule_semantics_audit.py \tnew file:   lower_limb_sim/test_p2_multi_step_decision_framework_analysis.py \tnew file:   lower_limb_sim/test_p2_next_revision_policy_design.py",
+    "prior_framework_artifacts_tracked_and_verified": true,
+    "prior_framework_artifact_sha256": {
+      "MANIFEST.json": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+      "framework_case_summary.csv": "e55e7b82174765db99d16468db89396d92ddeec0180ad512da1704aa9ca2f676",
+      "framework_trial_history.csv": "c84e0f5ea265060aabdf3fc8fa9b9662bcb866ab01bc55b2237acbe665c0b615",
+      "subject_specificity_analysis.csv": "eb58276761df0f34ec3e9c3a7928243da2e0d392222299bc573d89a58b023596",
+      "small_step_recovery.csv": "4ec4dd60f3ed37d2615475ce67b157b9f3d9d4db39d684ae96f6c19c4a28de61"
+    }
+  },
+  "prior_framework_manifest_sha256": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+  "adaptive_horizon_sequence": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "development_case_count": 15,
+  "approaches_fixed_bundle_5_performance": true,
+  "reduces_fixed_bundle_5_trial_cost": false,
+  "reduces_uniform_boundary_collapse": true,
+  "manifest_frozen_before_development_truth": true,
+  "manifest_truth_access_count": 176,
+  "future_truth_used_for_authorization": false,
+  "held_out_final_test_read": false,
+  "prospective_cohort_run": false,
+  "intermediate_trajectories_executed": false,
+  "model_refit_after_every_execution": true,
+  "full_map_recomputed_after_every_execution": true,
+  "P2_V1_modified": false,
+  "objective_modified": false,
+  "five_parameter_model_modified": false,
+  "generator_modified": false,
+  "ROM_modified": false,
+  "objective_equivalence_tolerance": 0.005,
+  "model_support_gate_percent": 90.0,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "theta_shank_definition": "q_hip - q_knee",
+  "default_enabled": false,
+  "evidence_level": "OFFLINE_ONLY",
+  "human_ready": "NOT_HUMAN_READY",
+  "robot_approved": "NOT_ROBOT_APPROVED",
+  "protected_source_sha256_before": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1",
+    "adaptive_core": "5c2da24cfd03220a55bd734f3d7d173c8410303159ab03599d6b7ff0312d5ac1",
+    "adaptive_runner": "7fdc0bdaa18ed2244349b36225d39e42f3769bef8a95c559d9bb461890db4c83",
+    "prior_framework_manifest": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+    "prior_framework_artifact:MANIFEST.json": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+    "prior_framework_artifact:framework_case_summary.csv": "e55e7b82174765db99d16468db89396d92ddeec0180ad512da1704aa9ca2f676",
+    "prior_framework_artifact:framework_trial_history.csv": "c84e0f5ea265060aabdf3fc8fa9b9662bcb866ab01bc55b2237acbe665c0b615",
+    "prior_framework_artifact:subject_specificity_analysis.csv": "eb58276761df0f34ec3e9c3a7928243da2e0d392222299bc573d89a58b023596",
+    "prior_framework_artifact:small_step_recovery.csv": "4ec4dd60f3ed37d2615475ce67b157b9f3d9d4db39d684ae96f6c19c4a28de61"
+  },
+  "protected_source_sha256_after": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1",
+    "adaptive_core": "5c2da24cfd03220a55bd734f3d7d173c8410303159ab03599d6b7ff0312d5ac1",
+    "adaptive_runner": "7fdc0bdaa18ed2244349b36225d39e42f3769bef8a95c559d9bb461890db4c83",
+    "prior_framework_manifest": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+    "prior_framework_artifact:MANIFEST.json": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+    "prior_framework_artifact:framework_case_summary.csv": "e55e7b82174765db99d16468db89396d92ddeec0180ad512da1704aa9ca2f676",
+    "prior_framework_artifact:framework_trial_history.csv": "c84e0f5ea265060aabdf3fc8fa9b9662bcb866ab01bc55b2237acbe665c0b615",
+    "prior_framework_artifact:subject_specificity_analysis.csv": "eb58276761df0f34ec3e9c3a7928243da2e0d392222299bc573d89a58b023596",
+    "prior_framework_artifact:small_step_recovery.csv": "4ec4dd60f3ed37d2615475ce67b157b9f3d9d4db39d684ae96f6c19c4a28de61"
+  },
+  "artifact_manifest": {
+    "MANIFEST.json": {
+      "sha256": "ace9586f98bfc5142ee310539e6c42b02d7164a3fbb91fdad8d7352110c96f9b",
+      "bytes": 5418
+    },
+    "REPORT.md": {
+      "sha256": "9a845923b5f645a71cfbe9ee36770a59010b1123eab99ec830cc9aed2bdf4d2e",
+      "bytes": 3175
+    },
+    "adaptive_case_summary.csv": {
+      "sha256": "7408e737d63cb2d0e32ae4d1bbde646948be4bdb6a17d76e58e68d28f75c5f14",
+      "bytes": 8813
+    },
+    "adaptive_guard_audit.csv": {
+      "sha256": "723896272d6914ac0b5eb933020e6952b1ca3090cf0827d81b2d8f4e5c341eb2",
+      "bytes": 3195690
+    },
+    "adaptive_small_step_recovery.csv": {
+      "sha256": "be75961d0c9b9392a180b5a4d5709c991b4a98b750cc9f0677240f669dbdfe2f",
+      "bytes": 2059
+    },
+    "adaptive_trial_history.csv": {
+      "sha256": "120dadd587bb21fbbc89697e1ea0dc6341e7ec24cd2b74023c2e1bf402c0aee9",
+      "bytes": 47875
+    },
+    "adaptive_vs_fixed_comparison.csv": {
+      "sha256": "0958230eb47cdf9c3ab55687aea3630324ba4a3a319c2e71862a2fa8344686a6",
+      "bytes": 917
+    },
+    "boundary_analysis.csv": {
+      "sha256": "eaaa457353471bb01a56ad7c2a29150be9658ad4e061ac86fa68df8713a843b9",
+      "bytes": 14113
+    },
+    "horizon_usage.csv": {
+      "sha256": "1d63a583d9dace8558df59ea024f055f1a5ca5a1de756cf89a9d5ef5c7077cf6",
+      "bytes": 18825
+    },
+    "subject_specificity.csv": {
+      "sha256": "a2fa77f2dfcc12df201eb523f41e9eac177f5bd1e63fa96287e152ef50b38034",
+      "bytes": 11720
+    }
+  },
+  "runtime_seconds": 574.5177449579933
+}

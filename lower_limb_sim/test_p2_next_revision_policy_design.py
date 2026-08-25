@@ -59,7 +59,13 @@ def _manifest() -> dict:
 def test_independent_calibration_checkpoint_and_frozen_shas() -> None:
     checkpoint = _checkpoint_preflight()
     assert checkpoint["checkpoint_verified"] is True
-    assert checkpoint["calibration_commit"] == checkpoint["checkpoint_commit"]
+    # Later, separately checkpointed offline analyses legitimately advance HEAD.
+    # The calibration must stay bound to its frozen policy-design provenance,
+    # rather than being required to equal the repository's current commit.
+    assert checkpoint["calibration_commit"] == _metadata()["checkpoint"][
+        "calibration_commit"
+    ]
+    assert checkpoint["calibration_commit"] == _manifest()["checkpoint_commit"]
     assert checkpoint["calibration_artifact_tracked_count"] >= 30
     assert sha256_file(
         MODULE_DIR
@@ -326,4 +332,3 @@ def test_manifest_reconstruction_is_independent_of_shadow_outputs() -> None:
         protected_source_sha256=frozen["protected_source_sha256"],
     )
     assert reconstructed == frozen
-
