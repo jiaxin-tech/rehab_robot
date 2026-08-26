@@ -1,0 +1,16 @@
+case_id,subject_id,scenario_name,first_trial_reaching_knee_minus_5,first_trial_reaching_final_alpha,total_trials,trials_after_first_final_alpha,accepted_actions_after_first_final_alpha,executed_actions_after_first_final_alpha,explore_actions_after_knee_minus_5,endpoint_actions_after_knee_minus_5,model_updates_after_knee_minus_5,best_J_changed_after_knee_minus_5,best_alpha_changed_after_knee_minus_5,prediction_map_changed_exactly_after_knee_minus_5,maximum_map_change_after_knee_minus_5
+baseline__combined_mild,baseline,combined_mild,4,4,4,0,0,0,0,0,0,False,False,False,0
+baseline__hip_knee_coupling_mild,baseline,hip_knee_coupling_mild,4,4,4,0,0,0,0,0,0,False,False,False,0
+baseline__matched_linear,baseline,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0
+baseline__nonlinear_damping_mild,baseline,nonlinear_damping_mild,4,4,4,0,0,0,0,0,0,False,False,False,0
+baseline__nonlinear_stiffness_mild,baseline,nonlinear_stiffness_mild,4,4,4,0,0,0,0,0,0,False,False,False,0
+baseline__structured_residual,baseline,structured_residual,4,4,4,0,0,0,0,0,0,False,False,False,0
+heavy_leg__matched_linear,heavy_leg,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0
+hip_stiff__matched_linear,hip_stiff,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0
+knee_stiff__matched_linear,knee_stiff,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0
+prospective_subject_001__matched_linear,prospective_subject_001,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0
+prospective_subject_001__nonlinear_stiffness_strong,prospective_subject_001,nonlinear_stiffness_strong,4,4,4,0,0,0,0,0,0,False,False,False,0
+prospective_subject_002__hip_knee_coupling_strong,prospective_subject_002,hip_knee_coupling_strong,4,4,4,0,0,0,0,0,0,False,False,False,0
+prospective_subject_002__matched_linear,prospective_subject_002,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0
+prospective_subject_003__combined_strong,prospective_subject_003,combined_strong,4,4,4,0,0,0,0,0,0,False,False,False,0
+prospective_subject_003__matched_linear,prospective_subject_003,matched_linear,5,5,12,7,0,7,7,0,7,False,False,False,0

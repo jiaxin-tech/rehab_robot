@@ -1,0 +1,106 @@
+{
+  "P2_V1_modified": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "adaptive_manifest_sha256": "ace9586f98bfc5142ee310539e6c42b02d7164a3fbb91fdad8d7352110c96f9b",
+  "audit_id": "P2_BUNDLE5_BOUNDARY_AND_SUBJECT_SPECIFICITY_AUDIT_V1",
+  "boundary_collapse_classification": {
+    "MIXED_TRUTH_AND_POLICY_EFFECT": "truth full optima differ, H2 is uniform, and at least one truth-optimum coordinate is uniformly equal to H2 while another truth-optimum coordinate remains diverse",
+    "POLICY_INDUCED_COLLAPSE": "truth full optima differ, H2 is uniform, and no truth-optimum coordinate is uniformly equal to the corresponding H2 coordinate",
+    "TRUTH_LANDSCAPE_CONCENTRATION": "one unique full truth optimum and H2 equals that optimum",
+    "results_may_change_rules": false
+  },
+  "checkpoint_commit": "8a5991e73d0dc0683439e8f915e7cee49ee8ff48",
+  "data_roles": {
+    "development": "ORIGINAL_9_PLUS_POST_REJECTION_DEVELOPMENT_6",
+    "heldout_final_test": "NOT_READ",
+    "independent_calibration": "EXISTING_UNCERTAINTY_ONLY_NOT_OUTCOME_EVIDENCE",
+    "prospective": "NOT_GENERATED"
+  },
+  "default_enabled": false,
+  "evidence_level": "OFFLINE_ONLY",
+  "generator_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "human_ready": "NOT_HUMAN_READY",
+  "manifest_id": "BUNDLE5_AUDIT_MANIFEST_V1",
+  "model_support_gate_percent": 90.0,
+  "new_policy_designed": false,
+  "objective_equivalence_tolerance": 0.005,
+  "objective_review_rule": {
+    "objective_may_be_changed_in_this_task": false,
+    "otherwise": "OBJECTIVE_CHANGE_NOT_JUSTIFIED",
+    "requires_both": [
+      "modal_full_truth_optimum_count >= 12_of_15",
+      "truth_axis_profile_best_direction_is_KNEE_NEGATIVE_BOUNDARY >= 12_of_15"
+    ],
+    "threshold_role": "POSTHOC_REVIEW_TRIAGE_ONLY_NOT_A_POLICY_GATE"
+  },
+  "policy_under_audit": "H2_FIXED_BUNDLE_5",
+  "protected_source_sha256": {
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "adaptive_core": "5c2da24cfd03220a55bd734f3d7d173c8410303159ab03599d6b7ff0312d5ac1",
+    "adaptive_manifest": "ace9586f98bfc5142ee310539e6c42b02d7164a3fbb91fdad8d7352110c96f9b",
+    "adaptive_runner": "7fdc0bdaa18ed2244349b36225d39e42f3769bef8a95c559d9bb461890db4c83",
+    "adaptive_test": "08ba2b9ac57128a4ef5a6ad793d08423f1d2a6e2d38ea434bdbc014908a8898e",
+    "audit_core": "eb1002a657f4bd5b1ce8f9330b507af21018d8c067fdd70739c44d4f4a294bb4",
+    "audit_runner": "89df7a2d8b42969851c91c5440a65911d1ed4497a18d8b5d17761bfc38677201",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "frozen_H2_history": "c84e0f5ea265060aabdf3fc8fa9b9662bcb866ab01bc55b2237acbe665c0b615",
+    "frozen_H2_summary": "e55e7b82174765db99d16468db89396d92ddeec0180ad512da1704aa9ca2f676",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "replay_contract": {
+    "every_replayed_row_must_match_frozen_alpha_purpose_J_and_acceptance": true,
+    "posthoc_diagnostics_added": [
+      "parameter_change",
+      "prediction_map_change",
+      "support_change",
+      "future_exploit_eligibility_change",
+      "candidate_truth_after_policy_decision"
+    ],
+    "trajectory_selection_recomputed_or_changed": false,
+    "trajectory_sequence_source": "frozen p2_multi_step_decision_framework_analysis_v1/framework_trial_history.csv BUNDLE_5 rows",
+    "truth_used_for_policy_authorization": false
+  },
+  "robot_approved": "NOT_ROBOT_APPROVED",
+  "status": "FROZEN_BEFORE_POSTHOC_H2_REPLAY",
+  "trial_cost_classification": {
+    "MIXED_TRIAL_VALUE": "otherwise",
+    "TRIAL_COST_CONTAINS_SUBSTANTIAL_LOW_VALUE_TAIL": "low-value classifications >= 50_percent_of_trials",
+    "TRIAL_COST_DOMINATED_BY_USEFUL_IMPROVEMENT": "useful classifications >= 75_percent_of_trials",
+    "role": "POSTHOC_DESCRIPTION_ONLY_NOT_A_STOPPING_RULE"
+  },
+  "trial_value_definition": {
+    "BOUNDARY_CHASING_LOW_VALUE": "an exploit is executed after best knee is already -5 and it has no best-J/alpha or future-eligibility change",
+    "DIRECT_DECISION_VALUE": "actual best J or best alpha changes, or future exploit eligibility changes",
+    "MODEL_INFORMATION_VALUE": "parameters or full prediction map change exactly, without direct or support value",
+    "MULTIPLE_VALUES": "two or more of decision/model/support value are present",
+    "POST_OPTIMUM_LOW_VALUE": "strictly after first final-alpha arrival with no best-J/alpha or future-exploit-eligibility change; model/support growth does not by itself become decision value",
+    "SUPPORT_ONLY_VALUE": "supported-point count increases without direct or model value",
+    "all_change_checks": "exact research numerical diagnostics; no new threshold"
+  },
+  "truth_landscape_scope": {
+    "distance_invented": false,
+    "global": "existing_frozen_geometrically_admissible_parameter_lattice",
+    "reference_centered_local": "reference plus six existing one-grid-unit single-axis neighbors that are present in the frozen lattice",
+    "truth_is_posthoc_only": true
+  }
+}
