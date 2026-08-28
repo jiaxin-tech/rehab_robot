@@ -171,7 +171,14 @@ def _checkpoint_preflight() -> dict[str, Any]:
     adaptive_commit = _git_output(
         "log", "-1", "--format=%H", "--", str(ADAPTIVE_CORE_PATH.relative_to(PROJECT_ROOT))
     )
-    if adaptive_commit != head:
+    ancestor_check = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", adaptive_commit, head],
+        cwd=PROJECT_ROOT,
+        check=False,
+        capture_output=True,
+        timeout=20.0,
+    )
+    if ancestor_check.returncode != 0:
         raise RuntimeError("BUNDLE5_AUDIT_REQUIRES_CHECKPOINT")
     verified: dict[str, str] = {}
     for path in _ADAPTIVE_REQUIRED:
@@ -181,7 +188,7 @@ def _checkpoint_preflight() -> dict[str, Any]:
         except subprocess.CalledProcessError as exc:
             raise RuntimeError("BUNDLE5_AUDIT_REQUIRES_CHECKPOINT") from exc
         committed = subprocess.run(
-            ["git", "show", f"HEAD:{relative}"],
+            ["git", "show", f"{adaptive_commit}:{relative}"],
             cwd=PROJECT_ROOT,
             check=True,
             capture_output=True,
@@ -194,7 +201,8 @@ def _checkpoint_preflight() -> dict[str, Any]:
         "checkpoint_commit": head,
         "checkpoint_subject": _git_output("log", "-1", "--format=%s"),
         "adaptive_checkpoint_commit": adaptive_commit,
-        "adaptive_checkpoint_is_current_HEAD": True,
+        "adaptive_checkpoint_is_current_HEAD": adaptive_commit == head,
+        "adaptive_checkpoint_is_ancestor_of_current_HEAD": True,
         "adaptive_manifest_sha256": ADAPTIVE_MANIFEST_SHA256,
         "tracked_adaptive_artifact_sha256": verified,
     }

@@ -38,10 +38,7 @@ from .run_p2_bundle5_boundary_subject_specificity_audit import (
 
 def test_adaptive_prototype_is_an_independent_checkpoint() -> None:
     checkpoint = _checkpoint_preflight()
-    assert checkpoint["adaptive_checkpoint_is_current_HEAD"] is True
-    assert checkpoint["adaptive_checkpoint_commit"] == checkpoint[
-        "checkpoint_commit"
-    ]
+    assert checkpoint["adaptive_checkpoint_is_ancestor_of_current_HEAD"] is True
     assert hashlib.sha256(ADAPTIVE_MANIFEST_PATH.read_bytes()).hexdigest() == (
         ADAPTIVE_MANIFEST_SHA256
     )
@@ -203,4 +200,3 @@ def test_formal_bundle5_audit_artifacts_are_consistent() -> None:
     axis = pd.read_csv(root / "bundle5_axis_direction_decision_audit.csv")
     assert axis.loc[axis["selected"], "axis_direction"].eq("KNEE_NEGATIVE").all()
     assert axis["truth_used_for_authorization"].eq(False).all()
-

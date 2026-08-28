@@ -1,0 +1,42 @@
+{
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "actual_J": [
+    0.965492695909,
+    0.970223767367,
+    0.976270020461
+  ],
+  "best_validated_J": 0.965492695909,
+  "best_validated_trajectory_id": "asym_h+1.000_k-5.000_p+0.03000",
+  "candidate_ids": [
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "candidate_trajectory_sha256": [
+    "0f923dd3048bdaa9e5ffc670f0061069a1601bd658339452a6df6ae17e4ec18e",
+    "b8718755bc8a57f5dc9db6f3e1fc5f475acba287b06da7a538e8944714a25ca9",
+    "73c1e846333be1ea5342722a4b2472bf5dc77d9a3749ae1349201b6cbebc1723"
+  ],
+  "case_class": "MISMATCH",
+  "case_id": "baseline__combined_mild",
+  "duration_ms": 28800,
+  "frame_count": 15,
+  "generator_source_sha256": "bfeef75fa17f7fdbc16c966a5fa586eede0bc7bfc194f23a93ae17bd50bad6fc",
+  "gif_sha256": "dec5e2f7fa892d9326b862ca8653548a532688c119ff4f6dfa6207743ae594dc",
+  "global_regret": 0.00138546013935,
+  "held_out_final_test_read": false,
+  "loop": true,
+  "reference_improvement": 0.0345073040909,
+  "resolution_px": [
+    1280,
+    720
+  ],
+  "robot_connected": false,
+  "scenario_name": "combined_mild",
+  "shortlist_frozen_before_truth": true,
+  "source_formal_manifest_sha256": "7576e5a545878292f2eb1846e9cae780325a2e44bb58093dfb04bae982827498",
+  "subject_id": "baseline",
+  "truth_used_to_create_or_rank_shortlist": false,
+  "visualization_id": "SINGLE_SIMULATED_SUBJECT_END_TO_END_V1",
+  "whole_trajectory_trials": true
+}

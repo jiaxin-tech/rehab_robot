@@ -1,0 +1,38 @@
+{
+  "L2_is_anatomical_ankle": false,
+  "case_id": "baseline__combined_mild",
+  "duration_ms": 18300,
+  "frame_count": 165,
+  "generator_source_sha256": "7c25e26185ad3f1fd26c52f3f45cf7462e337f502c2a620809dbeafecfe62e16",
+  "gif_sha256": "5a6dd0aad28172adc7f8c325f8002c37c8280a99d5c62a9f9ab793cbc17290eb",
+  "held_out_final_test_read": false,
+  "kinematic_points": [
+    "hip",
+    "knee",
+    "distal_strap_equivalent_traction_point_L2"
+  ],
+  "loop": true,
+  "resolution_px": [
+    1280,
+    720
+  ],
+  "robot_connected": false,
+  "round_actual_J": [
+    1.0,
+    0.965492695909,
+    0.970223767367,
+    0.976270020461
+  ],
+  "round_order": [
+    "Reference",
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "samples_per_round": 41,
+  "source_formal_manifest_sha256": "7576e5a545878292f2eb1846e9cae780325a2e44bb58093dfb04bae982827498",
+  "theta_shank_definition": "q_hip - q_knee",
+  "truth_used_to_create_or_rank_shortlist": false,
+  "visualization_id": "SUPINE_PATIENT_HIP_KNEE_FLEXION_ROUNDS_V1",
+  "whole_trajectory_trials": true
+}

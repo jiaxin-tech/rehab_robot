@@ -1,0 +1,101 @@
+{
+  "candidate_trajectory_sha_verified": true,
+  "duration_ms": 25850,
+  "frame_count": 159,
+  "generator_source_sha256": "313aba72030772c5913f2f2283b95ba9b43e84ad26de2b0579523282d6a44fde",
+  "gif_sha256": "34e4b57135c12105a0d1a5d9b477502ede0df211b55b2a6cbd785c8a5e5a69de",
+  "held_out_final_test_read": false,
+  "initial_identification_reconstruction_matches_formal_parameters": true,
+  "loop": true,
+  "patients": [
+    {
+      "best_validated_J": 0.972959853969,
+      "best_validated_trajectory_id": "asym_h-1.000_k-5.000_p+0.03000",
+      "case_id": "baseline__matched_linear",
+      "display_name": "Normal",
+      "executed_identification_candidate_ids": [
+        "ID-G-coupled-neg-d14",
+        "ID-F-coupled-pos-d14"
+      ],
+      "frozen_shortlist_ids": [
+        "asym_h-1.000_k-5.000_p+0.03000",
+        "asym_h-2.000_k-4.500_p-0.02750",
+        "asym_h-2.500_k-3.750_p+0.00500"
+      ],
+      "identified_parameters": {
+        "b_hip_nm_s_per_rad": 2.0000000236898585,
+        "b_knee_nm_s_per_rad": 1.4999999999917641,
+        "k_hip_nm_per_rad": 14.99999999980913,
+        "k_knee_nm_per_rad": 12.000000000127748,
+        "mass_scale": 1.0000000000345897
+      },
+      "subject_id": "baseline"
+    },
+    {
+      "best_validated_J": 0.971025115267,
+      "best_validated_trajectory_id": "asym_h-1.000_k-5.000_p+0.03000",
+      "case_id": "hip_stiff__matched_linear",
+      "display_name": "Hip stiffness",
+      "executed_identification_candidate_ids": [
+        "ID-G-coupled-neg-d14",
+        "ID-F-coupled-pos-d14"
+      ],
+      "frozen_shortlist_ids": [
+        "asym_h-1.000_k-5.000_p+0.03000",
+        "asym_h-4.000_k-4.250_p+0.00000",
+        "asym_h-1.250_k-3.250_p+0.02250"
+      ],
+      "identified_parameters": {
+        "b_hip_nm_s_per_rad": 1.9999999999999998,
+        "b_knee_nm_s_per_rad": 1.4999999999950528,
+        "k_hip_nm_per_rad": 30.0,
+        "k_knee_nm_per_rad": 11.999999999999893,
+        "mass_scale": 0.9999999999999999
+      },
+      "subject_id": "hip_stiff"
+    },
+    {
+      "best_validated_J": 0.97924745354,
+      "best_validated_trajectory_id": "asym_h-1.000_k-5.000_p+0.03000",
+      "case_id": "knee_stiff__matched_linear",
+      "display_name": "Knee stiffness",
+      "executed_identification_candidate_ids": [
+        "ID-G-coupled-neg-d14",
+        "ID-F-coupled-pos-d14"
+      ],
+      "frozen_shortlist_ids": [
+        "asym_h-1.000_k-5.000_p+0.03000",
+        "asym_h-2.000_k-4.250_p+0.00000",
+        "asym_h-1.000_k-2.750_p+0.00500"
+      ],
+      "identified_parameters": {
+        "b_hip_nm_s_per_rad": 2.000000000000028,
+        "b_knee_nm_s_per_rad": 1.5,
+        "k_hip_nm_per_rad": 15.0,
+        "k_knee_nm_per_rad": 30.0,
+        "mass_scale": 0.9999999999999999
+      },
+      "subject_id": "knee_stiff"
+    }
+  ],
+  "resolution_px": [
+    1600,
+    900
+  ],
+  "robot_connected": false,
+  "samples_per_motion": 31,
+  "source_formal_manifest_sha256": "7576e5a545878292f2eb1846e9cae780325a2e44bb58093dfb04bae982827498",
+  "stage_order": [
+    "Excitation 1",
+    "Excitation 2",
+    "Fit \u03b8",
+    "Screen 21,025",
+    "Validate C1",
+    "Validate C2",
+    "Validate C3",
+    "Final"
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "truth_used_to_create_or_rank_shortlist": false,
+  "visualization_id": "NORMAL_VS_STIFFNESS_IDENTIFICATION_TO_FINAL_V1"
+}

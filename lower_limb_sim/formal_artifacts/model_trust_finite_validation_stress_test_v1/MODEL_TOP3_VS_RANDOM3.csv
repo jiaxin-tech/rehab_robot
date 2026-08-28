@@ -1,0 +1,16 @@
+case_id,scenario_name,mismatch_family,mismatch_level,model_top3_regret,random3_mean_regret,random3_median_regret,random3_P5_regret,random3_P95_regret,model_strictly_beats_random_draw_percent,model_ties_random_draw_percent,paired_model_minus_random_mean_regret,model_harmful_candidate_exposure_count,random_mean_harmful_candidate_exposure_count
+baseline__matched_linear,matched_linear,matched_linear,MATCHED,0.00532677863239,0.0151354860406,0.014626123878,0.00340192129682,0.0315604043437,90,0,-0.00980870740819,0,1.14
+hip_stiff__matched_linear,matched_linear,matched_linear,MATCHED,0.000119909597779,0.0104819409658,0.00831733098301,0.000169381399666,0.023936790978,96,0,-0.010362031368,0,0.83
+knee_stiff__matched_linear,matched_linear,matched_linear,MATCHED,0.0044735804462,0.0118244166179,0.0109076063745,0.00334971720807,0.0233205060599,87,0,-0.00735083617168,0,1.06
+heavy_leg__matched_linear,matched_linear,matched_linear,MATCHED,0.00698009389859,0.0168393196366,0.0158070586182,0.00366926538126,0.0367968828325,87,0,-0.00985922573803,0,1.17
+baseline__nonlinear_stiffness_mild,nonlinear_stiffness_mild,nonlinear_stiffness,MILD,0.00096190254152,0.0142648430829,0.0133284595313,0.00308221852565,0.030151034713,100,0,-0.0133029405413,0,0.95
+baseline__hip_knee_coupling_mild,hip_knee_coupling_mild,hip_knee_coupling,MILD,0.0018231537629,0.0174999378507,0.0165058334702,0.00419466487712,0.0335824417044,98,1,-0.0156767840878,0,1.2
+baseline__nonlinear_damping_mild,nonlinear_damping_mild,nonlinear_damping,MILD,0.00172471018966,0.0144524866076,0.0136254022404,0.0021662440818,0.0271113296898,96,0,-0.012727776418,0,1.03
+baseline__structured_residual,structured_residual,structured_residual,SINGLE_DEFINED_LEVEL,0.00172385675505,0.0153692789492,0.0139672778073,0.0041444995469,0.0321178113255,99,0,-0.0136454221941,0,1.12
+baseline__combined_mild,combined_mild,combined,MILD,0.00138546013935,0.0172968661971,0.0163218519838,0.0043033816593,0.0358927642302,100,0,-0.0159114060578,0,1.05
+prospective_subject_001__matched_linear,matched_linear,matched_linear,MATCHED,0.00647195934857,0.0170279323745,0.0170589768508,0.00450008967022,0.0350667794579,87,0,-0.0105559730259,0,1.1
+prospective_subject_001__nonlinear_stiffness_strong,nonlinear_stiffness_strong,nonlinear_stiffness,STRONG,0.000384292608995,0.0204952097964,0.0182158686135,0.00311559544883,0.0447672712143,100,0,-0.0201109171874,0,0.73
+prospective_subject_002__matched_linear,matched_linear,matched_linear,MATCHED,0.00142513963897,0.00922165856586,0.00769891018619,0.00136358679209,0.021239821909,94,0,-0.00779651892689,0,0.89
+prospective_subject_002__hip_knee_coupling_strong,hip_knee_coupling_strong,hip_knee_coupling,STRONG,0.000764264864488,0.0120304635174,0.0105342824938,0.00333504661066,0.0263755822742,100,0,-0.011266198653,0,1.06
+prospective_subject_003__matched_linear,matched_linear,matched_linear,MATCHED,0.00100381030851,0.00973409073673,0.00881457462773,0.00130462777435,0.0233774821894,96,0,-0.00873028042822,0,0.88
+prospective_subject_003__combined_strong,combined_strong,combined,STRONG,0.000137300490145,0.0203053133348,0.0171119053093,0.00299729971164,0.0466753011018,99,0,-0.0201680128446,0,0.75

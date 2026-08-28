@@ -1,0 +1,38 @@
+{
+  "L2_is_anatomical_ankle": false,
+  "case_id": "baseline__combined_mild",
+  "duration_ms": 18300,
+  "frame_count": 165,
+  "generator_source_sha256": "bef690772e6fa1cad025afe81617904a61b30ac99f5c3cb78e4bf4f5f3dcf483",
+  "gif_sha256": "edcec834f9b76142287b74030777888fd51afeffee90c62d37392c3cd9ca2563",
+  "held_out_final_test_read": false,
+  "kinematic_points": [
+    "hip",
+    "knee",
+    "distal_strap_equivalent_traction_point_L2"
+  ],
+  "loop": true,
+  "resolution_px": [
+    1280,
+    720
+  ],
+  "robot_connected": false,
+  "round_actual_J": [
+    1.0,
+    0.965492695909,
+    0.970223767367,
+    0.976270020461
+  ],
+  "round_order": [
+    "Reference",
+    "C1",
+    "C2",
+    "C3"
+  ],
+  "samples_per_round": 41,
+  "source_formal_manifest_sha256": "7576e5a545878292f2eb1846e9cae780325a2e44bb58093dfb04bae982827498",
+  "theta_shank_definition": "q_hip - q_knee",
+  "truth_used_to_create_or_rank_shortlist": false,
+  "visualization_id": "SINGLE_SIMULATED_LEG_ROUNDS_V1",
+  "whole_trajectory_trials": true
+}
