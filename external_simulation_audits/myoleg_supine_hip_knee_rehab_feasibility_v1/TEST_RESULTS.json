@@ -1,0 +1,68 @@
+{
+  "derived_xml_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+  "failed": 0,
+  "passed": 15,
+  "status": "PASS",
+  "tests": [
+    {
+      "status": "PASS",
+      "test": "upstream_myoleg_assets_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "historical_rehab_robot_artifacts_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "derived_model_deterministic_load"
+    },
+    {
+      "status": "PASS",
+      "test": "pelvis_fixed"
+    },
+    {
+      "status": "PASS",
+      "test": "non_target_leg_fixed_as_designed"
+    },
+    {
+      "status": "PASS",
+      "test": "target_hip_only_intended_dof_free"
+    },
+    {
+      "status": "PASS",
+      "test": "target_knee_main_flexion_retained"
+    },
+    {
+      "status": "PASS",
+      "test": "patella_and_source_equalities_intact"
+    },
+    {
+      "status": "PASS",
+      "test": "target_ankle_subtalar_mtp_fixed"
+    },
+    {
+      "status": "PASS",
+      "test": "coordinate_mapping_round_trip"
+    },
+    {
+      "status": "PASS",
+      "test": "external_force_finite_generalized_response"
+    },
+    {
+      "status": "PASS",
+      "test": "zero_control_simulation_stable"
+    },
+    {
+      "status": "PASS",
+      "test": "rom_mismatch_not_silently_clipped"
+    },
+    {
+      "status": "PASS",
+      "test": "formal_reference_unmodified"
+    },
+    {
+      "status": "PASS",
+      "test": "no_robot_or_hardware_access"
+    }
+  ]
+}

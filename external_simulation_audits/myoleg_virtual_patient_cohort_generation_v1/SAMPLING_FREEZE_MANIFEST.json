@@ -1,0 +1,162 @@
+{
+  "algorithm": "deterministic centered maximin Latin hypercube",
+  "content_sha256": "cab71d693e28150441fbbc4a9d2254e981d73c534180e8d4723d64c3df9c259c",
+  "development_indices_zero_based": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    6,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    16,
+    17,
+    18,
+    20,
+    21,
+    22,
+    24,
+    25,
+    26,
+    28,
+    29,
+    30
+  ],
+  "dimension": 6,
+  "factor_order": [
+    "FEMUR_MASS_INERTIA_SCALE",
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+  ],
+  "files": {
+    "LHS_UNIT_CUBE_MATRIX.csv": "460134f8f26e7705c1b302a15e0a6ba8d30ec3b4c98c597702fe1910388022ce",
+    "SUBJECT_PARAMETER_MATRIX.csv": "6e529f0e1c45921b683042ea69e48adbcdcb6e8a2e84efaf815c164b18304416",
+    "SUBJECT_SPLIT.csv": "1142396f85ab8477811ca883df1792defdf170a7f9ee6c0e5bc25fea91716247"
+  },
+  "frozen_before_any_subject_replay_or_learner_outcome": true,
+  "held_out_indices_zero_based": [
+    3,
+    7,
+    11,
+    15,
+    19,
+    23,
+    27,
+    31
+  ],
+  "implementation": "repository-native NumPy PCG64 centered permutation LHS; no third-party LHS package",
+  "lhs_audit": {
+    "all_dimensions_centered_stratified": true,
+    "all_inside_open_unit_cube": true,
+    "boundary_behavior": "centered strata; theoretical unit-cube min/max are 0.5/N and 1-0.5/N; no exact 0 or 1",
+    "dimensions": [
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 0,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 1,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 2,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 3,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 4,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 5,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      }
+    ],
+    "duplicate_row_count": 0,
+    "max_pairwise_distance": 1.6138439167094196,
+    "median_pairwise_distance": 0.9921566195903444,
+    "min_pairwise_distance": 0.427337322849292,
+    "shape": [
+      32,
+      6
+    ]
+  },
+  "lhs_deterministic_repeat_exact": true,
+  "manifest_id": "MYOLEG_VIRTUAL_PATIENT_COHORT_V1_SAMPLING_FREEZE",
+  "numpy_version": "2.2.6",
+  "primary_bounds": {
+    "FEMUR_MASS_INERTIA_SCALE": [
+      0.88,
+      1.12
+    ],
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE": [
+      0.82,
+      1.18
+    ],
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": [
+      0.95,
+      1.05
+    ],
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE": [
+      0.95,
+      1.05
+    ],
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": [
+      0.95,
+      1.05
+    ],
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE": [
+      0.87,
+      1.13
+    ]
+  },
+  "replacement_sampling_allowed": false,
+  "restart_count": 512,
+  "sample_count": 32,
+  "sampling_used_torque_or_learner_outcomes": false,
+  "search_audit": {
+    "restart_score_max": 0.427337322849292,
+    "restart_score_median": 0.29973947020704494,
+    "restart_score_min": 0.14986973510352247,
+    "selected_min_pairwise_distance": 0.427337322849292,
+    "selected_restart_zero_based": 94
+  },
+  "seed": 20260830,
+  "seed_semantics": "one NumPy Generator(PCG64(seed)) consumed sequentially across 512 restarts and six dimension permutations per restart",
+  "selection": "maximize minimum pairwise Euclidean distance in unit cube; lexicographically smaller flattened matrix breaks ties within 1e-15"
+}

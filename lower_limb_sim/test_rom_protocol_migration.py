@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import json
 from pathlib import Path
 
@@ -34,6 +35,89 @@ from lower_limb_sim.workspace_atlas import build_workspace_atlas
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PYTHON_SOURCE_SCOPE_MANIFEST = (
+    PROJECT_ROOT / "config" / "python_source_scope_manifest.json"
+)
+FROZEN_STRESS_AUDIT_SCRIPT = (
+    PROJECT_ROOT
+    / "external_simulation"
+    / "myoleg_knee_rom_compatibility_v1"
+    / "build_and_audit.py"
+)
+FROZEN_STRESS_AUDIT_METADATA = (
+    PROJECT_ROOT
+    / "external_simulation_audits"
+    / "myoleg_knee_rom_compatibility_audit_v1"
+    / "metadata.json"
+)
+FROZEN_STRESS_PROTOCOL = (
+    PROJECT_ROOT
+    / "external_simulation_audits"
+    / "myoleg_knee_rom_compatibility_audit_v1"
+    / "ROM_EXTENSION_PROTOCOL.json"
+)
+FROZEN_STRESS_130_XML = (
+    PROJECT_ROOT
+    / "external_simulation"
+    / "myoleg_knee_rom_compatibility_v1"
+    / "myoleg_supine_right_knee130_stress_only_v1.xml"
+)
+FROZEN_STRESS_AUDIT_SCRIPT_SHA256 = (
+    "e40b1e9938f60e40ad1464c4ed219bef9fb0111a690f2fdd67843360042745b1"
+)
+FROZEN_STRESS_130_XML_SHA256 = (
+    "d8007d0a65c1d49a988a181c1fd251d0766f6f25cecc89e20f7030aefa444151"
+)
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _python_source_scope_manifest(path: Path = PYTHON_SOURCE_SCOPE_MANIFEST) -> dict:
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    assert manifest["schema_version"] == 1
+    assert manifest["default_active_policy_gate_scan"] is True
+    prefixes = [
+        entry["path_prefix"].strip("/")
+        for entry in manifest["non_production_path_prefixes"]
+    ]
+    assert all(prefix and ".." not in Path(prefix).parts for prefix in prefixes)
+    assert len(prefixes) == len(set(prefixes))
+    return manifest
+
+
+def _is_active_policy_gate_source(relative: Path, scope_manifest: dict) -> bool:
+    relative_posix = relative.as_posix()
+    for entry in scope_manifest["non_production_path_prefixes"]:
+        prefix = entry["path_prefix"].strip("/")
+        if relative_posix == prefix or relative_posix.startswith(f"{prefix}/"):
+            return False
+    return bool(scope_manifest["default_active_policy_gate_scan"])
+
+
+def _numeric_130_degree_gate_offenders(
+    project_root: Path,
+    scope_manifest: dict,
+) -> list[str]:
+    excluded_names = {"test_rom_protocol_migration.py"}
+    offenders: list[str] = []
+    for path in project_root.rglob("*.py"):
+        relative = path.relative_to(project_root)
+        if (
+            path.name.startswith("test_")
+            or path.name in excluded_names
+            or ".venv" in relative.parts
+            or "hardware/xcoresdk_python" in relative.as_posix()
+            or not _is_active_policy_gate_source(relative, scope_manifest)
+        ):
+            continue
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and type(node.value) in (int, float):
+                if float(node.value) == 130.0:
+                    offenders.append(f"{relative}:{node.lineno}")
+    return offenders
 
 
 def test_formal_runtime_and_manifest_are_one_rom_protocol() -> None:
@@ -107,23 +191,61 @@ def test_active_reference_is_pinned_valid_and_not_clipped() -> None:
 
 
 def test_production_python_has_no_numeric_130_degree_gate() -> None:
-    excluded_names = {"test_rom_protocol_migration.py"}
-    offenders: list[str] = []
-    for path in PROJECT_ROOT.rglob("*.py"):
-        relative = path.relative_to(PROJECT_ROOT)
-        if (
-            path.name.startswith("test_")
-            or path.name in excluded_names
-            or ".venv" in relative.parts
-            or "hardware/xcoresdk_python" in relative.as_posix()
-        ):
-            continue
-        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Constant) and type(node.value) in (int, float):
-                if float(node.value) == 130.0:
-                    offenders.append(f"{relative}:{node.lineno}")
-    assert offenders == []
+    assert _numeric_130_degree_gate_offenders(
+        PROJECT_ROOT,
+        _python_source_scope_manifest(),
+    ) == []
+
+
+def test_actual_production_130_degree_gate_still_fails_scan(tmp_path: Path) -> None:
+    active_source = tmp_path / "control" / "active_rom_gate.py"
+    active_source.parent.mkdir(parents=True)
+    active_source.write_text("FORMAL_KNEE_MAX_DEG = 130.0\n", encoding="utf-8")
+    assert _numeric_130_degree_gate_offenders(
+        tmp_path,
+        _python_source_scope_manifest(),
+    ) == ["control/active_rom_gate.py:1"]
+
+
+def test_historical_external_simulation_is_not_an_active_gate(tmp_path: Path) -> None:
+    historical_source = (
+        tmp_path / "external_simulation" / "historical_stress" / "build_and_audit.py"
+    )
+    historical_source.parent.mkdir(parents=True)
+    historical_source.write_text("STRESS_ONLY_LIMIT_DEG = 130.0\n", encoding="utf-8")
+    assert _numeric_130_degree_gate_offenders(
+        tmp_path,
+        _python_source_scope_manifest(),
+    ) == []
+
+
+def test_external_simulation_scope_has_offline_metadata_evidence() -> None:
+    manifest = _python_source_scope_manifest()
+    external_entry = next(
+        entry
+        for entry in manifest["non_production_path_prefixes"]
+        if entry["path_prefix"] == "external_simulation"
+    )
+    metadata_paths = sorted(PROJECT_ROOT.glob(external_entry["metadata_evidence_glob"]))
+    assert metadata_paths
+    referenced_builders = []
+    for metadata_path in metadata_paths:
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        builder = metadata.get("builder_script_path")
+        evidence_level = str(metadata.get("evidence_level", ""))
+        if builder and "OFFLINE" in evidence_level:
+            referenced_builders.append(Path(builder).resolve())
+    assert FROZEN_STRESS_AUDIT_SCRIPT.resolve() in referenced_builders
+
+
+def test_frozen_stress_only_audit_and_xml_sha_remain_unchanged() -> None:
+    metadata = json.loads(FROZEN_STRESS_AUDIT_METADATA.read_text(encoding="utf-8"))
+    protocol = json.loads(FROZEN_STRESS_PROTOCOL.read_text(encoding="utf-8"))
+    assert _sha256(FROZEN_STRESS_AUDIT_SCRIPT) == FROZEN_STRESS_AUDIT_SCRIPT_SHA256
+    assert metadata["builder_script_sha256"] == FROZEN_STRESS_AUDIT_SCRIPT_SHA256
+    assert _sha256(FROZEN_STRESS_130_XML) == FROZEN_STRESS_130_XML_SHA256
+    assert metadata["stress_130_xml_sha256"] == FROZEN_STRESS_130_XML_SHA256
+    assert protocol["stress_only_not_formal_reference_eligible"] is True
 
 
 def test_legacy_workspace_is_not_the_default_active_loader() -> None:

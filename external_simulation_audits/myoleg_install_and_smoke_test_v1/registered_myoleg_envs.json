@@ -1,0 +1,83 @@
+{
+  "environments": [
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoFatiLegHillyTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoFatiLegRoughTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoFatiLegStairTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:ReachEnvV0",
+      "environment_id": "myoFatiLegStandRandom-v0",
+      "max_episode_steps": 150
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:WalkEnvV0",
+      "environment_id": "myoFatiLegWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoLegHillyTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoLegRoughTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoLegStairTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:ReachEnvV0",
+      "environment_id": "myoLegStandRandom-v0",
+      "max_episode_steps": 150
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:WalkEnvV0",
+      "environment_id": "myoLegWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoSarcLegHillyTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoSarcLegRoughTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:TerrainEnvV0",
+      "environment_id": "myoSarcLegStairTerrainWalk-v0",
+      "max_episode_steps": 1000
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:ReachEnvV0",
+      "environment_id": "myoSarcLegStandRandom-v0",
+      "max_episode_steps": 150
+    },
+    {
+      "entry_point": "myosuite.envs.myo.myobase.walk_v0:WalkEnvV0",
+      "environment_id": "myoSarcLegWalk-v0",
+      "max_episode_steps": 1000
+    }
+  ],
+  "matching_count": 15,
+  "myoLegWalk_v0_exists": true,
+  "registry_total_count": 461,
+  "selected_environment_id": "myoLegWalk-v0"
+}

@@ -1,0 +1,12 @@
+{
+  "benchmark_segments": 3,
+  "headless_smoke": "PASS",
+  "official_test": {
+    "attempt_1_exit_code": 1,
+    "attempt_1_root_cause": "UNDECLARED_SCIPY_RUNTIME_DEPENDENCY_IN_MYOCHALLENGE_BIMANUAL",
+    "attempt_2_exit_code": 0,
+    "attempt_2_wall_time_seconds": 45.59559383295709,
+    "final_status": "PASS"
+  },
+  "selected_environment_id": "myoLegWalk-v0"
+}

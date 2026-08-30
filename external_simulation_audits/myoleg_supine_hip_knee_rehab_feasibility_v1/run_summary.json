@@ -1,0 +1,15 @@
+{
+  "coordinate_mapping_valid": "PASS",
+  "derived_knee_model_integrity": "PASS",
+  "external_strap_force_path_available": true,
+  "force_mapping_feasibility": "PASS",
+  "p0_finite": true,
+  "reference_replay_status": "REFERENCE_REPLAY_BLOCKED_BY_ROM",
+  "rom_classification": "REFERENCE_SLIGHTLY_EXCEEDS_MYOLEG_NATIVE_ROM",
+  "runtime_seconds": 3.020935583044775,
+  "stage_feasibility_status": "MYOLEG_SUPINE_REHAB_MODEL_FEASIBLE_WITH_LIMITATIONS",
+  "stage_id": "MYOLEG_SUPINE_HIP_KNEE_REHAB_FEASIBILITY_V1",
+  "test_failed": 0,
+  "test_passed": 15,
+  "tests": "PASS"
+}

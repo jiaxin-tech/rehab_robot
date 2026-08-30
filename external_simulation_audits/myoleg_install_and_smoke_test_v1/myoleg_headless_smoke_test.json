@@ -1,0 +1,49 @@
+{
+  "action_space_shape": [
+    80
+  ],
+  "data_field_shapes": {
+    "actuator_force": [
+      80
+    ],
+    "qfrc_actuator": [
+      34
+    ],
+    "qfrc_applied": [
+      34
+    ],
+    "qfrc_constraint": [
+      34
+    ],
+    "qfrc_passive": [
+      34
+    ],
+    "qpos": [
+      35
+    ],
+    "qvel": [
+      34
+    ],
+    "xfrc_applied": [
+      16,
+      6
+    ]
+  },
+  "environment_control_dt_seconds": 0.01,
+  "environment_id": "myoLegWalk-v0",
+  "environment_steps": 1000,
+  "environment_steps_per_second": 1612.9330338705513,
+  "exception_count": 0,
+  "integration_steps_per_environment_step": 10,
+  "integration_timestep_seconds": 0.001,
+  "nan_or_inf_detected": false,
+  "observation_shape": [
+    403
+  ],
+  "realtime_factor": 16.129330338705348,
+  "simulated_time_seconds": 9.999999999999897,
+  "status": "PASS",
+  "termination_signal_count": 965,
+  "truncation_signal_count": 1,
+  "wall_time_seconds": 0.6199885419919156
+}

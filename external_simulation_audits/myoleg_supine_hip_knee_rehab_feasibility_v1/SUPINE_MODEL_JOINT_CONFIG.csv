@@ -1,0 +1,30 @@
+joint_id,name,body,joint_type,qpos_address,dof_address,native_range_min_rad,native_range_max_rad,native_range_unchanged,derived_role,derived_constraint
+0,root,root,0,0,0,0.0,0.0,True,ROOT_FREE_JOINT_PRESERVED_BUT_WELDED,derived_root_supine_weld
+1,hip_flexion_r,femur_r,3,7,6,-0.523599,2.0944,True,TARGET_PRIMARY_FREE_DOF,
+2,hip_adduction_r,femur_r,3,8,7,-0.872665,0.523599,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_hip_adduction_r
+3,hip_rotation_r,femur_r,3,9,8,-0.698132,0.698132,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_hip_rotation_r
+4,knee_angle_r_translation2,tibia_r,2,10,9,7.69254e-11,0.006792,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+5,knee_angle_r_translation1,tibia_r,2,11,10,9.53733e-08,0.00159883,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+6,knee_angle_r,tibia_r,3,12,11,0.0,2.0944,True,TARGET_PRIMARY_FREE_DOF,
+7,knee_angle_r_rotation2,tibia_r,3,13,12,-0.00167821,0.0335354,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+8,knee_angle_r_rotation3,tibia_r,3,14,13,1.08939e-08,0.262788,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+9,ankle_angle_r,talus_r,3,15,14,-0.698132,0.523599,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_ankle_angle_r
+10,subtalar_angle_r,calcn_r,3,16,15,-0.349066,0.349066,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_subtalar_angle_r
+11,mtp_angle_r,toes_r,3,17,16,-0.523599,0.523599,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_mtp_angle_r
+12,knee_angle_r_beta_translation2,patella_r,2,18,17,-0.0408267,-0.0108281,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+13,knee_angle_r_beta_translation1,patella_r,2,19,18,-0.0227731,0.0524192,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+14,knee_angle_r_beta_rotation1,patella_r,3,20,19,-1.79241,0.010506,True,TARGET_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+15,hip_flexion_l,femur_l,3,21,20,-0.523599,2.0944,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_hip_flexion_l
+16,hip_adduction_l,femur_l,3,22,21,-0.872665,0.523599,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_hip_adduction_l
+17,hip_rotation_l,femur_l,3,23,22,-0.698132,0.698132,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_hip_rotation_l
+18,knee_angle_l_translation2,tibia_l,2,24,23,-0.006792,-7.69254e-11,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+19,knee_angle_l_translation1,tibia_l,2,25,24,9.53733e-08,0.00159883,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+20,knee_angle_l,tibia_l,3,26,25,0.0,2.0944,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_knee_angle_l
+21,knee_angle_l_rotation2,tibia_l,3,27,26,-0.00167821,0.0335354,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+22,knee_angle_l_rotation3,tibia_l,3,28,27,-0.262788,-1.08939e-08,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+23,ankle_angle_l,talus_l,3,29,28,-0.698132,0.523599,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_ankle_angle_l
+24,subtalar_angle_l,calcn_l,3,30,29,-0.349066,0.349066,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_subtalar_angle_l
+25,mtp_angle_l,toes_l,3,31,30,-0.523599,0.523599,True,DERIVED_EQUALITY_LOCK_ZERO,derived_lock_mtp_angle_l
+26,knee_angle_l_beta_translation2,patella_l,2,32,31,-0.0408267,-0.0108281,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+27,knee_angle_l_beta_translation1,patella_l,2,33,32,-0.0227731,0.0524192,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality
+28,knee_angle_l_beta_rotation1,patella_l,3,34,33,-1.79241,0.010506,True,CONTRALATERAL_AUXILIARY_EQUALITY_PRESERVED,upstream knee equality

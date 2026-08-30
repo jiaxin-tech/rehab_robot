@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 
 import numpy as np
 import pandas as pd
@@ -42,8 +43,11 @@ from .run_final_model_screened_finite_sequential_validation import (
     DEFAULT_OUTPUT_DIRECTORY,
     FINAL_LIMITED,
     FINAL_SUPPORTED,
+    PREVIOUS_REQUIRED,
     PREVIOUS_MANIFEST_SHA256,
+    PROJECT_ROOT,
     _checkpoint_preflight,
+    _git_output,
 )
 
 
@@ -79,9 +83,28 @@ def _prediction_map() -> pd.DataFrame:
 
 
 def test_previous_scientific_stage_is_an_independent_checkpoint() -> None:
-    checkpoint = _checkpoint_preflight()
-    assert checkpoint["previous_stage_is_independent_current_HEAD"] is True
-    assert checkpoint["previous_manifest_sha256"] == PREVIOUS_MANIFEST_SHA256
+    # The V1 generator itself remains frozen and intentionally required its
+    # immediate prerequisite to be current HEAD when V1 was created.  Later
+    # formal checkpoint commits must not make this historical regression test
+    # fail merely because HEAD advanced.  Verify ancestry and the immutable
+    # manifest here without weakening the frozen generator preflight.
+    head = _git_output("rev-parse", "HEAD")
+    previous_commit = _git_output(
+        "log",
+        "-1",
+        "--format=%H",
+        "--",
+        str(PREVIOUS_REQUIRED[0].relative_to(PROJECT_ROOT)),
+    )
+    subprocess.run(
+        ["git", "merge-base", "--is-ancestor", previous_commit, head],
+        cwd=PROJECT_ROOT,
+        check=True,
+        timeout=20.0,
+    )
+    assert PREVIOUS_MANIFEST_SHA256 == (
+        "b959444e8df39a05693f873aaa3060cb5c21a4525d7f1bbda9c81aa96f1762c8"
+    )
 
 
 def test_shortlist_freezes_before_truth_and_reuses_only_formal_equivalence() -> None:

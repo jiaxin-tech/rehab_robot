@@ -1,0 +1,172 @@
+{
+  "admission_forbidden_inputs": [
+    "mechanical J",
+    "truth J",
+    "candidate ranking",
+    "J_pred",
+    "five-parameter coverage",
+    "learner error",
+    "NN",
+    "PINN",
+    "BO acquisition",
+    "oracle",
+    "held-out performance"
+  ],
+  "admission_gates": [
+    "trajectory_generation_valid",
+    "finite",
+    "closure_C2",
+    "branch_assignment_and_phase_warp",
+    "project_ROM",
+    "project_workspace_geometry",
+    "project_Jacobian_and_force_mapping",
+    "trusted_MyoLeg_hip_domain",
+    "trusted_MyoLeg_knee_domain"
+  ],
+  "boundary_diagnostic": {
+    "knee_acceleration_deg_s2": 0.0,
+    "low_knee_velocity_deg_s": [
+      -1.0,
+      0.0,
+      1.0
+    ],
+    "lower_decision_rule": "lowest tested angle that passes for all models; all proposal minima are separately checked",
+    "lower_knee_target_deg": [
+      0.0,
+      0.1,
+      0.25,
+      0.5,
+      1.0,
+      5.0
+    ],
+    "metrics_frozen_before_results": [
+      "absolute projected knee joint-limit contribution",
+      "relative contribution divided by max(abs required knee drive, frozen subject reference knee RMS)",
+      "solver warnings",
+      "source equality residual",
+      "finite state",
+      "contact mode",
+      "joint-limit mode"
+    ],
+    "models": "all 32 frozen subjects plus nominal control",
+    "representative_hip_deg": [
+      30.0,
+      60.0,
+      90.0,
+      112.0
+    ],
+    "threshold_evidence_basis": {
+      "maximum_absolute_joint_limit_knee_contribution_nm": 0.002605930679340417,
+      "maximum_relative_joint_limit_contribution": 0.00022564099827750413,
+      "maximum_source_equality_residual": 0.0005924610755421184,
+      "model_count": 33,
+      "source": "previously frozen 32-subject plus nominal 119.5-degree reference replays",
+      "threshold_selection": "pre-analysis conservative engineering ceiling: absolute rounded upward to 0.005 Nm and relative rounded upward to 0.0005"
+    },
+    "thresholds": {
+      "absolute_limit_contribution_max_nm": 0.005,
+      "classification": "SIMULATOR_ARTIFACT_GATE_NOT_HUMAN_SAFETY",
+      "contact_constraint_count": 0,
+      "relative_limit_contribution_max": 0.0005,
+      "solver_warning_count": 0,
+      "source_equality_residual_max": 0.001
+    },
+    "upper_decision_rule": "highest tested angle in the contiguous all-model pass prefix from 119.0 deg",
+    "upper_knee_target_deg": [
+      119.0,
+      119.25,
+      119.5,
+      119.6,
+      119.7,
+      119.75,
+      119.8,
+      119.9,
+      120.0
+    ]
+  },
+  "frozen_before_new_boundary_or_smoke_results": true,
+  "original_proposal_space": {
+    "alpha_order": [
+      "delta_hip_amp_deg",
+      "delta_knee_amp_deg",
+      "knee_phase_shift"
+    ],
+    "count": 21025,
+    "hip": {
+      "count": 29,
+      "lower": -5.0,
+      "step": 0.25,
+      "upper": 2.0
+    },
+    "knee": {
+      "count": 29,
+      "lower": -5.0,
+      "step": 0.25,
+      "upper": 2.0
+    },
+    "phase": {
+      "count": 25,
+      "lower": -0.03,
+      "step": 0.0025,
+      "upper": 0.03
+    },
+    "proposal_order": "hip outer, knee middle, phase inner; zero-based stable proposal_index"
+  },
+  "project_geometry": {
+    "L1": 0.42,
+    "L2": 0.3,
+    "force_mapping": "finite 2x2 project Jacobian meeting determinant and condition gates",
+    "formal_project_hip_rom_deg": [
+      0.0,
+      120.0
+    ],
+    "formal_project_knee_rom_deg": [
+      5.0,
+      145.0
+    ],
+    "jacobian_condition_limit": 100.0,
+    "jacobian_det_threshold": 0.0001,
+    "workspace": "finite FK and x_pull>=0, z_pull>=0, z_knee>=0"
+  },
+  "protocol_id": "MYOLEG_V2_CANDIDATE_DOMAIN_PROTOCOL_V1",
+  "scientific_role": "offline simulator-valid candidate-domain design; not human safety and not robot approval",
+  "scope_guards": {
+    "bo": false,
+    "five_parameter_fit": false,
+    "full_truth_landscape": false,
+    "human_safety_claim": false,
+    "nn_or_pinn": false,
+    "robot_or_hardware": false
+  },
+  "source_identities": {
+    "base_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "generator_source_sha256": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "generator_version": "continuous_asymmetric_reference_neighborhood_v1",
+    "sampling_manifest": "81451f87e817062e5e56cc1de13d2a71a148989db06454514818fa268300fecb",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "sparse_smoke": {
+    "candidate_count": 30,
+    "candidate_selection": "reference; axis-admissible extrema; nearest admissible 3-D corners; four near-upper-knee candidates; deterministic SHA-256 ordered interior fill",
+    "expected_model_count": 7,
+    "replay": "prescribed MyoLeg truth only for integrity; no objective/ranking is computed",
+    "selection_uses_only_parameter_geometry": true,
+    "subject_selection": "within development and held-out separately: nearest unit-cube centroid, farthest centroid, then maximin from first two; plus nominal"
+  },
+  "stage_id": "MYOLEG_V2_CANDIDATE_DOMAIN_DESIGN_V1",
+  "v2_adapter": {
+    "amplitude_basis": "quintic smootherstep independently on measured flexion and measured extension branches",
+    "clipping": false,
+    "duration_s": 24.0,
+    "minimal_change": "replace only parent q/dq/ddq with frozen V2 reference; reuse periodic cubic splines, amplitude basis, phase warp, branch labels, phase grid and duration",
+    "phase_warp": "W(r,s)=r+s*64*r^3*(1-r)^3 independently on each branch",
+    "reason": "existing generator is fail-closed to the active formal reference and cannot accept the frozen V2 diagnostic reference",
+    "sample_count": 401,
+    "theta_shank": "q_hip - q_knee",
+    "version": "MYOLEG_V2_CONTINUOUS_ASYMMETRIC_ADAPTER_V1"
+  }
+}

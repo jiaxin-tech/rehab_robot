@@ -1,0 +1,30 @@
+{
+  "PRIMARY": {
+    "complete_replay_wall_time_s": 2.416605625010561,
+    "controlled_replay_realtime_factor": 10.684694319823757,
+    "controlled_replay_wall_time_s": 2.246203707996756,
+    "determinism_repeat_excluded_from_benchmark": true,
+    "integration_steps": 24000,
+    "peak_process_memory_mib": 273.59375,
+    "prescribed_inverse_wall_time_s": 0.17040191701380536,
+    "state_evaluations": 24001
+  },
+  "SENSITIVITY": {
+    "complete_replay_wall_time_s": 2.435970959078986,
+    "controlled_replay_realtime_factor": 10.58759011107736,
+    "controlled_replay_wall_time_s": 2.26680479204515,
+    "determinism_repeat_excluded_from_benchmark": true,
+    "integration_steps": 24000,
+    "peak_process_memory_mib": 273.59375,
+    "prescribed_inverse_wall_time_s": 0.16916616703383625,
+    "state_evaluations": 24001
+  },
+  "engineering_estimates": {
+    "1000_trajectories_s": 2426.2882920447737,
+    "100_trajectories_s": 242.62882920447737,
+    "21025_trajectories_s": 51012.71134024137,
+    "basis": "mean complete two-path 24 s reference replay; determinism repeat excluded",
+    "label": "reference-replay-based engineering estimate",
+    "one_trajectory_s": 2.4262882920447737
+  }
+}

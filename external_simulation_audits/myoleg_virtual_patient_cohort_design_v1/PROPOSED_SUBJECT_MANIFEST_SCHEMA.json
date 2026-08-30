@@ -1,0 +1,179 @@
+{
+  "$defs": {
+    "modification": {
+      "additionalProperties": false,
+      "properties": {
+        "factor_id": {
+          "type": "string"
+        },
+        "target_objects": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "underlying_fields": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "factor_id",
+        "underlying_fields",
+        "target_objects",
+        "value",
+        "unit"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "MYOLEG_VIRTUAL_SUBJECT_MANIFEST_SCHEMA_V1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Schema only. This design stage creates no subject instances.",
+  "properties": {
+    "base_myoleg_model_sha256": {
+      "const": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d"
+    },
+    "body_anthropometry_modifications": {
+      "items": {
+        "$ref": "#/$defs/modification"
+      },
+      "type": "array"
+    },
+    "frozen_before_truth_reveal": {
+      "const": true
+    },
+    "generated_model_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "integrity_gate_results": {
+      "additionalProperties": {
+        "type": "boolean"
+      },
+      "type": "object"
+    },
+    "low_activation_state": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "control_or_activation": {
+              "enum": [
+                "ctrl",
+                "act"
+              ]
+            },
+            "role": {
+              "enum": [
+                "EPISODE_NUISANCE",
+                "SUBJECT_BASELINE_WITH_EXTERNAL_JUSTIFICATION"
+              ]
+            },
+            "value": {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            }
+          },
+          "required": [
+            "role",
+            "control_or_activation",
+            "value"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "muscle_strength_modifications": {
+      "items": {
+        "$ref": "#/$defs/modification"
+      },
+      "type": "array"
+    },
+    "parameter_semantic_version": {
+      "const": "MYOLEG_COHORT_PARAMETER_SEMANTICS_V1"
+    },
+    "passive_property_modifications": {
+      "items": {
+        "$ref": "#/$defs/modification"
+      },
+      "type": "array"
+    },
+    "random_seed": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "reference_tau_rms_nm": {
+      "additionalProperties": false,
+      "properties": {
+        "hip": {
+          "type": "number"
+        },
+        "knee": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "hip",
+        "knee"
+      ],
+      "type": "object"
+    },
+    "split_role": {
+      "enum": [
+        "DEVELOPMENT_SUBJECT",
+        "HELD_OUT_SUBJECT"
+      ]
+    },
+    "subject_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "subject_specific_reference_normalization": {
+      "const": true
+    },
+    "truth_field": {
+      "const": "TAU_MY0LEG_REQUIRED_DRIVE"
+    },
+    "truth_semantic_version": {
+      "const": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1"
+    },
+    "v2_reference_sha256": {
+      "const": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+    }
+  },
+  "required": [
+    "subject_id",
+    "base_myoleg_model_sha256",
+    "v2_reference_sha256",
+    "parameter_semantic_version",
+    "body_anthropometry_modifications",
+    "muscle_strength_modifications",
+    "passive_property_modifications",
+    "low_activation_state",
+    "random_seed",
+    "generated_model_sha256",
+    "truth_semantic_version",
+    "truth_field",
+    "subject_specific_reference_normalization",
+    "reference_tau_rms_nm",
+    "integrity_gate_results",
+    "split_role",
+    "frozen_before_truth_reveal"
+  ],
+  "title": "MyoLeg heterogeneous musculoskeletal virtual-subject manifest",
+  "type": "object"
+}

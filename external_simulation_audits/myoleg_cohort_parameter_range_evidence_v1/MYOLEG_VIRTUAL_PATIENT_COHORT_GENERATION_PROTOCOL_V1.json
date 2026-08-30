@@ -1,0 +1,214 @@
+{
+  "claim_boundary": "heterogeneous musculoskeletal virtual subjects; not a representative patient cohort",
+  "cohort_generated": false,
+  "dependency_and_correlation": {
+    "known_structural_overlap_excluded": "GLOBAL_RIGHT_TARGET_FP_MAX_SCALE",
+    "limitation": "space filling covers a rectangular model-parameter design, not a human joint distribution",
+    "marginal_independence_is_population_claim": false,
+    "quantitative_covariance_frozen": false,
+    "reason": "no defensible covariance matrix is available for the exact six MyoLeg scale factors"
+  },
+  "execution_authorized": false,
+  "factor_order": [
+    "FEMUR_MASS_INERTIA_SCALE",
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+  ],
+  "forbidden_in_generation": [
+    "change formal/V2 reference",
+    "change truth semantics",
+    "add independent F0 factor in P0",
+    "use held-out learner outcomes to alter subjects/ranges/split",
+    "claim clinical or patient-population representativeness"
+  ],
+  "frozen_inputs": {
+    "base_model_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "formal_manifest_sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "proposal_content_sha256": "fc826049859960654d593f7ce1c2096c3df563f92915c07758a8ea84645e37de",
+    "truth_field": "TAU_MY0LEG_REQUIRED_DRIVE",
+    "truth_semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1",
+    "truth_semantics_sha256": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference_sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "integrity_gates": {
+    "algebraic_residual_max_nm": 1e-08,
+    "native_knee_max_deg": 120.0,
+    "native_knee_min_deg": 0.0,
+    "peak_force_ratio_vs_nominal_max": 2.0,
+    "source_equality_residual_max": 0.001,
+    "tracking_q_max_abs_deg": 1.0
+  },
+  "p0_semantics": {
+    "condition": "P0_ZERO_MINIMUM_CONTROL_MUSCULOSKELETAL",
+    "f0_factor_present": false,
+    "force_fpmax_indistinguishable": true,
+    "rule": "Do not add F0 as an independent P0 dimension; retain frozen fpmax groups."
+  },
+  "protocol_id": "MYOLEG_VIRTUAL_PATIENT_COHORT_GENERATION_PROTOCOL_V1",
+  "ranges": {
+    "FEMUR_MASS_INERTIA_SCALE": {
+      "evidence_class": "E2",
+      "extended_stress_only": [
+        0.76,
+        1.0,
+        1.24
+      ],
+      "primary": [
+        0.88,
+        1.0,
+        1.12
+      ],
+      "sources": [
+        "KUDZIA2022",
+        "DURKIN2003",
+        "RAJAGOPAL2016"
+      ]
+    },
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE": {
+      "evidence_class": "E2",
+      "extended_stress_only": [
+        0.64,
+        1.0,
+        1.36
+      ],
+      "primary": [
+        0.82,
+        1.0,
+        1.18
+      ],
+      "sources": [
+        "KUDZIA2022",
+        "DURKIN2003",
+        "RAJAGOPAL2016"
+      ]
+    },
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": {
+      "evidence_class": "E4",
+      "extended_stress_only": [
+        0.9,
+        1.0,
+        1.1
+      ],
+      "primary": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "sources": [
+        "MUJOCO_MUSCLE_36",
+        "SILDER2007",
+        "WINTER2010",
+        "MAGNUSSON2000",
+        "UHLRICH2022_CALIBRATION"
+      ]
+    },
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE": {
+      "evidence_class": "E4",
+      "extended_stress_only": [
+        0.9,
+        1.0,
+        1.1
+      ],
+      "primary": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "sources": [
+        "MUJOCO_MUSCLE_36",
+        "SILDER2007",
+        "UHLRICH2022_CALIBRATION"
+      ]
+    },
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": {
+      "evidence_class": "E4",
+      "extended_stress_only": [
+        0.9,
+        1.0,
+        1.1
+      ],
+      "primary": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "sources": [
+        "MUJOCO_MUSCLE_36",
+        "SILDER2007",
+        "UHLRICH2022_CALIBRATION"
+      ]
+    },
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE": {
+      "evidence_class": "E2",
+      "extended_stress_only": [
+        0.74,
+        1.0,
+        1.26
+      ],
+      "primary": [
+        0.87,
+        1.0,
+        1.13
+      ],
+      "sources": [
+        "KUDZIA2022",
+        "DURKIN2003",
+        "RAJAGOPAL2016"
+      ]
+    }
+  },
+  "readiness_basis": "MYOLEG_COHORT_RANGES_READY_WITH_SYNTHETIC_LIMITATIONS",
+  "sampling": {
+    "algorithm": "deterministic centered maximin Latin hypercube",
+    "construction": "32 equal strata per factor; midpoint in each stratum; 512 seeded permutation restarts; maximize minimum pairwise Euclidean distance in normalized coordinates; lexicographic tie-break",
+    "development_indices_zero_based": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      24,
+      25,
+      26,
+      28,
+      29,
+      30
+    ],
+    "dimension": 6,
+    "held_out_indices_zero_based": [
+      3,
+      7,
+      11,
+      15,
+      19,
+      23,
+      27,
+      31
+    ],
+    "heterogeneous_subject_count": 32,
+    "nominal_control": "existing frozen base model, evaluated separately and not counted among 32 heterogeneous subjects",
+    "random_engine": "NumPy PCG64",
+    "seed": 20260830,
+    "split_frozen_before_learner_performance_reveal": true
+  },
+  "scheme_id": "SCHEME_A_MINIMAL_INTERPRETABLE",
+  "scheme_source_sha256": "a460befdbbfa7dc7f54078673067843467740ed6ecbf7c4cd5cee533e6269bff",
+  "status": "FROZEN_PROTOCOL_ONLY_DEFAULT_OFF"
+}

@@ -1,0 +1,149 @@
+{
+  "artifact_sha256": {
+    "ANTHROPOMETRY_VARIATION_AUDIT.md": "8c311691b083cc190a74b8a0bfdb591ef1ce8eca0b02c9cbcf9f2671eaef3c31",
+    "BIARTICULAR_VARIATION_AUDIT.md": "7b7b27059c323cd3efc7e3c6309bc8cbda4e61d83e483567e412b25c4b5a0542",
+    "COHORT_INTEGRITY_GATES.json": "760b1a18005b6a22ab3adbe9ab7580ef3ba033e66978e5d099907361c81c975b",
+    "LOW_ACTIVATION_VARIABILITY_AUDIT.md": "1ccf42c4c9b1dbb8dcf99e09f848b8e00e312b5e729f456952cb6bb8fbe2eab6",
+    "MUSCLE_STRENGTH_VARIATION_AUDIT.md": "4aaffcdead0faa074968c4492d2f62782f4e7c7c25dbf8f6036b2a9ffd749aef",
+    "MYOLEG_PARAMETER_INVENTORY.csv": "b4eded805c353e65bb38325d64deb85bfbb3eff4c4ff127e9135c5be306ac417",
+    "MYOLEG_VIRTUAL_PATIENT_COHORT_DESIGN_REPORT.md": "a0db81ec16e6c1c103d3de6a585beb5978f00e2f82687bef323272dcd4073c88",
+    "PARAMETER_RANGE_EVIDENCE.json": "af250c583d856ba9891fb0449b4a964f9c469a3a0151ed560ce086534fec596c",
+    "PARAMETER_TAXONOMY.csv": "0f8f3e6af995ad973bb1c941e9cc4e2efa96248ee1df85c65f44f38138bab33f",
+    "PASSIVE_PROPERTY_VARIATION_AUDIT.md": "4bf31debf9167fe719d1d73fc7fd26a477bc59d5954fc8436c6f87abcf3f0b4b",
+    "PROPOSED_COHORT_SCHEMES.json": "a460befdbbfa7dc7f54078673067843467740ed6ecbf7c4cd5cee533e6269bff",
+    "PROPOSED_SUBJECT_MANIFEST_SCHEMA.json": "7aeab880ed5011c08e2d3eec7d62ba13c455543aa5c99c4b0d3e148b5d944631",
+    "SINGLE_PARAMETER_SENSITIVITY_RESULTS.csv": "a78c8eaabb8eeb3baad8d3b65bab748dad268672350f663c25c8e015d75c3053"
+  },
+  "bo_run": false,
+  "builder_script_path": "external_simulation/myoleg_virtual_patient_cohort_design_v1/build_design_audit.py",
+  "builder_script_sha256": "e9fed19ab16243e0c64ebbc10cf870a010914ccd1414b43ebc99c83f41d18cf3",
+  "candidate_landscape_generated": false,
+  "cohort_generated": false,
+  "design_content_sha256": "b90483ec4d7968deb9673e714782e73759fa1d5b25dbb1db635bd81f48e5745b",
+  "evidence_level": "OFFLINE_MODEL_PARAMETER_DESIGN_AND_SMALL_PERTURBATION_SMOKE",
+  "five_parameter_fit": false,
+  "formal_reference_modified": false,
+  "hardware_accessed": false,
+  "model_inventory_counts": {
+    "bodies": 16,
+    "equalities": 27,
+    "geoms": 89,
+    "inventory_rows": 1054,
+    "joints": 29,
+    "muscle_actuators": 80,
+    "sites": 384,
+    "tendons": 80
+  },
+  "myoleg_v2_reference": {
+    "duration_s": 24.0,
+    "id": "NATIVE_ROM_REFERENCE_CANDIDATE",
+    "knee_max_deg": 119.5,
+    "regenerated": false,
+    "sample_count": 401,
+    "sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+    "transformation_identity": {
+      "active_reference": false,
+      "amplitude_scale": 0.9503287154119732,
+      "anchor_knee_deg": 18.35481394984986,
+      "anchor_knee_rad": 0.3203519370158654,
+      "candidate_csv_sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+      "candidate_id": "MYOLEG_NATIVE_ROM_REFERENCE_CANDIDATE",
+      "derivative_formula": "dq_new=s*dq_original; ddq_new=s*ddq_original",
+      "duration_s": 24.0,
+      "formula": "q_new(t)=q0+s*(q_original(t)-q0)",
+      "globally_smooth": true,
+      "inverse_formula": "q_original(t)=q0+(q_new(t)-q0)/s",
+      "invertible": true,
+      "original_peak_knee_deg": 124.78660371882795,
+      "original_peak_knee_rad": 2.177937097274948,
+      "parent_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+      "pointwise_clipping_used": false,
+      "robot_execution_approved": false,
+      "role": "DIAGNOSTIC_SIMULATION_CANDIDATE_ONLY",
+      "sample_count": 401,
+      "selection_uses_extension_results": false,
+      "target_peak_knee_deg_preselected": 119.5
+    }
+  },
+  "next_stage_executed": false,
+  "nn_trained": false,
+  "nominal_prior_replay_exact_match": true,
+  "official_mujoco_sources": {
+    "muscle_model": "https://mujoco.readthedocs.io/en/3.6.0/modeling.html#muscle-actuators",
+    "muscle_xml": "https://mujoco.readthedocs.io/en/3.6.0/XMLreference.html#actuator-muscle"
+  },
+  "outcome": "MYOLEG_COHORT_DESIGN_READY_WITH_EVIDENCE_GAPS",
+  "pinn_trained": false,
+  "robot_connected": false,
+  "rom_protocol_modified": false,
+  "runtime_environment": {
+    "frozen_expected": {
+      "mujoco": "3.6.0",
+      "myosuite": "2.12.2",
+      "python": "3.10.19"
+    },
+    "frozen_match": true,
+    "mujoco": "3.6.0",
+    "myosuite": "2.12.2",
+    "numpy": "2.2.6",
+    "platform": "macOS-26.4.1-arm64-arm-64bit",
+    "python": "3.10.19",
+    "python_executable": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python"
+  },
+  "smoke_test": {
+    "all_deterministic": true,
+    "all_integrity_gates_pass": true,
+    "amplitude_is_scientific_range": false,
+    "families": [
+      "SEGMENT_MASS_INERTIA_COUPLED_SCALE",
+      "MUSCLE_FORCE_CAPACITY_SCALE",
+      "MUSCLE_PASSIVE_FP_MAX_SCALE",
+      "BIARTICULAR_FORCE_CAPACITY_SCALE",
+      "BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+    ],
+    "p0_force_fpmax_equivalence": {
+      "biarticular_force_vs_fpmax_negative_within_1e_12_nm": true,
+      "biarticular_force_vs_fpmax_positive_within_1e_12_nm": true,
+      "biarticular_negative_max_abs_difference_nm": 3.552713678800501e-15,
+      "biarticular_positive_max_abs_difference_nm": 0.0,
+      "global_force_vs_global_fpmax_negative_within_1e_12_nm": true,
+      "global_force_vs_global_fpmax_positive_within_1e_12_nm": true,
+      "global_negative_max_abs_difference_nm": 7.105427357601002e-15,
+      "global_positive_max_abs_difference_nm": 7.105427357601002e-15,
+      "interpretation": "At P0, actuator force is -F0*FP(L); same-group scaling of F0 or fpmax is equivalent to floating-point precision and cannot define two independent cohort factors."
+    },
+    "row_count": 15
+  },
+  "source_identity_after": {
+    "base_myoleg_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "source_identity_before": {
+    "base_myoleg_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "stage_id": "MYOLEG_VIRTUAL_PATIENT_COHORT_DESIGN_V1",
+  "taxonomy_counts": {
+    "A": 5,
+    "B": 2,
+    "C": 2,
+    "D": 6,
+    "E": 5
+  },
+  "truth_learner_parameterization_independence": "PASS",
+  "truth_semantics": {
+    "field": "TAU_MY0LEG_REQUIRED_DRIVE",
+    "nominal_denominator_for_all_subjects": false,
+    "sha256": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "subject_specific_reference_normalization": true,
+    "version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1"
+  },
+  "truth_semantics_modified": false,
+  "v2_reference_modified": false
+}

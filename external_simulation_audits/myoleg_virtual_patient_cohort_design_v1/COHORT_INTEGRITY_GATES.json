@@ -1,0 +1,97 @@
+{
+  "applies_to": "every future generated subject independently",
+  "fail_closed": true,
+  "gates": [
+    {
+      "criterion": true,
+      "gate": "model_loads"
+    },
+    {
+      "criterion": true,
+      "gate": "all_state_finite"
+    },
+    {
+      "criterion": 0,
+      "gate": "solver_warning_count"
+    },
+    {
+      "criterion": 24.0,
+      "gate": "reference_replay_duration_s"
+    },
+    {
+      "criterion": 401,
+      "gate": "reference_sample_count"
+    },
+    {
+      "criterion": 0.001,
+      "gate": "source_equality_residual_max"
+    },
+    {
+      "criterion": [
+        0.0,
+        120.0
+      ],
+      "gate": "native_knee_rom_deg"
+    },
+    {
+      "criterion": true,
+      "gate": "muscle_and_tendon_state_finite"
+    },
+    {
+      "criterion": {
+        "peak_force_ratio_vs_nominal_max": 2.0,
+        "scope": "small +/-5% smoke only; not a scientific range"
+      },
+      "gate": "pathological_force_explosion_screen"
+    },
+    {
+      "criterion": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1",
+      "gate": "truth_semantic_version"
+    },
+    {
+      "criterion": "TAU_MY0LEG_REQUIRED_DRIVE",
+      "gate": "truth_field"
+    },
+    {
+      "criterion": "exact repeated fingerprint",
+      "gate": "deterministic_replay"
+    },
+    {
+      "criterion": true,
+      "gate": "subject_specific_reference_normalization"
+    }
+  ],
+  "protocol": "MYOLEG_COHORT_INTEGRITY_GATES_V1",
+  "tested_family_results": {
+    "BIARTICULAR_FORCE_CAPACITY_SCALE": {
+      "eligible_for_cohort_generation": "ACTIVE_CONDITION_ONLY_OR_MUTUALLY_EXCLUSIVE_IN_P0",
+      "numerical_smoke_pass": true,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    "BIARTICULAR_PASSIVE_FP_MAX_SCALE": {
+      "eligible_for_cohort_generation": "YES_AFTER_RANGE_EVIDENCE",
+      "numerical_smoke_pass": true,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    "MUSCLE_FORCE_CAPACITY_SCALE": {
+      "eligible_for_cohort_generation": "ACTIVE_CONDITION_ONLY_OR_MUTUALLY_EXCLUSIVE_IN_P0",
+      "numerical_smoke_pass": true,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    "MUSCLE_PASSIVE_FP_MAX_SCALE": {
+      "eligible_for_cohort_generation": "YES_AFTER_RANGE_EVIDENCE",
+      "numerical_smoke_pass": true,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    "SEGMENT_MASS_INERTIA_COUPLED_SCALE": {
+      "eligible_for_cohort_generation": "YES_AFTER_RANGE_EVIDENCE",
+      "numerical_smoke_pass": true,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    }
+  },
+  "unchanged_inputs": {
+    "base_model_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "truth_semantics_sha256": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference_sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  }
+}

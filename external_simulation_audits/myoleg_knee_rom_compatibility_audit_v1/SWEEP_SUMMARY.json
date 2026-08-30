@@ -1,0 +1,25 @@
+{
+  "all_finite": true,
+  "auxiliary_roundtrip_inconsistency_by_hip": {
+    "110.0": 0.0001709363729882618,
+    "30.0": 0.0001689801608926178,
+    "60.0": 0.0001870318758534495,
+    "90.0": 0.0001925195276317737
+  },
+  "hip_angles_deg": [
+    30.0,
+    60.0,
+    90.0,
+    110.0
+  ],
+  "maximum_auxiliary_roundtrip_inconsistency": 0.0001925195276317737,
+  "maximum_required_diagnostic_torque_nm": 66.10357747610851,
+  "maximum_source_equality_force": 481.56146739658385,
+  "maximum_source_equality_residual": 0.000682169599245142,
+  "maximum_tracking_error_deg": 0.7574889368178503,
+  "pass": true,
+  "recorded_rows": 4004,
+  "simulated_time_per_hip_s": 20.0,
+  "total_steps": 80004,
+  "warning_count": 0
+}

@@ -1,0 +1,64 @@
+{
+  "absolute_limit_contribution_max_nm": 0.005,
+  "all_model_criterion": true,
+  "candidate_observed_hip_domain_deg": [
+    28.909336160834915,
+    114.02543856570828
+  ],
+  "candidate_observed_knee_domain_deg": [
+    18.320897342452927,
+    119.99993257281847
+  ],
+  "classification": "SIMULATOR_ARTIFACT_GATE_NOT_HUMAN_SAFETY",
+  "decision_id": "MYOLEG_V2_TRUSTED_JOINT_DOMAIN_V1",
+  "failed_row_count": 214,
+  "lower_angle_all_model_pass": {
+    "0.0": true,
+    "0.1": false,
+    "0.25": false,
+    "0.5": true,
+    "1.0": true,
+    "5.0": true
+  },
+  "lower_boundary_interpretation": "the exact 0-degree boundary is numerically inactive while 0.1/0.25-degree states cross the preregistered artifact gate; no proposal approaches this non-monotonic soft-limit band because the complete admitted candidate envelope remains above 18.32 degrees",
+  "maximum_observed_absolute_limit_nm": 0.01193199473526037,
+  "maximum_observed_relative_limit": 0.0012347393521005522,
+  "models_required": 33,
+  "native_hip_range_deg": [
+    -30.000012857270395,
+    120.0002806121996
+  ],
+  "native_knee_range_deg": [
+    0.0,
+    120.0002806121996
+  ],
+  "relative_limit_contribution_max": 0.0005,
+  "selection_used_candidate_objective_or_count": false,
+  "trusted_domain_used_by_admitted_candidates_deg": {
+    "hip": [
+      28.909336160834915,
+      114.02543856570828
+    ],
+    "knee": [
+      18.320897342452927,
+      119.99993257281847
+    ]
+  },
+  "trusted_hip_domain_deg": [
+    -30.000012857270395,
+    120.0002806121996
+  ],
+  "trusted_knee_lower_deg": 0.0,
+  "trusted_knee_upper_deg": 120.0,
+  "upper_angle_all_model_pass": {
+    "119.0": true,
+    "119.25": true,
+    "119.5": true,
+    "119.6": true,
+    "119.7": true,
+    "119.75": true,
+    "119.8": true,
+    "119.9": true,
+    "120.0": true
+  }
+}

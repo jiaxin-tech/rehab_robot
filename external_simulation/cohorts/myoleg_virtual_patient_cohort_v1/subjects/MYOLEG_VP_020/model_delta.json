@@ -1,0 +1,790 @@
+{
+  "base_model_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+  "cohort_protocol_sha256": "94abf249d19e7ec820ba6c24b6be665686b0434379b27c5c281620e10405fc48",
+  "compact_delta_used_instead_of_copied_mjb_or_assets": true,
+  "compiled_transmission_group_members": {
+    "HIP_KNEE_BIARTICULAR": [
+      "bflh_r",
+      "grac_r",
+      "recfem_r",
+      "sart_r",
+      "semimem_r",
+      "semiten_r",
+      "tfl_r"
+    ],
+    "HIP_ONLY": [
+      "addbrev_r",
+      "addlong_r",
+      "addmagDist_r",
+      "addmagIsch_r",
+      "addmagMid_r",
+      "addmagProx_r",
+      "glmax1_r",
+      "glmax2_r",
+      "glmax3_r",
+      "glmed1_r",
+      "glmed2_r",
+      "glmed3_r",
+      "glmin1_r",
+      "glmin2_r",
+      "glmin3_r",
+      "iliacus_r",
+      "piri_r",
+      "psoas_r"
+    ],
+    "KNEE_ONLY": [
+      "bfsh_r",
+      "gaslat_r",
+      "gasmed_r",
+      "vasint_r",
+      "vaslat_r",
+      "vasmed_r"
+    ]
+  },
+  "factor_order": [
+    "FEMUR_MASS_INERTIA_SCALE",
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+  ],
+  "factor_values": {
+    "FEMUR_MASS_INERTIA_SCALE": 0.93625,
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE": 0.9831249999999999,
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 1.0078125,
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 0.9515625,
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 1.0140625,
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE": 1.0121875
+  },
+  "generated_model_fingerprint_sha256": "f9cbb0cf9b2d4768b189195ab1388fd926d7bfb8a8a2f23d0f3e06b2e2f830e7",
+  "inertia_scaling_is_modeling_approximation": true,
+  "modifications": [
+    {
+      "body_ipos_com_unchanged": true,
+      "factor_id": "FEMUR_MASS_INERTIA_SCALE",
+      "fields": {
+        "body_inertia": {
+          "after": [
+            0.15860075,
+            0.15860075,
+            0.022963310125
+          ],
+          "before": [
+            0.1694,
+            0.1694,
+            0.0245269
+          ]
+        },
+        "body_mass": {
+          "after": 7.8645000000000005,
+          "before": 8.4
+        }
+      },
+      "inertia_scaling_is_modeling_approximation": true,
+      "object_name": "femur_r",
+      "object_type": "body",
+      "scale": 0.93625
+    },
+    {
+      "body_ipos_com_unchanged": true,
+      "factor_id": "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+      "fields": {
+        "body_inertia": {
+          "after": [
+            0.07809927409375,
+            0.07809927409375,
+            0.0069880109156250005
+          ],
+          "before": [
+            0.0771589,
+            0.0771589,
+            0.00690387
+          ]
+        },
+        "body_mass": {
+          "after": 3.8463125,
+          "before": 3.8
+        }
+      },
+      "inertia_scaling_is_modeling_approximation": true,
+      "object_name": "tibia_r",
+      "object_type": "body",
+      "scale": 1.0121875
+    },
+    {
+      "body_ipos_com_unchanged": true,
+      "factor_id": "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+      "fields": {
+        "body_inertia": {
+          "after": [
+            6.851403911241635e-06,
+            4.828970245502209e-06,
+            3.6791691975228318e-06
+          ],
+          "before": [
+            6.768907846858052e-06,
+            4.770825805991685e-06,
+            3.63486922879687e-06
+          ]
+        },
+        "body_mass": {
+          "after": 0.028192317026082964,
+          "before": 0.027852860291282953
+        }
+      },
+      "inertia_scaling_is_modeling_approximation": true,
+      "object_name": "patella_r",
+      "object_type": "body",
+      "scale": 1.0121875
+    },
+    {
+      "body_ipos_com_unchanged": true,
+      "factor_id": "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+      "fields": {
+        "body_inertia": {
+          "after": [
+            4.141247965710142e-06,
+            2.949240341006579e-06,
+            2.435583161173638e-06
+          ],
+          "before": [
+            4.212331052216292e-06,
+            2.999863029631613e-06,
+            2.477389102274521e-06
+          ]
+        },
+        "body_mass": {
+          "after": 0.020848632449579185,
+          "before": 0.021206492002114875
+        }
+      },
+      "inertia_scaling_is_modeling_approximation": true,
+      "object_name": "talus_r",
+      "object_type": "body",
+      "scale": 0.9831249999999999
+    },
+    {
+      "body_ipos_com_unchanged": true,
+      "factor_id": "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+      "fields": {
+        "body_inertia": {
+          "after": [
+            0.0030834339249999998,
+            0.00292099218125,
+            0.000925845188125
+          ],
+          "before": [
+            0.00313636,
+            0.00297113,
+            0.000941737
+          ]
+        },
+        "body_mass": {
+          "after": 1.1207624999999999,
+          "before": 1.14
+        }
+      },
+      "inertia_scaling_is_modeling_approximation": true,
+      "object_name": "calcn_r",
+      "object_type": "body",
+      "scale": 0.9831249999999999
+    },
+    {
+      "body_ipos_com_unchanged": true,
+      "factor_id": "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+      "fields": {
+        "body_inertia": {
+          "after": [
+            0.00037074457457750157,
+            0.00031332951678349273,
+            9.887729689661181e-05
+          ],
+          "before": [
+            0.00037710827674761763,
+            0.0003187077093792679,
+            0.00010057449143965601
+          ]
+        },
+        "body_mass": {
+          "after": 0.2805495115867169,
+          "before": 0.2853650467506339
+        }
+      },
+      "inertia_scaling_is_modeling_approximation": true,
+      "object_name": "toes_r",
+      "object_type": "body",
+      "scale": 0.9831249999999999
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.27705396875,
+          "before": 1.34206
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.27705396875,
+          "before": 1.34206
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "addbrev_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.436707125,
+          "before": 1.50984
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.436707125,
+          "before": 1.50984
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "addlong_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.5299412187499999,
+          "before": 1.60782
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.5299412187499999,
+          "before": 1.60782
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "addmagDist_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.58368546875,
+          "before": 1.6643
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.58368546875,
+          "before": 1.6643
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "addmagIsch_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.6119088124999998,
+          "before": 1.69396
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.6119088124999998,
+          "before": 1.69396
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "addmagMid_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.31488809375,
+          "before": 1.38182
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.31488809375,
+          "before": 1.38182
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "addmagProx_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.7758154531249999,
+          "before": 1.86621
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.7758154531249999,
+          "before": 1.86621
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmax1_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.1652739218750001,
+          "before": 1.22459
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.1652739218750001,
+          "before": 1.22459
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmax2_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.30434478125,
+          "before": 1.37074
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.30434478125,
+          "before": 1.37074
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmax3_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.476111328125,
+          "before": 1.55125
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.476111328125,
+          "before": 1.55125
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmed1_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.543139390625,
+          "before": 1.62169
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.543139390625,
+          "before": 1.62169
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmed2_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.318323234375,
+          "before": 1.38543
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.318323234375,
+          "before": 1.38543
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmed3_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.1472989062499999,
+          "before": 1.2057
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.1472989062499999,
+          "before": 1.2057
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmin1_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.142550609375,
+          "before": 1.20071
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.142550609375,
+          "before": 1.20071
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmin2_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.338876984375,
+          "before": 1.40703
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.338876984375,
+          "before": 1.40703
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "glmin3_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.7328619218749999,
+          "before": 1.82107
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.7328619218749999,
+          "before": 1.82107
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "iliacus_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.5475451249999999,
+          "before": 1.62632
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.5475451249999999,
+          "before": 1.62632
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "piri_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.407065953125,
+          "before": 1.47869
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.407065953125,
+          "before": 1.47869
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "psoas_r",
+      "object_type": "actuator",
+      "scale": 0.9515625,
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.6031516875000003,
+          "before": 1.58092
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.6031516875000003,
+          "before": 1.58092
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "bfsh_r",
+      "object_type": "actuator",
+      "scale": 1.0140625,
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.9303997968750002,
+          "before": 1.90363
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.9303997968750002,
+          "before": 1.90363
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "gaslat_r",
+      "object_type": "actuator",
+      "scale": 1.0140625,
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.5390730781250002,
+          "before": 1.51773
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.5390730781250002,
+          "before": 1.51773
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "gasmed_r",
+      "object_type": "actuator",
+      "scale": 1.0140625,
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.0071912125,
+          "before": 0.993224
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.0071912125,
+          "before": 0.993224
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "vasint_r",
+      "object_type": "actuator",
+      "scale": 1.0140625,
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 2.028125,
+          "before": 2.0
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 2.028125,
+          "before": 2.0
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "vaslat_r",
+      "object_type": "actuator",
+      "scale": 1.0140625,
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.425944265625,
+          "before": 1.40617
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.425944265625,
+          "before": 1.40617
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "vasmed_r",
+      "object_type": "actuator",
+      "scale": 1.0140625,
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.9985224218750002,
+          "before": 1.98303
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.9985224218750002,
+          "before": 1.98303
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "bflh_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 0.94588846875,
+          "before": 0.938556
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 0.94588846875,
+          "before": 0.938556
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "grac_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.79557921875,
+          "before": 1.78166
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.79557921875,
+          "before": 1.78166
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "recfem_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 0.8129166796874999,
+          "before": 0.806615
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 0.8129166796874999,
+          "before": 0.806615
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "sart_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.0789136718749999,
+          "before": 1.07055
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.0789136718749999,
+          "before": 1.07055
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "semimem_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.58708296875,
+          "before": 1.57478
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.58708296875,
+          "before": 1.57478
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "semiten_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    },
+    {
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "fields": {
+        "actuator_biasprm_7_fpmax": {
+          "after": 1.3487655468750002,
+          "before": 1.33831
+        },
+        "actuator_gainprm_7_fpmax": {
+          "after": 1.3487655468750002,
+          "before": 1.33831
+        }
+      },
+      "group_basis": "compiled tendon transmission moment matrix over all 401 frozen V2 states",
+      "object_name": "tfl_r",
+      "object_type": "actuator",
+      "scale": 1.0078125,
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    }
+  ],
+  "reconstruction": "load frozen base XML, apply exact listed double-precision field deltas in factor_order, then verify model fingerprint",
+  "sampling_freeze_manifest_sha256": "81451f87e817062e5e56cc1de13d2a71a148989db06454514818fa268300fecb",
+  "structural_fingerprint_sha256": "cb9bcb226b68bc5f9c5bf31f366733d75d0733af15be407bacfed3e45637b079",
+  "subject_id": "MYOLEG_VP_020",
+  "unit_cube_vector": [
+    0.234375,
+    0.546875,
+    0.453125,
+    0.015625,
+    0.640625,
+    0.578125
+  ]
+}

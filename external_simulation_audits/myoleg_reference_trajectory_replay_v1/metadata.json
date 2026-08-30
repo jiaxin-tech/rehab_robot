@@ -1,0 +1,279 @@
+{
+  "artifact_sha256": {
+    "DATASET_SCHEMA.json": "8550d27e540084e15fa6f76884ffcb3e6aa7bb826206d7c3d5cf90eacd619db3",
+    "DYNAMICS_BALANCE_AUDIT.csv": "ef92b58d96194d4eeabbba3ce25025b4b53acce2c28f2edc51cbf7fd6524b71d",
+    "FORCE_SEMANTICS_VALIDATION.csv": "2b58538bd84aabbdc0bb72d8a6d6e18c7a88f192669c8dd3e7246652aedced9d",
+    "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1.json": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "MYOLEG_REFERENCE_TRAJECTORY_REPLAY_REPORT.md": "73e2a27deb67e7b964ce389f222635a12e9af684e69bf7baa34e611f04565270",
+    "PRIMARY_REFERENCE_REPLAY.npz": "d5b31431830bc1756f0fa9ad46349a5725ee73a98ddf1a51b939e35c3715c269",
+    "PRIMARY_REFERENCE_REPLAY_SUMMARY.csv": "8fc5f336daabe7a115057537ae6ccf0aadef4a96ce956cd925b9c7c68675c50c",
+    "PRIMARY_VS_SENSITIVITY.csv": "59de8b9331cd49a96e6b9c59d66c0b1a712d4400589e0b05b32845db7602d2af",
+    "REPLAY_PROTOCOL.json": "5c46ed8bc6785cb23899a4ac8e895a3e487fd0e3f57f21531082122a70489837",
+    "RUNTIME_BENCHMARK.json": "b97c6bf73bb6ffeb30fead795102a250f2809f497e2a0cacdda76715b1b5c040",
+    "SENSITIVITY_REFERENCE_REPLAY.npz": "ffb389f22ad586a1cbe3f18fbaca9a4bf2cc7964d94336bb5e398a38b64e6cde",
+    "SENSITIVITY_REFERENCE_REPLAY_SUMMARY.csv": "e5354e49c82e8ddcc83349f4d0d294c2daaefce643cb152208ce5ef6c0e5ca99",
+    "TEST_RESULTS.json": "1a9d13028fe60811157607e97a1ebcc1a13661c57654d6a14d51f8537871c841",
+    "figures/dynamics_balance_residual.png": "5c0d10ed1adf1c445a8092b6b87643e5d19f37b01c6a5e8503e4874c732c55df",
+    "figures/generalized_force_decomposition.png": "6406d0e1f10289677db2fabab4219e2c614e7ec388dc5e1af0c4fa2f78cb17a7",
+    "figures/high_flexion_10p540_to_16p824_zoom.png": "b67a524945e90b62605c293a6e60eb3068f8f25e3bc027be4f102f562f9a078e",
+    "figures/primary_vs_sensitivity_torque.png": "ddb7ca64ba1822a6c77efd11e0994274194fc8d5353882719922c702f167b942",
+    "figures/target_vs_actual_hip_knee.png": "62322a68251a46b05ee0e090ca04e9608a54fa50f40d8aa497d215470c6dfd34",
+    "figures/tau_truth_hip_knee.png": "e3a76da3ad73b190f4cfd909cd0dcbd4ca476c27b51138bc867c15c6ede16459"
+  },
+  "bo_run": false,
+  "builder_script_path": "external_simulation/myoleg_reference_trajectory_replay_v1/build_and_replay.py",
+  "builder_script_sha256": "d60a9b1651b49307155b8b36bfdd881b595c604288f7c07a3237afe5f5feb32e",
+  "default_off": true,
+  "determinism_fingerprints": {
+    "PRIMARY": {
+      "first": "6428d64c2ea7128e671c42a9785fe904ec916601dfcda4cfcec3f4d41ff05a1c",
+      "repeat": "6428d64c2ea7128e671c42a9785fe904ec916601dfcda4cfcec3f4d41ff05a1c"
+    },
+    "SENSITIVITY": {
+      "first": "3ad24d63febd8b3922d618e741d2f514add8af6b525145fae436a99cdd4c4496",
+      "repeat": "3ad24d63febd8b3922d618e741d2f514add8af6b525145fae436a99cdd4c4496"
+    }
+  },
+  "evidence_level": "OFFLINE_HEADLESS_VIRTUAL_MODEL_ONLY",
+  "extension_sensitivity_assessment": {
+    "all_joint_growth_within_predeclared_limits": false,
+    "assessment": "MATERIAL_HIGH_FLEXION_TORQUE_AMPLIFICATION_DETECTED"
+  },
+  "five_parameter_fit": false,
+  "generalized_force_truth_semantics": "PASS",
+  "human_ready": false,
+  "landscape_generated": false,
+  "myoleg_tau_compatible_with_existing_j": "WITH_CAVEATS",
+  "next_stage_recommended_not_executed": "MYOLEG_VIRTUAL_PATIENT_COHORT_DESIGN_V1",
+  "outcome": "MYOLEG_REFERENCE_REPLAY_VALID_WITH_LIMITATIONS",
+  "pinn_trained": false,
+  "replay_protocol_sha256": "5c46ed8bc6785cb23899a4ac8e895a3e487fd0e3f57f21531082122a70489837",
+  "robot_approved": false,
+  "robot_connected": false,
+  "runtime_environment": {
+    "frozen_expected": {
+      "mujoco": "3.6.0",
+      "myosuite": "2.12.2",
+      "python": "3.10.19"
+    },
+    "frozen_match": true,
+    "mujoco": "3.6.0",
+    "myosuite": "2.12.2",
+    "numpy": "2.2.6",
+    "pillow": "12.3.0",
+    "platform": "macOS-26.4.1-arm64-arm-64bit",
+    "python": "3.10.19",
+    "python_executable": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python"
+  },
+  "source_identity_after": {
+    "hashes": {
+      "coordinate_mapping": "83798958fd0b12f5c5314bc32df898f1d6e56d8e224f7673d8aca5c457ce713c",
+      "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+      "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+      "native_compatible_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+      "native_supine_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+      "primary_125_model": "c652424679308411fb73a211ad1fc770002fd760c8339c1ed9553888c14e0d41",
+      "supine_manifest": "54b24b6c33dbb66d2549dbbbe45dc87e83bf10eeda54427143634fc0b2aaa3fc"
+    },
+    "prior_checksum_verification": {
+      "external_simulation_audits/myoleg_install_and_smoke_test_v1/checksums.sha256": {
+        "checked_file_count": 14,
+        "failures": [],
+        "manifest_sha256": "b9f820da70b024deec6eefb4e2a138f122c01284e7207f960d2780356fa74e34",
+        "status": "PASS"
+      },
+      "external_simulation_audits/myoleg_knee_rom_compatibility_audit_v1/checksums.sha256": {
+        "checked_file_count": 24,
+        "failures": [],
+        "manifest_sha256": "bddbb5ea54fc907f2600f625e472467adccddde7c08cc78ac83c22d50cedb7ac",
+        "status": "PASS"
+      },
+      "external_simulation_audits/myoleg_supine_hip_knee_rehab_feasibility_v1/checksums.sha256": {
+        "checked_file_count": 13,
+        "failures": [],
+        "manifest_sha256": "3083f700154f670ea32e9fa21e7c7efe527db5d1c657637e499a4d286c8d335e",
+        "status": "PASS"
+      }
+    },
+    "upstream_asset_count": 22,
+    "upstream_asset_sha256": {
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_bofoot.stl": "e3cc26950da6a22ac921e937740408bba43193f1c422810716435a4dd39a0ad1",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_femur.stl": "d72e3bc4c1d0bbf76e189d50cd0594e3275169d1b2bf48370cb07d3d2a1a848d",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_fibula.stl": "1b31ecc2af2935d3602f977af1787c55551a2179d38a44bb015005698a1e1bae",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_foot.stl": "4cb976c3d03dc47cbee8786999a572f580044976e149c1bdeffe27666a0e42f7",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_patella.stl": "1cd80b37a1ba01dd6c135273e7e85a14733c9940905aaa72ce001fc164659440",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_pelvis.stl": "6998661b30f05288f018ca3e4934ae45560b1fd62f638f339fcf4881aa16c1a4",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_talus.stl": "45cff977c3cf0e2da78832366630f662f20526a5c5ad4f753c268a58b10b3a6a",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_tibia.stl": "0b4392cf63f523dba4fa0d9fdd62cf2bf0b464eaeaad320103d33534fc9e5b60",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_bofoot.stl": "39dae011e441c0018cba4a00664d4076f0bb8f86f73522567275ececf6f78db5",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_femur.stl": "7d6e76a58e964551824169d89ae4b6142617f947bfdbc4ee0a4328040acf9f63",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_fibula.stl": "2cb0f77671c5421abdec1643aab77b41af2c2b5a8eff49845b098b2393443354",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_foot.stl": "e95cf6418432ea49488790364588246202b7ce54d6827bef49ac3406733d9f4f",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_patella.stl": "6a08e1e74354c65940bfd00ba343823e65eece2ebf10d9bf66c0429e83588128",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_pelvis.stl": "6eb7bbe904ce85566fc6afcde0935eda11ae12da341965616c7c798c9b2d7ee4",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_talus.stl": "96202bdab4836e8fede82d3897b4b1bbc6f1afd6fc77e87b8bb444212df2ae90",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_tibia.stl": "7c016de88550dab6bb33d3060ba7aa42b061ca78c5224b7d92a4c766f25ca15f",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/torso_lowpoly-v1.stl": "117e5ba0b225b778b07c9854b4f87a9ea51f2b98b9be6a26e8bbd4d0d77366b2",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/floor0.png": "b6480ddfc8519607574fb08f98d6ee9673e3790014b1c5239641632d24752cf1",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_logo.msh": "6dc356d095d68c2fb35942aaf1835b3ea32b3f50aca51bbde703a61f57bb6f07",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_logo.png": "6587db5da73706f355155f0c49f550afbe601f51029ef7aa89bcf4e73ff09698",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_scene.png": "b14011caf35a0fcdfe32d287907149c7eae159e2e599f27c144dc97d2abc41ce",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_scene_noFloor_noPedestal.msh": "b80b2a96ccbafaae58a979118f026a40056c5904f9daba1d464fa49c7a696355"
+    }
+  },
+  "source_identity_before": {
+    "hashes": {
+      "coordinate_mapping": "83798958fd0b12f5c5314bc32df898f1d6e56d8e224f7673d8aca5c457ce713c",
+      "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+      "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+      "native_compatible_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+      "native_supine_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+      "primary_125_model": "c652424679308411fb73a211ad1fc770002fd760c8339c1ed9553888c14e0d41",
+      "supine_manifest": "54b24b6c33dbb66d2549dbbbe45dc87e83bf10eeda54427143634fc0b2aaa3fc"
+    },
+    "prior_checksum_verification": {
+      "external_simulation_audits/myoleg_install_and_smoke_test_v1/checksums.sha256": {
+        "checked_file_count": 14,
+        "failures": [],
+        "manifest_sha256": "b9f820da70b024deec6eefb4e2a138f122c01284e7207f960d2780356fa74e34",
+        "status": "PASS"
+      },
+      "external_simulation_audits/myoleg_knee_rom_compatibility_audit_v1/checksums.sha256": {
+        "checked_file_count": 24,
+        "failures": [],
+        "manifest_sha256": "bddbb5ea54fc907f2600f625e472467adccddde7c08cc78ac83c22d50cedb7ac",
+        "status": "PASS"
+      },
+      "external_simulation_audits/myoleg_supine_hip_knee_rehab_feasibility_v1/checksums.sha256": {
+        "checked_file_count": 13,
+        "failures": [],
+        "manifest_sha256": "3083f700154f670ea32e9fa21e7c7efe527db5d1c657637e499a4d286c8d335e",
+        "status": "PASS"
+      }
+    },
+    "upstream_asset_count": 22,
+    "upstream_asset_sha256": {
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_bofoot.stl": "e3cc26950da6a22ac921e937740408bba43193f1c422810716435a4dd39a0ad1",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_femur.stl": "d72e3bc4c1d0bbf76e189d50cd0594e3275169d1b2bf48370cb07d3d2a1a848d",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_fibula.stl": "1b31ecc2af2935d3602f977af1787c55551a2179d38a44bb015005698a1e1bae",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_foot.stl": "4cb976c3d03dc47cbee8786999a572f580044976e149c1bdeffe27666a0e42f7",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_patella.stl": "1cd80b37a1ba01dd6c135273e7e85a14733c9940905aaa72ce001fc164659440",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_pelvis.stl": "6998661b30f05288f018ca3e4934ae45560b1fd62f638f339fcf4881aa16c1a4",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_talus.stl": "45cff977c3cf0e2da78832366630f662f20526a5c5ad4f753c268a58b10b3a6a",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/l_tibia.stl": "0b4392cf63f523dba4fa0d9fdd62cf2bf0b464eaeaad320103d33534fc9e5b60",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_bofoot.stl": "39dae011e441c0018cba4a00664d4076f0bb8f86f73522567275ececf6f78db5",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_femur.stl": "7d6e76a58e964551824169d89ae4b6142617f947bfdbc4ee0a4328040acf9f63",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_fibula.stl": "2cb0f77671c5421abdec1643aab77b41af2c2b5a8eff49845b098b2393443354",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_foot.stl": "e95cf6418432ea49488790364588246202b7ce54d6827bef49ac3406733d9f4f",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_patella.stl": "6a08e1e74354c65940bfd00ba343823e65eece2ebf10d9bf66c0429e83588128",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_pelvis.stl": "6eb7bbe904ce85566fc6afcde0935eda11ae12da341965616c7c798c9b2d7ee4",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_talus.stl": "96202bdab4836e8fede82d3897b4b1bbc6f1afd6fc77e87b8bb444212df2ae90",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/r_tibia.stl": "7c016de88550dab6bb33d3060ba7aa42b061ca78c5224b7d92a4c766f25ca15f",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/meshes/torso_lowpoly-v1.stl": "117e5ba0b225b778b07c9854b4f87a9ea51f2b98b9be6a26e8bbd4d0d77366b2",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/floor0.png": "b6480ddfc8519607574fb08f98d6ee9673e3790014b1c5239641632d24752cf1",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_logo.msh": "6dc356d095d68c2fb35942aaf1835b3ea32b3f50aca51bbde703a61f57bb6f07",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_logo.png": "6587db5da73706f355155f0c49f550afbe601f51029ef7aa89bcf4e73ff09698",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_scene.png": "b14011caf35a0fcdfe32d287907149c7eae159e2e599f27c144dc97d2abc41ce",
+      "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/simhive/myo_sim/scene/myosuite_scene_noFloor_noPedestal.msh": "b80b2a96ccbafaae58a979118f026a40056c5904f9daba1d464fa49c7a696355"
+    }
+  },
+  "stage_id": "MYOLEG_REFERENCE_TRAJECTORY_REPLAY_V1",
+  "tests": {
+    "failed": 0,
+    "passed": 22,
+    "status": "PASS",
+    "tests": [
+      {
+        "status": "PASS",
+        "test": "upstream_myosuite_unchanged"
+      },
+      {
+        "status": "PASS",
+        "test": "formal_reference_unchanged"
+      },
+      {
+        "status": "PASS",
+        "test": "rom_protocol_v2_unchanged"
+      },
+      {
+        "status": "PASS",
+        "test": "knee125_model_hash_frozen"
+      },
+      {
+        "status": "PASS",
+        "test": "native_candidate_hash_frozen"
+      },
+      {
+        "status": "PASS",
+        "test": "muscles_and_tendons_preserved"
+      },
+      {
+        "status": "PASS",
+        "test": "fourteen_knee_equalities_preserved"
+      },
+      {
+        "status": "PASS",
+        "test": "method_a_b_deterministic"
+      },
+      {
+        "status": "PASS",
+        "test": "torque_sign_mapping"
+      },
+      {
+        "status": "PASS",
+        "test": "no_nan_or_inf"
+      },
+      {
+        "status": "PASS",
+        "test": "dynamics_balance"
+      },
+      {
+        "status": "PASS",
+        "test": "sample_timestamps_reproducible"
+      },
+      {
+        "status": "PASS",
+        "test": "no_pointwise_clipping"
+      },
+      {
+        "status": "PASS",
+        "test": "no_five_parameter_fitting"
+      },
+      {
+        "status": "PASS",
+        "test": "no_pinn"
+      },
+      {
+        "status": "PASS",
+        "test": "no_bo"
+      },
+      {
+        "status": "PASS",
+        "test": "no_robot_hardware_access"
+      },
+      {
+        "status": "PASS",
+        "test": "prior_artifacts_unchanged"
+      },
+      {
+        "status": "PASS",
+        "test": "truth_semantics_pass"
+      },
+      {
+        "status": "PASS",
+        "test": "zero_control_p0"
+      },
+      {
+        "status": "PASS",
+        "test": "no_warmup"
+      },
+      {
+        "status": "PASS",
+        "test": "theta_shank_preserved"
+      }
+    ]
+  },
+  "torque_sign_mapping": "PASS",
+  "truth_field": "TAU_MY0LEG_REQUIRED_DRIVE",
+  "truth_semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1"
+}

@@ -1,0 +1,1533 @@
+{
+  "actuator_count": 80,
+  "biarticular_classification_requires_further_model_inspection": true,
+  "biarticular_hip_knee_actuators_at_inspected_state": [
+    "bflh_r",
+    "grac_r",
+    "recfem_r",
+    "sart_r",
+    "semimem_r",
+    "semiten_r",
+    "tfl_r",
+    "bflh_l",
+    "grac_l",
+    "recfem_l",
+    "sart_l",
+    "semimem_l",
+    "semiten_l",
+    "tfl_l"
+  ],
+  "biarticular_hip_knee_count_at_inspected_state": 14,
+  "biarticular_method": "nonzero MjData.actuator_moment at actual reset state",
+  "body_count": 16,
+  "equality_constraints": [
+    {
+      "active_initially": true,
+      "data": "[7.69254e-11, 0.00587971, -0.00125622, -2.61846e-06, 6.24355e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 0,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_translation2",
+      "object_1_id": 4,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[9.53733e-08, 0.00312879, -0.00230804, 0.000561561, 5.68366e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 1,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_translation1",
+      "object_1_id": 5,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[-1.47325e-08, 0.0791, -0.0328478, -0.0252183, 0.0108321, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 2,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_rotation2",
+      "object_1_id": 7,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[1.08939e-08, 0.369499, -0.169478, 0.0251643, 3.50498e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 3,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_rotation3",
+      "object_1_id": 8,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[-0.0108281, -0.0487847, 0.00927644, 0.0131673, -0.00349673, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 4,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_beta_translation2",
+      "object_1_id": 12,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[0.0524192, -0.0150188, -0.0340522, 0.0133393, -0.000879151, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 5,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_beta_translation1",
+      "object_1_id": 13,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[0.010506, 0.0247615, -1.31647, 0.716337, -0.138302, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 6,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_r_beta_rotation1",
+      "object_1_id": 14,
+      "object_2": "knee_angle_r",
+      "object_2_id": 6
+    },
+    {
+      "active_initially": true,
+      "data": "[-7.69254e-11, -0.00587971, 0.00125622, 2.61846e-06, -6.24355e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 7,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_translation2",
+      "object_1_id": 18,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    },
+    {
+      "active_initially": true,
+      "data": "[9.53733e-08, 0.00312879, -0.00230804, 0.000561561, 5.68366e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 8,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_translation1",
+      "object_1_id": 19,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    },
+    {
+      "active_initially": true,
+      "data": "[-1.47325e-08, 0.0791, -0.0328478, -0.0252183, 0.0108321, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 9,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_rotation2",
+      "object_1_id": 21,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    },
+    {
+      "active_initially": true,
+      "data": "[-1.08939e-08, -0.369499, 0.169478, -0.0251643, -3.50498e-07, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 10,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_rotation3",
+      "object_1_id": 22,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    },
+    {
+      "active_initially": true,
+      "data": "[-0.0108281, -0.0487847, 0.00927644, 0.0131673, -0.00349673, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 11,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_beta_translation2",
+      "object_1_id": 26,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    },
+    {
+      "active_initially": true,
+      "data": "[0.0524192, -0.0150188, -0.0340522, 0.0133393, -0.000879151, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 12,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_beta_translation1",
+      "object_1_id": 27,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    },
+    {
+      "active_initially": true,
+      "data": "[0.010506, 0.0247615, -1.31647, 0.716337, -0.138302, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]",
+      "equality_id": 13,
+      "equality_type": "mjEQ_JOINT",
+      "object_1": "knee_angle_l_beta_rotation1",
+      "object_1_id": 28,
+      "object_2": "knee_angle_l",
+      "object_2_id": 20
+    }
+  ],
+  "equality_count": 14,
+  "force_api_all_finite": true,
+  "force_api_shapes": {
+    "actuator_force": [
+      80
+    ],
+    "qfrc_actuator": [
+      34
+    ],
+    "qfrc_applied": [
+      34
+    ],
+    "qfrc_constraint": [
+      34
+    ],
+    "qfrc_passive": [
+      34
+    ],
+    "qpos": [
+      35
+    ],
+    "qvel": [
+      34
+    ],
+    "xfrc_applied": [
+      16,
+      6
+    ]
+  },
+  "hip_related_actuator_count_at_inspected_state": 50,
+  "hip_related_actuators_at_inspected_state": [
+    "addbrev_r",
+    "addlong_r",
+    "addmagDist_r",
+    "addmagIsch_r",
+    "addmagMid_r",
+    "addmagProx_r",
+    "bflh_r",
+    "glmax1_r",
+    "glmax2_r",
+    "glmax3_r",
+    "glmed1_r",
+    "glmed2_r",
+    "glmed3_r",
+    "glmin1_r",
+    "glmin2_r",
+    "glmin3_r",
+    "grac_r",
+    "iliacus_r",
+    "piri_r",
+    "psoas_r",
+    "recfem_r",
+    "sart_r",
+    "semimem_r",
+    "semiten_r",
+    "tfl_r",
+    "addbrev_l",
+    "addlong_l",
+    "addmagDist_l",
+    "addmagIsch_l",
+    "addmagMid_l",
+    "addmagProx_l",
+    "bflh_l",
+    "glmax1_l",
+    "glmax2_l",
+    "glmax3_l",
+    "glmed1_l",
+    "glmed2_l",
+    "glmed3_l",
+    "glmin1_l",
+    "glmin2_l",
+    "glmin3_l",
+    "grac_l",
+    "iliacus_l",
+    "piri_l",
+    "psoas_l",
+    "recfem_l",
+    "sart_l",
+    "semimem_l",
+    "semiten_l",
+    "tfl_l"
+  ],
+  "joint_count": 29,
+  "knee_related_actuator_count_at_inspected_state": 26,
+  "knee_related_actuators_at_inspected_state": [
+    "bflh_r",
+    "bfsh_r",
+    "gaslat_r",
+    "gasmed_r",
+    "grac_r",
+    "recfem_r",
+    "sart_r",
+    "semimem_r",
+    "semiten_r",
+    "tfl_r",
+    "vasint_r",
+    "vaslat_r",
+    "vasmed_r",
+    "bflh_l",
+    "bfsh_l",
+    "gaslat_l",
+    "gasmed_l",
+    "grac_l",
+    "recfem_l",
+    "sart_l",
+    "semimem_l",
+    "semiten_l",
+    "tfl_l",
+    "vasint_l",
+    "vaslat_l",
+    "vasmed_l"
+  ],
+  "model_path": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myobase/../../../simhive/myo_sim/leg/myolegs.xml",
+  "nq": 35,
+  "nv": 34,
+  "passive_preliminary_audit": {
+    "actuator_force_nonzero_at_zero_control_after": true,
+    "actuator_force_nonzero_at_zero_control_before": true,
+    "all_finite": true,
+    "exception_count": 0,
+    "qfrc_passive_l2_after": 0.013958187740899809,
+    "qfrc_passive_l2_before": 3.100452207340084,
+    "qfrc_passive_nonzero_after": true,
+    "qfrc_passive_nonzero_before": true,
+    "steps": 250,
+    "zero_control_is_not_claimed_as_true_human_passivity": true
+  },
+  "rehabilitation_feasibility": {
+    "ankle_fix": {
+      "evidence": "ankle_angle_r/l, subtalar_angle_r/l, mtp_angle_r/l joints exist",
+      "rating": "REQUIRES_MODIFICATION"
+    },
+    "external_traction": {
+      "evidence": "xfrc_applied is exposed per body and mujoco.mj_applyFT is available",
+      "rating": "YES"
+    },
+    "hip_knee_state_force_readout": {
+      "evidence": "joint qpos/dof addresses plus qpos/qvel/qfrc arrays are exposed",
+      "rating": "YES"
+    },
+    "hip_non_sagittal_lock": {
+      "evidence": "hip_adduction and hip_rotation are separate hinge joints",
+      "rating": "REQUIRES_MODIFICATION"
+    },
+    "knee_flexion_only": {
+      "evidence": "knee_angle_r/l are hinge DoFs; auxiliary knee joints have existing equality constraints",
+      "rating": "LIKELY"
+    },
+    "non_target_leg_fix": {
+      "evidence": "separate left/right hip, knee, ankle joint chains",
+      "rating": "REQUIRES_MODIFICATION"
+    },
+    "pelvis_fix": {
+      "evidence": "root free joint plus descendant pelvis body; weld/root locking is structurally possible",
+      "rating": "REQUIRES_MODIFICATION"
+    },
+    "shank_attachment": {
+      "evidence": "tibia_r/l bodies and actual attached sites exist; dedicated strap site should be separately specified",
+      "rating": "LIKELY"
+    }
+  },
+  "shank_site_count": 102,
+  "shank_sites": [
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0, 0.0, 0.0]",
+      "mass_kg": "",
+      "name": "knee_r",
+      "object_id": 130,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0337, -0.035, 0.0253]",
+      "mass_kg": "",
+      "name": "bflh_r-P2",
+      "object_id": 131,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0287, -0.0455, 0.0303]",
+      "mass_kg": "",
+      "name": "bflh_r-P3",
+      "object_id": 132,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0301, -0.0419, 0.0318]",
+      "mass_kg": "",
+      "name": "bfsh_r-P2",
+      "object_id": 133,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.016, -0.1157, 0.0205]",
+      "mass_kg": "",
+      "name": "edl_r-P1",
+      "object_id": 134,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0164, -0.376, 0.0112]",
+      "mass_kg": "",
+      "name": "edl_r-P2",
+      "object_id": 135,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.014, -0.155, 0.0189]",
+      "mass_kg": "",
+      "name": "ehl_r-P1",
+      "object_id": 136,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0071, -0.2909, 0.0164]",
+      "mass_kg": "",
+      "name": "ehl_r-P2",
+      "object_id": 137,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.02, -0.3693, -0.0028]",
+      "mass_kg": "",
+      "name": "ehl_r-P3",
+      "object_id": 138,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0023, -0.1832, -0.0018]",
+      "mass_kg": "",
+      "name": "fdl_r-P1",
+      "object_id": 139,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0176, -0.3645, -0.0124]",
+      "mass_kg": "",
+      "name": "fdl_r-P2",
+      "object_id": 140,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.031, -0.2163, 0.02]",
+      "mass_kg": "",
+      "name": "fhl_r-P1",
+      "object_id": 141,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0242, -0.3671, -0.0076]",
+      "mass_kg": "",
+      "name": "fhl_r-P2",
+      "object_id": 142,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0184, -0.0476, -0.0296]",
+      "mass_kg": "",
+      "name": "grac_r-P2",
+      "object_id": 143,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0018, -0.0696, -0.0157]",
+      "mass_kg": "",
+      "name": "grac_r-P3",
+      "object_id": 144,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0243, -0.2532, 0.0251]",
+      "mass_kg": "",
+      "name": "perbrev_r-P1",
+      "object_id": 145,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0339, -0.3893, 0.0249]",
+      "mass_kg": "",
+      "name": "perbrev_r-P2",
+      "object_id": 146,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0285, -0.4004, 0.0255]",
+      "mass_kg": "",
+      "name": "perbrev_r-P3",
+      "object_id": 147,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.02, -0.1373, 0.0282]",
+      "mass_kg": "",
+      "name": "perlong_r-P1",
+      "object_id": 148,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0317, -0.39, 0.0237]",
+      "mass_kg": "",
+      "name": "perlong_r-P2",
+      "object_id": 149,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0272, -0.4014, 0.024]",
+      "mass_kg": "",
+      "name": "perlong_r-P3",
+      "object_id": 150,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0326, -0.0631, -0.0005]",
+      "mass_kg": "",
+      "name": "recfem_r-P5",
+      "object_id": 151,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0251, -0.0401, -0.0365]",
+      "mass_kg": "",
+      "name": "sart_r-P3",
+      "object_id": 152,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0159, -0.0599, -0.0264]",
+      "mass_kg": "",
+      "name": "sart_r-P4",
+      "object_id": 153,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0136, -0.081, -0.0026]",
+      "mass_kg": "",
+      "name": "sart_r-P5",
+      "object_id": 154,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.029, -0.0417, -0.0196]",
+      "mass_kg": "",
+      "name": "semimem_r-P2",
+      "object_id": 155,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0312, -0.0508, -0.0229]",
+      "mass_kg": "",
+      "name": "semiten_r-P2",
+      "object_id": 156,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0019, -0.0773, -0.0117]",
+      "mass_kg": "",
+      "name": "semiten_r-P3",
+      "object_id": 157,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0076, -0.0916, 0.0098]",
+      "mass_kg": "",
+      "name": "soleus_r-P1",
+      "object_id": 158,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0108, -0.041, 0.0346]",
+      "mass_kg": "",
+      "name": "tfl_r-P4",
+      "object_id": 159,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0154, -0.1312, 0.0162]",
+      "mass_kg": "",
+      "name": "tibant_r-P1",
+      "object_id": 160,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0251, -0.1906, 0.0128]",
+      "mass_kg": "",
+      "name": "tibant_r-P2",
+      "object_id": 161,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0233, -0.3659, -0.0132]",
+      "mass_kg": "",
+      "name": "tibant_r-P3",
+      "object_id": 162,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0041, -0.1304, 0.0103]",
+      "mass_kg": "",
+      "name": "tibpost_r-P1",
+      "object_id": 163,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0164, -0.3655, -0.0175]",
+      "mass_kg": "",
+      "name": "tibpost_r-P2",
+      "object_id": 164,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0326, -0.0632, 0.0004]",
+      "mass_kg": "",
+      "name": "vasint_r-P5",
+      "object_id": 165,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0325, -0.0634, 0.0051]",
+      "mass_kg": "",
+      "name": "vaslat_r-P5",
+      "object_id": 166,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0319, -0.0636, -0.0068]",
+      "mass_kg": "",
+      "name": "vasmed_r-P5",
+      "object_id": 167,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0017, -0.0024, -0.0085]",
+      "mass_kg": "",
+      "name": "RKJC",
+      "object_id": 168,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0017, -0.1565, 0.0492]",
+      "mass_kg": "",
+      "name": "RTB1",
+      "object_id": 169,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.037, -0.2301, -0.0039]",
+      "mass_kg": "",
+      "name": "RTB2",
+      "object_id": 170,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.0114, -0.2952, 0.0554]",
+      "mass_kg": "",
+      "name": "RTB3",
+      "object_id": 171,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.005, -0.3888, 0.053]",
+      "mass_kg": "",
+      "name": "RLMAL",
+      "object_id": 172,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[0.006, -0.3888, -0.038]",
+      "mass_kg": "",
+      "name": "RMMAL",
+      "object_id": 173,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0081, -0.017, -0.0015]",
+      "mass_kg": "",
+      "name": "R_tibial_plateau",
+      "object_id": 174,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0512647, -0.0235815, -0.0514609]",
+      "mass_kg": "",
+      "name": "GasLat_at_shank_r_site_gaslat_r_side",
+      "object_id": 175,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0226964, -0.1301, 0.0498879]",
+      "mass_kg": "",
+      "name": "GasMed_at_shank_r_site_gasmed_r_side",
+      "object_id": 176,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0513804, -0.042587, 0.0198669]",
+      "mass_kg": "",
+      "name": "GR_at_condyles_r_site_grac_r_side",
+      "object_id": 177,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0387876, -0.035171, -0.0182577]",
+      "mass_kg": "",
+      "name": "SM_at_condyles_r_site_semimem_r_side",
+      "object_id": 178,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0428471, -0.0468901, -0.0181631]",
+      "mass_kg": "",
+      "name": "ST_at_condyles_r_site_semiten_r_side",
+      "object_id": 179,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_r",
+      "local_position": "[-0.0687049, -0.0256284, 0.0426731]",
+      "mass_kg": "",
+      "name": "BF_at_gastroc_r_site_bfsh_r_side",
+      "object_id": 180,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0, 0.0, 0.0]",
+      "mass_kg": "",
+      "name": "knee_l",
+      "object_id": 282,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0337, -0.035, -0.0253]",
+      "mass_kg": "",
+      "name": "bflh_l-P2",
+      "object_id": 283,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0287, -0.0455, -0.0303]",
+      "mass_kg": "",
+      "name": "bflh_l-P3",
+      "object_id": 284,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0301, -0.0419, -0.0318]",
+      "mass_kg": "",
+      "name": "bfsh_l-P2",
+      "object_id": 285,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.016, -0.1157, -0.0205]",
+      "mass_kg": "",
+      "name": "edl_l-P1",
+      "object_id": 286,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0164, -0.376, -0.0112]",
+      "mass_kg": "",
+      "name": "edl_l-P2",
+      "object_id": 287,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.014, -0.155, -0.0189]",
+      "mass_kg": "",
+      "name": "ehl_l-P1",
+      "object_id": 288,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0071, -0.2909, -0.0164]",
+      "mass_kg": "",
+      "name": "ehl_l-P2",
+      "object_id": 289,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.02, -0.3693, 0.0028]",
+      "mass_kg": "",
+      "name": "ehl_l-P3",
+      "object_id": 290,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0023, -0.1832, 0.0018]",
+      "mass_kg": "",
+      "name": "fdl_l-P1",
+      "object_id": 291,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0176, -0.3645, 0.0124]",
+      "mass_kg": "",
+      "name": "fdl_l-P2",
+      "object_id": 292,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.031, -0.2163, -0.02]",
+      "mass_kg": "",
+      "name": "fhl_l-P1",
+      "object_id": 293,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0242, -0.3671, 0.0076]",
+      "mass_kg": "",
+      "name": "fhl_l-P2",
+      "object_id": 294,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0184, -0.0476, 0.0296]",
+      "mass_kg": "",
+      "name": "grac_l-P2",
+      "object_id": 295,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0018, -0.0696, 0.0157]",
+      "mass_kg": "",
+      "name": "grac_l-P3",
+      "object_id": 296,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0243, -0.2532, -0.0251]",
+      "mass_kg": "",
+      "name": "perbrev_l-P1",
+      "object_id": 297,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0339, -0.3893, -0.0249]",
+      "mass_kg": "",
+      "name": "perbrev_l-P2",
+      "object_id": 298,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0285, -0.4004, -0.0255]",
+      "mass_kg": "",
+      "name": "perbrev_l-P3",
+      "object_id": 299,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.02, -0.1373, -0.0282]",
+      "mass_kg": "",
+      "name": "perlong_l-P1",
+      "object_id": 300,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0317, -0.39, -0.0237]",
+      "mass_kg": "",
+      "name": "perlong_l-P2",
+      "object_id": 301,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0272, -0.4014, -0.024]",
+      "mass_kg": "",
+      "name": "perlong_l-P3",
+      "object_id": 302,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0326, -0.0631, 0.0005]",
+      "mass_kg": "",
+      "name": "recfem_l-P5",
+      "object_id": 303,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0251, -0.0401, 0.0365]",
+      "mass_kg": "",
+      "name": "sart_l-P3",
+      "object_id": 304,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0159, -0.0599, 0.0264]",
+      "mass_kg": "",
+      "name": "sart_l-P4",
+      "object_id": 305,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0136, -0.081, 0.0026]",
+      "mass_kg": "",
+      "name": "sart_l-P5",
+      "object_id": 306,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.029, -0.0417, 0.0196]",
+      "mass_kg": "",
+      "name": "semimem_l-P2",
+      "object_id": 307,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0312, -0.0508, 0.0229]",
+      "mass_kg": "",
+      "name": "semiten_l-P2",
+      "object_id": 308,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0019, -0.0773, 0.0117]",
+      "mass_kg": "",
+      "name": "semiten_l-P3",
+      "object_id": 309,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0076, -0.0916, -0.0098]",
+      "mass_kg": "",
+      "name": "soleus_l-P1",
+      "object_id": 310,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0108, -0.041, -0.0346]",
+      "mass_kg": "",
+      "name": "tfl_l-P4",
+      "object_id": 311,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0154, -0.1312, -0.0162]",
+      "mass_kg": "",
+      "name": "tibant_l-P1",
+      "object_id": 312,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0251, -0.1906, -0.0128]",
+      "mass_kg": "",
+      "name": "tibant_l-P2",
+      "object_id": 313,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0233, -0.3659, 0.0132]",
+      "mass_kg": "",
+      "name": "tibant_l-P3",
+      "object_id": 314,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0041, -0.1304, -0.0103]",
+      "mass_kg": "",
+      "name": "tibpost_l-P1",
+      "object_id": 315,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0164, -0.3655, 0.0175]",
+      "mass_kg": "",
+      "name": "tibpost_l-P2",
+      "object_id": 316,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0326, -0.0632, -0.0004]",
+      "mass_kg": "",
+      "name": "vasint_l-P5",
+      "object_id": 317,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0325, -0.0634, -0.0051]",
+      "mass_kg": "",
+      "name": "vaslat_l-P5",
+      "object_id": 318,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0319, -0.0636, 0.0068]",
+      "mass_kg": "",
+      "name": "vasmed_l-P5",
+      "object_id": 319,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0017, -0.0024, 0.0085]",
+      "mass_kg": "",
+      "name": "LKJC",
+      "object_id": 320,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0017, -0.1565, -0.0492]",
+      "mass_kg": "",
+      "name": "LTB1",
+      "object_id": 321,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.037, -0.2301, 0.0039]",
+      "mass_kg": "",
+      "name": "LTB2",
+      "object_id": 322,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.0114, -0.2952, -0.0554]",
+      "mass_kg": "",
+      "name": "LTB3",
+      "object_id": 323,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.005, -0.3888, -0.053]",
+      "mass_kg": "",
+      "name": "LLMAL",
+      "object_id": 324,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[0.006, -0.3888, 0.038]",
+      "mass_kg": "",
+      "name": "LMMAL",
+      "object_id": 325,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0081, -0.017, 0.0015]",
+      "mass_kg": "",
+      "name": "L_tibial_plateau",
+      "object_id": 326,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0512647, -0.0235815, 0.0514609]",
+      "mass_kg": "",
+      "name": "GasLat_at_shank_l_site_gaslat_l_side",
+      "object_id": 327,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0226964, -0.1301, -0.0498879]",
+      "mass_kg": "",
+      "name": "GasMed_at_shank_l_site_gasmed_l_side",
+      "object_id": 328,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0513804, -0.042587, -0.0198669]",
+      "mass_kg": "",
+      "name": "GR_at_condyles_l_site_grac_l_side",
+      "object_id": 329,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0387876, -0.035171, 0.0182577]",
+      "mass_kg": "",
+      "name": "SM_at_condyles_l_site_semimem_l_side",
+      "object_id": 330,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0428471, -0.0468901, 0.0181631]",
+      "mass_kg": "",
+      "name": "ST_at_condyles_l_site_semiten_l_side",
+      "object_id": 331,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    },
+    {
+      "attached_body": "tibia_l",
+      "local_position": "[-0.0687049, -0.0256284, -0.0426731]",
+      "mass_kg": "",
+      "name": "BF_at_gastroc_l_site_bfsh_l_side",
+      "object_id": 332,
+      "object_type": "SITE",
+      "parent_body": "",
+      "path_objects": ""
+    }
+  ],
+  "site_count": 382,
+  "target_joint_evidence": [
+    {
+      "body": "root",
+      "body_id": 1,
+      "dof_address": 0,
+      "joint_id": 0,
+      "joint_type": "mjJNT_FREE",
+      "limited": false,
+      "name": "root",
+      "qpos_address": 0,
+      "range_max": 0.0,
+      "range_min": 0.0
+    },
+    {
+      "body": "femur_r",
+      "body_id": 4,
+      "dof_address": 6,
+      "joint_id": 1,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "hip_flexion_r",
+      "qpos_address": 7,
+      "range_max": 2.0944,
+      "range_min": -0.523599
+    },
+    {
+      "body": "femur_r",
+      "body_id": 4,
+      "dof_address": 7,
+      "joint_id": 2,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "hip_adduction_r",
+      "qpos_address": 8,
+      "range_max": 0.523599,
+      "range_min": -0.872665
+    },
+    {
+      "body": "femur_r",
+      "body_id": 4,
+      "dof_address": 8,
+      "joint_id": 3,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "hip_rotation_r",
+      "qpos_address": 9,
+      "range_max": 0.698132,
+      "range_min": -0.698132
+    },
+    {
+      "body": "tibia_r",
+      "body_id": 5,
+      "dof_address": 11,
+      "joint_id": 6,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "knee_angle_r",
+      "qpos_address": 12,
+      "range_max": 2.0944,
+      "range_min": 0.0
+    },
+    {
+      "body": "talus_r",
+      "body_id": 6,
+      "dof_address": 14,
+      "joint_id": 9,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "ankle_angle_r",
+      "qpos_address": 15,
+      "range_max": 0.523599,
+      "range_min": -0.698132
+    },
+    {
+      "body": "calcn_r",
+      "body_id": 7,
+      "dof_address": 15,
+      "joint_id": 10,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "subtalar_angle_r",
+      "qpos_address": 16,
+      "range_max": 0.349066,
+      "range_min": -0.349066
+    },
+    {
+      "body": "toes_r",
+      "body_id": 8,
+      "dof_address": 16,
+      "joint_id": 11,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "mtp_angle_r",
+      "qpos_address": 17,
+      "range_max": 0.523599,
+      "range_min": -0.523599
+    },
+    {
+      "body": "femur_l",
+      "body_id": 10,
+      "dof_address": 20,
+      "joint_id": 15,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "hip_flexion_l",
+      "qpos_address": 21,
+      "range_max": 2.0944,
+      "range_min": -0.523599
+    },
+    {
+      "body": "femur_l",
+      "body_id": 10,
+      "dof_address": 21,
+      "joint_id": 16,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "hip_adduction_l",
+      "qpos_address": 22,
+      "range_max": 0.523599,
+      "range_min": -0.872665
+    },
+    {
+      "body": "femur_l",
+      "body_id": 10,
+      "dof_address": 22,
+      "joint_id": 17,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "hip_rotation_l",
+      "qpos_address": 23,
+      "range_max": 0.698132,
+      "range_min": -0.698132
+    },
+    {
+      "body": "tibia_l",
+      "body_id": 11,
+      "dof_address": 25,
+      "joint_id": 20,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "knee_angle_l",
+      "qpos_address": 26,
+      "range_max": 2.0944,
+      "range_min": 0.0
+    },
+    {
+      "body": "talus_l",
+      "body_id": 12,
+      "dof_address": 28,
+      "joint_id": 23,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "ankle_angle_l",
+      "qpos_address": 29,
+      "range_max": 0.523599,
+      "range_min": -0.698132
+    },
+    {
+      "body": "calcn_l",
+      "body_id": 13,
+      "dof_address": 29,
+      "joint_id": 24,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "subtalar_angle_l",
+      "qpos_address": 30,
+      "range_max": 0.349066,
+      "range_min": -0.349066
+    },
+    {
+      "body": "toes_l",
+      "body_id": 14,
+      "dof_address": 30,
+      "joint_id": 25,
+      "joint_type": "mjJNT_HINGE",
+      "limited": true,
+      "name": "mtp_angle_l",
+      "qpos_address": 31,
+      "range_max": 0.523599,
+      "range_min": -0.523599
+    }
+  ],
+  "tendon_count": 80
+}

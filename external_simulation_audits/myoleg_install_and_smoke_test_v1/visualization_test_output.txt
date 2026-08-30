@@ -1,0 +1,19 @@
+MYOLEG MAC VISUALIZATION PROBE
+command: /Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/mjpython external_simulation_audits/myoleg_install_and_smoke_test_v1/run_myoleg_smoke_audit.py --visualization-probe --environment-id myoLegWalk-v0
+mjpython_path: /Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/mjpython
+mjpython_executable: true
+exit_code: 1
+status: FAIL
+
+failed to dlopen path '/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python': dlopen(/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python, 0x000A): Library not loaded: @executable_path/../lib/libpython3.10.dylib
+  Referenced from: /Users/fengjiaxin/.local/share/uv/python/cpython-3.10.19-macos-aarch64-none/bin/python3.10
+  Reason: tried:
+    /Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/mujoco/MuJoCo_(mjpython).app/Contents/lib/libpython3.10.dylib (no such file)
+    /Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/../lib/libpython3.10.dylib (no such file)
+    /usr/local/lib/libpython3.10.dylib (no such file)
+    /usr/lib/libpython3.10.dylib (no such file, not in dyld cache)
+
+Interpretation: the failure occurs in the mjpython loader before a viewer window
+or MyoLeg model is created. Headless MuJoCo execution is independently PASS.
+No symlink, system Python replacement, upstream modification, or renderer
+workaround was applied.
