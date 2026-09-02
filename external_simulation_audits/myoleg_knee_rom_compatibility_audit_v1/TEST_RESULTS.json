@@ -1,0 +1,79 @@
+{
+  "failed": 0,
+  "passed": 18,
+  "status": "PASS",
+  "tests": [
+    {
+      "status": "PASS",
+      "test": "upstream_myoleg_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "formal_reference_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "rom_protocol_v2_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "native_derived_model_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "primary_125_diff_is_only_knee_limit"
+    },
+    {
+      "status": "PASS",
+      "test": "muscles_and_tendons_preserved"
+    },
+    {
+      "status": "PASS",
+      "test": "fourteen_source_knee_equalities_preserved"
+    },
+    {
+      "status": "PASS",
+      "test": "common_domain_deterministic"
+    },
+    {
+      "status": "PASS",
+      "test": "no_nan_or_inf"
+    },
+    {
+      "status": "PASS",
+      "test": "candidate_is_not_pointwise_clipped"
+    },
+    {
+      "status": "PASS",
+      "test": "candidate_duration_and_sample_count_preserved"
+    },
+    {
+      "status": "PASS",
+      "test": "candidate_c2_and_closure_explicit"
+    },
+    {
+      "status": "PASS",
+      "test": "reference_state_path_valid_in_125_model"
+    },
+    {
+      "status": "PASS",
+      "test": "context_proxy_warning_not_created_by_extension"
+    },
+    {
+      "status": "PASS",
+      "test": "no_robot_or_hardware_import"
+    },
+    {
+      "status": "PASS",
+      "test": "stress_130_is_not_formal_condition"
+    },
+    {
+      "status": "PASS",
+      "test": "full_145_degree_domain_not_tested"
+    },
+    {
+      "status": "PASS",
+      "test": "formal_reference_not_replayed"
+    }
+  ]
+}

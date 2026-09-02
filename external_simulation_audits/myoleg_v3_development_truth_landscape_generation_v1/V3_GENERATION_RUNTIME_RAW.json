@@ -1,0 +1,203 @@
+{
+  "failed_chunk_count": 0,
+  "failed_chunks": [],
+  "formal_worker_count": 4,
+  "generation_command_wall_time_s": 358.19513220799854,
+  "invalid_existing_chunk_count": 0,
+  "new_chunk_runtime": [
+    {
+      "chunk_id": "MYOLEG_VP_002",
+      "cpu_time_s": 52.940065000000004,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_002",
+      "wall_time_s": 53.08308270800626,
+      "worker_peak_rss_bytes": 244891648
+    },
+    {
+      "chunk_id": "MYOLEG_VP_001",
+      "cpu_time_s": 52.938468,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_001",
+      "wall_time_s": 53.09146424999926,
+      "worker_peak_rss_bytes": 246546432
+    },
+    {
+      "chunk_id": "MYOLEG_VP_003",
+      "cpu_time_s": 53.09756,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_003",
+      "wall_time_s": 53.27055175002897,
+      "worker_peak_rss_bytes": 230260736
+    },
+    {
+      "chunk_id": "MYOLEG_VP_005",
+      "cpu_time_s": 53.403306,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_005",
+      "wall_time_s": 53.57287329103565,
+      "worker_peak_rss_bytes": 230113280
+    },
+    {
+      "chunk_id": "MYOLEG_VP_006",
+      "cpu_time_s": 57.772159,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_006",
+      "wall_time_s": 58.09428066696273,
+      "worker_peak_rss_bytes": 244891648
+    },
+    {
+      "chunk_id": "MYOLEG_VP_007",
+      "cpu_time_s": 57.815075,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_007",
+      "wall_time_s": 58.15150941704633,
+      "worker_peak_rss_bytes": 246546432
+    },
+    {
+      "chunk_id": "MYOLEG_VP_009",
+      "cpu_time_s": 57.96526599999999,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_009",
+      "wall_time_s": 58.317897416010965,
+      "worker_peak_rss_bytes": 230260736
+    },
+    {
+      "chunk_id": "MYOLEG_VP_010",
+      "cpu_time_s": 58.14583,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_010",
+      "wall_time_s": 58.50813641602872,
+      "worker_peak_rss_bytes": 230113280
+    },
+    {
+      "chunk_id": "MYOLEG_VP_011",
+      "cpu_time_s": 59.04721400000001,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_011",
+      "wall_time_s": 59.38640254101483,
+      "worker_peak_rss_bytes": 244891648
+    },
+    {
+      "chunk_id": "MYOLEG_VP_013",
+      "cpu_time_s": 59.128029,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_013",
+      "wall_time_s": 59.47463604202494,
+      "worker_peak_rss_bytes": 246546432
+    },
+    {
+      "chunk_id": "MYOLEG_VP_014",
+      "cpu_time_s": 59.247102,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_014",
+      "wall_time_s": 59.55407270800788,
+      "worker_peak_rss_bytes": 230260736
+    },
+    {
+      "chunk_id": "MYOLEG_VP_015",
+      "cpu_time_s": 59.44901399999999,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_015",
+      "wall_time_s": 59.75668616697658,
+      "worker_peak_rss_bytes": 230113280
+    },
+    {
+      "chunk_id": "MYOLEG_VP_017",
+      "cpu_time_s": 60.008166999999986,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_017",
+      "wall_time_s": 60.447831625002436,
+      "worker_peak_rss_bytes": 244891648
+    },
+    {
+      "chunk_id": "MYOLEG_VP_018",
+      "cpu_time_s": 59.964973999999984,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_018",
+      "wall_time_s": 60.38747675000923,
+      "worker_peak_rss_bytes": 246546432
+    },
+    {
+      "chunk_id": "MYOLEG_VP_019",
+      "cpu_time_s": 60.222193000000004,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_019",
+      "wall_time_s": 60.640709958039224,
+      "worker_peak_rss_bytes": 230260736
+    },
+    {
+      "chunk_id": "MYOLEG_VP_021",
+      "cpu_time_s": 60.444920999999994,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_021",
+      "wall_time_s": 60.872851499996614,
+      "worker_peak_rss_bytes": 230113280
+    },
+    {
+      "chunk_id": "MYOLEG_VP_022",
+      "cpu_time_s": 61.704699000000005,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_022",
+      "wall_time_s": 62.92109925003024,
+      "worker_peak_rss_bytes": 244891648
+    },
+    {
+      "chunk_id": "MYOLEG_VP_023",
+      "cpu_time_s": 61.72319700000003,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_023",
+      "wall_time_s": 63.01273866702104,
+      "worker_peak_rss_bytes": 246546432
+    },
+    {
+      "chunk_id": "MYOLEG_VP_025",
+      "cpu_time_s": 61.88099600000004,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_025",
+      "wall_time_s": 63.16134570800932,
+      "worker_peak_rss_bytes": 230260736
+    },
+    {
+      "chunk_id": "MYOLEG_VP_026",
+      "cpu_time_s": 62.13632500000003,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_026",
+      "wall_time_s": 63.464651124959346,
+      "worker_peak_rss_bytes": 230113280
+    },
+    {
+      "chunk_id": "MYOLEG_VP_027",
+      "cpu_time_s": 61.323646999999994,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_027",
+      "wall_time_s": 61.6712004999863,
+      "worker_peak_rss_bytes": 244891648
+    },
+    {
+      "chunk_id": "MYOLEG_VP_029",
+      "cpu_time_s": 61.38581099999999,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_029",
+      "wall_time_s": 61.72922987502534,
+      "worker_peak_rss_bytes": 246546432
+    },
+    {
+      "chunk_id": "MYOLEG_VP_030",
+      "cpu_time_s": 61.38322199999999,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_030",
+      "wall_time_s": 61.705247166974004,
+      "worker_peak_rss_bytes": 230260736
+    },
+    {
+      "chunk_id": "MYOLEG_VP_031",
+      "cpu_time_s": 61.20360099999999,
+      "row_count": 625,
+      "subject_id": "MYOLEG_VP_031",
+      "wall_time_s": 61.499029458034784,
+      "worker_peak_rss_bytes": 230113280
+    }
+  ],
+  "recomputed_chunk_count": 24,
+  "resume_valid_chunk_count": 0
+}

@@ -1,0 +1,50 @@
+{
+  "comparison_id": "MYOLEG_V2_V3_PERSONALIZATION_COMPARISON_V1",
+  "raw_near_oracle_candidate_counts_compared": false,
+  "v2": {
+    "boundary_oracle_fraction": 1.0,
+    "candidate_count": 16675,
+    "candidate_dimensions": 3,
+    "candidate_main_variance_percent": 99.93907664196321,
+    "common_regret_max": 0.0,
+    "common_regret_mean": 0.0,
+    "distinct_oracle_count": 1,
+    "interaction_to_common_ratio": 0.01820289059991073,
+    "interaction_variance_percent": 0.03311433595538275,
+    "kendall_median": 0.9897220731124183,
+    "maximum_common_near_oracle_coverage_epsilon_0_001": 24,
+    "off_diagonal_transfer_relative_regret_max": 0.0,
+    "off_diagonal_transfer_relative_regret_median": 0.0,
+    "rom_invariant": false,
+    "spearman_median": 0.9998337836697475,
+    "universal_near_oracle_epsilon_0_001": true
+  },
+  "v2_source_artifact_sha256": {
+    "common_near": "90c66a2b398eac70ec52688aa7ec7153d2f2531a911bd17eab35202b9ccd1a03",
+    "decomposition": "903b4478cc1080bbd18260f5fd7d8fead70ea959fa564b30293009d424eeeccd",
+    "gap": "b3470b12955066cf72ba88c86d93f8507437f7aae42a328a7441cce5b5d7dfe8",
+    "oracle": "ef60fd158962ad4ea0212db6159cae1c7b4036db2b99e37ea57d7192d1badb42",
+    "protocol": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f",
+    "rank": "f3ec7e200f63655cfa1632a537895f581436691218c58d7b139216b1e2340e31",
+    "transfer": "205b2416eb93a63982c5940f0d59e141c6ac12aeff998e926ef6a4302bd7dd20"
+  },
+  "v3": {
+    "boundary_oracle_fraction": 1.0,
+    "candidate_count": 625,
+    "candidate_dimensions": 2,
+    "candidate_main_variance_percent": 99.86390766427071,
+    "common_regret_max": 0.0,
+    "common_regret_mean": 0.0,
+    "distinct_oracle_count": 1,
+    "interaction_to_common_ratio": 0.03677741061119796,
+    "interaction_variance_percent": 0.13507371763654394,
+    "kendall_median": 0.9952564102564103,
+    "maximum_common_near_oracle_coverage_epsilon_0_001": 24,
+    "off_diagonal_transfer_relative_regret_max": 0.0,
+    "off_diagonal_transfer_relative_regret_median": 0.0,
+    "rom_invariant": true,
+    "spearman_median": 0.9999533792086508,
+    "universal_near_oracle_epsilon_0_001": true
+  },
+  "v3_result_freeze_sha256": "19b461e4f2a83431878b2ed5042b26876d7fdcc659a5294273c44c82104e9a48"
+}

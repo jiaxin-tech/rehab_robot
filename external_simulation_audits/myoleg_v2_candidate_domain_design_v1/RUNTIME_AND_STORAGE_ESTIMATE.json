@@ -1,0 +1,31 @@
+{
+  "admissible_candidate_count": 16675,
+  "estimate_only_no_landscape_executed": true,
+  "full_cohort_trajectory_count": 533600,
+  "idealized_parallel_runtime_s_at_75pct_efficiency": {
+    "16": 7559.659819559117,
+    "32": 3779.8299097795584,
+    "4": 30238.639278236467,
+    "8": 15119.319639118234
+  },
+  "measured_sparse_replay": {
+    "mean_prescribed_replay_s": 0.17000734226894565,
+    "median_prescribed_replay_s": 0.16942029149504378,
+    "replay_count": 210,
+    "selected_subject_ids": [
+      "SUBJECT_NOMINAL_CONTROL",
+      "MYOLEG_VP_031",
+      "MYOLEG_VP_011",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_032",
+      "MYOLEG_VP_028"
+    ],
+    "total_prescribed_replay_s": 35.701541876478586
+  },
+  "serial_runtime_s": 90715.9178347094,
+  "storage_estimate_bytes": {
+    "full_reference_npz_schema_mean_based": 386188130900.0,
+    "torque_truth_only_float64": 3423577600
+  }
+}

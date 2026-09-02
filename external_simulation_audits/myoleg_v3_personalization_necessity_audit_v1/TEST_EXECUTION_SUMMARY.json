@@ -1,0 +1,11 @@
+{
+  "command": "MPLCONFIGDIR=/private/tmp/rehab_robot_mplconfig python3 -m pytest -q",
+  "failed": 0,
+  "full_repository_suite": true,
+  "passed": 1587,
+  "runtime_s": 283.61,
+  "skipped": 5,
+  "stage_id": "MYOLEG_V3_PERSONALIZATION_NECESSITY_AUDIT_V1",
+  "status": "PASS",
+  "warnings": 0
+}

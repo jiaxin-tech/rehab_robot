@@ -1,0 +1,8 @@
+muscle,tendon,tendon_path_element_count,force_parameter_n,fpmax_dimensionless,actual_coupling_mechanism,artificial_coupling_coefficient_needed,candidate,geometry_change,range_status
+bflh_r,bflh_r_tendon,3,1328.94,1.98303,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+grac_r,grac_r_tendon,4,280.917,0.938556,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+recfem_r,recfem_r_tendon,6,2211.57,1.78166,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+sart_r,sart_r_tendon,5,245.514,0.806615,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+semimem_r,semimem_r_tendon,3,2249.55,1.07055,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+semiten_r,semiten_r_tendon,4,583.121,1.57478,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+tfl_r,tfl_r_tendon,4,265.756,1.33831,muscle-specific force-length-velocity x spatial tendon moment arms at hip and knee,False,relative family force/fpmax or normalized-curve structure,False,RANGE_REQUIRES_EXTERNAL_EVIDENCE

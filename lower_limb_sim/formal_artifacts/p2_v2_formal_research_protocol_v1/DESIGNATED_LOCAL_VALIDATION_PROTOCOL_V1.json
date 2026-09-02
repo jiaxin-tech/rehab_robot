@@ -1,0 +1,66 @@
+{
+  "protocol_id": "DESIGNATED_LOCAL_VALIDATION_PROTOCOL_V1",
+  "status": "FORMAL_RESEARCH_PROTOCOL_DESIGNED_NOT_POLICY_FROZEN",
+  "candidate_neighborhood": {
+    "space": "existing_geometry_valid_generator_parameter_lattice_only",
+    "relationship": "one_coordinate_differs_by_one_existing_trust_step",
+    "trust_levels": {
+      "hip": [
+        1.0,
+        0.5,
+        0.25
+      ],
+      "knee": [
+        1.0,
+        0.5,
+        0.25
+      ],
+      "phase": [
+        0.01,
+        0.005,
+        0.0025
+      ]
+    },
+    "clipping_allowed": false,
+    "bounds_expansion_allowed": false,
+    "physical_distance_used": false
+  },
+  "pair_generation": {
+    "orientation": "canonical_low_coordinate_to_high_coordinate",
+    "strata": "coordinate_x_trust_level_x_lower_interior_upper_location",
+    "pairs_per_location_class": 12,
+    "selection": "lowest_SHA256_within_each_stratum_using_alpha_and_protocol_only",
+    "universe_pair_count": 173188,
+    "planned_pair_count": 324,
+    "sample_count_status": "PILOT_DESIGN_COUNT_REQUIRES_POWER_AND_REVIEW_APPROVAL",
+    "pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+    "pair_plan_must_be_frozen_before_prediction_or_truth": true
+  },
+  "outcome_schema": {
+    "required": [
+      "pair_id",
+      "alpha_i",
+      "alpha_j",
+      "predicted_delta_J",
+      "truth_delta_J",
+      "e_delta_J=abs(predicted_delta_J-truth_delta_J)"
+    ],
+    "prediction_model_checkpoint_must_be_predeclared": true,
+    "truth_source": "new_independent_designated_offline_evaluation_after_plan_freeze",
+    "existing_final_truth_landscape_allowed": false
+  },
+  "data_separation": {
+    "model_fitting": false,
+    "adaptation_update": false,
+    "heldout_final_test": false,
+    "P2_V1_input": false,
+    "formal_P2_V2_guard_input_before_review": false
+  },
+  "uncertainty_statistics_to_report": [
+    "max",
+    "P95",
+    "P99"
+  ],
+  "uncertainty_threshold_frozen": false,
+  "current_P2_modified": false
+}

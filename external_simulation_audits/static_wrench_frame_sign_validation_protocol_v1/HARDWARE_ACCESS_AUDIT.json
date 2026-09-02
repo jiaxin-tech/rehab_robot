@@ -1,0 +1,10 @@
+{
+  "endpoint_computation_count": 0,
+  "human_or_operator_hand_loading_count": 0,
+  "load_application_count": 0,
+  "motion_or_position_command_count": 0,
+  "power_or_enable_count": 0,
+  "protocol_design_only": true,
+  "robot_connected": false,
+  "robot_constructed": false
+}

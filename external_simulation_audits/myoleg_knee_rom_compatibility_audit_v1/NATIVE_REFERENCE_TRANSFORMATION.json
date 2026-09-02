@@ -1,0 +1,23 @@
+{
+  "active_reference": false,
+  "amplitude_scale": 0.9503287154119732,
+  "anchor_knee_deg": 18.35481394984986,
+  "anchor_knee_rad": 0.3203519370158654,
+  "candidate_csv_sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+  "candidate_id": "MYOLEG_NATIVE_ROM_REFERENCE_CANDIDATE",
+  "derivative_formula": "dq_new=s*dq_original; ddq_new=s*ddq_original",
+  "duration_s": 24.0,
+  "formula": "q_new(t)=q0+s*(q_original(t)-q0)",
+  "globally_smooth": true,
+  "inverse_formula": "q_original(t)=q0+(q_new(t)-q0)/s",
+  "invertible": true,
+  "original_peak_knee_deg": 124.78660371882795,
+  "original_peak_knee_rad": 2.177937097274948,
+  "parent_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "pointwise_clipping_used": false,
+  "robot_execution_approved": false,
+  "role": "DIAGNOSTIC_SIMULATION_CANDIDATE_ONLY",
+  "sample_count": 401,
+  "selection_uses_extension_results": false,
+  "target_peak_knee_deg_preselected": 119.5
+}

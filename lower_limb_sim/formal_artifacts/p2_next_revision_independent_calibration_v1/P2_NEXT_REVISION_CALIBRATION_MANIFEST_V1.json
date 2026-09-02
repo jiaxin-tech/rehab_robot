@@ -1,0 +1,120 @@
+{
+  "P2_V2_default_enabled": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "bundle_validation_protocol": {
+    "assignment_sha256": "a7ec2254fd8c5342ef3550212c24049477107220bc06428a6a4d81b0464af725",
+    "assignment_uses_truth": false,
+    "bundle_lengths": [
+      2,
+      3,
+      5
+    ],
+    "protocol_id": "DESIGNATED_BUNDLE_VALIDATION_PROTOCOL_V1",
+    "source_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+    "verified_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84"
+  },
+  "calibration_id": "P2_NEXT_REVISION_INDEPENDENT_CALIBRATION_V1",
+  "case_count": 12,
+  "case_ids": [
+    "calibration_subject_001__matched_linear",
+    "calibration_subject_001__nonlinear_stiffness_strong",
+    "calibration_subject_002__hip_knee_coupling_strong",
+    "calibration_subject_002__matched_linear",
+    "calibration_subject_003__combined_strong",
+    "calibration_subject_003__matched_linear",
+    "calibration_subject_004__matched_linear",
+    "calibration_subject_004__nonlinear_stiffness_strong",
+    "calibration_subject_005__hip_knee_coupling_strong",
+    "calibration_subject_005__matched_linear",
+    "calibration_subject_006__combined_strong",
+    "calibration_subject_006__matched_linear"
+  ],
+  "case_manifest_sha256": "a5c4c55174bb548eb4602f6df6e695fc54615c7f5660d1b8fdc23e98059a0747",
+  "case_selection": {
+    "mismatch_mechanism_source": "PREEXISTING_STRONG_MISMATCH_SCENARIOS_ASSIGNED_BY_SUBJECT_INDEX",
+    "seed": 20260824,
+    "selection_uses_error_magnitude": false,
+    "selection_uses_subject_specificity": false,
+    "selection_uses_truth": false,
+    "selection_uses_truth_optimum": false,
+    "virtual_parameter_source": "FIXED_REPOSITORY_SYNTHETIC_GRID_UNUSED_COMBINATIONS"
+  },
+  "checkpoint_commit": "2e276b50d3e91219ddd17ea2aa86562cbdbb858d",
+  "data_role": "INDEPENDENT_CALIBRATION_DECISION_ERROR_ONLY",
+  "data_split": {
+    "development": "EARLY_P2_DEVELOPMENT_PLUS_SIX_REJECTED_PROSPECTIVE_CASES_DEVELOPMENT_USED",
+    "future_prospective": "NOT_CREATED_IN_THIS_TASK",
+    "held_out_final_test": "HELD_OUT_FINAL_TEST_NOT_READ",
+    "independent_calibration": "TWELVE_NEW_CASES_THIS_MANIFEST_ONLY"
+  },
+  "evaluation_metrics": [
+    "e_deltaJ_1=abs(deltaJ_pred-deltaJ_truth)",
+    "e_deltaJ_2=abs(deltaJ_pred_start_endpoint-deltaJ_truth_start_endpoint)",
+    "e_deltaJ_3=abs(deltaJ_pred_start_endpoint-deltaJ_truth_start_endpoint)",
+    "e_deltaJ_5=abs(deltaJ_pred_start_endpoint-deltaJ_truth_start_endpoint)",
+    "mean",
+    "median",
+    "P90",
+    "P95",
+    "P99",
+    "max"
+  ],
+  "heldout_final_test_read_allowed": false,
+  "human_ready": "NOT_HUMAN_READY",
+  "identification_procedure": "SAFEGUARDED_SEQUENTIAL_INITIAL_IDENTIFICATION_V1_WITH_STOP_RULE_NONE_THEN_DIAGNOSTIC_MODEL_SELECTION",
+  "local_validation_protocol": {
+    "assignment_sha256": "6ae1ec751b4242fa97f9dd220f370d3fd84a7152f221eb5f6d0803aaf105c15a",
+    "assignment_uses_truth": false,
+    "independent_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+    "protocol_id": "INDEPENDENT_LOCAL_CALIBRATION_PAIR_PLAN_V1",
+    "source_geometry_unchanged": true,
+    "source_pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+    "source_protocol_id": "DESIGNATED_LOCAL_VALIDATION_PROTOCOL_V1"
+  },
+  "manifest_id": "P2_NEXT_REVISION_CALIBRATION_MANIFEST_V1",
+  "matched_case_count": 6,
+  "mismatch_case_count": 6,
+  "old_prospective_conclusion": "P2_V2_PROSPECTIVE_EVIDENCE_REJECTS_CURRENT_REVISION",
+  "old_prospective_manifest_sha256": "94d33675b2ae51ef80154c3bba92f31b87852267f3cffbaaacc75c3ce0aa1876",
+  "old_prospective_start_commit": "d7fe80945ae625fffc7919e1735e9e2df8c8fa00",
+  "patient_envelope_fixture": {
+    "auto_expand": false,
+    "envelope_id": "VIRTUAL_RESEARCH_ENVELOPE_DEFAULT",
+    "hip_deg": [
+      20.0,
+      115.0
+    ],
+    "knee_deg": [
+      15.0,
+      135.0
+    ],
+    "status": "SYNTHETIC_TEST_FIXTURE_NOT_CLINICAL_SAFETY_LIMIT"
+  },
+  "prospective_personalization_allowed": false,
+  "protected_source_sha256": {
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "P2_V2A_definition": "f6ebaeb91c8b42b2f1d8144cfed347d0164d844bd91aec597dd76356bc1450a2",
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "rejected_post_prospective_audit": "ffe5f1f8282e15ab5e1d57bb4fc5519ae2b1289c8635b28200afb99f3cc2d264",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "reserved_for_future_prospective": false,
+  "robot_motion_approved": "NOT_ROBOT_MOTION_APPROVED",
+  "status": "FROZEN_BEFORE_ANY_NEW_CALIBRATION_TRUTH",
+  "threshold_selection_allowed": false,
+  "truth_access_discipline": [
+    "CASE_MANIFEST_PERSISTED",
+    "LOCAL_AND_BUNDLE_PAIR_ASSIGNMENTS_PERSISTED",
+    "THIS_MANIFEST_PERSISTED_AND_SHA256_VERIFIED",
+    "ONLY_THEN_IDENTIFICATION_AND_ENDPOINT_TRUTH"
+  ],
+  "truth_may_change_case_or_pair_selection": false,
+  "truth_may_update_policy": false
+}

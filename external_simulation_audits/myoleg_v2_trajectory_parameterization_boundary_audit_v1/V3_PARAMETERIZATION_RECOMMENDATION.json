@@ -1,0 +1,61 @@
+{
+  "V3_FALLBACK_PARAMETERIZATION": {
+    "bounds_strategy": "future constrained local feasibility audit that proves extrema invariance without clipping",
+    "dimension": 4,
+    "generation": "branch-wise degree-6 interior Bezier/B-spline basis with zero value, first derivative, and second derivative at endpoints",
+    "id": "P2_INTERIOR_BSPLINE_JOINT_PERTURBATION",
+    "invariants": [
+      "duration",
+      "branch endpoints",
+      "closure",
+      "C2",
+      "no clipping"
+    ],
+    "numeric_range_frozen": false,
+    "parameters": [
+      "hip flexion interior",
+      "hip extension interior",
+      "knee flexion interior",
+      "knee extension interior"
+    ]
+  },
+  "V3_PRIMARY_PARAMETERIZATION": {
+    "bounds_strategy": "future independent kinematic and simulator-validity audit; local reversible coefficients centered at zero",
+    "dimension": 2,
+    "generation": "q_hip remains unchanged; q_knee receives a branch-wise C2 interior basis perturbation as a function of normalized hip-reference branch phase",
+    "id": "P4_BRANCH_AWARE_COORDINATION_FUNCTION",
+    "invariants": [
+      "joint extrema",
+      "duration",
+      "branch endpoints",
+      "closure",
+      "C2",
+      "measured branch asymmetry",
+      "no clipping"
+    ],
+    "numeric_range_frozen": false,
+    "parameters": [
+      "flexion interior knee coordination coefficient",
+      "extension interior knee coordination coefficient"
+    ]
+  },
+  "current_v2_decision": "NOT_ADEQUATE_FOR_CURRENT_PERSONALIZATION_QUESTION",
+  "decision_basis": {
+    "current_amplitudes_change_task_ROM": true,
+    "matched_ROM_status": "CURRENT_GRID_CANNOT_IDENTIFY_FIXED_ROM_PATH_EFFECT",
+    "phase_only_common_monotonic": true,
+    "selection_used_held_out_truth": false,
+    "selection_used_new_outcome_diversity": false,
+    "structural_scores_frozen_in_protocol": true
+  },
+  "decision_id": "MYOLEG_V3_PARAMETERIZATION_RECOMMENDATION_V1",
+  "execute_next_stage_now": false,
+  "next_branch": "BRANCH_A",
+  "next_stage": "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_V1",
+  "parameterization_option_scores": {
+    "P1_PHASE_COORDINATION_ONLY": 27,
+    "P2_INTERIOR_BSPLINE_JOINT_PERTURBATION": 27,
+    "P3_JOINT_SPACE_NORMAL_DISPLACEMENT": 20,
+    "P4_BRANCH_AWARE_COORDINATION_FUNCTION": 30
+  }
+}

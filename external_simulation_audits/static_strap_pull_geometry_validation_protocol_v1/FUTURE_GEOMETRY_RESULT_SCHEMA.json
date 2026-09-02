@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "full_validation_requirements": [
+    "all required configurations and ten setup repetitions retained",
+    "physical eyelet and operational exit/free-span line measured in common frame",
+    "T_B_R calibration and uncertainty valid",
+    "single taut line/routing/placement gate passes",
+    "repeatability and propagated uncertainty pass all prefrozen thresholds",
+    "no post-result definition, threshold or repeat-count change"
+  ],
+  "properties": {
+    "T_B_R": {
+      "type": [
+        "array",
+        "null"
+      ]
+    },
+    "configuration_results": {
+      "minItems": 3,
+      "type": "array"
+    },
+    "decision": {
+      "enum": [
+        "STRAP_PULL_GEOMETRY_VALIDATED",
+        "STRAP_PULL_GEOMETRY_VALIDATED_WITH_LIMITATIONS",
+        "STRAP_PULL_GEOMETRY_NOT_VALIDATED"
+      ]
+    },
+    "execution_manifest_sha256": {
+      "type": "string"
+    },
+    "metrology_repeats_per_setup": {
+      "const": 3
+    },
+    "p_attach_TCP_m": {
+      "type": [
+        "array",
+        "null"
+      ]
+    },
+    "protocol_sha256": {
+      "const": "4da84b5ffde2bb5c7dc7b3baccf81cb1dbd8a7a0cb8c3bdd8d457a4f3399e337"
+    },
+    "raw_data_checksums": {
+      "type": "object"
+    },
+    "repeat_count": {
+      "const": 10
+    },
+    "task_direction_update": {
+      "enum": [
+        "ELIGIBLE_FOR_ENDPOINT_REEVALUATION",
+        "LIMITED_RANGE_ONLY",
+        "REMAINS_UNVALIDATED"
+      ]
+    },
+    "uncertainty_results": {
+      "type": "object"
+    },
+    "wrench_sign_status": {
+      "const": "REQUIRES_SEPARATE_STATIC_WRENCH_FRAME_SIGN_VALIDATION"
+    }
+  },
+  "protocol_itself_must_not_emit_validated": true,
+  "required": [
+    "protocol_sha256",
+    "execution_manifest_sha256",
+    "raw_data_checksums",
+    "configuration_results",
+    "decision"
+  ],
+  "title": "Future static strap pull geometry result",
+  "type": "object"
+}

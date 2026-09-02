@@ -1,0 +1,78 @@
+{
+  "base_model_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+  "cohort_member": false,
+  "exact_array_match_to_frozen_nominal": {
+    "compared_array_count": 49,
+    "exact": true,
+    "mismatched_keys": [],
+    "missing_or_extra_keys": []
+  },
+  "factor_values": {
+    "FEMUR_MASS_INERTIA_SCALE": 1.0,
+    "FOOT_COMPLEX_MASS_INERTIA_SCALE": 1.0,
+    "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 1.0,
+    "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 1.0,
+    "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 1.0,
+    "TIBIA_PATELLA_MASS_INERTIA_SCALE": 1.0
+  },
+  "generated_model_fingerprint_sha256": "6b3b5ff33ce029efe53c212f2c62d5f600f64f29d603298de31288026721ac77",
+  "integrity": {
+    "algebraic_residual_max_nm": 7.105427357601002e-15,
+    "all_replay_arrays_finite": true,
+    "contact_active_max": 0,
+    "controlled_knee_max_deg": 119.54559189516057,
+    "controlled_knee_min_deg": 18.35481394984986,
+    "duration_s": 24.0,
+    "hip_actuator_internal_rms_nm": 10.268008640501577,
+    "hip_constraint_internal_rms_nm": 0.0,
+    "hip_passive_internal_rms_nm": 0.08020448513272198,
+    "hip_tau_peak_abs_nm": 52.397146942707494,
+    "hip_tau_rate_rms_nm_s": 5.924210484495001,
+    "hip_tau_rms_nm": 35.975555467222364,
+    "integrity_gate_results": {
+      "algebraic_residual": true,
+      "all_finite": true,
+      "equality_residual": true,
+      "full_24s_401_samples": true,
+      "native_knee_rom": true,
+      "no_force_explosion": true,
+      "no_new_contact_or_limit_mode": true,
+      "no_solver_warning": true,
+      "structure": true,
+      "tracking": true
+    },
+    "joint_limit_active_max": 1,
+    "knee_actuator_internal_rms_nm": 5.369511253663055,
+    "knee_constraint_internal_rms_nm": 0.0006035333409953259,
+    "knee_passive_internal_rms_nm": 0.20020005871919597,
+    "knee_tau_peak_abs_nm": 17.227371087475195,
+    "knee_tau_rate_rms_nm_s": 1.4506561113071046,
+    "knee_tau_rms_nm": 11.075814287716018,
+    "maximum_actuator_force_abs_n": 491.8163353892764,
+    "muscle_states_finite": true,
+    "peak_force_ratio_vs_nominal": 1.0,
+    "sample_count": 401,
+    "source_equality_residual_max": 0.0005669015303355132,
+    "subject_integrity": "PASS",
+    "tendon_limit_active_max": 0,
+    "tendon_states_finite": true,
+    "tracking_q_max_abs_deg": 0.621851312569234,
+    "warning_count": 0
+  },
+  "j_truth_reference": 1.0,
+  "reference_denominators": {
+    "subject_reference_tau_hip_rms_nm": 35.975555467222364,
+    "subject_reference_tau_knee_rms_nm": 11.075814287716018
+  },
+  "reference_replay_truth_sha256": "ffb389f22ad586a1cbe3f18fbaca9a4bf2cc7964d94336bb5e398a38b64e6cde",
+  "runtime": {
+    "controlled_s": 2.2537848750362173,
+    "prescribed_s": 0.17145004199119285
+  },
+  "subject_id": "SUBJECT_NOMINAL_CONTROL",
+  "subject_specific_reference_normalization": "PASS",
+  "truth_field": "TAU_MY0LEG_REQUIRED_DRIVE",
+  "truth_semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1",
+  "truth_semantics_sha256": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+  "v2_reference_sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+}

@@ -1,0 +1,16 @@
+subject_id,truth_scenario,trial_id,candidate_id,diagnosed_weakest_parameter_before_trial,diagnosed_highest_correlation_pair_before_trial,incremental_log_information_gain,incremental_state_regressor_coverage,duplicate_information
+baseline,matched_linear,1,ID-G-coupled-neg-d14,NOT_YET_OBSERVED,NOT_YET_OBSERVED,48.79314953427252,1.0,False
+baseline,matched_linear,2,ID-F-coupled-pos-d14,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,3.468835294100103,0.23724375918807308,False
+hip_stiff,matched_linear,1,ID-G-coupled-neg-d14,NOT_YET_OBSERVED,NOT_YET_OBSERVED,48.79314953427252,1.0,False
+hip_stiff,matched_linear,2,ID-F-coupled-pos-d14,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,3.4688352938553493,0.23724375918807308,False
+knee_stiff,matched_linear,1,ID-G-coupled-neg-d14,NOT_YET_OBSERVED,NOT_YET_OBSERVED,48.79314953427252,1.0,False
+knee_stiff,matched_linear,2,ID-F-coupled-pos-d14,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,3.4688352939989997,0.23724375918807308,False
+heavy_leg,matched_linear,1,ID-G-coupled-neg-d14,NOT_YET_OBSERVED,NOT_YET_OBSERVED,48.79314953427252,1.0,False
+heavy_leg,matched_linear,2,ID-F-coupled-pos-d14,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,3.4688352937835276,0.23724375918807308,False
+baseline,combined_mild,1,ID-G-coupled-neg-d14,NOT_YET_OBSERVED,NOT_YET_OBSERVED,48.79314953427252,1.0,False
+baseline,combined_mild,2,ID-F-coupled-pos-d14,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,3.4688352939928464,0.23724375918807308,False
+baseline,combined_mild,3,ID-C-knee-d16,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,1.8727661790215606,0.2746213262230073,False
+baseline,combined_mild,4,ID-B-hip-d16,b_hip_nm_s_per_rad,k_knee_nm_per_rad|mass_scale,1.350396958418841,0.24607664848481187,False
+baseline,combined_mild,5,ID-J-opposed-d18,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,1.0005528929310685,0.2759415284388428,False
+LIMITED_ROM_VIRTUAL_SUBJECT,matched_linear,1,ID-G-coupled-neg-d14,NOT_YET_OBSERVED,NOT_YET_OBSERVED,48.79314953427252,1.0,False
+LIMITED_ROM_VIRTUAL_SUBJECT,matched_linear,2,ID-F-coupled-pos-d14,b_hip_nm_s_per_rad,mass_scale|k_knee_nm_per_rad,3.468835294100103,0.23724375918807308,False

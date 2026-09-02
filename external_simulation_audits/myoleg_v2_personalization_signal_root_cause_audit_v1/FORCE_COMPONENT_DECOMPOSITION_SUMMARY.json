@@ -1,0 +1,405 @@
+{
+  "bias_gravity_hip": {
+    "component": "bias_gravity",
+    "joint": "hip",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.00782625457381066,
+      "common_candidate_effect_rms": 0.09825495677992827,
+      "dimensionless_interaction_scale": 0.00030717158185410235,
+      "grand_mean": 27.398450884613005,
+      "interaction_to_common_effect_ratio": 0.08565497125431284,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 1.1584843838190684,
+      "ss_subject_candidate_interaction": 0.008499538223126834,
+      "ss_subject_main": 146.85840585964942,
+      "ss_total": 148.02538978169144,
+      "subject_candidate_interaction_variance_fraction": 5.741946186165761e-05,
+      "subject_main_variance_fraction": 0.9921163259643289,
+      "subject_specific_interaction_rms": 0.008416025498578507
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.9944764781840827,
+      "common_candidate_effect_rms": 0.0035867012036136263,
+      "dimensionless_interaction_scale": 0.0002670606597845928,
+      "grand_mean": 1.0001887443965891,
+      "interaction_to_common_effect_ratio": 0.07447262841927292,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.0015437310628804123,
+      "ss_subject_candidate_interaction": 8.561798588768747e-06,
+      "ss_subject_main": 1.2393351188891173e-08,
+      "ss_total": 0.0015523052548203757,
+      "subject_candidate_interaction_variance_fraction": 0.005515537979519029,
+      "subject_main_variance_fraction": 7.98383639455325e-06,
+      "subject_specific_interaction_rms": 0.00026711106598767653
+    },
+    "required_drive_formula_sign": 1.0
+  },
+  "bias_gravity_knee": {
+    "component": "bias_gravity",
+    "joint": "knee",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.0016075308049430586,
+      "common_candidate_effect_rms": 0.02627848700667155,
+      "dimensionless_interaction_scale": 0.00011254833441564082,
+      "grand_mean": 12.359165096496362,
+      "interaction_to_common_effect_ratio": 0.05293316339047381,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.08286706552317664,
+      "ss_subject_candidate_interaction": 0.00023218687054045315,
+      "ss_subject_main": 51.46618693756012,
+      "ss_total": 51.549286189953875,
+      "subject_candidate_interaction_variance_fraction": 4.504172369814553e-06,
+      "subject_main_variance_fraction": 0.9983879650226863,
+      "subject_specific_interaction_rms": 0.0013910034463785882
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.999137382865246,
+      "common_candidate_effect_rms": 0.0021274080089605427,
+      "dimensionless_interaction_scale": 6.016357962906528e-05,
+      "grand_mean": 1.000180250087898,
+      "interaction_to_common_effect_ratio": 0.0282853236737522,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.0005431037803907353,
+      "ss_subject_candidate_interaction": 4.345153581747951e-07,
+      "ss_subject_main": 3.4379745690038007e-08,
+      "ss_total": 0.000543572675494601,
+      "subject_candidate_interaction_variance_fraction": 0.0007993693902649286,
+      "subject_main_variance_fraction": 6.324774448744248e-05,
+      "subject_specific_interaction_rms": 6.0174424119581675e-05
+    },
+    "required_drive_formula_sign": 1.0
+  },
+  "constraint_hip": {
+    "component": "constraint",
+    "joint": "hip",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.0,
+      "common_candidate_effect_rms": 0.0,
+      "dimensionless_interaction_scale": 0.0,
+      "grand_mean": 0.0,
+      "interaction_to_common_effect_ratio": 0.0,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.0,
+      "ss_subject_candidate_interaction": 0.0,
+      "ss_subject_main": 0.0,
+      "ss_total": 0.0,
+      "subject_candidate_interaction_variance_fraction": 0.0,
+      "subject_main_variance_fraction": 0.0,
+      "subject_specific_interaction_rms": 0.0
+    },
+    "reference_nonzero_subject_count": 0,
+    "reference_normalized_decomposition": null,
+    "required_drive_formula_sign": -1.0
+  },
+  "constraint_knee": {
+    "component": "constraint",
+    "joint": "knee",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 1.0000000000000002,
+      "common_candidate_effect_rms": 8.673202673265564e-05,
+      "dimensionless_interaction_scale": 8.075960140685517e-17,
+      "grand_mean": 0.0005411813093162073,
+      "interaction_to_common_effect_ratio": 5.039152026728926e-16,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 9.02693335338491e-07,
+      "ss_subject_candidate_interaction": 2.2922139841034606e-37,
+      "ss_subject_main": 0.0,
+      "ss_total": 9.026933353384909e-07,
+      "subject_candidate_interaction_variance_fraction": 2.5393053148486234e-31,
+      "subject_main_variance_fraction": 0.0,
+      "subject_specific_interaction_rms": 4.3705586829216897e-20
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 1.0,
+      "common_candidate_effect_rms": 0.14370710090286024,
+      "dimensionless_interaction_scale": 5.5371170653969887e-17,
+      "grand_mean": 0.8966883394108935,
+      "interaction_to_common_effect_ratio": 3.4549916290154075e-16,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 2.478207701988582,
+      "ss_subject_candidate_interaction": 2.9582283945787943e-31,
+      "ss_subject_main": 0.0,
+      "ss_total": 2.478207701988582,
+      "subject_candidate_interaction_variance_fraction": 1.193696715656654e-31,
+      "subject_main_variance_fraction": 0.0,
+      "subject_specific_interaction_rms": 4.965068306494546e-17
+    },
+    "required_drive_formula_sign": -1.0
+  },
+  "mass_hip": {
+    "component": "mass",
+    "joint": "hip",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.4885521586708618,
+      "common_candidate_effect_rms": 0.004686484490492487,
+      "dimensionless_interaction_scale": 0.0024183192915105773,
+      "grand_mean": 0.11875236689833396,
+      "interaction_to_common_effect_ratio": 0.06127858533734403,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.002635576425555196,
+      "ss_subject_candidate_interaction": 9.896760845632612e-06,
+      "ss_subject_main": 0.0027491942585767034,
+      "ss_total": 0.005394667444977532,
+      "subject_candidate_interaction_variance_fraction": 0.0018345451219326887,
+      "subject_main_variance_fraction": 0.5096132962072055,
+      "subject_specific_interaction_rms": 0.00028718113978278313
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.9957835835050508,
+      "common_candidate_effect_rms": 0.041079423154864264,
+      "dimensionless_interaction_scale": 0.0020773880636552272,
+      "grand_mean": 1.0405344140670512,
+      "interaction_to_common_effect_ratio": 0.05261986672637639,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.20250228080836777,
+      "ss_subject_candidate_interaction": 0.0005606985160131796,
+      "ss_subject_main": 0.0002967508045106986,
+      "ss_total": 0.20335973012889164,
+      "subject_candidate_interaction_variance_fraction": 0.002757175747911362,
+      "subject_main_variance_fraction": 0.001459240747037846,
+      "subject_specific_interaction_rms": 0.002161593771605378
+    },
+    "required_drive_formula_sign": 1.0
+  },
+  "mass_knee": {
+    "component": "mass",
+    "joint": "knee",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.6527007794718707,
+      "common_candidate_effect_rms": 0.0028739986737457185,
+      "dimensionless_interaction_scale": 0.004608590324273746,
+      "grand_mean": 0.037878835884653746,
+      "interaction_to_common_effect_ratio": 0.06074047220253296,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.0009911842052030579,
+      "ss_subject_candidate_interaction": 3.656879926306642e-06,
+      "ss_subject_main": 0.000523747886075894,
+      "ss_total": 0.0015185889712052577,
+      "subject_candidate_interaction_variance_fraction": 0.002408077495389874,
+      "subject_main_variance_fraction": 0.34489114303274004,
+      "subject_specific_interaction_rms": 0.0001745680365527684
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.9998362371306536,
+      "common_candidate_effect_rms": 0.08077159691648268,
+      "dimensionless_interaction_scale": 0.0007943367084096496,
+      "grand_mean": 1.0648387030959166,
+      "interaction_to_common_effect_ratio": 0.010472003806969474,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.7828861042126506,
+      "ss_subject_candidate_interaction": 8.585353216487455e-05,
+      "ss_subject_main": 4.237514172783258e-05,
+      "ss_total": 0.7830143328865434,
+      "subject_candidate_interaction_variance_fraction": 0.00010964490502795749,
+      "subject_main_variance_fraction": 5.411796431825038e-05,
+      "subject_specific_interaction_rms": 0.0008458404704044106
+    },
+    "required_drive_formula_sign": 1.0
+  },
+  "passive_hip": {
+    "component": "passive",
+    "joint": "hip",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.9999999999999961,
+      "common_candidate_effect_rms": 0.001480150727247926,
+      "dimensionless_interaction_scale": 6.699792554913788e-17,
+      "grand_mean": 0.08022403771657875,
+      "interaction_to_common_effect_ratio": 3.6312816034486765e-15,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.0002629015410447077,
+      "ss_subject_candidate_interaction": 3.4666738998970245e-33,
+      "ss_subject_main": 0.0,
+      "ss_total": 0.0002629015410447087,
+      "subject_candidate_interaction_variance_fraction": 1.3186206083544736e-29,
+      "subject_main_variance_fraction": 0.0,
+      "subject_specific_interaction_rms": 5.374844106186573e-18
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.9999999999999988,
+      "common_candidate_effect_rms": 0.018454712661001214,
+      "dimensionless_interaction_scale": 3.5099777915532626e-17,
+      "grand_mean": 1.0002437841702296,
+      "interaction_to_common_effect_ratio": 1.9024048399278786e-15,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.04086917032801421,
+      "ss_subject_candidate_interaction": 1.4791141972893971e-31,
+      "ss_subject_main": 0.0,
+      "ss_total": 0.04086917032801426,
+      "subject_candidate_interaction_variance_fraction": 3.619144174981014e-30,
+      "subject_main_variance_fraction": 0.0,
+      "subject_specific_interaction_rms": 3.510833468576701e-17
+    },
+    "required_drive_formula_sign": -1.0
+  },
+  "passive_knee": {
+    "component": "passive",
+    "joint": "knee",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.9999999999999937,
+      "common_candidate_effect_rms": 0.002514227512074182,
+      "dimensionless_interaction_scale": 1.869797367730096e-16,
+      "grand_mean": 0.19915533598122157,
+      "interaction_to_common_effect_ratio": 1.4810915925420195e-14,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.000758560797896488,
+      "ss_subject_candidate_interaction": 1.6640034719505718e-31,
+      "ss_subject_main": 9.244463733058732e-32,
+      "ss_total": 0.0007585607978964927,
+      "subject_candidate_interaction_variance_fraction": 2.1936323054986406e-28,
+      "subject_main_variance_fraction": 1.2186846141659115e-28,
+      "subject_specific_interaction_rms": 3.7238012298709096e-17
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.999999999999998,
+      "common_candidate_effect_rms": 0.012558575297925801,
+      "dimensionless_interaction_scale": 2.3543037199930835e-16,
+      "grand_mean": 0.9947816062359912,
+      "interaction_to_common_effect_ratio": 1.8648755775098957e-14,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.018926137621640655,
+      "ss_subject_candidate_interaction": 6.582058177937817e-30,
+      "ss_subject_main": 5.9164567891575885e-30,
+      "ss_total": 0.018926137621640693,
+      "subject_candidate_interaction_variance_fraction": 3.4777609195928606e-28,
+      "subject_main_variance_fraction": 3.126077231094706e-28,
+      "subject_specific_interaction_rms": 2.342018036142089e-16
+    },
+    "required_drive_formula_sign": -1.0
+  },
+  "zero_control_actuator_hip": {
+    "component": "zero_control_actuator",
+    "joint": "hip",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.23862689777574111,
+      "common_candidate_effect_rms": 0.15886696288620863,
+      "dimensionless_interaction_scale": 0.0005046732603568712,
+      "grand_mean": 10.253498892042389,
+      "interaction_to_common_effect_ratio": 0.0325723273228245,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 3.028645427602559,
+      "ss_subject_candidate_interaction": 0.003213261074492843,
+      "ss_subject_main": 9.660111310651548,
+      "ss_total": 12.6919699993286,
+      "subject_candidate_interaction_variance_fraction": 0.00025317275999413985,
+      "subject_main_variance_fraction": 0.7611199294642647,
+      "subject_specific_interaction_rms": 0.0051746667159126
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.9999452553634364,
+      "common_candidate_effect_rms": 0.01550205682566557,
+      "dimensionless_interaction_scale": 0.00010954827003588511,
+      "grand_mean": 1.0006477364922655,
+      "interaction_to_common_effect_ratio": 0.007071269940551613,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.028837651899139744,
+      "ss_subject_candidate_interaction": 1.4419650294655429e-06,
+      "ss_subject_main": 1.3682817359023522e-07,
+      "ss_total": 0.02883923069234277,
+      "subject_candidate_interaction_variance_fraction": 5.000012118382913e-05,
+      "subject_main_variance_fraction": 4.7445153807991505e-06,
+      "subject_specific_interaction_rms": 0.0001096192284480519
+    },
+    "required_drive_formula_sign": -1.0
+  },
+  "zero_control_actuator_knee": {
+    "component": "zero_control_actuator",
+    "joint": "knee",
+    "raw_decomposition": {
+      "candidate_main_variance_fraction": 0.8270608142322209,
+      "common_candidate_effect_rms": 0.37143524268315936,
+      "dimensionless_interaction_scale": 0.002219989039833692,
+      "grand_mean": 5.379720603635334,
+      "interaction_to_common_effect_ratio": 0.03215343996753009,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 16.5556967408517,
+      "ss_subject_candidate_interaction": 0.017116002803539046,
+      "ss_subject_main": 3.444695589417861,
+      "ss_total": 20.017508333073096,
+      "subject_candidate_interaction_variance_fraction": 0.0008550516137545372,
+      "subject_main_variance_fraction": 0.17208413415402485,
+      "subject_specific_interaction_rms": 0.011942920777437934
+    },
+    "reference_nonzero_subject_count": 6,
+    "reference_normalized_decomposition": {
+      "candidate_main_variance_fraction": 0.9999965943299143,
+      "common_candidate_effect_rms": 0.06743887571618921,
+      "dimensionless_interaction_scale": 0.00012718059205040668,
+      "grand_mean": 0.976777868661427,
+      "interaction_to_common_effect_ratio": 0.0018420708577778526,
+      "shape": [
+        6,
+        20
+      ],
+      "ss_candidate_main": 0.5457602349436339,
+      "ss_subject_candidate_interaction": 1.851887297816445e-06,
+      "ss_subject_main": 6.7983387530885935e-09,
+      "ss_total": 0.5457620936292701,
+      "subject_candidate_interaction_variance_fraction": 3.3932134888694024e-06,
+      "subject_main_variance_fraction": 1.245659754029496e-08,
+      "subject_specific_interaction_rms": 0.00012422718763809465
+    },
+    "required_drive_formula_sign": -1.0
+  }
+}

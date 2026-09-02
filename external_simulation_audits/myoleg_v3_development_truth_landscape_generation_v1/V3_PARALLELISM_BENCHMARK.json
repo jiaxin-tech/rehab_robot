@@ -1,0 +1,83 @@
+{
+  "fixed_pair_set": {
+    "candidate_ids": [
+      "MYOLEG_V3_K0312",
+      "MYOLEG_V3_K0000",
+      "MYOLEG_V3_K0024",
+      "MYOLEG_V3_K0624"
+    ],
+    "pair_count": 32,
+    "subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_006",
+      "MYOLEG_VP_007",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_010"
+    ]
+  },
+  "protocol_sha256": "837f287f75d353af69bdd0e9ade5a417777c6de60a69cda693f6be9f094f133d",
+  "selected_worker_count": 4,
+  "selection_rule_frozen_before_truth": "highest-throughput stable deterministic count with efficiency >= 0.35; otherwise highest-throughput stable deterministic count",
+  "stage_id": "MYOLEG_V3_DEVELOPMENT_TRUTH_LANDSCAPE_GENERATION_V1",
+  "worker_results": [
+    {
+      "aggregate_worker_cpu_time_s": 2.6445369999999992,
+      "deterministic_equal_to_one_worker": true,
+      "maximum_worker_peak_rss_bytes": 334659584,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 1.0,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "2a35197af4c27fec6b35f997ef9a5c4aba690fe583b953e2a53ff007db03d899",
+      "stable": true,
+      "throughput_pairs_per_s": 8.809202009813527,
+      "wall_time_s": 3.6325651250081137,
+      "workers": 1
+    },
+    {
+      "aggregate_worker_cpu_time_s": 2.898824,
+      "deterministic_equal_to_one_worker": true,
+      "maximum_worker_peak_rss_bytes": 309444608,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 1.037237330411471,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "2a35197af4c27fec6b35f997ef9a5c4aba690fe583b953e2a53ff007db03d899",
+      "stable": true,
+      "throughput_pairs_per_s": 18.274466351428696,
+      "wall_time_s": 1.7510771250235848,
+      "workers": 2
+    },
+    {
+      "aggregate_worker_cpu_time_s": 3.538006,
+      "deterministic_equal_to_one_worker": true,
+      "maximum_worker_peak_rss_bytes": 272695296,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 0.6652833196913386,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "2a35197af4c27fec6b35f997ef9a5c4aba690fe583b953e2a53ff007db03d899",
+      "stable": true,
+      "throughput_pairs_per_s": 23.44246062768142,
+      "wall_time_s": 1.3650444169761613,
+      "workers": 4
+    },
+    {
+      "aggregate_worker_cpu_time_s": 4.669773,
+      "deterministic_equal_to_one_worker": true,
+      "maximum_worker_peak_rss_bytes": 249511936,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 0.3420187552808678,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "2a35197af4c27fec6b35f997ef9a5c4aba690fe583b953e2a53ff007db03d899",
+      "stable": true,
+      "throughput_pairs_per_s": 24.10329845131313,
+      "wall_time_s": 1.3276191250188276,
+      "workers": 8
+    }
+  ]
+}

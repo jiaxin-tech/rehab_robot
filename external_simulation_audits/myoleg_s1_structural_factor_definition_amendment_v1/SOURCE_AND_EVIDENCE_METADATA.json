@@ -1,0 +1,33 @@
+{
+  "J_or_oracle_or_rank_read": false,
+  "amended_definition_sha256": "3faf531f127bce1a26dd13b01dae07bc332bb107ac9d562c314f296780921763",
+  "anatomical_review_source_basis": [
+    "Rajagopal et al. lower-limb model context in inherited evidence",
+    "compiled MyoLeg paths and moment signs"
+  ],
+  "frozen_inputs": {
+    "candidate_builder": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "cohort_v1": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "coordinate_mapping": "83798958fd0b12f5c5314bc32df898f1d6e56d8e224f7673d8aca5c457ce713c",
+    "evidence": "bc5c67abb6a9c8955f60b80fc4da31e736b731820fbd8b4ffffb3ddbd79426f3",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "old_s1": "47ebf27c43ccca9621e315c1322946bb7b8687e098b243ee8d92f0f66d578394",
+    "pilot_design_metadata": "e53d28c1f526615c7fb7976fce0e26c36bcf76ca7e529f23a6cf9f47bd213c23",
+    "pilot_design_report": "b2ddf4290d42f98089e3e6629123d2a1127c1862c38e8fa04ccc16157fa642dc",
+    "protocol": "e09b7a47c6538dd91fe5f044514a2372d20d23a55b1dd490c67437b318223056",
+    "replay_builder": "d60a9b1651b49307155b8b36bfdd881b595c604288f7c07a3237afe5f5feb32e",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+    "v3_manifest": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "v3_table": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774"
+  },
+  "held_out_scientific_access_count": 0,
+  "inherited_evidence_source_count": 8,
+  "muscle_force_sign_semantic": "unit positive muscle tension generalized effect = -projected actuator moment",
+  "new_external_range_bound": false,
+  "protocol_sha256": "e09b7a47c6538dd91fe5f044514a2372d20d23a55b1dd490c67437b318223056",
+  "reference_role": "mechanical membership classification only",
+  "reference_states_used": 401,
+  "scientific_trajectory_truth_replay": false
+}

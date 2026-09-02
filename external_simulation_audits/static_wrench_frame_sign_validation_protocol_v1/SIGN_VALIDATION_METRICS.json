@@ -1,0 +1,34 @@
+{
+  "SIGN_REVERSAL_PASS": "all required + / - pairs reverse and meet preregistered signal/uncertainty gates under one global convention",
+  "dominant_component": "dot(DeltaF_world, d_applied_world)",
+  "global_sign_candidates": {
+    "OPPOSITE_DIRECTION": "reported response aligns with negative applied force for every paired axis/pose/level",
+    "SAME_DIRECTION": "reported response aligns with applied force for every paired axis/pose/level"
+  },
+  "magnitude_similarity_cannot_replace_sign": true,
+  "metrics_id": "STATIC_SIGN_VALIDATION_METRICS_V1",
+  "paired_axes": [
+    [
+      "+WORLD_X",
+      "-WORLD_X"
+    ],
+    [
+      "+WORLD_Y",
+      "-WORLD_Y"
+    ],
+    [
+      "+WORLD_Z",
+      "-WORLD_Z"
+    ]
+  ],
+  "post_result_flip_or_threshold_change_allowed": false,
+  "raw_axis_sign_reversal": "DeltaF_plus[axis] * DeltaF_minus[axis] < 0",
+  "response_vector": "DeltaF_world = mean(load) - 0.5*(mean(pre_zero)+mean(post_zero))",
+  "sign_rule": "select at most one global convention from all preregistered paired cells; per-axis sign flipping is forbidden",
+  "threshold_status": "THRESHOLD_REQUIRES_CALIBRATION_EVIDENCE",
+  "thresholds": {
+    "minimum_component_n": null,
+    "minimum_signal_to_zero_noise": null,
+    "repeatability_limit": null
+  }
+}

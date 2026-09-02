@@ -1,0 +1,97 @@
+{
+  "centering_convention": "X_ic=grand+row_main_i+candidate_main_c+interaction_ic; every main effect is zero-sum",
+  "diagnostic": "PERSONALIZATION_SIGNAL_IS_LOW_RANK_OR_COMMON_MODE_DOMINATED",
+  "matrices": {
+    "HIP_NORMALIZED_RMS": {
+      "candidate_main_variance_fraction": 0.9991024760839983,
+      "common_candidate_effect_rms": 0.008947723737789131,
+      "dimensionless_interaction_scale": 0.000209540122133852,
+      "grand_mean": 1.0073192568070592,
+      "interaction_to_common_effect_ratio": 0.02358966439785119,
+      "shape": [
+        24,
+        16675
+      ],
+      "ss_candidate_main": 32.0407163871356,
+      "ss_subject_candidate_interaction": 0.01782977006513303,
+      "ss_subject_main": 0.010953372737195337,
+      "ss_total": 32.06949952993793,
+      "subject_candidate_interaction_variance_fraction": 0.0005559728192355591,
+      "subject_main_variance_fraction": 0.00034155109676625934,
+      "subject_specific_interaction_rms": 0.00021107380009913223
+    },
+    "HIP_RAW_RMS": {
+      "candidate_main_variance_fraction": 0.045059462735057454,
+      "common_candidate_effect_rms": 0.3254031777741247,
+      "dimensionless_interaction_scale": 0.0003516984817621976,
+      "grand_mean": 36.64573306818288,
+      "interaction_to_common_effect_ratio": 0.03960701543022092,
+      "shape": [
+        24,
+        16675
+      ],
+      "ss_candidate_main": 42376.068687820545,
+      "ss_subject_candidate_interaction": 66.47600303823529,
+      "ss_subject_main": 898005.1685227924,
+      "ss_total": 940447.7132136519,
+      "subject_candidate_interaction_variance_fraction": 7.068548533238148e-05,
+      "subject_main_variance_fraction": 0.9548698517796094,
+      "subject_specific_interaction_rms": 0.012888248683142678
+    },
+    "J": {
+      "candidate_main_variance_fraction": 0.9993907664196321,
+      "common_candidate_effect_rms": 0.008781832639302404,
+      "dimensionless_interaction_scale": 0.00015773807092479058,
+      "grand_mean": 1.0134188776542452,
+      "interaction_to_common_effect_ratio": 0.01820289059991073,
+      "shape": [
+        24,
+        16675
+      ],
+      "ss_candidate_main": 30.86365791878776,
+      "ss_subject_candidate_interaction": 0.01022652571422307,
+      "ss_subject_main": 0.00858811361296773,
+      "ss_total": 30.88247255811495,
+      "subject_candidate_interaction_variance_fraction": 0.00033114335955382746,
+      "subject_main_variance_fraction": 0.00027809022081397565,
+      "subject_specific_interaction_rms": 0.000159854738799947
+    },
+    "KNEE_NORMALIZED_RMS": {
+      "candidate_main_variance_fraction": 0.9995546367528133,
+      "common_candidate_effect_rms": 0.016121815721586212,
+      "dimensionless_interaction_scale": 0.0002237862760420173,
+      "grand_mean": 1.0193908626240737,
+      "interaction_to_common_effect_ratio": 0.01415012359138019,
+      "shape": [
+        24,
+        16675
+      ],
+      "ss_candidate_main": 104.0171594527459,
+      "ss_subject_candidate_interaction": 0.02082693952428396,
+      "ss_subject_main": 0.025519121204806303,
+      "ss_total": 104.06350551347501,
+      "subject_candidate_interaction_variance_fraction": 0.00020013682435084904,
+      "subject_main_variance_fraction": 0.0002452264228356393,
+      "subject_specific_interaction_rms": 0.00022812568497790112
+    },
+    "KNEE_RAW_RMS": {
+      "candidate_main_variance_fraction": 0.05599148547789262,
+      "common_candidate_effect_rms": 0.18065230188997972,
+      "dimensionless_interaction_scale": 0.0011388086511796125,
+      "grand_mean": 11.418039720818774,
+      "interaction_to_common_effect_ratio": 0.07197783962642164,
+      "shape": [
+        24,
+        16675
+      ],
+      "ss_candidate_main": 13060.628722094978,
+      "ss_subject_candidate_interaction": 67.66462801790449,
+      "ss_subject_main": 220132.68571878062,
+      "ss_total": 233260.97906889374,
+      "subject_candidate_interaction_variance_fraction": 0.0002900812141319175,
+      "subject_main_variance_fraction": 0.9437184333079744,
+      "subject_specific_interaction_rms": 0.013002962413580866
+    }
+  },
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_SIGNAL_ROOT_CAUSE_AUDIT_V1"
+}

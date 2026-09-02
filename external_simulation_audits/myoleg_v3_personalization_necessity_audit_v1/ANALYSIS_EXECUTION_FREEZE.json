@@ -1,0 +1,50 @@
+{
+  "development_subject_ids": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003",
+    "MYOLEG_VP_005",
+    "MYOLEG_VP_006",
+    "MYOLEG_VP_007",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_010",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_013",
+    "MYOLEG_VP_014",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_017",
+    "MYOLEG_VP_018",
+    "MYOLEG_VP_019",
+    "MYOLEG_VP_021",
+    "MYOLEG_VP_022",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_025",
+    "MYOLEG_VP_026",
+    "MYOLEG_VP_027",
+    "MYOLEG_VP_029",
+    "MYOLEG_VP_030",
+    "MYOLEG_VP_031"
+  ],
+  "freeze_id": "MYOLEG_V3_PERSONALIZATION_NECESSITY_ANALYSIS_EXECUTION_FREEZE_V1",
+  "held_out_scientific_access_count_before_analysis": 0,
+  "held_out_subject_ids": [
+    "MYOLEG_VP_004",
+    "MYOLEG_VP_008",
+    "MYOLEG_VP_012",
+    "MYOLEG_VP_016",
+    "MYOLEG_VP_020",
+    "MYOLEG_VP_024",
+    "MYOLEG_VP_028",
+    "MYOLEG_VP_032"
+  ],
+  "input_sha256": {
+    "candidate_manifest": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "candidate_table": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774",
+    "cohort": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "protocol": "d21506672ed006e5015bb92ad8ec50dce15ea2762b1b421083664ae6321b3eb3",
+    "truth": "c318700e161e857d3e059eadf2bc21364e21b74d8b39faf4124a26fc15d37c6e",
+    "v2_protocol": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f"
+  },
+  "protocol_sha256": "d21506672ed006e5015bb92ad8ec50dce15ea2762b1b421083664ae6321b3eb3",
+  "v2_result_artifacts_opened_before_v3_result_freeze": false
+}

@@ -1,0 +1,75 @@
+{
+  "classification": "REFERENCE_SLIGHTLY_EXCEEDS_MYOLEG_NATIVE_ROM",
+  "classification_rule_frozen_for_v1": {
+    "fully": "zero samples exceed native limit within 1e-12 deg",
+    "materially": "otherwise",
+    "slightly": "maximum exceedance <=5 deg and outside fraction <=30%"
+  },
+  "common_supported_formal_rom_deg": {
+    "hip": [
+      0.0,
+      120.0
+    ],
+    "knee": [
+      5.0,
+      120.0002806121996
+    ]
+  },
+  "coordinate_mapping_used": "identity hip and knee joint angles",
+  "formal_project_rom_deg": {
+    "hip": [
+      0.0,
+      120.0
+    ],
+    "knee": [
+      5.0,
+      145.0
+    ]
+  },
+  "formal_project_rom_protocol": "ROM_PROTOCOL_V2",
+  "maximum_knee_exceedance_deg": 4.786323106628345,
+  "myoleg_native_rom_deg": {
+    "hip": [
+      -30.000012857270395,
+      120.0002806121996
+    ],
+    "knee": [
+      0.0,
+      120.0002806121996
+    ]
+  },
+  "outside_fraction": 0.26932668329177056,
+  "outside_intervals": [
+    {
+      "end_index": 262,
+      "end_phase": "extension",
+      "end_time_s": 16.823999999999998,
+      "phase_sequence": [
+        "flexion",
+        "extension"
+      ],
+      "sample_count": 108,
+      "start_index": 155,
+      "start_phase": "flexion",
+      "start_time_s": 10.54
+    }
+  ],
+  "peak_knee_deg": 124.78660371882795,
+  "peak_knee_phase": "extension",
+  "peak_knee_time_s": 15.16,
+  "pointwise_clipping_used": false,
+  "reference_hip_range_deg": [
+    28.90933692566648,
+    112.02543857007235
+  ],
+  "reference_knee_range_deg": [
+    18.31912469027814,
+    124.78660371882795
+  ],
+  "reference_modified": false,
+  "reference_replay_status": "REFERENCE_REPLAY_BLOCKED_BY_ROM",
+  "reference_sample_count": 401,
+  "samples_inside_myoleg_native_rom": 293,
+  "samples_outside_myoleg_native_rom": 108,
+  "scaling_used": false
+}

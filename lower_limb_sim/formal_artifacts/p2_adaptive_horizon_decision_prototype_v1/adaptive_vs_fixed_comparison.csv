@@ -1,0 +1,4 @@
+prototype_variant_id,case_count,trial_count,exploration_count,exploit_count,missed_improvement,false_improvement,conservative_stop,mean_final_J,mean_global_regret,mean_decision_latency_trials,intermediate_trajectory_executions,endpoint_executions,boundary_saturated_case_count,boundary_saturation_fraction,unique_final_alpha_count,small_step_recovery,trial_change_vs_H1,trial_change_vs_H2,final_J_change_vs_H2,regret_change_vs_H2,truth_used_for_authorization,default_enabled
+H1_SINGLE_STEP_ONLY,15,56,56,0,0,0,0,0.999663936359,0.0347058543723,3.73333333333,0,0,1,0.0666666666667,2,0,0,-60,0.0308698360209,0.0308656371677,False,False
+H2_FIXED_BUNDLE_5,15,116,56,60,7,0,0,0.968794100338,0.00384021720457,0.466666666667,0,60,15,1,1,9,60,0,0,0,False,False
+H3_ADAPTIVE_HORIZON,15,116,56,60,0,0,0,0.969000562044,0.0040466775802,0.466666666667,0,60,14,0.933333333333,2,9,60,0,0.000206461705902,0.000206460375633,False,False

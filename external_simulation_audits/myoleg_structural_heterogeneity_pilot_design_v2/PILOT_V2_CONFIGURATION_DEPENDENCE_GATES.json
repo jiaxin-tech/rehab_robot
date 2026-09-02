@@ -1,0 +1,27 @@
+{
+  "beta_dependence_model": "fixed OLS design [1,beta_flex,beta_extend,beta_flex^2,beta_extend^2,beta_flex*beta_extend] over all 13 points",
+  "constant_change_rule": "zero/under-threshold spread or range is constant-like and fails",
+  "delta_definition": "delta_y(c)=y_perturbed(c)-y_nominal(c)",
+  "frozen_before_scientific_pilot_outcomes": true,
+  "gate_id": "PILOT_V2_CONFIGURATION_DEPENDENCE_GATE_V1",
+  "normalization": "max(nominal_response_RMS,1e-12 response units)",
+  "required_outputs": [
+    "delta_mean",
+    "delta_population_SD",
+    "delta_range",
+    "delta_RMS",
+    "normalized_spread",
+    "normalized_range",
+    "beta_polynomial_coefficients",
+    "beta_polynomial_R2"
+  ],
+  "scale_like_rule": "configuration dependence alone is insufficient; the separate nonproportionality gate must also pass",
+  "threshold_tuning_after_outcome": false,
+  "thresholds": {
+    "all_required_on_same_predeclared_response": true,
+    "beta_polynomial_R2_min_inclusive": 0.25,
+    "effect_resolution_gate_from_nonproportionality_required": true,
+    "normalized_range_min_inclusive": 0.0002,
+    "normalized_spread_min_inclusive": 0.0001
+  }
+}

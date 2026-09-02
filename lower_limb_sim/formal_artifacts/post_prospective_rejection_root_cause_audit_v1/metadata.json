@@ -1,0 +1,214 @@
+{
+  "audit_id": "POST_PROSPECTIVE_REJECTION_ROOT_CAUSE_AUDIT_V1",
+  "data_role": "POST_PROSPECTIVE_DEVELOPMENT_ONLY",
+  "final_status": "NEXT_REVISION_ROOT_CAUSE_IDENTIFIED",
+  "prospective_conclusion": "P2_V2_PROSPECTIVE_EVIDENCE_REJECTS_CURRENT_REVISION",
+  "prospective_conclusion_revised": false,
+  "prospective_manifest_sha256": "94d33675b2ae51ef80154c3bba92f31b87852267f3cffbaaacc75c3ce0aa1876",
+  "prospective_start_commit_sha": "d7fe80945ae625fffc7919e1735e9e2df8c8fa00",
+  "post_prospective_checkpoint": {
+    "post_prospective_start_commit_sha": "da5bba56bcc482a7c3eb5bc47e731026c0158cbd",
+    "prospective_source_tracked": true,
+    "prospective_artifact_tracked": true,
+    "git_log": [
+      "da5bba5 validate P2 V2 on prospective offline cohort",
+      "d7fe809 evaluate P2 V2 offline research prototype",
+      "e6a8abc freeze P2 V2 offline research protocol",
+      "3de0533 add P2 revision root-cause and design evidence",
+      "9908054 implement decision-guarded sequential personalization and convergence audit",
+      "0ae022c characterize decision-relevant model reliability"
+    ]
+  },
+  "development_used_after_rejection": true,
+  "current_six_cases_may_support_future_prospective_claim": false,
+  "future_revision_requires_new_independent_prospective_cohort": true,
+  "factorial_variants": [
+    {
+      "factorial_variant_id": "A0_G0_C0_S0_ORIGINAL_P2_V1",
+      "policy": {
+        "policy_variant_id": "P2_V1_G0_C0_S0",
+        "guard_id": "G0_CURRENT_GLOBAL_MAX",
+        "cumulative_rule_id": "C0_SINGLE_STEP",
+        "stopping_rule_id": "S0_CURRENT_CONTINUATION",
+        "stopping_k": null,
+        "role": "HISTORICAL_PROSPECTIVE_PRIMARY_A0",
+        "active_in_prospective_execution": true
+      },
+      "evidence_role": "HISTORICAL_PROSPECTIVE_PRIMARY"
+    },
+    {
+      "factorial_variant_id": "A1_G2_C0_S0_POST_HOC",
+      "policy": {
+        "policy_variant_id": "POST_HOC_A1_G2_C0_S0",
+        "guard_id": "G2_FROZEN_LOCAL_P95",
+        "cumulative_rule_id": "C0_SINGLE_STEP",
+        "stopping_rule_id": "S0_CURRENT_CONTINUATION",
+        "stopping_k": null,
+        "role": "POST_HOC_COUNTERFACTUAL_ONLY",
+        "active_in_prospective_execution": true
+      },
+      "evidence_role": "POST_HOC_COUNTERFACTUAL_ONLY"
+    },
+    {
+      "factorial_variant_id": "A2_G0_C0_S2_POST_HOC",
+      "policy": {
+        "policy_variant_id": "POST_HOC_A2_G0_C0_S2",
+        "guard_id": "G0_CURRENT_GLOBAL_MAX",
+        "cumulative_rule_id": "C0_SINGLE_STEP",
+        "stopping_rule_id": "S2_DECISION_VALUE_K2",
+        "stopping_k": 2,
+        "role": "POST_HOC_COUNTERFACTUAL_ONLY",
+        "active_in_prospective_execution": true
+      },
+      "evidence_role": "POST_HOC_COUNTERFACTUAL_ONLY"
+    },
+    {
+      "factorial_variant_id": "A3_G2_C0_S2_REJECTED_V2A",
+      "policy": {
+        "policy_variant_id": "P2_V2A_G2_C0_S2",
+        "guard_id": "G2_FROZEN_LOCAL_P95",
+        "cumulative_rule_id": "C0_SINGLE_STEP",
+        "stopping_rule_id": "S2_DECISION_VALUE_K2",
+        "stopping_k": 2,
+        "role": "HISTORICAL_PROSPECTIVE_PRIMARY_A3_REJECTED",
+        "active_in_prospective_execution": true
+      },
+      "evidence_role": "HISTORICAL_PROSPECTIVE_PRIMARY"
+    }
+  ],
+  "A0_A3_historical_reproduction_all_passed": true,
+  "A1_A2_post_hoc_counterfactual_only": true,
+  "prospective_outcome_used_to_modify_historical_policy": false,
+  "prospective_truth_gate_access_count": 174,
+  "small_step_path_count": 9,
+  "premature_stop_count": 24,
+  "bundle_validation_protocol_id": "DESIGNATED_BUNDLE_VALIDATION_PROTOCOL_V1",
+  "bundle_pair_plan_sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+  "bundle_pair_plan_count": 648,
+  "future_bundle_calibration_truth_generated": false,
+  "new_percentile_selected": false,
+  "K_tuned": false,
+  "new_policy_implemented": false,
+  "P2_V2_default_enabled": false,
+  "human_readiness": "NOT_HUMAN_READY",
+  "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED",
+  "robot_connected": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "theta_shank_definition": "q_hip - q_knee",
+  "algorithm_equivalence_tolerance": 0.005,
+  "support_gate_percent": 90.0,
+  "protected_source_sha256_before": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "protected_source_sha256_after": {
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "immutable_prospective_metadata_final_status": "P2_V2_PROSPECTIVE_EVIDENCE_REJECTS_CURRENT_REVISION",
+  "artifact_manifest": {
+    "guard_stopping_factorial_decomposition.csv": {
+      "sha256": "f837662413dc412e0dc8f943d20ad8bb8eebfc161522e4222591402d0a95b504",
+      "bytes": 13684
+    },
+    "prospective_missed_round_root_cause.csv": {
+      "sha256": "7f677b5b967a6e1e9c73e59c0061742f64e5720d4c7248bf49738ac4077a31a0",
+      "bytes": 23963
+    },
+    "prospective_rejection_mechanism_summary.csv": {
+      "sha256": "4a6e642e40dd9a0cf57f09139cc3467e48410d9284776ae0762caf272f77979f",
+      "bytes": 737
+    },
+    "prospective_small_step_accumulation.csv": {
+      "sha256": "4fd0f87335ff6a4e114d17410bf1d5c6acc2f97e142600dea52ee4e6569752d9",
+      "bytes": 12722
+    },
+    "prospective_bundle_residual_characterization.csv": {
+      "sha256": "24ca80a977dbb3d04d24947d80e598997314a948f82925999deeedf406352a7f",
+      "bytes": 7979
+    },
+    "stopping_removed_trial_value_audit.csv": {
+      "sha256": "c0c64e18ad5a1572a911a9dad4d9150f64b441b614f82719503c256d2ef01108",
+      "bytes": 2766
+    },
+    "POST_PROSPECTIVE_REVISION_ROOT_CAUSE_MATRIX.csv": {
+      "sha256": "a9791a77f07c6ae88fac7579e2f0249f53cb48d2319e4e455bbade0ac7e0386a",
+      "bytes": 1227
+    },
+    "designated_bundle_validation_pair_plan.csv": {
+      "sha256": "3808bfe8819ded263a1cac847e3234e39878623ed5332e57b2bb4bd17e26ee84",
+      "bytes": 290467
+    },
+    "factorial_policy_summary.csv": {
+      "sha256": "90cbacb61ed66b8a549c3ce5553d4434334d3e1f4ff519ebcbcb3e3e621b2af4",
+      "bytes": 17089
+    },
+    "factorial_trial_history.csv": {
+      "sha256": "789d11f28a4c450bca9c05c31e57f52e213e99b5a12560987e95682cf029b59f",
+      "bytes": 43558
+    },
+    "factorial_historical_reproduction_audit.csv": {
+      "sha256": "418b7470790e3a7f474a8a0ca317bb31c0e2cf2c71739fea2ea151be0e389736",
+      "bytes": 15756
+    },
+    "prospective_premature_stop_root_cause.csv": {
+      "sha256": "b7dc8072e6dfd86e53bc8f084eb58466aa6d5998946b06703cb91448724af422",
+      "bytes": 7654
+    },
+    "bundle_validation_plan_strata.csv": {
+      "sha256": "08e47f1a51b78a76a5ff9324c259f2ccdd1bc88d2c361a44fe0f2f21120ccf5b",
+      "bytes": 6604
+    },
+    "factorial_exploration_value_history.csv": {
+      "sha256": "bbe65a35a30a305f0f2e1a247d8998d95a70bea23ae6b93350ae70d416222865",
+      "bytes": 14441
+    },
+    "DESIGNATED_BUNDLE_VALIDATION_PROTOCOL_V1.json": {
+      "sha256": "be1db7cb8030f1db3a4a71bcf0b594b411753b8fd5cfb651ce8e2b58f43c8623",
+      "bytes": 2008
+    },
+    "BUNDLE_VALIDATION_PROTOCOL_REPORT.md": {
+      "sha256": "b75163a68b81f09545e61465e74d3122c52141d1811ecb597731c63f285bca73",
+      "bytes": 1155
+    },
+    "POST_PROSPECTIVE_REJECTION_REPORT.md": {
+      "sha256": "be4bf2371c92bf0f5138c69f604e2e14d06f795df8f30be9a410986ca4ea6575",
+      "bytes": 4478
+    },
+    "DATA_PROVENANCE_AUDIT.md": {
+      "sha256": "1cbe6860d0b6e1280d9060b5fe6d7dbe310d9313ebf9a01cd000199b37084dd5",
+      "bytes": 1441
+    },
+    "factorial_final_J_and_regret.png": {
+      "sha256": "eeb49a17f95d2facfd5665baa720102b305a4b48d8cf13d03b223497e10bd5e5",
+      "bytes": 35056
+    },
+    "stopping_removed_trial_value.png": {
+      "sha256": "adec581ad01611c40caa20bdc14a0c8def43661351c38a9f79a3774062af870c",
+      "bytes": 52929
+    },
+    "posthoc_bundle_residuals.png": {
+      "sha256": "584cddd13872a29dc828f28363a6fbfa92f14c106dc82b4ca052575c3eab0b37",
+      "bytes": 49587
+    }
+  },
+  "runtime_seconds": 231.45525954201003,
+  "generated_at_utc": "2026-08-23T00:33:52.706571+00:00"
+}

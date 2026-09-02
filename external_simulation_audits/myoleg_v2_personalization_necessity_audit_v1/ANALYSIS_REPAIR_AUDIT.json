@@ -1,0 +1,23 @@
+{
+  "repair_id": "CONSTANT_SPEARMAN_REPRESENTATION_REPAIR_V1",
+  "date": "2026-08-30",
+  "scope": "descriptive parameter-to-oracle association table only",
+  "trigger": "The first analysis attempt passed constant outcome vectors to scipy.stats.spearmanr, producing undefined NaN coefficients and p-values that propagated through Benjamini-Hochberg correction.",
+  "repair": {
+    "constant_parameter_or_outcome_spearman_rho": null,
+    "constant_parameter_or_outcome_raw_p_value": 1.0,
+    "undefined_reason_recorded": true,
+    "finite_tests_unchanged": true
+  },
+  "frozen_protocol_changed": false,
+  "decision_metrics_or_thresholds_changed": false,
+  "held_out_truth_access_changed": false,
+  "preliminary_decision_changed_by_repair": false,
+  "first_attempt_preserved_at": "attempt1_constant_input_warning/",
+  "second_attempt": {
+    "status": "INCOMPLETE_ENGINEERING_RUN",
+    "reason": "The archived figures directory had to be recreated before image output.",
+    "scientific_analysis_changed": false,
+    "preserved_at": "attempt2_missing_figures_directory/"
+  }
+}

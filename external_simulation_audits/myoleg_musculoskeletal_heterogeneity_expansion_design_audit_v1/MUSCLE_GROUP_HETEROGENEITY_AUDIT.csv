@@ -1,0 +1,7 @@
+factor,model_fields,relative_pattern_changes,evidence,taxonomy,future_role
+V1 hip-only common fpmax,muscle-specific fpmax changed by one common group multiplier,False,V1 negative result,B,secondary/background; not primary signal source
+V1 knee-only common fpmax,muscle-specific fpmax changed by one common group multiplier,False,V1 negative result,B,secondary/background; not primary signal source
+V1 biarticular common fpmax,seven muscle-specific fpmax fields changed uniformly,False,V1 negative result,B,replace in personalization-focused V2 design
+rectus-femoris vs hamstring-family relative fpmax,recfem_r vs bflh_r/semimem_r/semiten_r gainprm/biasprm[7],True,E3 mapping; range absent,A,pilot candidate
+relative family F0,muscle.force gainprm/biasprm[2] by anatomical family,True,E2/E3; range mapping required,A,pilot candidate
+80 independent random muscles,all muscle fields independently,True,no parsimonious subject semantics,E,prohibited

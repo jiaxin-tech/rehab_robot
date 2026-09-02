@@ -1,0 +1,51 @@
+{
+  "protocol_id": "RESEARCH_ONLY_DECISION_GUARDED_SEQUENTIAL_PERSONALIZATION_V1",
+  "decision_uncertainty_version": "RESEARCH_DECISION_UNCERTAINTY_V1",
+  "policies": {
+    "P0_SUPPORTED_ONLY_GREEDY": {
+      "role": "SANITY_COMPARATOR_NOT_RECOMMENDED",
+      "exploit": "lowest_predicted_J_among_supported_local_trust_region_neighbors",
+      "decision_guard_required": false,
+      "exploration_allowed": false
+    },
+    "P1_DECISION_GUARDED_EXPLOIT_ONLY": {
+      "role": "RESEARCH_DIAGNOSTIC",
+      "exploit": "local_candidate_requires_validation_calibrated_margin_and_support_provenance",
+      "decision_guard_required": true,
+      "exploration_allowed": false
+    },
+    "P2_DECISION_GUARDED_EXPLORE_EXPLOIT": {
+      "role": "RESEARCH_DIAGNOSTIC",
+      "exploit": "same_as_P1",
+      "explore": "one_formal_grid_layer_information_gain_first",
+      "decision_guard_required": true,
+      "exploration_allowed": true
+    }
+  },
+  "exploit_steps": {
+    "initial_hip_deg": 1.0,
+    "initial_knee_deg": 1.0,
+    "initial_phase": 0.01,
+    "minimum_hip_deg": 0.25,
+    "minimum_knee_deg": 0.25,
+    "minimum_phase": 0.0025
+  },
+  "exploration_frontier_steps": {
+    "hip_deg": 0.25,
+    "knee_deg": 0.25,
+    "phase": 0.0025
+  },
+  "decision_guard": {
+    "improvement_margin_formula": "-delta_J_pred - max_observed_validation_e_delta_J - 0.005",
+    "uncertainty_bound_status": "RESEARCH_CANDIDATE_ONLY_NOT_FORMAL_THRESHOLD",
+    "support_role": "DATA_PROVENANCE_NOT_RELIABILITY_APPROVAL",
+    "distance_role": "LOCALITY_CONTROL_NOT_RELIABILITY_SCORE",
+    "formal_threshold": false
+  },
+  "support_coverage_gate_percent": 90.0,
+  "trial_budget": 6,
+  "trial_budget_status": "RESEARCH_ONLY_NOT_HUMAN_SAFETY_THRESHOLD",
+  "heldout_final_test_used": false,
+  "human_ready_theta_0_created": false,
+  "robot_execution_allowed": false
+}

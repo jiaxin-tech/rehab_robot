@@ -1,0 +1,33 @@
+{
+  "attempts_before_final_uninterrupted_resume": [
+    {
+      "attempt": 1,
+      "completed_new_chunks_before_interrupt": 40,
+      "reason_for_interrupt": "root-cause audit after lightweight integrity status failures",
+      "result": "21 chunks were invalid only because the new generator incorrectly used 119.5 deg instead of the frozen candidate-manifest trusted upper knee domain of 120.0 deg; 19 unaffected chunks remained valid",
+      "wall_time_s_before_interrupt": 306.36468670901377
+    },
+    {
+      "attempt": 2,
+      "completed_new_chunks_before_interrupt": 40,
+      "reason_for_interrupt": "replace a computationally redundant full constraint-group dense-Jacobian construction with a lightweight algebraically equivalent joint-limit projection",
+      "result": "four preregistered geometry cases across all 401 samples had exactly zero projection difference and identical constraint counts; the 59 valid existing chunks were retained",
+      "wall_time_s_before_interrupt": 309.0361883750302
+    },
+    {
+      "attempt": 3,
+      "completed_new_chunks_at_last_progress": 130,
+      "reason_for_interrupt": "use the MuJoCo inverse-skip acceleration stage after an already-completed forward pass instead of recomputing unchanged position and velocity stages",
+      "result": "the reference candidate across all 401 samples had exactly zero qfrc_inverse, efc_force, required-tau, and projected-limit difference; the inverse call alone was 11.47 times faster",
+      "wall_time_lower_bound_s_at_last_progress": 1004.4973678329843
+    }
+  ],
+  "candidate_domain_changed": false,
+  "cohort_changed": false,
+  "formal_worker_count_changed": false,
+  "gate_threshold_changed": false,
+  "integrity_only_was_inspected": true,
+  "j_rank_or_oracle_inspected": false,
+  "prior_interrupted_wall_time_lower_bound_s": 1619.8982429170284,
+  "resume_rule": "retain checksum/schema/integrity-valid chunks; explicitly recompute missing, checksum-invalid, schema-invalid, identity-invalid, or pair-integrity-invalid chunks"
+}

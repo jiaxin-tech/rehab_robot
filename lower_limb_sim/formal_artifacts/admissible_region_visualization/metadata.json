@@ -1,0 +1,282 @@
+{
+  "animation": {
+    "physical_realtime_claimed": false,
+    "requested_frame_count": 96,
+    "source_cycle_duration_s": 24.0,
+    "time_compressed": true,
+    "writer_fps": 12.0
+  },
+  "artifact_sha256": {
+    "VISUALIZATION_SUMMARY.md": "198a4c29c65aa32b77cf52b2fc0fff4b5f51028ef54c08367cd4fe538e5a609b",
+    "dynamic_rehabilitation_process.gif": "24bcbe344a9f160c7b6f038af10fd206d0e7f2083f70bbe6708fb95aa4831aa2",
+    "dynamic_rehabilitation_snapshots.png": "2d0bd0b0379203d7d560e245574ba85b8398607240bc6c5b3a94b0f16a48a7dc",
+    "hip_corridor_vs_phase_detailed.png": "a6d57a91f9bbba6c53274c55ae2b3dba14c5d8e0bdbab37f81909e5bc535bf25",
+    "identification_directional_support_summary.png": "963c21de0139fcd945ac7b4d7dd2cfd1a28ee23dfe779b4130d2c5c600613528",
+    "identification_region_parameter_slices.png": "899bd92c377a8f0556830990399966b44dc631cf97464cd2e53d1a9a0aa04554",
+    "knee_corridor_vs_phase_detailed.png": "249a4d07c4509352606c4bc483e33927d8bbdd99be170f64c7e4e30dc0502984",
+    "pull_deviation_vs_phase.png": "49fe9289a2f5b998a6ba8119996fa482c66e382fb2a537bc6847e6cbbc4950e4",
+    "pull_reference_corridor.png": "59b5ef5be3184addbf0fa289930aa8312435c0695be5b8c298919dd91a255f0a",
+    "reference_admissible_region_overview.png": "db91a65966b17ae1594c031266f5125307b8947cd1008879d65ee36ec906182c"
+  },
+  "artifact_status": "FORMAL_OFFLINE_EXPLANATORY_VISUALIZATION",
+  "created_git_commit": "f5a73d26f64fc6a74beb0953e03be159064360b1",
+  "directional_identification_support": [
+    {
+      "direction": "hip -",
+      "farthest_supported_distance": 5.0,
+      "nearest_rejected_distance": null,
+      "nearest_rejected_reason": "",
+      "nearest_sample_distance": 0.25,
+      "parameter_column": "hip_delta",
+      "sampled_count": 20,
+      "supported_count": 20,
+      "supported_fraction": 1.0,
+      "unit": "deg"
+    },
+    {
+      "direction": "hip +",
+      "farthest_supported_distance": null,
+      "nearest_rejected_distance": 0.25,
+      "nearest_rejected_reason": "identification_domain_insufficient",
+      "nearest_sample_distance": 0.25,
+      "parameter_column": "hip_delta",
+      "sampled_count": 8,
+      "supported_count": 0,
+      "supported_fraction": 0.0,
+      "unit": "deg"
+    },
+    {
+      "direction": "knee -",
+      "farthest_supported_distance": 5.0,
+      "nearest_rejected_distance": null,
+      "nearest_rejected_reason": "",
+      "nearest_sample_distance": 0.25,
+      "parameter_column": "knee_delta",
+      "sampled_count": 20,
+      "supported_count": 20,
+      "supported_fraction": 1.0,
+      "unit": "deg"
+    },
+    {
+      "direction": "knee +",
+      "farthest_supported_distance": 0.25,
+      "nearest_rejected_distance": 0.5,
+      "nearest_rejected_reason": "identification_domain_insufficient",
+      "nearest_sample_distance": 0.25,
+      "parameter_column": "knee_delta",
+      "sampled_count": 8,
+      "supported_count": 1,
+      "supported_fraction": 0.125,
+      "unit": "deg"
+    },
+    {
+      "direction": "phase -",
+      "farthest_supported_distance": 0.0299999999999999,
+      "nearest_rejected_distance": null,
+      "nearest_rejected_reason": "",
+      "nearest_sample_distance": 0.0025,
+      "parameter_column": "phase_delta",
+      "sampled_count": 12,
+      "supported_count": 12,
+      "supported_fraction": 1.0,
+      "unit": "phase"
+    },
+    {
+      "direction": "phase +",
+      "farthest_supported_distance": 0.0299999999999999,
+      "nearest_rejected_distance": null,
+      "nearest_rejected_reason": "",
+      "nearest_sample_distance": 0.0025,
+      "parameter_column": "phase_delta",
+      "sampled_count": 12,
+      "supported_count": 12,
+      "supported_fraction": 1.0,
+      "unit": "phase"
+    }
+  ],
+  "generation_timestamp_utc": "2026-08-14T09:58:45.762272+00:00",
+  "generator_version": "continuous_asymmetric_reference_neighborhood_v1",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "initial_trust_region_neighbors": [
+    {
+      "alpha": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "domain_coverage_percent": 81.79551122194513,
+      "invalid_reason": "identification_domain_insufficient",
+      "label": "hip +",
+      "trajectory_admissible": false
+    },
+    {
+      "alpha": [
+        -1.0,
+        0.0,
+        0.0
+      ],
+      "domain_coverage_percent": 99.75062344139653,
+      "invalid_reason": "",
+      "label": "hip -",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "domain_coverage_percent": 81.29675810473816,
+      "invalid_reason": "identification_domain_insufficient",
+      "label": "knee +",
+      "trajectory_admissible": false
+    },
+    {
+      "alpha": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "domain_coverage_percent": 99.75062344139653,
+      "invalid_reason": "",
+      "label": "knee -",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        0.0,
+        0.0,
+        0.01
+      ],
+      "domain_coverage_percent": 99.50124688279301,
+      "invalid_reason": "",
+      "label": "phase +",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        0.0,
+        0.0,
+        -0.01
+      ],
+      "domain_coverage_percent": 99.75062344139653,
+      "invalid_reason": "",
+      "label": "phase -",
+      "trajectory_admissible": true
+    }
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "parameter_sample_count": 21025,
+  "parent_reference_id": "reference_measured_asymmetric_closed_slow",
+  "parent_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "representative_candidates": [
+    {
+      "alpha": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "label": "neutral",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        -3.0,
+        0.0,
+        0.0
+      ],
+      "label": "hip negative",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        0.0,
+        -3.0,
+        0.0
+      ],
+      "label": "knee negative",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        0.0,
+        0.0,
+        0.03
+      ],
+      "label": "positive phase",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        0.0,
+        0.0,
+        -0.03
+      ],
+      "label": "negative phase",
+      "trajectory_admissible": true
+    },
+    {
+      "alpha": [
+        -3.0,
+        -3.0,
+        0.03
+      ],
+      "label": "combined perturbation",
+      "trajectory_admissible": true
+    }
+  ],
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "schema_version": 1,
+  "scientific_boundaries": {
+    "formal_sequential_personalization_rerun": false,
+    "generator_mathematics_modified": false,
+    "hardware_modified": false,
+    "identification_region_is_rom": false,
+    "identification_region_is_safety_region": false,
+    "identification_region_is_workspace": false,
+    "real_robot_safety_region_status": "NOT_DEFINED_NOT_APPROVED",
+    "reference_modified": false,
+    "reliability_threshold_resolved": false,
+    "robot_command_sent": false,
+    "robot_connection_performed": false,
+    "rom_modified": false,
+    "safety_modified": false
+  },
+  "source_inputs": {
+    "active_reference": {
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    },
+    "admissible_region_manifest": {
+      "path": "lower_limb_sim/formal_artifacts/admissible_personalization_region_v1/admissible_region_manifest.json",
+      "sha256": "587c3947d9a124a376c5305e75c6ac81737fb2932bfc4eef99d45346e2757836"
+    },
+    "formal_experiment_manifest": {
+      "path": "config/formal_experiment_manifest.json",
+      "sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+    },
+    "joint_corridor": {
+      "path": "lower_limb_sim/formal_artifacts/admissible_personalization_region_v1/joint_corridor_by_phase.csv",
+      "sha256": "d049ebf6d5d70bfea297eb0323bfa0fe83bdbe4836aae9565c022348f3f3b539"
+    },
+    "parameter_space_admissibility": {
+      "path": "lower_limb_sim/formal_artifacts/admissible_personalization_region_v1/parameter_space_admissibility.csv",
+      "sha256": "f5eddf4c3a05e9e638bf9254c9f74acf36c80420a1b1ea5f4580e5ce4721a16b"
+    },
+    "pull_corridor": {
+      "path": "lower_limb_sim/formal_artifacts/admissible_personalization_region_v1/pull_corridor_by_phase.csv",
+      "sha256": "1e89478b0bb476b19230b131c26b2afaa251dfbd078f268671a3e55bfcc8ed91"
+    }
+  },
+  "source_region_classification": "OFFLINE_PERSONALIZATION_ADMISSIBLE_REGION",
+  "source_region_version": "REFERENCE_CENTERED_ADMISSIBLE_REGION_V1",
+  "theta_shank_definition": "q_hip - q_knee",
+  "trajectory_sample_count": 401,
+  "visualization_version": "ADMISSIBLE_REGION_VISUALIZATION_V1"
+}

@@ -1,0 +1,26 @@
+{
+  "DOWNGRADE": [
+    "patient population truth",
+    "final personalization-necessity proof",
+    "subject preference ground truth",
+    "comfort oracle",
+    "human safety or clinical effectiveness evidence"
+  ],
+  "KEEP": [
+    "offline method development",
+    "physics-prior implementation checks",
+    "trajectory kinematic/dynamic feasibility support",
+    "controlled stress testing and ablation",
+    "simulation-based baseline construction with explicit evidence limits"
+  ],
+  "STOP": [
+    "arbitrary factor expansion to induce oracle diversity",
+    "Cohort V2 under uncalibrated S1 ranges",
+    "larger diagnostic z after a negative preregistered pilot",
+    "V4/V5 redesign solely to manufacture personalization",
+    "objective-weight search solely to manufacture different oracles"
+  ],
+  "myoleg_is_future_patient_preference_truth": false,
+  "myoleg_still_useful": true,
+  "stage_id": "MYOLEG_PERSONALIZATION_FORMULATION_STOP_OR_PIVOT_AUDIT_V1"
+}

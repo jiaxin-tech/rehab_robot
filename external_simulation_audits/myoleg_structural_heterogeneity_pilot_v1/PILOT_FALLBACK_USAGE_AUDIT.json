@@ -1,0 +1,13 @@
+{
+  "actual_total_model_count": 9,
+  "actual_total_replay_count": 117,
+  "additional_levels_added": false,
+  "events": [],
+  "fallback_model_count": 0,
+  "fallback_replay_count": 0,
+  "fallback_triggered_by_small_effect_or_failed_scientific_gate": false,
+  "larger_perturbation_attempted": false,
+  "primary_model_count": 9,
+  "primary_replay_count": 117,
+  "rule": "fallback only after preregistered primary model/numerical integrity failure"
+}

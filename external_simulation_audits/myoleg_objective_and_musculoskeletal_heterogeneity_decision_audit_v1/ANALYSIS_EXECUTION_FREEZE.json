@@ -1,0 +1,28 @@
+{
+  "candidate_count": 625,
+  "decision_rules_copied_without_post_result_tuning": {
+    "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_ADEQUATE": "at least two physically meaningful diagnostic representations satisfy REPRESENTATION_ORDERING_EVIDENCE, at least one is a force component, and at least one has direction_disagreement_fraction>=0.05",
+    "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_LIMITED": "the ADEQUATE conjunction is false after all preregistered diagnostics pass integrity checks",
+    "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE": "the LIMITED conjunction is false after all preregistered diagnostics pass integrity checks",
+    "CURRENT_OBJECTIVE_INFORMATION_RETENTION_LIMITED": "at least two upstream raw/time/peak/component representations satisfy REPRESENTATION_ORDERING_EVIDENCE, combined J does not, and at least one preregistered normalization/RMS/component-aggregation loss condition is met",
+    "final_matrix": {
+      "integrity_or_diagnostic_failure": "INSUFFICIENT_EVIDENCE_TO_SEPARATE",
+      "objective_adequate_and_heterogeneity_adequate": "INSUFFICIENT_EVIDENCE_TO_SEPARATE",
+      "objective_adequate_and_heterogeneity_limited": "HETEROGENEITY_LIMITATION_DOMINANT",
+      "objective_limited_and_heterogeneity_adequate": "OBJECTIVE_LIMITATION_DOMINANT",
+      "objective_limited_and_heterogeneity_limited": "BOTH_OBJECTIVE_AND_HETEROGENEITY_LIMITING"
+    },
+    "next_stage": {
+      "BOTH_OBJECTIVE_AND_HETEROGENEITY_LIMITING": "recommend the layer with stronger preregistered evidence first; do not execute",
+      "HETEROGENEITY_LIMITATION_DOMINANT": "MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_AUDIT_V1",
+      "INSUFFICIENT_EVIDENCE_TO_SEPARATE": "MYOLEG_OBJECTIVE_HETEROGENEITY_EVIDENCE_GAP_PROTOCOL_V1",
+      "OBJECTIVE_LIMITATION_DOMINANT": "MYOLEG_OBJECTIVE_FORMULATION_DESIGN_AUDIT_V1"
+    }
+  },
+  "development_subject_count": 24,
+  "frozen_before_compact_or_replay_scientific_arrays_read": true,
+  "held_out_scientific_access_count": 0,
+  "protocol_id": "OBJECTIVE_HETEROGENEITY_DECISION_PROTOCOL_V1",
+  "protocol_sha256": "80a24b8da08b902581db05c875fb3f8532ece30737e36a98cf26778a0e467fd8",
+  "stage_id": "MYOLEG_OBJECTIVE_AND_MUSCULOSKELETAL_HETEROGENEITY_DECISION_AUDIT_V1"
+}

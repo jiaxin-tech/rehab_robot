@@ -1,0 +1,7 @@
+factor,required_evidence,minimum_level,acceptable_source,current_gap,status
+normalized muscle range/lmin/lmax mapping,model-specific calibration linking measured fiber/tendon behavior to MuJoCo normalized fields,E2,subject-specific imaging/dynamometry plus validated conversion,no one-to-one physiological mapping,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+relative muscle-family F0,human architecture/PCSA or force-capacity distribution with conversion uncertainty,E1/E2,human measurements or validated subject-specific model,"current force field is model force scale, not direct measured strength",RANGE_REQUIRES_EXTERNAL_EVIDENCE
+relative family fpmax,passive force-length calibration by muscle family,E1/E2,passive torque/fiber imaging calibration,literature does not directly specify current normalized fpmax bounds,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+COM profile,segment-specific human COM distribution and coherent inertia reconstruction,E1/E2,anthropometric/imaging study,V1 fixed COM and approximate inertia scaling,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+moment-arm geometry,subject-specific geometry plus coupled path/wrap and muscle-length calibration,E2,MRI-derived model validation,no safe scalar site range,REQUIRES_REBUILD_CALIBRATION
+tendon compliance,tendon-specific stiffness/slack calibration in compatible model,E1/E2,in-vivo/validated model calibration,current stiffness/damping zero,SECONDARY_STRESS_ONLY

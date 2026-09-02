@@ -1,0 +1,46 @@
+{
+  "allowed_model_inputs": [
+    "past valid measured state/interaction time series",
+    "past valid episode endpoints",
+    "past executed beta",
+    "frozen reference/task/V3 descriptors"
+  ],
+  "bo_observation_interface": {
+    "candidate": [
+      "beta_flex",
+      "beta_extend"
+    ],
+    "invalid_value": null,
+    "quality": [
+      "gate_version",
+      "endpoint_version",
+      "uncertainty_or_quality_flag"
+    ],
+    "value": "validated episode mechanical endpoint"
+  },
+  "decision_rule": "when selecting beta_k, use frozen priors plus valid completed episodes 1..k-1 only",
+  "episode_available_after": "validity gate PASS and endpoint versioned computation completes",
+  "final_evaluation": "sealed from adaptation; cannot update the selected beta or adaptation model",
+  "forbidden": [
+    "current/future episode outcome",
+    "unexecuted candidate truth",
+    "offline MyoLeg oracle",
+    "held-out final evaluation",
+    "future participant data",
+    "post-hoc endpoint variant chosen by ranking"
+  ],
+  "gray_box_interface": {
+    "endpoint_relationship": "time-series prediction may be projected/aggregated by the separately frozen endpoint; endpoint-only model is a simpler comparator",
+    "five_parameter_model_modified": false,
+    "inputs": [
+      "trajectory/state descriptors",
+      "validated measured episode time series/features"
+    ],
+    "outputs": [
+      "mechanical response prediction",
+      "prediction uncertainty/quality"
+    ]
+  },
+  "invalid_episode": "record exposure and failure, but do not add a normal objective observation or fit target",
+  "policy_id": "REAL_PERSONALIZATION_CAUSAL_DATA_POLICY_V1"
+}

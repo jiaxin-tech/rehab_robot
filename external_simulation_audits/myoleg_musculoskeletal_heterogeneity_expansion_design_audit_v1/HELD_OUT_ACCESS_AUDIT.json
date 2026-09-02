@@ -1,0 +1,15 @@
+{
+  "stage_id": "MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_AUDIT_V1",
+  "held_out_classification": "SEALED_CONFIRMATORY_TRUTH_FOR_COHORT_V1",
+  "held_out_subject_ids": [
+    "MYOLEG_VP_004", "MYOLEG_VP_008", "MYOLEG_VP_012", "MYOLEG_VP_016",
+    "MYOLEG_VP_020", "MYOLEG_VP_024", "MYOLEG_VP_028", "MYOLEG_VP_032"
+  ],
+  "allowed_operations": ["file existence", "manifest row count", "streaming SHA-256"],
+  "held_out_scientific_access_count": 0,
+  "held_out_np_load_count": 0,
+  "held_out_replay_count": 0,
+  "future_methodological_decision": "V1 held-out subjects cannot automatically serve as the sole confirmatory cohort for a materially new structural heterogeneity space",
+  "new_held_out_subjects_generated": false,
+  "status": "SEALED_AND_FAIL_CLOSED"
+}

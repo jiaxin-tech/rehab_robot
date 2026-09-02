@@ -1,0 +1,21 @@
+{
+  "bo_status": "PERSONALIZED_BO_NOT_YET_JUSTIFIED_WITHOUT_SUBJECT_FEEDBACK",
+  "cohort_v2_generated": false,
+  "core_question_answer": "NO_CURRENT_JUSTIFICATION_FOR_SYNTHETIC_MYOLEG_HETEROGENEITY_PLUS_TORQUE_OBJECTIVE_AS_PRIMARY_SUBJECT_PREFERENCE_SOURCE",
+  "held_out_scientific_access_count": 0,
+  "human_feedback_required_for_comfort_preference_claim": true,
+  "human_ready": false,
+  "mechanical_and_comfort_personalization_separated": true,
+  "mechanical_torque_is_comfort_truth": false,
+  "myoleg_engineering_support_role_retained": true,
+  "myoleg_patient_truth_role_stopped": true,
+  "next_independent_stage": "PERSONALIZED_REHABILITATION_RESEARCH_FORMULATION_V2",
+  "next_stage_executed": false,
+  "option_a_continue_synthetic_myoleg_personalization": "STOP",
+  "option_b_universal_mechanical_trajectory_optimization": "RETAIN_AS_LIMITED_NONPERSONALIZED_SECONDARY_BRANCH",
+  "option_c_measurement_driven_personalization": "PRIMARY_RECOMMENDATION",
+  "pinn_status": "PINN_NOT_YET_JUSTIFIED",
+  "primary_recommendation": "PIVOT_TO_MEASUREMENT_DRIVEN_PERSONALIZATION",
+  "robot_approved": false,
+  "stage_id": "MYOLEG_PERSONALIZATION_FORMULATION_STOP_OR_PIVOT_AUDIT_V1"
+}

@@ -1,0 +1,17 @@
+metric,v2,v3,unit,comparison_frozen_after_v3_only_result_freeze
+candidate_dimensions,3,2,count,True
+candidate_count,16675,625,count,True
+rom_invariant,False,True,boolean,True
+distinct_oracle_count,1,1,count,True
+boundary_oracle_fraction,1.0,1.0,fraction,True
+spearman_median,0.9998337836697475,0.9999533792086508,correlation,True
+kendall_median,0.9897220731124183,0.9952564102564103,correlation,True
+candidate_main_variance_percent,99.93907664196321,99.86390766427071,percent,True
+interaction_variance_percent,0.03311433595538275,0.13507371763654394,percent,True
+interaction_to_common_ratio,0.01820289059991073,0.03677741061119796,ratio,True
+common_regret_mean,0.0,0.0,relative J fraction,True
+common_regret_max,0.0,0.0,relative J fraction,True
+off_diagonal_transfer_relative_regret_median,0.0,0.0,relative J fraction,True
+off_diagonal_transfer_relative_regret_max,0.0,0.0,relative J fraction,True
+universal_near_oracle_epsilon_0_001,True,True,boolean,True
+maximum_common_near_oracle_coverage_epsilon_0_001,24,24,subjects,True

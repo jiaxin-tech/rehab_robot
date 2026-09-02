@@ -1,0 +1,1106 @@
+{
+  "boundary_pressure": {
+    "frozen_common_oracle_alpha": [
+      2.0,
+      0.5,
+      -0.03
+    ],
+    "inward_steps": [
+      1,
+      2,
+      3
+    ],
+    "metric": "J(inward)-J(boundary); positive means improvement toward boundary",
+    "no_out_of_domain_extrapolation": true
+  },
+  "candidate_effect_interaction": {
+    "common_scale": "RMS of candidate main effect",
+    "interaction_scale": "RMS of subject-by-candidate residual",
+    "ratio": "interaction scale / common candidate-effect scale"
+  },
+  "crossover": {
+    "deterministic_subset_candidate_ids": [
+      "MYOLEG_V2_P02233",
+      "MYOLEG_V2_P09042",
+      "MYOLEG_V2_P17135",
+      "MYOLEG_V2_P07267",
+      "MYOLEG_V2_P10496",
+      "MYOLEG_V2_P03389",
+      "MYOLEG_V2_P11791",
+      "MYOLEG_V2_P11418",
+      "MYOLEG_V2_P00023",
+      "MYOLEG_V2_P02713",
+      "MYOLEG_V2_P09532",
+      "MYOLEG_V2_P06819",
+      "MYOLEG_V2_P10183",
+      "MYOLEG_V2_P04808",
+      "MYOLEG_V2_P13154",
+      "MYOLEG_V2_P01772",
+      "MYOLEG_V2_P13321",
+      "MYOLEG_V2_P08538",
+      "MYOLEG_V2_P09432",
+      "MYOLEG_V2_P16497",
+      "MYOLEG_V2_P18556",
+      "MYOLEG_V2_P09777",
+      "MYOLEG_V2_P10893",
+      "MYOLEG_V2_P13209",
+      "MYOLEG_V2_P09834",
+      "MYOLEG_V2_P14348",
+      "MYOLEG_V2_P15514",
+      "MYOLEG_V2_P10366",
+      "MYOLEG_V2_P20098",
+      "MYOLEG_V2_P10298",
+      "MYOLEG_V2_P19196",
+      "MYOLEG_V2_P09456",
+      "MYOLEG_V2_P19701",
+      "MYOLEG_V2_P04184",
+      "MYOLEG_V2_P13974",
+      "MYOLEG_V2_P20850",
+      "MYOLEG_V2_P16699",
+      "MYOLEG_V2_P08065",
+      "MYOLEG_V2_P14585",
+      "MYOLEG_V2_P18362",
+      "MYOLEG_V2_P19778",
+      "MYOLEG_V2_P04571",
+      "MYOLEG_V2_P15589",
+      "MYOLEG_V2_P06756",
+      "MYOLEG_V2_P08332",
+      "MYOLEG_V2_P17961",
+      "MYOLEG_V2_P00361",
+      "MYOLEG_V2_P08001",
+      "MYOLEG_V2_P17749",
+      "MYOLEG_V2_P12395",
+      "MYOLEG_V2_P16955",
+      "MYOLEG_V2_P14603",
+      "MYOLEG_V2_P11148",
+      "MYOLEG_V2_P09202",
+      "MYOLEG_V2_P19800",
+      "MYOLEG_V2_P13969",
+      "MYOLEG_V2_P08132",
+      "MYOLEG_V2_P09496",
+      "MYOLEG_V2_P01155",
+      "MYOLEG_V2_P06049",
+      "MYOLEG_V2_P00350",
+      "MYOLEG_V2_P05181",
+      "MYOLEG_V2_P09702",
+      "MYOLEG_V2_P16107",
+      "MYOLEG_V2_P13271",
+      "MYOLEG_V2_P12457",
+      "MYOLEG_V2_P20527",
+      "MYOLEG_V2_P18367",
+      "MYOLEG_V2_P20148",
+      "MYOLEG_V2_P11236",
+      "MYOLEG_V2_P04151",
+      "MYOLEG_V2_P16374",
+      "MYOLEG_V2_P09095",
+      "MYOLEG_V2_P00490",
+      "MYOLEG_V2_P10898",
+      "MYOLEG_V2_P07537",
+      "MYOLEG_V2_P14957",
+      "MYOLEG_V2_P19053",
+      "MYOLEG_V2_P10938",
+      "MYOLEG_V2_P18435",
+      "MYOLEG_V2_P19001",
+      "MYOLEG_V2_P19080",
+      "MYOLEG_V2_P14608",
+      "MYOLEG_V2_P09631",
+      "MYOLEG_V2_P13775",
+      "MYOLEG_V2_P02390",
+      "MYOLEG_V2_P19970",
+      "MYOLEG_V2_P06561",
+      "MYOLEG_V2_P14290",
+      "MYOLEG_V2_P05233",
+      "MYOLEG_V2_P01665",
+      "MYOLEG_V2_P19609",
+      "MYOLEG_V2_P05556",
+      "MYOLEG_V2_P06607",
+      "MYOLEG_V2_P07501",
+      "MYOLEG_V2_P06990",
+      "MYOLEG_V2_P18888",
+      "MYOLEG_V2_P11747",
+      "MYOLEG_V2_P07794",
+      "MYOLEG_V2_P12002",
+      "MYOLEG_V2_P15476",
+      "MYOLEG_V2_P08412",
+      "MYOLEG_V2_P14750",
+      "MYOLEG_V2_P09100",
+      "MYOLEG_V2_P07093",
+      "MYOLEG_V2_P01206",
+      "MYOLEG_V2_P06676",
+      "MYOLEG_V2_P03019",
+      "MYOLEG_V2_P11619",
+      "MYOLEG_V2_P12492",
+      "MYOLEG_V2_P20388",
+      "MYOLEG_V2_P17790",
+      "MYOLEG_V2_P11645",
+      "MYOLEG_V2_P02197",
+      "MYOLEG_V2_P03289",
+      "MYOLEG_V2_P05904",
+      "MYOLEG_V2_P20321",
+      "MYOLEG_V2_P04609",
+      "MYOLEG_V2_P05646",
+      "MYOLEG_V2_P19734",
+      "MYOLEG_V2_P11818",
+      "MYOLEG_V2_P11660",
+      "MYOLEG_V2_P19205",
+      "MYOLEG_V2_P18190",
+      "MYOLEG_V2_P03637",
+      "MYOLEG_V2_P09681",
+      "MYOLEG_V2_P15967",
+      "MYOLEG_V2_P03646",
+      "MYOLEG_V2_P15028",
+      "MYOLEG_V2_P05510",
+      "MYOLEG_V2_P14723",
+      "MYOLEG_V2_P06848",
+      "MYOLEG_V2_P19786",
+      "MYOLEG_V2_P08927",
+      "MYOLEG_V2_P12843",
+      "MYOLEG_V2_P11733",
+      "MYOLEG_V2_P00203",
+      "MYOLEG_V2_P01850",
+      "MYOLEG_V2_P09458",
+      "MYOLEG_V2_P01006",
+      "MYOLEG_V2_P17874",
+      "MYOLEG_V2_P08054",
+      "MYOLEG_V2_P16144",
+      "MYOLEG_V2_P05167",
+      "MYOLEG_V2_P17701",
+      "MYOLEG_V2_P19029",
+      "MYOLEG_V2_P07698",
+      "MYOLEG_V2_P20558",
+      "MYOLEG_V2_P09610",
+      "MYOLEG_V2_P09593",
+      "MYOLEG_V2_P05140",
+      "MYOLEG_V2_P15758",
+      "MYOLEG_V2_P06022",
+      "MYOLEG_V2_P08217",
+      "MYOLEG_V2_P00026",
+      "MYOLEG_V2_P06653",
+      "MYOLEG_V2_P11901",
+      "MYOLEG_V2_P01208",
+      "MYOLEG_V2_P09665",
+      "MYOLEG_V2_P13085",
+      "MYOLEG_V2_P12550",
+      "MYOLEG_V2_P10995",
+      "MYOLEG_V2_P12111",
+      "MYOLEG_V2_P14838",
+      "MYOLEG_V2_P09855",
+      "MYOLEG_V2_P16381",
+      "MYOLEG_V2_P04777",
+      "MYOLEG_V2_P05204",
+      "MYOLEG_V2_P06217",
+      "MYOLEG_V2_P14817",
+      "MYOLEG_V2_P07774",
+      "MYOLEG_V2_P14017",
+      "MYOLEG_V2_P06196",
+      "MYOLEG_V2_P13795",
+      "MYOLEG_V2_P06563",
+      "MYOLEG_V2_P06739",
+      "MYOLEG_V2_P06763",
+      "MYOLEG_V2_P19356",
+      "MYOLEG_V2_P06916",
+      "MYOLEG_V2_P06984",
+      "MYOLEG_V2_P01528",
+      "MYOLEG_V2_P20325",
+      "MYOLEG_V2_P18538",
+      "MYOLEG_V2_P02291",
+      "MYOLEG_V2_P13278",
+      "MYOLEG_V2_P14892",
+      "MYOLEG_V2_P03979",
+      "MYOLEG_V2_P19596",
+      "MYOLEG_V2_P07609",
+      "MYOLEG_V2_P18990",
+      "MYOLEG_V2_P03055",
+      "MYOLEG_V2_P16360",
+      "MYOLEG_V2_P15591",
+      "MYOLEG_V2_P01228",
+      "MYOLEG_V2_P05548",
+      "MYOLEG_V2_P14584",
+      "MYOLEG_V2_P13854",
+      "MYOLEG_V2_P09448",
+      "MYOLEG_V2_P04135",
+      "MYOLEG_V2_P15975",
+      "MYOLEG_V2_P04641",
+      "MYOLEG_V2_P17466",
+      "MYOLEG_V2_P17622",
+      "MYOLEG_V2_P19680",
+      "MYOLEG_V2_P07298",
+      "MYOLEG_V2_P02643",
+      "MYOLEG_V2_P11417",
+      "MYOLEG_V2_P07772",
+      "MYOLEG_V2_P04355",
+      "MYOLEG_V2_P19126",
+      "MYOLEG_V2_P07765",
+      "MYOLEG_V2_P07574",
+      "MYOLEG_V2_P07557",
+      "MYOLEG_V2_P09096",
+      "MYOLEG_V2_P12394",
+      "MYOLEG_V2_P16802",
+      "MYOLEG_V2_P04636",
+      "MYOLEG_V2_P13583",
+      "MYOLEG_V2_P08252",
+      "MYOLEG_V2_P20051",
+      "MYOLEG_V2_P20771",
+      "MYOLEG_V2_P06044",
+      "MYOLEG_V2_P07009",
+      "MYOLEG_V2_P19739",
+      "MYOLEG_V2_P16170",
+      "MYOLEG_V2_P01776",
+      "MYOLEG_V2_P20124",
+      "MYOLEG_V2_P15999",
+      "MYOLEG_V2_P04802",
+      "MYOLEG_V2_P10231",
+      "MYOLEG_V2_P13792",
+      "MYOLEG_V2_P11404",
+      "MYOLEG_V2_P13873",
+      "MYOLEG_V2_P18467",
+      "MYOLEG_V2_P13282",
+      "MYOLEG_V2_P03897",
+      "MYOLEG_V2_P10944",
+      "MYOLEG_V2_P10279",
+      "MYOLEG_V2_P16065",
+      "MYOLEG_V2_P05575",
+      "MYOLEG_V2_P13526",
+      "MYOLEG_V2_P09512",
+      "MYOLEG_V2_P00535",
+      "MYOLEG_V2_P03251",
+      "MYOLEG_V2_P04635",
+      "MYOLEG_V2_P00458",
+      "MYOLEG_V2_P11800",
+      "MYOLEG_V2_P06980",
+      "MYOLEG_V2_P02182",
+      "MYOLEG_V2_P00796",
+      "MYOLEG_V2_P11368",
+      "MYOLEG_V2_P04016",
+      "MYOLEG_V2_P09865",
+      "MYOLEG_V2_P06026",
+      "MYOLEG_V2_P19115",
+      "MYOLEG_V2_P10984",
+      "MYOLEG_V2_P03292",
+      "MYOLEG_V2_P18630",
+      "MYOLEG_V2_P07555",
+      "MYOLEG_V2_P14087",
+      "MYOLEG_V2_P16754",
+      "MYOLEG_V2_P20583",
+      "MYOLEG_V2_P00160",
+      "MYOLEG_V2_P20553",
+      "MYOLEG_V2_P06586",
+      "MYOLEG_V2_P15398",
+      "MYOLEG_V2_P00144",
+      "MYOLEG_V2_P08836",
+      "MYOLEG_V2_P18428",
+      "MYOLEG_V2_P15613",
+      "MYOLEG_V2_P17963",
+      "MYOLEG_V2_P18229",
+      "MYOLEG_V2_P14237",
+      "MYOLEG_V2_P19229",
+      "MYOLEG_V2_P08043",
+      "MYOLEG_V2_P04168",
+      "MYOLEG_V2_P02732",
+      "MYOLEG_V2_P03459",
+      "MYOLEG_V2_P01241",
+      "MYOLEG_V2_P17800",
+      "MYOLEG_V2_P06588",
+      "MYOLEG_V2_P09094",
+      "MYOLEG_V2_P06166",
+      "MYOLEG_V2_P19647",
+      "MYOLEG_V2_P09043",
+      "MYOLEG_V2_P20632",
+      "MYOLEG_V2_P03404",
+      "MYOLEG_V2_P01253",
+      "MYOLEG_V2_P16404",
+      "MYOLEG_V2_P14118",
+      "MYOLEG_V2_P14872",
+      "MYOLEG_V2_P10228",
+      "MYOLEG_V2_P11741",
+      "MYOLEG_V2_P06369",
+      "MYOLEG_V2_P10607",
+      "MYOLEG_V2_P16718",
+      "MYOLEG_V2_P16744",
+      "MYOLEG_V2_P06057",
+      "MYOLEG_V2_P09579",
+      "MYOLEG_V2_P04558",
+      "MYOLEG_V2_P19606",
+      "MYOLEG_V2_P09982",
+      "MYOLEG_V2_P15776",
+      "MYOLEG_V2_P07715",
+      "MYOLEG_V2_P13078",
+      "MYOLEG_V2_P14854",
+      "MYOLEG_V2_P15798",
+      "MYOLEG_V2_P16364",
+      "MYOLEG_V2_P04684",
+      "MYOLEG_V2_P17799",
+      "MYOLEG_V2_P14145",
+      "MYOLEG_V2_P16483",
+      "MYOLEG_V2_P18973",
+      "MYOLEG_V2_P10669",
+      "MYOLEG_V2_P02904",
+      "MYOLEG_V2_P04848",
+      "MYOLEG_V2_P08948",
+      "MYOLEG_V2_P09050",
+      "MYOLEG_V2_P08422",
+      "MYOLEG_V2_P07604",
+      "MYOLEG_V2_P06632",
+      "MYOLEG_V2_P12438",
+      "MYOLEG_V2_P05975",
+      "MYOLEG_V2_P20700",
+      "MYOLEG_V2_P04613",
+      "MYOLEG_V2_P11907",
+      "MYOLEG_V2_P08275",
+      "MYOLEG_V2_P09979",
+      "MYOLEG_V2_P07780",
+      "MYOLEG_V2_P08028",
+      "MYOLEG_V2_P19343",
+      "MYOLEG_V2_P12463",
+      "MYOLEG_V2_P01720",
+      "MYOLEG_V2_P09134",
+      "MYOLEG_V2_P03442",
+      "MYOLEG_V2_P07013",
+      "MYOLEG_V2_P18978",
+      "MYOLEG_V2_P18169",
+      "MYOLEG_V2_P11262",
+      "MYOLEG_V2_P08214",
+      "MYOLEG_V2_P05598",
+      "MYOLEG_V2_P18267",
+      "MYOLEG_V2_P14688",
+      "MYOLEG_V2_P12575",
+      "MYOLEG_V2_P19281",
+      "MYOLEG_V2_P08529",
+      "MYOLEG_V2_P14259",
+      "MYOLEG_V2_P15043",
+      "MYOLEG_V2_P11374",
+      "MYOLEG_V2_P08440",
+      "MYOLEG_V2_P06011",
+      "MYOLEG_V2_P04660",
+      "MYOLEG_V2_P11841",
+      "MYOLEG_V2_P17510",
+      "MYOLEG_V2_P13436",
+      "MYOLEG_V2_P05381",
+      "MYOLEG_V2_P04373",
+      "MYOLEG_V2_P13061",
+      "MYOLEG_V2_P06324",
+      "MYOLEG_V2_P17130",
+      "MYOLEG_V2_P17224",
+      "MYOLEG_V2_P04448",
+      "MYOLEG_V2_P20573",
+      "MYOLEG_V2_P04793",
+      "MYOLEG_V2_P19201",
+      "MYOLEG_V2_P16367",
+      "MYOLEG_V2_P07482",
+      "MYOLEG_V2_P13528",
+      "MYOLEG_V2_P01163",
+      "MYOLEG_V2_P17191",
+      "MYOLEG_V2_P13224",
+      "MYOLEG_V2_P20041",
+      "MYOLEG_V2_P18574",
+      "MYOLEG_V2_P12414",
+      "MYOLEG_V2_P16004",
+      "MYOLEG_V2_P02703",
+      "MYOLEG_V2_P11711",
+      "MYOLEG_V2_P19594",
+      "MYOLEG_V2_P04449",
+      "MYOLEG_V2_P16271",
+      "MYOLEG_V2_P13295",
+      "MYOLEG_V2_P09781",
+      "MYOLEG_V2_P05914",
+      "MYOLEG_V2_P06122",
+      "MYOLEG_V2_P20451",
+      "MYOLEG_V2_P14158",
+      "MYOLEG_V2_P01145",
+      "MYOLEG_V2_P03000",
+      "MYOLEG_V2_P20372",
+      "MYOLEG_V2_P05169",
+      "MYOLEG_V2_P01586",
+      "MYOLEG_V2_P01057",
+      "MYOLEG_V2_P02266",
+      "MYOLEG_V2_P19249",
+      "MYOLEG_V2_P09745",
+      "MYOLEG_V2_P18188",
+      "MYOLEG_V2_P12588",
+      "MYOLEG_V2_P17473",
+      "MYOLEG_V2_P16299",
+      "MYOLEG_V2_P03798",
+      "MYOLEG_V2_P15371",
+      "MYOLEG_V2_P12661",
+      "MYOLEG_V2_P19978",
+      "MYOLEG_V2_P12721",
+      "MYOLEG_V2_P11828",
+      "MYOLEG_V2_P18647",
+      "MYOLEG_V2_P14035",
+      "MYOLEG_V2_P10339",
+      "MYOLEG_V2_P03723",
+      "MYOLEG_V2_P12717",
+      "MYOLEG_V2_P01821",
+      "MYOLEG_V2_P12754",
+      "MYOLEG_V2_P10270",
+      "MYOLEG_V2_P16735",
+      "MYOLEG_V2_P16051",
+      "MYOLEG_V2_P10657",
+      "MYOLEG_V2_P20479",
+      "MYOLEG_V2_P04890",
+      "MYOLEG_V2_P01224",
+      "MYOLEG_V2_P13868",
+      "MYOLEG_V2_P03123",
+      "MYOLEG_V2_P14100",
+      "MYOLEG_V2_P06902",
+      "MYOLEG_V2_P17924",
+      "MYOLEG_V2_P10901",
+      "MYOLEG_V2_P04882",
+      "MYOLEG_V2_P18335",
+      "MYOLEG_V2_P16435",
+      "MYOLEG_V2_P09630",
+      "MYOLEG_V2_P18290",
+      "MYOLEG_V2_P00841",
+      "MYOLEG_V2_P05401",
+      "MYOLEG_V2_P10974",
+      "MYOLEG_V2_P18576",
+      "MYOLEG_V2_P00759",
+      "MYOLEG_V2_P09846",
+      "MYOLEG_V2_P03004",
+      "MYOLEG_V2_P06089",
+      "MYOLEG_V2_P14994",
+      "MYOLEG_V2_P10184",
+      "MYOLEG_V2_P19974",
+      "MYOLEG_V2_P08785",
+      "MYOLEG_V2_P14637",
+      "MYOLEG_V2_P13365",
+      "MYOLEG_V2_P11050",
+      "MYOLEG_V2_P12448",
+      "MYOLEG_V2_P03102",
+      "MYOLEG_V2_P16684",
+      "MYOLEG_V2_P06564",
+      "MYOLEG_V2_P06286",
+      "MYOLEG_V2_P14691",
+      "MYOLEG_V2_P00313",
+      "MYOLEG_V2_P13197",
+      "MYOLEG_V2_P01930",
+      "MYOLEG_V2_P00477",
+      "MYOLEG_V2_P14713",
+      "MYOLEG_V2_P08532",
+      "MYOLEG_V2_P14672",
+      "MYOLEG_V2_P17819",
+      "MYOLEG_V2_P19873",
+      "MYOLEG_V2_P17040",
+      "MYOLEG_V2_P04423",
+      "MYOLEG_V2_P16103",
+      "MYOLEG_V2_P19735",
+      "MYOLEG_V2_P13252",
+      "MYOLEG_V2_P07262",
+      "MYOLEG_V2_P11685",
+      "MYOLEG_V2_P17246",
+      "MYOLEG_V2_P11971",
+      "MYOLEG_V2_P19312",
+      "MYOLEG_V2_P09821",
+      "MYOLEG_V2_P20576",
+      "MYOLEG_V2_P19944",
+      "MYOLEG_V2_P15753",
+      "MYOLEG_V2_P11172",
+      "MYOLEG_V2_P04409",
+      "MYOLEG_V2_P16290",
+      "MYOLEG_V2_P15296",
+      "MYOLEG_V2_P08359",
+      "MYOLEG_V2_P12054",
+      "MYOLEG_V2_P20713",
+      "MYOLEG_V2_P05226",
+      "MYOLEG_V2_P05534",
+      "MYOLEG_V2_P00090",
+      "MYOLEG_V2_P06695",
+      "MYOLEG_V2_P07818",
+      "MYOLEG_V2_P13488",
+      "MYOLEG_V2_P07626",
+      "MYOLEG_V2_P12061",
+      "MYOLEG_V2_P02215",
+      "MYOLEG_V2_P20636",
+      "MYOLEG_V2_P13159",
+      "MYOLEG_V2_P16722",
+      "MYOLEG_V2_P16382",
+      "MYOLEG_V2_P16466",
+      "MYOLEG_V2_P07393",
+      "MYOLEG_V2_P13163",
+      "MYOLEG_V2_P10544",
+      "MYOLEG_V2_P12772",
+      "MYOLEG_V2_P12541",
+      "MYOLEG_V2_P16283",
+      "MYOLEG_V2_P05433",
+      "MYOLEG_V2_P10431",
+      "MYOLEG_V2_P15648",
+      "MYOLEG_V2_P15599",
+      "MYOLEG_V2_P15443",
+      "MYOLEG_V2_P12358",
+      "MYOLEG_V2_P17235",
+      "MYOLEG_V2_P20555",
+      "MYOLEG_V2_P08782",
+      "MYOLEG_V2_P09560",
+      "MYOLEG_V2_P13813"
+    ],
+    "primary": "exact all-candidate Kendall tau-b; inversion_rate=(1-tau_b)/2",
+    "subset_role": "independent exact pair-preference corroboration"
+  },
+  "figures": [
+    "all-development hip slices",
+    "all-development knee slices",
+    "all-development phase slices",
+    "common candidate effect versus interaction",
+    "SVD explained variance",
+    "raw versus normalized variability",
+    "time-resolved torque comparison",
+    "force-component decomposition"
+  ],
+  "finite_difference": {
+    "central_derivative": "(f_plus-f_minus)/(2*step)",
+    "neighbors": {
+      "hip": [
+        -0.25,
+        0.25
+      ],
+      "knee": [
+        -0.25,
+        0.25
+      ],
+      "phase": [
+        -0.0025,
+        0.0025
+      ]
+    },
+    "reference_candidate_id": "MYOLEG_V2_P15012",
+    "sign_tolerance": 1e-12
+  },
+  "frozen_before_development_outcome_matrix_read": true,
+  "global_monotonicity": {
+    "adjacent_pair_selection": "all frozen pairs differing by one positive grid step in exactly one dimension",
+    "grid_step": [
+      0.25,
+      0.25,
+      0.0025
+    ],
+    "location_bins": "exact lower-coordinate grid value",
+    "sign_tolerance": 1e-12
+  },
+  "hip_knee_tradeoff": {
+    "diagnostic_only": true,
+    "meaningful_tradeoff_threshold": 0.05,
+    "scope": "all frozen adjacent candidate transitions and all development subjects"
+  },
+  "hypotheses": [
+    "H1_NORMALIZATION_CANCELLATION",
+    "H2_WEAK_SUBJECT_TRAJECTORY_INTERACTION",
+    "H3_RMS_OBJECTIVE_COMPRESSION",
+    "H4_CANDIDATE_DOMAIN_MONOTONICITY"
+  ],
+  "hypothesis_decision_rules": {
+    "H1_NORMALIZATION_CANCELLATION": {
+      "PARTIALLY_SUPPORTED": "attenuation_ratio<=0.8 for at least one joint",
+      "SUPPORTED": "attenuation_ratio<=0.5 for both joints"
+    },
+    "H2_WEAK_SUBJECT_TRAJECTORY_INTERACTION": {
+      "PARTIALLY_SUPPORTED": "J interaction fraction<=0.05 and interaction/common ratio<=0.25",
+      "SUPPORTED": "J interaction variance fraction<=0.01 and interaction/common ratio<=0.10"
+    },
+    "H3_RMS_OBJECTIVE_COMPRESSION": {
+      "PARTIALLY_SUPPORTED": "ratio>=1.25 and time interaction RMS>=0.001 for at least one joint",
+      "SUPPORTED": "time/RMS interaction ratio>=2 and time interaction RMS>=0.001 for both joints"
+    },
+    "H4_CANDIDATE_DOMAIN_MONOTONICITY": {
+      "PARTIALLY_SUPPORTED": "at least 2 boundary dimensions improve for >=22/24 subjects",
+      "SUPPORTED": "all 3 boundary dimensions improve toward boundary for >=23/24 subjects and at least 2 dimensions have >=0.85 pooled global majority sign fraction"
+    }
+  },
+  "input_sha256": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "necessity_checksums": "0b4a449186b571b9c39207dc18cab1ec1366004821b8d9fd74e97792d87437d3",
+    "necessity_protocol": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f",
+    "truth_landscape_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "truth_landscape_protocol": "2fe115d8c34685c70672bcc6a4d9752a88dfbb2cf12fb12d60df877755b7fdcc"
+  },
+  "jointwise_diagnostic_views": [
+    "HIP_NORMALIZED_RMS_ONLY",
+    "KNEE_NORMALIZED_RMS_ONLY"
+  ],
+  "matrix_fields": [
+    "j_truth",
+    "hip_tau_rms_nm",
+    "knee_tau_rms_nm",
+    "subject_reference_hip_rms_nm",
+    "subject_reference_knee_rms_nm"
+  ],
+  "multiplicative_scaling": {
+    "anchor_selection": "CENTER_NEAREST",
+    "anchor_subject_id": "MYOLEG_VP_031",
+    "models": [
+      "affine y=a*x+b",
+      "pure proportional y=a*x"
+    ],
+    "normalized_rmse_denominator": "mean absolute target RMS",
+    "support_rule": "median affine R2>=0.995 and median proportional NRMSE<=0.01 for both joints"
+  },
+  "normalization_diagnostic": {
+    "attenuation_ratio": "normalized dimensionless interaction scale / raw dimensionless interaction scale",
+    "candidate_wise_variability": [
+      "CV median",
+      "CV P95",
+      "pairwise rank correlation"
+    ],
+    "dimensionless_interaction_scale": "interaction RMS divided by absolute grand mean"
+  },
+  "overall_decision": {
+    "IDENTIFIED": "at least two hypotheses SUPPORTED and H2 or H4 is SUPPORTED",
+    "NOT_IDENTIFIED": "no hypothesis has support",
+    "PARTIALLY_IDENTIFIED": "otherwise at least one hypothesis is SUPPORTED or PARTIALLY_SUPPORTED"
+  },
+  "parameter_associations": {
+    "compact_outcomes": [
+      "hip_raw_scale",
+      "knee_raw_scale",
+      "J_local_gradient_norm",
+      "J_interaction_rms"
+    ],
+    "method": "descriptive Spearman with raw p and BH q; no predictive model",
+    "replay_component_outcomes": [
+      "mass_scale",
+      "bias_gravity_scale",
+      "passive_scale",
+      "zero_control_actuator_scale",
+      "constraint_scale"
+    ]
+  },
+  "population": {
+    "candidate_count": 16675,
+    "development_count": 24,
+    "development_subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_006",
+      "MYOLEG_VP_007",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_010",
+      "MYOLEG_VP_011",
+      "MYOLEG_VP_013",
+      "MYOLEG_VP_014",
+      "MYOLEG_VP_015",
+      "MYOLEG_VP_017",
+      "MYOLEG_VP_018",
+      "MYOLEG_VP_019",
+      "MYOLEG_VP_021",
+      "MYOLEG_VP_022",
+      "MYOLEG_VP_023",
+      "MYOLEG_VP_025",
+      "MYOLEG_VP_026",
+      "MYOLEG_VP_027",
+      "MYOLEG_VP_029",
+      "MYOLEG_VP_030",
+      "MYOLEG_VP_031"
+    ],
+    "held_out_scientific_values_allowed": false,
+    "held_out_subject_ids": [
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_008",
+      "MYOLEG_VP_012",
+      "MYOLEG_VP_016",
+      "MYOLEG_VP_020",
+      "MYOLEG_VP_024",
+      "MYOLEG_VP_028",
+      "MYOLEG_VP_032"
+    ]
+  },
+  "protocol_id": "PERSONALIZATION_SIGNAL_ROOT_CAUSE_PROTOCOL_V1",
+  "replay_subset": {
+    "candidate_rows": [
+      {
+        "alpha": [
+          -5.0,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P00512",
+        "proposal_index": 512,
+        "selection_roles": [
+          "HIP_AXIS_LOW"
+        ]
+      },
+      {
+        "alpha": [
+          -2.0,
+          -1.75,
+          0.0125
+        ],
+        "candidate_id": "MYOLEG_V2_P09042",
+        "proposal_index": 9042,
+        "selection_roles": [
+          "FIXED_HASH_INTERIOR_1"
+        ]
+      },
+      {
+        "alpha": [
+          -1.5,
+          -2.25,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P10437",
+        "proposal_index": 10437,
+        "selection_roles": [
+          "GEOMETRIC_DOMAIN_CENTER"
+        ]
+      },
+      {
+        "alpha": [
+          -1.0,
+          -3.25,
+          0.01
+        ],
+        "candidate_id": "MYOLEG_V2_P11791",
+        "proposal_index": 11791,
+        "selection_roles": [
+          "FIXED_HASH_INTERIOR_2"
+        ]
+      },
+      {
+        "alpha": [
+          -0.25,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P14287",
+        "proposal_index": 14287,
+        "selection_roles": [
+          "REFERENCE_HIP_MINUS_NEIGHBOR"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          -5.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P14512",
+        "proposal_index": 14512,
+        "selection_roles": [
+          "KNEE_AXIS_LOW"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          -0.25,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P14987",
+        "proposal_index": 14987,
+        "selection_roles": [
+          "REFERENCE_KNEE_MINUS_NEIGHBOR"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P15000",
+        "proposal_index": 15000,
+        "selection_roles": [
+          "PHASE_AXIS_LOW"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          -0.0025
+        ],
+        "candidate_id": "MYOLEG_V2_P15011",
+        "proposal_index": 15011,
+        "selection_roles": [
+          "REFERENCE_PHASE_MINUS_NEIGHBOR"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P15012",
+        "proposal_index": 15012,
+        "selection_roles": [
+          "REFERENCE"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          0.0025
+        ],
+        "candidate_id": "MYOLEG_V2_P15013",
+        "proposal_index": 15013,
+        "selection_roles": [
+          "REFERENCE_PHASE_PLUS_NEIGHBOR"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P15024",
+        "proposal_index": 15024,
+        "selection_roles": [
+          "PHASE_AXIS_HIGH"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.25,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P15037",
+        "proposal_index": 15037,
+        "selection_roles": [
+          "REFERENCE_KNEE_PLUS_NEIGHBOR"
+        ]
+      },
+      {
+        "alpha": [
+          0.0,
+          0.5,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P15062",
+        "proposal_index": 15062,
+        "selection_roles": [
+          "KNEE_AXIS_HIGH"
+        ]
+      },
+      {
+        "alpha": [
+          0.25,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P15737",
+        "proposal_index": 15737,
+        "selection_roles": [
+          "REFERENCE_HIP_PLUS_NEIGHBOR"
+        ]
+      },
+      {
+        "alpha": [
+          1.75,
+          0.5,
+          -0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P20125",
+        "proposal_index": 20125,
+        "selection_roles": [
+          "ORACLE_HIP_INWARD_1"
+        ]
+      },
+      {
+        "alpha": [
+          2.0,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P20812",
+        "proposal_index": 20812,
+        "selection_roles": [
+          "HIP_AXIS_HIGH"
+        ]
+      },
+      {
+        "alpha": [
+          2.0,
+          0.25,
+          -0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P20825",
+        "proposal_index": 20825,
+        "selection_roles": [
+          "ORACLE_KNEE_INWARD_1"
+        ]
+      },
+      {
+        "alpha": [
+          2.0,
+          0.5,
+          -0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P20850",
+        "proposal_index": 20850,
+        "selection_roles": [
+          "FROZEN_COMMON_ORACLE"
+        ]
+      },
+      {
+        "alpha": [
+          2.0,
+          0.5,
+          -0.0275
+        ],
+        "candidate_id": "MYOLEG_V2_P20851",
+        "proposal_index": 20851,
+        "selection_roles": [
+          "ORACLE_PHASE_INWARD_1"
+        ]
+      }
+    ],
+    "components": {
+      "bias_gravity": {
+        "array": "bias_term_nm",
+        "required_drive_formula_sign": 1.0
+      },
+      "constraint": {
+        "array": "constraint_internal_nm",
+        "required_drive_formula_sign": -1.0
+      },
+      "mass": {
+        "array": "mass_term_nm",
+        "required_drive_formula_sign": 1.0
+      },
+      "passive": {
+        "array": "passive_internal_nm",
+        "required_drive_formula_sign": -1.0
+      },
+      "zero_control_actuator": {
+        "array": "actuator_internal_nm",
+        "required_drive_formula_sign": -1.0
+      }
+    },
+    "pair_count": 120,
+    "replay_api": "external_simulation/myoleg_v2_truth_landscape_generation_v1/replay_api.py",
+    "selection_uses_parameter_and_candidate_geometry_only": true,
+    "subject_rows": [
+      {
+        "selection_role": "CENTER_NEAREST",
+        "subject_id": "MYOLEG_VP_031"
+      },
+      {
+        "selection_role": "CENTER_FARTHEST",
+        "subject_id": "MYOLEG_VP_011"
+      },
+      {
+        "selection_role": "MAXIMIN_3",
+        "subject_id": "MYOLEG_VP_009"
+      },
+      {
+        "selection_role": "MAXIMIN_4",
+        "subject_id": "MYOLEG_VP_015"
+      },
+      {
+        "selection_role": "MAXIMIN_5",
+        "subject_id": "MYOLEG_VP_023"
+      },
+      {
+        "selection_role": "MAXIMIN_6",
+        "subject_id": "MYOLEG_VP_001"
+      }
+    ]
+  },
+  "rms_compression": {
+    "heterogeneity_ratio": "time-resolved interaction RMS / RMS-summary interaction RMS",
+    "rms_interaction": "two-way interaction of candidate RMS/reference RMS summaries",
+    "sign_change": "candidate-minus-reference waveform contains both signs beyond 1e-12",
+    "time_interaction": "two-way subject-by-candidate interaction at each time sample, pooled RMS",
+    "time_signal": "signed tau(t) divided by the same subject reference RMS"
+  },
+  "scientific_role": "development-only offline root-cause analysis under the unchanged frozen objective",
+  "scope_guards": {
+    "bo": false,
+    "candidate_change": false,
+    "cohort_or_range_change": false,
+    "five_parameter": false,
+    "held_out_truth": false,
+    "learner_training": false,
+    "nn_or_pinn": false,
+    "normalization_change": false,
+    "objective_redesign": false,
+    "robot_or_hardware": false
+  },
+  "slice_anchors": [
+    {
+      "alpha": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "candidate_id": "MYOLEG_V2_P15012",
+      "proposal_index": 15012,
+      "selection_role": "V2_REFERENCE"
+    },
+    {
+      "alpha": [
+        2.0,
+        0.5,
+        -0.03
+      ],
+      "candidate_id": "MYOLEG_V2_P20850",
+      "proposal_index": 20850,
+      "selection_role": "FROZEN_COMMON_ORACLE"
+    },
+    {
+      "alpha": [
+        -1.5,
+        -2.25,
+        -0.0
+      ],
+      "candidate_id": "MYOLEG_V2_P10437",
+      "proposal_index": 10437,
+      "selection_role": "GEOMETRIC_DOMAIN_CENTER"
+    },
+    {
+      "alpha": [
+        -2.0,
+        -1.75,
+        0.0125
+      ],
+      "candidate_id": "MYOLEG_V2_P09042",
+      "proposal_index": 9042,
+      "selection_role": "FIXED_HASH_INTERIOR_1"
+    },
+    {
+      "alpha": [
+        -1.0,
+        -3.25,
+        0.01
+      ],
+      "candidate_id": "MYOLEG_V2_P11791",
+      "proposal_index": 11791,
+      "selection_role": "FIXED_HASH_INTERIOR_2"
+    }
+  ],
+  "slice_subject_policy": "all 24 development subjects; mean and full range overlay",
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_SIGNAL_ROOT_CAUSE_AUDIT_V1",
+  "svd": {
+    "matrices": [
+      "RAW_J",
+      "SUBJECT_ROW_CENTERED_J",
+      "CANDIDATE_MAIN_REMOVED_J"
+    ],
+    "physiological_latent_factor_interpretation": false,
+    "reported_components": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "variance": "squared singular value divided by sum squared singular values"
+  },
+  "two_way_decomposition": {
+    "convention": "X_ic=grand+row_main_i+candidate_main_c+interaction_ic; every main effect is zero-sum",
+    "matrices": [
+      "J",
+      "HIP_RAW_RMS",
+      "KNEE_RAW_RMS",
+      "HIP_NORMALIZED_RMS",
+      "KNEE_NORMALIZED_RMS"
+    ],
+    "sum_of_squares": "SS_subject=C*sum(row_main^2); SS_candidate=S*sum(candidate_main^2); SS_interaction=sum(interaction^2)"
+  },
+  "unchanged_normalization": "joint RMS divided by the same subject's V2-reference joint RMS",
+  "unchanged_objective": "sqrt(0.5*(hip_normalized_rms_ratio^2+knee_normalized_rms_ratio^2))"
+}

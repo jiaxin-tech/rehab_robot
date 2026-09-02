@@ -1,0 +1,176 @@
+{
+  "prototype_id": "P2_V2_OFFLINE_RESEARCH_PROTOTYPE_IMPLEMENTATION_V1",
+  "generated_at_utc": "2026-08-22T09:44:39.282186+00:00",
+  "git_branch": "sync/mac-20260813",
+  "git_commit": "0ae022c0f8a3cd8b154de83f0606c30ceb0850cf",
+  "prototype_status": "DEFAULT_OFF_SHADOW_EVALUATION_NOT_FORMAL_POLICY",
+  "controls": {
+    "p2_v1_remains_default": true,
+    "local_guard_policy_override_enabled": false,
+    "cumulative_rule_enabled": false,
+    "automatic_stopping_enabled": false,
+    "truth_policy_input_enabled": false,
+    "formal_personalization_enabled": false,
+    "robot_execution_enabled": false
+  },
+  "P2_V1_remains_default": true,
+  "P2_V1_executed_by_runner": false,
+  "P2_V1_modified": false,
+  "formal_personalization_executed": false,
+  "frozen_local_protocol_id": "DESIGNATED_LOCAL_VALIDATION_PROTOCOL_V1",
+  "frozen_pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+  "frozen_pair_count": 324,
+  "designated_local_result_count": 324,
+  "designated_local_result_sha256": "57dcaba346e55b85b0ad59ae44ee2af2302746bf582e88e8eda9708a6407b94e",
+  "evaluation_case_count": 9,
+  "evaluation_pairs_per_case": {
+    "baseline__combined_mild": 36,
+    "baseline__hip_knee_coupling_mild": 36,
+    "baseline__matched_linear": 36,
+    "baseline__nonlinear_damping_mild": 36,
+    "baseline__nonlinear_stiffness_mild": 36,
+    "baseline__structured_residual": 36,
+    "heavy_leg__matched_linear": 36,
+    "hip_stiff__matched_linear": 36,
+    "knee_stiff__matched_linear": 36
+  },
+  "prediction_used_for_pair_or_case_selection": false,
+  "truth_used_for_pair_or_case_selection": false,
+  "pair_reselected_after_truth": false,
+  "local_uncertainty_metrics": {
+    "local_max": 0.0016827379049442204,
+    "local_P95": 0.000430956758923898,
+    "local_P99": 0.001276942013587856
+  },
+  "local_uncertainty_threshold_frozen": false,
+  "local_P95_missed_improvement_change_vs_G0": -4,
+  "local_P95_false_improvement_change_vs_G0": 0,
+  "cumulative_rule_enabled": false,
+  "cumulative_rule_frozen": false,
+  "cumulative_bundle_uncertainty_frozen": false,
+  "automatic_stopping_enabled": false,
+  "stopping_K_frozen": false,
+  "stopping_shadow_summary": {
+    "CURRENT_P2_V1_HISTORY": {
+      "exploration_count": 32,
+      "exploration_reduction": 0,
+      "missed_opportunity": 0,
+      "support_increase": 33200
+    },
+    "K1_DECISION_VALUE_STOP_SHADOW": {
+      "exploration_count": 7,
+      "exploration_reduction": 25,
+      "missed_opportunity": 0,
+      "support_increase": 19450
+    },
+    "K2_DECISION_VALUE_STOP_SHADOW": {
+      "exploration_count": 11,
+      "exploration_reduction": 21,
+      "missed_opportunity": 0,
+      "support_increase": 21650
+    },
+    "K3_DECISION_VALUE_STOP_SHADOW": {
+      "exploration_count": 15,
+      "exploration_reduction": 17,
+      "missed_opportunity": 0,
+      "support_increase": 23850
+    }
+  },
+  "minimum_P2_V2_change_set": [
+    "review_and_freeze_an_independent_designated_local_uncertainty_statistic",
+    "add_a_default_off_local_uncertainty_provider_while_P2_V1_remains_default",
+    "prospectively_validate_same_direction_cumulative_bundles_and_uncertainty_aggregation",
+    "add_default_off_cumulative_bundle_evaluation_for_knee_stepwise_candidates",
+    "record_support_model_prediction_and_decision_value_separately",
+    "prospectively_validate_default_off_K_stopping_before_any_policy_enablement"
+  ],
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "active_reference_sha256_observed": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "five_parameter_names": [
+    "mass_scale",
+    "k_hip_nm_per_rad",
+    "k_knee_nm_per_rad",
+    "b_hip_nm_s_per_rad",
+    "b_knee_nm_s_per_rad"
+  ],
+  "mechanical_objective_version": "mechanical_joint_torque_objective_v1",
+  "algorithm_equivalence_tolerance": 0.005,
+  "support_coverage_gate_percent": 90.0,
+  "generator_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "active_reference_modified": false,
+  "rom_protocol_modified": false,
+  "five_parameter_model_modified": false,
+  "mechanical_objective_modified": false,
+  "generator_modified": false,
+  "truth_used_to_modify_formal_policy": false,
+  "truth_used_for_automatic_stopping": false,
+  "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+  "human_readiness": "NOT_HUMAN_READY",
+  "robot_motion_approval": "NOT_ROBOT_MOTION_APPROVED",
+  "real_robot_connected": false,
+  "safety_configuration_modified": false,
+  "protected_package_diff_unchanged": true,
+  "protected_package_git_diff_empty": true,
+  "protected_package_git_diff": "",
+  "policy_definition_source_sha256": "a29a1510b37ac292587daaef4bc5933694dd2c01282e7b8dad3f4be3c2d77757",
+  "decision_guard_source_sha256": "c0cd519fe8901040514ef3b9df31c0f64d1fd0f54a8de1a0464697e2a0015476",
+  "exploit_selector_source_sha256": "1c19dbbef2a763aa48bcfd117c63e806c729755c886c07de18dd5a97a5271886",
+  "exploration_ranker_source_sha256": "d43e04d9ff9594d0061c1e165f92df031d4efe65c38b516c65b55e76221e0e2f",
+  "policy_core_source_sha256": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+  "mechanical_objective_source_sha256": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+  "generator_source_sha256": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+  "estimator_source_sha256": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+  "formal_protocol_core_source_sha256": "73259cc2e7c7ff12a3c30c572bc74a6c904d471a4fbc531d2fcea9191dcc7a5c",
+  "prototype_core_source_sha256": "a48329f326fef83ea456348434260afa36c3e8dd99c2ee316f80e143053e00eb",
+  "runner_source_sha256": "44940ccce25aa5cd4bbe4aac4108eae10c8cf8a9adc785f857556bfbba0233ce",
+  "source_input_sha256": {
+    "frozen_pair_plan": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+    "frozen_local_protocol": "941119f725c027011fc8b29d21e21c6c72c0c2bf4727eafa9bb6da94b5e94f1d",
+    "parameter_map": "f5eddf4c3a05e9e638bf9254c9f74acf36c80420a1b1ea5f4580e5ce4721a16b",
+    "diagnostic_model_metadata": "dbbda36f0565a0cc40f27a6647b6ad80d8fc194eb9ac5dd18564751e73ad5ea5",
+    "historical_guard_candidates": "ea4089394be4b0cd12a560cdba69c4c22d3e1f56d1806fb280d972e6444d48f0",
+    "historical_exploration": "3adb4262623ec17913debd6b75d70b6dd10a43ea556f2fe1edb7ed0fd5a70d2e",
+    "historical_execution": "81b8b4cb2928df585cd64eec4b3d08dfa383fd6dd793faac7b1cbce1f6a18c48",
+    "current_policy_definition": "a29a1510b37ac292587daaef4bc5933694dd2c01282e7b8dad3f4be3c2d77757"
+  },
+  "runtime_seconds": 12.696155749988975,
+  "output_sha256": {
+    "local_validation_results.csv": "57dcaba346e55b85b0ad59ae44ee2af2302746bf582e88e8eda9708a6407b94e",
+    "local_uncertainty_metrics.csv": "b55c1dfafd24160f607ff040279f4dae05cf3330ebc72673f99cf79bcf2c5f3a",
+    "local_guard_shadow_detail.csv": "a44aa76c1ec879e7b5a45ba99e9c31f5ab5c662d142734701fae9196a975f89c",
+    "local_guard_comparison.csv": "d0be1b7eeaf1bbdd67890f7c5777bc8589ed77a89207c61d88593c698434e73f",
+    "cumulative_rule_comparison.csv": "dae8f09e2e40764ea51c67555a832010b5984eac0d82644143326fc9394b6530",
+    "decision_value_stopping_comparison.csv": "3512227d38f63d8825bb73bedfd2cfdd5fe42e5f5d8d795ee52c95069779fa06",
+    "prototype_definition.json": "9ed3afbd7a4201276313922745d89a568c01ef785e7bec210ae7be885367293a",
+    "P2_V2_PROTOTYPE_EVALUATION_REPORT.md": "2b38121b1db4d565e7f1eab883343c9a00ef42cc59c51d7efaf2ea179c34cd9f",
+    "DATA_LEAKAGE_AUDIT.md": "be6ae4185c6ed9c5a104d55d0ca2941a8b0e1c536de096f56817de81a43d6de8",
+    "designated_local_error_distribution.png": "c2ebfb76400ab4c9814c77e4aed5a20e0415c64de6e5380ab0297748cfdac239",
+    "local_guard_comparison.png": "4720eb10d6debb3a5503f0598bc0fd0d6e60b086882ec0d74324ec0b1482890c",
+    "cumulative_rule_comparison.png": "6920671866570a35e993f829639885482ba54e0802a2dd9a61364cd1b7a41761",
+    "decision_value_stopping_comparison.png": "87b1b5012893fd3403b366cf4833d80f227acb294b8c02dec78cc5c2720cb7c3"
+  }
+}

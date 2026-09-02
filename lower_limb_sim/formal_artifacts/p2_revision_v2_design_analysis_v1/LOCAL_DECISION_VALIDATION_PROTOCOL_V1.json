@@ -1,0 +1,55 @@
+{
+  "protocol_id": "LOCAL_DECISION_VALIDATION_PROTOCOL_V1",
+  "status": "REVISION_DESIGN_NOT_FROZEN",
+  "purpose": "estimate decision-error uncertainty on the same formal coordinate relationship used by a future local P2 decision",
+  "local_pair_definition": {
+    "both_points": "geometrically_admissible_generator_alpha_points",
+    "relationship": "exactly_one_of_hip_knee_phase_differs_and_the_signed_difference_equals_the_current_trust_region_step_for_that_coordinate",
+    "allowed_existing_trust_levels": {
+      "hip": [
+        1.0,
+        0.5,
+        0.25
+      ],
+      "knee": [
+        1.0,
+        0.5,
+        0.25
+      ],
+      "phase": [
+        0.01,
+        0.005,
+        0.0025
+      ]
+    },
+    "formal_grid_steps": {
+      "hip_deg": 0.25,
+      "knee_deg": 0.25,
+      "phase": 0.0025
+    },
+    "physical_distance_threshold": null,
+    "euclidean_physical_distance_used": false,
+    "clipping_allowed": false
+  },
+  "future_designated_validation_requirements": {
+    "split_role": "DESIGNATED_LOCAL_DECISION_VALIDATION_ONLY",
+    "must_be_predeclared_before_policy_evaluation": true,
+    "must_not_be_model_fitting_data": true,
+    "must_not_be_adaptation_executed_outcome": true,
+    "must_not_be_heldout_final_test": true,
+    "must_preserve_pair_current_candidate_identity": true,
+    "must_stratify_by_coordinate_and_existing_trust_level": true,
+    "must_stratify_by_model_support_status": true,
+    "must_cover_all_existing_trust_levels_before_generalizing": true,
+    "minimum_sample_count": null,
+    "sample_count_requires_review": true
+  },
+  "candidate_statistics_only": [
+    "max",
+    "P95",
+    "P99"
+  ],
+  "threshold_frozen": false,
+  "current_P2_modified": false,
+  "retrospective_evidence_role": "RETROSPECTIVE_LOCAL_DECISION_OPPORTUNITY_CANDIDATE_NOT_DESIGNATED_VALIDATION"
+}

@@ -1,0 +1,255 @@
+{
+  "analysis_code_sha256": "432709085d2bcdd5c96daca2004ced78397a07dff2962b16485aa68af2b9e2e0",
+  "artifact_sha256_excluding_metadata_and_checksums": {
+    "DATA_ACQUISITION_READINESS.md": "f4841c7debe0640941c8913b5ea15dfda519dd7f90d83261f406aedea568e568",
+    "EQUIPMENT_AND_CALIBRATION_READINESS.csv": "b117bc852a78b292cf7cb36ae1fe926ac457c2ab38abf6a4bdc41398f5d49533",
+    "FINAL_EXECUTION_READINESS_STATUS.json": "3ebbee089310974fa4ac2d3e210be0b3253b56d22622d4792084a559b9193924",
+    "GEOMETRY_MEASUREMENT_READINESS.md": "ebec5ec2ad6c1bb91a4cd44bbc7cc656e61c8ff6c1efca8d6751cd2e950b1cb3",
+    "LOAD_LEVEL_READINESS.md": "d51ffbccac753697da6a200baa4dcbbebd671a714c86bb2bf70de672070796de",
+    "MINIMUM_BLOCKING_ITEMS.md": "27119b6c737fb1666ff6d622db6fb15ba15ba93d24f46967afe107949c6ef3c8",
+    "READINESS_CHECKLIST.csv": "1f15c8a4d5bc6e9dc1dbae8ae3bb2f10d527cba5a85cacf21286f7d672fae641",
+    "SAFETY_AND_CONFIG_READINESS.csv": "12e945f85149b63ddb015843d23f3546c17dc3ec42de184288456a373f7d661c",
+    "STATIC_MEASUREMENT_VALIDATION_EXECUTION_READINESS_REPORT.md": "34365cc4cb2b03a790a247a3eb48ea1d810e3ebdb0db3f3abfaec5fb63077ec8"
+  },
+  "audit_type": "EXECUTION_READINESS_SAFETY_EQUIPMENT_CONFIG_REVIEW",
+  "authoritative_protocols_modified": false,
+  "bo_run_count": 0,
+  "decision": "STATIC_MEASUREMENT_VALIDATION_EXECUTION_NOT_READY",
+  "execution_authorized": false,
+  "hardware_control_safety_modified": false,
+  "human_data_count": 0,
+  "minimum_blocking_item_count": 5,
+  "motion_command_count": 0,
+  "next_action": "RESOLVE_MINIMUM_BLOCKING_ITEMS",
+  "not_human_ready": true,
+  "not_robot_approved": true,
+  "physical_load_count": 0,
+  "physical_validation_executed": false,
+  "pinn_run_count": 0,
+  "research_outcome_definition_modified": false,
+  "robot_access_count": 0,
+  "stage_id": "STATIC_MEASUREMENT_VALIDATION_EXECUTION_READINESS_AUDIT_V1",
+  "verified_input_count": 20,
+  "verified_inputs": [
+    {
+      "input_id": "WRENCH_PROTOCOL",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/STATIC_WRENCH_VALIDATION_PROTOCOL.json",
+      "semantic_markers": [
+        "STATIC_WRENCH_FRAME_SIGN_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED",
+        "FORCE_MAGNITUDE_REQUIRES_SAFETY_REVIEW",
+        "THRESHOLD_REQUIRES_CALIBRATION_EVIDENCE"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1"
+    },
+    {
+      "input_id": "WRENCH_SAFETY_PRECONDITIONS",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/SAFETY_PRECONDITIONS.json",
+      "semantic_markers": [
+        "NOT_AUTHORIZED",
+        "STATIC_FORCE_LIMITS_APPROVED",
+        "LOGGER_AND_RAW_PROVENANCE_VALIDATED"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "e554510c3ad63a67878068910135423c2cf68ac4746b4e319ed7a0754b23bb13"
+    },
+    {
+      "input_id": "STATIC_POSE_PLAN",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/STATIC_POSE_PLAN.json",
+      "semantic_markers": [
+        "P0_CURRENT_SAFE_STATIONARY",
+        "POSE_DEPENDENCE_NOT_YET_VALIDATED",
+        "full_world_frame_decision_allowed"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "c7fd9207b1b5c4e8a1e84a6139056952e49df85de2040a927ac86c14f46c0d20"
+    },
+    {
+      "input_id": "KNOWN_LOAD_PLAN",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/KNOWN_LOAD_APPLICATION_PLAN.md",
+      "semantic_markers": [
+        "calibrated bidirectional force gauge",
+        "Operator hand pushing",
+        "N values are null"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "3fcd7a20b8a8f8afed66d70b66e99802e62f2fbaf6d527041ab820c999f7b993"
+    },
+    {
+      "input_id": "SAMPLING_PLAN",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/SAMPLING_AND_TIMESTAMP_PLAN.md",
+      "semantic_markers": [
+        "HOST_MONOTONIC_PERF_COUNTER_NS",
+        "PRE/LOAD/POST",
+        "STATIC_FRAME_VALIDATION != DYNAMIC_SYNCHRONIZATION_VALIDATION"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "b20d12114fb418a94876d76ece00a980ae12d735d404fde8fce31497c798dffd"
+    },
+    {
+      "input_id": "WRENCH_RESULT_SCHEMA",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/FUTURE_RESULT_SCHEMA.json",
+      "semantic_markers": [
+        "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1",
+        "immutable PRE/LOAD/POST",
+        "active tool/payload/TCP"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8a2089b9e7115878894ab20e1e6e7e8d3b2fa3ce7aef63d15f7ecb36bc866443"
+    },
+    {
+      "input_id": "GEOMETRY_PROTOCOL",
+      "path": "external_simulation_audits/static_strap_pull_geometry_validation_protocol_v1/STRAP_GEOMETRY_VALIDATION_PROTOCOL.json",
+      "semantic_markers": [
+        "STATIC_STRAP_PULL_GEOMETRY_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED",
+        "REHAB_SETUP_FRAME",
+        "GEOMETRY_PRELOAD_REQUIRES_INDEPENDENT_FIXTURE_AND_SAFETY_REVIEW"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "4da84b5ffde2bb5c7dc7b3baccf81cb1dbd8a7a0cb8c3bdd8d457a4f3399e337"
+    },
+    {
+      "input_id": "GEOMETRY_VALIDITY_GATE",
+      "path": "external_simulation_audits/static_strap_pull_geometry_validation_protocol_v1/GEOMETRY_VALIDITY_GATE.json",
+      "semantic_markers": [
+        "FAIL_CLOSED_NOT_EXECUTED",
+        "calibrated T_B_R",
+        "fallback_direction_allowed"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f6f9b4860b0aedf3382acfa7cc47e3b030cd49f0e69054181f5476c1ec788ae2"
+    },
+    {
+      "input_id": "GEOMETRY_MEASUREMENT_PLAN",
+      "path": "external_simulation_audits/static_strap_pull_geometry_validation_protocol_v1/STATIC_GEOMETRY_MEASUREMENT_PLAN.md",
+      "semantic_markers": [
+        "10` complete remove/reattach",
+        "rigid shank surrogate",
+        "GEOMETRY_PRELOAD_REQUIRES_INDEPENDENT_FIXTURE_AND_SAFETY_REVIEW"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "964b5762694edc8523d53faab1b3c445153af59ca6dc8fb13954e52a617322d8"
+    },
+    {
+      "input_id": "FRAME_CALIBRATION_PLAN",
+      "path": "external_simulation_audits/static_strap_pull_geometry_validation_protocol_v1/ROBOT_TO_SETUP_FRAME_CALIBRATION_PLAN.md",
+      "semantic_markers": [
+        "at least three non-collinear",
+        "T_B_R",
+        "Robot TCP probing is optional only"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "153664e340d8d82fecbe02af9b426709b6143d397b00098c7695e5271cde0aae"
+    },
+    {
+      "input_id": "EXPERIMENT_SAFETY_CONFIG",
+      "path": "config/experiment_safety.json",
+      "semantic_markers": [
+        "\"max_force_n\": null",
+        "\"expected_robot_model\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "2f60266b6a16f7911a585aad85fe2bcb4191144672d337d3960fc113e5c36b66"
+    },
+    {
+      "input_id": "REAL_IDENTIFICATION_CONFIG",
+      "path": "config/real_identification_config.json",
+      "semantic_markers": [
+        "\"raw_wrench_frame\": null",
+        "\"force_sign_robot_on_leg\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8979412db4d3c7ef4d0886eaebc6edeaa2474679ef33ac434c1c57d6c3cd2ba4"
+    },
+    {
+      "input_id": "REHAB_FRAME_CONFIG",
+      "path": "config/rehab_frame_config.json",
+      "semantic_markers": [
+        "\"rehab_x_axis_in_base\": null",
+        "\"rehab_z_axis_in_base\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "eeb4b28a359acc74ab9cf9dcdf5ebbf41bf8f40e4eae1020045011aecdd57606"
+    },
+    {
+      "input_id": "COLLECTOR",
+      "path": "collection/collector.py",
+      "semantic_markers": [
+        "force_query_started_s",
+        "force_query_finished_s",
+        "fx_raw_n",
+        "get_robot_metadata"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "18e1731497c25259d0d225778c0b9b235786a30ec4d6af87e4c18578f1bb6513"
+    },
+    {
+      "input_id": "EPISODE_LOGGER",
+      "path": "collection/episode_logger.py",
+      "semantic_markers": [
+        "query_start_s",
+        "query_end_s",
+        "The logger never substitutes a numeric zero"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "831d4326b247ed95ccc9b9e45690332711077d05f7397a6cbd74d808c910187a"
+    },
+    {
+      "input_id": "ROBOT_STATE_SCHEMA",
+      "path": "collection/state.py",
+      "semantic_markers": [
+        "force_query_started_s",
+        "force_query_finished_s",
+        "cartesian_force_raw_n"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "d5c2b4c67baca13922e5d0e8fb80a5d10941e160d2e3990287299b8c3cef88fd"
+    },
+    {
+      "input_id": "XCORE_ADAPTER",
+      "path": "hardware/windows/rokae_xcore.py",
+      "semantic_markers": [
+        "get_end_wrench",
+        "host_monotonic_time_s",
+        "active_hmi_tool_workobject_verified"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5d5908b0e504a729357b91ca8b31158f7ed6c8c8b8e5b8659bcef25ece22cca3"
+    },
+    {
+      "input_id": "READONLY_DIAGNOSTIC_HELPER",
+      "path": "scripts/rokae_diagnostic_common.py",
+      "semantic_markers": [
+        "never enable, move, drag",
+        "readonly_connection",
+        "robot.disconnect"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "cab5f8f075228702aae319700d6fba370b2032a522475593bdeab09ee26001d7"
+    },
+    {
+      "input_id": "WRENCH_QUERY_DIAGNOSTIC",
+      "path": "scripts/check_wrench_query_timing.py",
+      "semantic_markers": [
+        "without robot motion",
+        "perf_counter_ns",
+        "query_duration_ms"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "01c905104eeee051da2bc3982c4d4c527daba43317cddfc0c6465e620f46d6f3"
+    },
+    {
+      "input_id": "ACTIVE_REFERENCE",
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "semantic_markers": [
+        "reference_measured_asymmetric_closed_slow",
+        "theta_shank = q_hip - q_knee"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    }
+  ]
+}

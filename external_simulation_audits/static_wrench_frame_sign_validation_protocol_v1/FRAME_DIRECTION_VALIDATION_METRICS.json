@@ -1,0 +1,29 @@
+{
+  "CROSS_AXIS_LEAKAGE": "norm(F_orth) / max(abs(dot(DeltaF_world,d_applied_world)), epsilon_preregistered)",
+  "dominant_component_abs_n": "abs(dot(DeltaF_world, d_applied_world))",
+  "magnitude_calibration_required_for_frame_gate": false,
+  "metrics_id": "STATIC_FRAME_DIRECTION_VALIDATION_METRICS_V1",
+  "normalized_reported": "u_reported = normalize(DeltaF_world)",
+  "opposite_direction_angle_rad": "theta_opposite = acos(clip(dot(u_reported, -d_applied_world), -1, 1))",
+  "orthogonal_vector": "F_orth = DeltaF_world - dot(DeltaF_world,d_applied_world)*d_applied_world",
+  "pose_consistency_angle_rad": "acos(clip(dot(u_reported_pose_i,u_reported_pose_j),-1,1)) after one global sign convention",
+  "primary_frame_gate_requires": [
+    "all six directions executed",
+    "one global sign convention",
+    "direction-angle gate",
+    "cross-axis gate",
+    "at least two independently approved tool orientations",
+    "world-axis registration valid",
+    "repeatability gate"
+  ],
+  "same_direction_angle_rad": "theta_same = acos(clip(dot(u_reported, d_applied_world), -1, 1))",
+  "secondary_magnitude_linearity": "if two approved known levels: preregistered regression of response magnitude versus applied magnitude; report slope/intercept/residual/R2",
+  "sign_handling": "report both angles before sign resolution; after paired +/- analysis use only the single global sign convention",
+  "threshold_status": "THRESHOLD_REQUIRES_CALIBRATION_EVIDENCE",
+  "thresholds": {
+    "cross_axis_leakage_max": null,
+    "direction_angle_max_rad": null,
+    "epsilon_n": null,
+    "pose_consistency_angle_max_rad": null
+  }
+}

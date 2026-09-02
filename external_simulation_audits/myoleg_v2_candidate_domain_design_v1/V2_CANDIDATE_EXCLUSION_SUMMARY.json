@@ -1,0 +1,12 @@
+{
+  "admissible_candidate_count": 16675,
+  "excluded_candidate_count": 4350,
+  "original_proposal_count": 21025,
+  "performance_filter_used": false,
+  "reason_combinations": {
+    "myoleg_knee_upper_trusted_bound": 4350
+  },
+  "reason_counts_nonexclusive": {
+    "myoleg_knee_upper_trusted_bound": 4350
+  }
+}

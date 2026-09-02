@@ -1,0 +1,99 @@
+{
+  "all_subjects_share_one_boundary_oracle": true,
+  "boundary_oracle_fraction": 1.0,
+  "broad_plateau_rule_triggered": false,
+  "candidate_main_variance_fraction": 0.9986390766427071,
+  "clearly_separated_oracle_pair_fraction": 0.0,
+  "global_direction_disagreement_transition_count": 0,
+  "global_direction_disagreement_transition_fraction": 0.0,
+  "global_transition_count": 1200,
+  "interaction_fold_change_vs_v2": 4.079051689211329,
+  "interaction_to_common_effect_ratio": 0.03677741061119796,
+  "interaction_variance_fraction": 0.0013507371763654393,
+  "interaction_variance_percent": 0.13507371763654394,
+  "kendall_tau_b": {
+    "max": 0.9998871794871795,
+    "mean": 0.994509513192122,
+    "median": 0.9952564102564103,
+    "min": 0.9833230769230771,
+    "p5": 0.9870846153846156,
+    "p75": 0.9976948717948719,
+    "p90": 0.999020512820513,
+    "p95": 0.9994666666666668
+  },
+  "material_interaction_increase_vs_v2": false,
+  "max_common_near_oracle_coverage_epsilon_0_001": 24,
+  "meaningful_median_transfer_loss": false,
+  "modal_oracle_subject_count": 24,
+  "modal_oracle_subject_fraction": 1.0,
+  "near_oracle_count_epsilon_0_001": {
+    "max": 16.0,
+    "mean": 14.75,
+    "median": 15.0,
+    "min": 13.0,
+    "p5": 13.0,
+    "p75": 16.0,
+    "p90": 16.0,
+    "p95": 16.0
+  },
+  "normalized_oracle_distance": {
+    "max": 0.0,
+    "mean": 0.0,
+    "median": 0.0,
+    "min": 0.0,
+    "p5": 0.0,
+    "p75": 0.0,
+    "p90": 0.0,
+    "p95": 0.0
+  },
+  "off_diagonal_relative_oracle_transfer_regret": {
+    "max": 0.0,
+    "mean": 0.0,
+    "median": 0.0,
+    "min": 0.0,
+    "p5": 0.0,
+    "p75": 0.0,
+    "p90": 0.0,
+    "p95": 0.0
+  },
+  "oracle_pair_classification_counts": {
+    "CLEARLY_SEPARATED": 0,
+    "EXACT_SAME_ORACLE": 276,
+    "IMMEDIATE_GRID_NEIGHBOR": 0
+  },
+  "relative_common_regret": {
+    "max": 0.0,
+    "mean": 0.0,
+    "median": 0.0,
+    "min": 0.0,
+    "p5": 0.0,
+    "p75": 0.0,
+    "p90": 0.0,
+    "p95": 0.0
+  },
+  "spearman_rank_correlation": {
+    "max": 0.9999994593266159,
+    "mean": 0.9999191141219758,
+    "median": 0.9999533792086508,
+    "min": 0.9995531088719587,
+    "p5": 0.9997257925780291,
+    "p75": 0.9999826124354879,
+    "p90": 0.9999938314082085,
+    "p95": 0.9999969771442616
+  },
+  "subject_main_variance_fraction": 1.0186180928127048e-05,
+  "top5_jaccard": {
+    "max": 1.0,
+    "mean": 1.0,
+    "median": 1.0,
+    "min": 1.0,
+    "p5": 1.0,
+    "p75": 1.0,
+    "p90": 1.0,
+    "p95": 1.0
+  },
+  "unique_beta_extend_oracle_count": 1,
+  "unique_beta_flex_oracle_count": 1,
+  "unique_oracle_candidate_count": 1,
+  "universal_near_oracle_epsilon_0_001": true
+}

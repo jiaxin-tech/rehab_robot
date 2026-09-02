@@ -1,0 +1,88 @@
+{
+  "new_subjects_generated": false,
+  "population_bounds_frozen": false,
+  "recommended_scheme_for_pilot": "S1_MINIMAL_STRUCTURAL",
+  "schemes": [
+    {
+      "actual_model_fields": [
+        "gainprm/biasprm[5]",
+        "gainprm/biasprm[7]",
+        "gainprm/biasprm[2]",
+        "gainprm/biasprm[2]"
+      ],
+      "dimensionality": 4,
+      "evidence_level": "E2/E3",
+      "factors": [
+        "biarticular normalized-curve lmax profile",
+        "rectus-vs-hamstring relative fpmax balance",
+        "hip monoarticular antagonist relative F0",
+        "knee monoarticular antagonist relative F0"
+      ],
+      "geometry_consistency": "no geometry mutation; knee equalities unchanged",
+      "implementation_risk": "moderate",
+      "mechanistic_rationale": "curve position plus anatomical-family balance acts through distinct configuration-dependent paths rather than common group scale",
+      "range_evidence_exists": false,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "scheme_id": "S1_MINIMAL_STRUCTURAL",
+      "scientific_role": "primary pilot candidate"
+    },
+    {
+      "actual_model_fields": [
+        "gainprm/biasprm[5]",
+        "gainprm/biasprm[5]",
+        "gainprm/biasprm[5]",
+        "gainprm/biasprm[7]",
+        "gainprm/biasprm[2]",
+        "gainprm/biasprm[2]",
+        "body_mass/body_inertia/body_ipos"
+      ],
+      "dimensionality": 7,
+      "evidence_level": "E1-E3 mixed",
+      "factors": [
+        "hip-flexor/extensor curve profile",
+        "knee-flexor/extensor curve profile",
+        "biarticular curve profile",
+        "rectus-vs-hamstring fpmax",
+        "hip relative F0",
+        "knee relative F0",
+        "background mass/COM profile"
+      ],
+      "geometry_consistency": "conditional; COM requires inertial consistency",
+      "implementation_risk": "moderate-high",
+      "mechanistic_rationale": "separates curve and family-balance mechanisms while remaining below eight dimensions",
+      "range_evidence_exists": false,
+      "range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "scheme_id": "S2_MODERATE_STRUCTURAL",
+      "scientific_role": "secondary pilot candidate"
+    },
+    {
+      "actual_model_fields": [
+        "dof_damping",
+        "tendon_stiffness",
+        "tendon_damping",
+        "gainprm/biasprm[4:8]",
+        "site/geom/body coupled rebuild",
+        "act/ctrl"
+      ],
+      "dimensionality": 6,
+      "evidence_level": "E3/E4",
+      "factors": [
+        "joint damping",
+        "synthetic tendon stiffness",
+        "tendon damping",
+        "passive curve stress",
+        "coupled geometry profile",
+        "activation nuisance"
+      ],
+      "geometry_consistency": "not established",
+      "implementation_risk": "high",
+      "mechanistic_rationale": "robustness exploration only",
+      "range_evidence_exists": false,
+      "range_status": "STRESS_ONLY_NO_POPULATION_BOUNDS",
+      "scheme_id": "S3_STRESS_EXPLORATORY",
+      "scientific_role": "stress only; excluded from primary paper validation"
+    }
+  ],
+  "selection_uses_personalization_outcome": false,
+  "stage_id": "MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_AUDIT_V1"
+}

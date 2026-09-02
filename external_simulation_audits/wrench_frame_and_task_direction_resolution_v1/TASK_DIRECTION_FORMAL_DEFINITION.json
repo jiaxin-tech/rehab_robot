@@ -1,0 +1,32 @@
+{
+  "commanded_tcp_tangent_equivalent": false,
+  "construction": "d_task_B(t) = normalize(p_robot_attach_B(t) - p_limb_attach_B(t))",
+  "coordinate_frame": "robot base B after independent frame-chain validation",
+  "currently_computable_as_validated_physical_direction": false,
+  "equivalence_condition": "only after geometry demonstrates alignment within a preregistered tolerance over representative poses",
+  "force_projection_candidate": "F_task(t) = dot(F_interaction_B(t), d_task_B(t))",
+  "point_A": {
+    "current_status": "NOT_MEASURED",
+    "id": "p_limb_attach_B(t)",
+    "meaning": "measured physical center of limb/cuff strap load transfer in base"
+  },
+  "point_B": {
+    "current_status": "NOT_MEASURED",
+    "id": "p_robot_attach_B(t)",
+    "meaning": "measured physical robot-side strap attachment point in base, not automatically TCP origin"
+  },
+  "positive_force_meaning": null,
+  "positive_force_status": "PARTIALLY_UNRESOLVED_UNTIL_WRENCH_FORCE_SIGN_VALIDATED",
+  "positive_geometric_direction": "limb attachment toward robot attachment (robotward pull direction)",
+  "selection_used_mechanical_outcomes": false,
+  "status": "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION",
+  "target_definition": "ACTUAL_STRAP_PULL_LINE_OF_ACTION",
+  "time_variation": "both points may vary with posture; recompute per valid synchronized sample or use a validated static approximation",
+  "validity": [
+    "both points expressed in same validated base frame",
+    "finite separation above future metrology threshold",
+    "strap taut and single line of action",
+    "attachment placement valid",
+    "geometry timestamp/pose alignment valid"
+  ]
+}

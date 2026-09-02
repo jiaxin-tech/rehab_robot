@@ -1,0 +1,119 @@
+{
+  "protocol_id": "S1_FACTOR_DEFINITION_AMENDMENT_PROTOCOL_V1",
+  "stage_id": "MYOLEG_S1_STRUCTURAL_FACTOR_DEFINITION_AMENDMENT_V1",
+  "scientific_role": "definition amendment and operator-unit verification only",
+  "frozen_before_final_group_membership_or_operator_candidate_results": true,
+  "old_s1_identity": "S1_MINIMAL_STRUCTURAL",
+  "old_s1_sha256": "47ebf27c43ccca9621e315c1322946bb7b8687e098b243ee8d92f0f66d578394",
+  "amended_identity": "S1_STRUCTURAL_DEFINITION_AMENDED_V1",
+  "versioning": {
+    "overwrite_old_s1": false,
+    "old_s1_permanently_preserved": true,
+    "unresolved_factor_action": "FACTOR_DEFINITION_UNRESOLVED and lower readiness; never silently delete a factor"
+  },
+  "membership_derivation": {
+    "model_source": "compiled frozen supine MyoLeg",
+    "state_source": "frozen V3 reference candidate MYOLEG_V3_K0312, beta=[0,0], 401 states",
+    "coordinate_source": "existing project-to-MyoLeg independent hip/knee mapping",
+    "mechanical_quantity": "actuator moment matrix projected through the independent-coordinate tangent; positive actuator force generalized effect in project q_hip/q_knee flexion coordinates",
+    "prohibited_inputs": ["mechanical J", "oracle", "candidate rank", "personalization outcome", "held-out scientific truth", "muscle name as primary classifier"],
+    "effective_moment_arm_abs_m": 1e-5,
+    "negligible_other_joint_max_abs_m": 1e-6,
+    "minimum_target_effective_state_fraction": 0.8,
+    "minimum_antagonist_negative_sign_fraction": 0.95,
+    "minimum_agonist_positive_sign_fraction": 0.95,
+    "near_zero_states": "excluded from sign denominator when abs(target moment arm) < 1e-5 m",
+    "monoarticular_rule": "target effective-state fraction >=0.8 and other-joint maximum absolute projected moment arm <=1e-6 m",
+    "antagonist_rule": "monoarticular rule plus negative target sign in >=0.95 of effective states",
+    "biarticular_rule": "hip and knee effective-state fractions each >=0.8",
+    "ambiguous_rule": "any threshold-borderline, sign-inconsistent, or non-negligible other-joint case is excluded and reported; no name-based override"
+  },
+  "anatomical_review": {
+    "performed_after_mechanical_membership": true,
+    "criteria": [
+      "standard anatomical action is consistent with mechanically observed target-joint torque sign",
+      "multi-action or model-path disagreement is marked anatomically ambiguous",
+      "anatomical review never overrides the frozen mechanical rule",
+      "every included and excluded actuator receives a review label and reason"
+    ]
+  },
+  "operator_candidates": {
+    "lmax": [
+      "L1_LOG_MULTIPLICATIVE_LMAX_ONLY: lmax_i(z)=lmax_i0*exp(z)",
+      "L2_LOG_WIDTH_ABOUT_FIXED_CENTER: center_i fixed; width_i(z)=width_i0*exp(z), changing lmin and lmax",
+      "L3_ADDITIVE_LMAX_ONLY: lmax_i(z)=lmax_i0+z"
+    ],
+    "rectus_hamstring_balance": [
+      "B1_LINEAR_SYMMETRIC: rectus*(1+d), hamstrings*(1-d)",
+      "B2_LOG_SYMMETRIC_FAMILY_CENTERS: rectus*exp(d), each hamstring*exp(-d)",
+      "B3_INDIVIDUAL_COUNT_WEIGHTED_LOG: rectus*exp(d), each hamstring*exp(-d/3)"
+    ],
+    "f0_group": [
+      "F1_LOG_GROUP_SCALE: each included member F0_i(z)=F0_i0*exp(z)",
+      "F2_LINEAR_GROUP_SCALE: each included member F0_i(z)=F0_i0*(1+z)"
+    ]
+  },
+  "operator_comparison_criteria_in_order": [
+    "uses only inherited exact field family",
+    "zero gives exact nominal identity",
+    "parameter-domain validity and positivity",
+    "valid lmin<lmax where applicable",
+    "deterministic invertibility",
+    "gainprm and biasprm synchronization",
+    "minimal unintended global remapping",
+    "group-size-invariant family interpretation",
+    "reproducibility and future range calibratability"
+  ],
+  "operator_selection_prohibited_inputs": [
+    "J", "oracle", "ranking", "personalization", "gradient rotation outcome", "trajectory truth outcome"
+  ],
+  "operator_invariants": {
+    "all_factors": [
+      "factor value zero is bitwise-equal to base targeted fields",
+      "positive force/passive parameters remain positive",
+      "only declared fields and members change",
+      "corresponding gainprm and biasprm entries remain exactly equal",
+      "structural topology, transmissions, sites, wraps, equalities and actuator_lengthrange remain unchanged"
+    ],
+    "lmax": ["lmin<lmax", "range and actuator_lengthrange unchanged"],
+    "balance": ["rectus and hamstring family log-centers move equally and oppositely", "non-family biarticular muscles unchanged"]
+  },
+  "v1_relation_decision_rules": {
+    "anthropometric_mass_inertia": "RETAIN_AS_BACKGROUND",
+    "hip_only_common_fpmax": "SECONDARY_ONLY because prior evidence is magnitude-dominant and amended hip factor uses F0 rather than fpmax",
+    "knee_only_common_fpmax": "SECONDARY_ONLY because prior evidence is magnitude-dominant and amended knee factor uses F0 rather than fpmax",
+    "biarticular_common_fpmax": "REMOVE_FROM_PERSONALIZATION_FOCUSED_COHORT to avoid global fpmax scale confounding the amended within-family balance; a future explicit global-plus-balance decomposition would require a separate version",
+    "new_structural_factor_relation": "REPLACED_BY_STRUCTURAL_FACTOR is a future personalization-focused design relationship, not physiological equivalence"
+  },
+  "operator_unit_check_policy": {
+    "allowed": [
+      "compiled moment-arm structural classification", "nominal identity", "gain/bias synchronization",
+      "single extremely small operator application at z=1e-8", "field-domain checks", "topology fingerprint checks"
+    ],
+    "small_operator_value": 1e-8,
+    "scientific_trajectory_truth_replay": false,
+    "J_or_oracle_read": false,
+    "population_bounds_or_diagnostic_levels_frozen": false
+  },
+  "readiness_rules": {
+    "S1_STRUCTURAL_FACTOR_DEFINITION_AMENDED_READY": "all four factors have deterministic mechanics-derived membership, complete operators, exact identity/synchronization/integrity PASS, and no unresolved semantic limitation",
+    "S1_STRUCTURAL_FACTOR_DEFINITION_AMENDED_READY_WITH_LIMITATIONS": "all four factors are deterministic and unit-valid, but range calibration or indirect physiological mapping limitations remain",
+    "S1_STRUCTURAL_FACTOR_DEFINITION_AMENDMENT_NOT_READY": "one or more factor definitions remain unresolved or an operator/integrity invariant fails"
+  },
+  "scope_guards": {
+    "structural_pilot_executed": false,
+    "scientific_outcome_experiment": false,
+    "virtual_subjects_generated": 0,
+    "cohort_v2_generated": false,
+    "truth_landscape_generated": false,
+    "v1_cohort_modified": false,
+    "v3_parameterization_or_domain_modified": false,
+    "objective_or_normalization_modified": false,
+    "held_out_scientific_access": 0,
+    "five_parameter_or_ml_training": false,
+    "bo_run": false,
+    "robot_or_hardware": false
+  },
+  "next_stage_if_ready": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_V2",
+  "next_stage_executed": false
+}

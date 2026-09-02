@@ -1,0 +1,7 @@
+joint,field,nominal,units,normal_or_limit,truth_learner_independent,decision
+hip_flexion_r,dof_damping,0.5,N m s/rad,non-limit model field,False,SECONDARY/STRESS_ONLY
+hip_flexion_r,jnt_stiffness,0.0,N m/rad,non-limit model field,False,DO_NOT_USE_AS_PRIMARY_CURRENTLY_ZERO
+hip_flexion_r,jnt_range/solver impedance,-0.523599|2.0944,rad/solver,simulator joint-limit artifact,True,DO_NOT_PERTURB
+knee_angle_r,dof_damping,0.5,N m s/rad,non-limit model field,False,SECONDARY/STRESS_ONLY
+knee_angle_r,jnt_stiffness,0.0,N m/rad,non-limit model field,False,DO_NOT_USE_AS_PRIMARY_CURRENTLY_ZERO
+knee_angle_r,jnt_range/solver impedance,0.0|2.0944,rad/solver,simulator joint-limit artifact,True,DO_NOT_PERTURB

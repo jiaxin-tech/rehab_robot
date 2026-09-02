@@ -1,0 +1,73 @@
+{
+  "engineering_estimate_only": true,
+  "environment_control_dt_seconds": 0.01,
+  "environment_id": "myoLegWalk-v0",
+  "environment_steps_per_24s_trajectory": 2400,
+  "extrapolation_from_100000_step_segment": [
+    {
+      "estimated_wall_hours": 0.00038146178611360177,
+      "estimated_wall_minutes": 0.022887707166816106,
+      "estimated_wall_seconds": 1.3732624300089664,
+      "trajectory_count": 1
+    },
+    {
+      "estimated_wall_hours": 0.03814617861136018,
+      "estimated_wall_minutes": 2.288770716681611,
+      "estimated_wall_seconds": 137.32624300089665,
+      "trajectory_count": 100
+    },
+    {
+      "estimated_wall_hours": 0.3814617861136018,
+      "estimated_wall_minutes": 22.887707166816107,
+      "estimated_wall_seconds": 1373.2624300089665,
+      "trajectory_count": 1000
+    },
+    {
+      "estimated_wall_hours": 8.020234053038477,
+      "estimated_wall_minutes": 481.21404318230867,
+      "estimated_wall_seconds": 28872.84259093852,
+      "trajectory_count": 21025
+    }
+  ],
+  "integration_steps_per_24s_trajectory": 24000,
+  "integration_steps_per_environment_step": 10,
+  "integration_timestep_seconds": 0.001,
+  "peak_rss_raw_ru_maxrss": 291422208,
+  "peak_rss_units_on_macos": "bytes",
+  "segments": [
+    {
+      "completed_environment_steps": 1000,
+      "environment_steps_per_second": 1712.2266403996875,
+      "exception_count": 0,
+      "integration_steps_per_second": 17122.266403996873,
+      "nan_or_inf_detected": false,
+      "realtime_factor": 17.122266403996697,
+      "requested_environment_steps": 1000,
+      "simulated_time_seconds": 9.999999999999897,
+      "wall_time_seconds": 0.5840348330093548
+    },
+    {
+      "completed_environment_steps": 10000,
+      "environment_steps_per_second": 1728.785171158847,
+      "exception_count": 0,
+      "integration_steps_per_second": 17287.85171158847,
+      "nan_or_inf_detected": false,
+      "realtime_factor": 17.28785171161635,
+      "requested_environment_steps": 10000,
+      "simulated_time_seconds": 100.00000000016128,
+      "wall_time_seconds": 5.784408708976116
+    },
+    {
+      "completed_environment_steps": 100000,
+      "environment_steps_per_second": 1747.6630449901186,
+      "exception_count": 0,
+      "integration_steps_per_second": 17476.630449901186,
+      "nan_or_inf_detected": false,
+      "realtime_factor": 17.47663044956044,
+      "requested_environment_steps": 100000,
+      "simulated_time_seconds": 999.9999999805027,
+      "wall_time_seconds": 57.21926791704027
+    }
+  ],
+  "trajectory_duration_seconds": 24.0
+}

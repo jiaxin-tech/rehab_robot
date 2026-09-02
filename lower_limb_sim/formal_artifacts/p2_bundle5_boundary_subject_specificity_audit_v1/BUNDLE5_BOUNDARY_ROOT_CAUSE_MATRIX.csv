@@ -1,0 +1,7 @@
+problem,possible_cause,evidence,conclusion
+15/15 H2 final same alpha,truth landscape + policy ranking,truth full optima=8; truth knee=-5=15/15; H2 full alpha unique=1,MIXED_TRUTH_AND_POLICY_EFFECT
+116 trials,initial exploration plus four useful boundary endpoints per case,low-value=49/116; trials after final alpha=49,MIXED_TRIAL_VALUE
+H3 degenerates to H5,short horizons fail unchanged confidence gates,"adaptive endpoint usage H1=0,H2=0,H3=1,H5=59",HORIZON_ESCALATION_DRIVEN_BY_FROZEN_DECISION_EVIDENCE
+high J improvement but weak specificity,uniform truth knee direction plus policy loss of hip/phase diversity,selected knee-negative=60/60; objective status=OBJECTIVE_CHANGE_NOT_JUSTIFIED,MIXED_TRUTH_AND_POLICY_EFFECT
+knee-negative dominance,prediction magnitude / availability / uncertainty / ranking / truth,all horizons use the same H5 uncertainty; see axis-direction audit,PREDICTION_MAGNITUDE_AND_TRUTH_DIRECTION_WITH_EQUAL_UNCERTAINTY
+objective subject discrimination,normalization / torque response / generator geometry,full truth optima=8; knee boundary=15/15,OBJECTIVE_CHANGE_NOT_JUSTIFIED

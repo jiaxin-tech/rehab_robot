@@ -1,0 +1,42 @@
+{
+  "primary_125": {
+    "changed_content_lines": [
+      "-            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.0944\"/>",
+      "+            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.18166\"/>"
+    ],
+    "status": "PASS",
+    "unified_diff": [
+      "--- myoleg_supine_right_v1.xml",
+      "+++ myoleg_supine_right_knee125_v1.xml",
+      "@@ -384,7 +384,7 @@",
+      "             <inertial pos=\"-0.005 -0.175 0.0025\" quat=\"0.70204 -0.711847 0.0203385 0\" mass=\"3.8\" diaginertia=\"0.0771589 0.0771589 0.00690387\"/>",
+      "             <joint name=\"knee_angle_r_translation2\" pos=\"0 0 0\" axis=\"0.992246 0.123982 -0.00878916\" type=\"slide\" range=\"7.69254e-11 0.006792\"/>",
+      "             <joint name=\"knee_angle_r_translation1\" pos=\"0 0 0\" axis=\"-0.124293 0.989762 -0.0701648\" type=\"slide\" range=\"9.53733e-08 0.00159883\"/>",
+      "-            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.0944\"/>",
+      "+            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.18166\"/>",
+      "             <joint name=\"knee_angle_r_rotation2\" pos=\"0 0 0\" axis=\"0.992246 0.123982 -0.00878916\" range=\"-0.00167821 0.0335354\"/>",
+      "             <joint name=\"knee_angle_r_rotation3\" pos=\"0 0 0\" axis=\"-0.124293 0.989762 -0.0701648\" range=\"1.08939e-08 0.262788\"/>",
+      "             <geom name=\"r_tibia1_col\" class=\"coll\" size=\"0.056 0.0701895\" pos=\"-0.005 -0.07 0.00125\" quat=\"0.700782 -0.711563 0.0508259 0\" mass=\"0\"/>"
+    ]
+  },
+  "stress_only_130": {
+    "changed_content_lines": [
+      "-            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.0944\"/>",
+      "+            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.26893\"/>"
+    ],
+    "status": "PASS",
+    "unified_diff": [
+      "--- myoleg_supine_right_v1.xml",
+      "+++ myoleg_supine_right_knee130_stress_only_v1.xml",
+      "@@ -384,7 +384,7 @@",
+      "             <inertial pos=\"-0.005 -0.175 0.0025\" quat=\"0.70204 -0.711847 0.0203385 0\" mass=\"3.8\" diaginertia=\"0.0771589 0.0771589 0.00690387\"/>",
+      "             <joint name=\"knee_angle_r_translation2\" pos=\"0 0 0\" axis=\"0.992246 0.123982 -0.00878916\" type=\"slide\" range=\"7.69254e-11 0.006792\"/>",
+      "             <joint name=\"knee_angle_r_translation1\" pos=\"0 0 0\" axis=\"-0.124293 0.989762 -0.0701648\" type=\"slide\" range=\"9.53733e-08 0.00159883\"/>",
+      "-            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.0944\"/>",
+      "+            <joint name=\"knee_angle_r\" pos=\"0 0 0\" axis=\"-3.98373e-10 -0.0707131 -0.997497\" range=\"0 2.26893\"/>",
+      "             <joint name=\"knee_angle_r_rotation2\" pos=\"0 0 0\" axis=\"0.992246 0.123982 -0.00878916\" range=\"-0.00167821 0.0335354\"/>",
+      "             <joint name=\"knee_angle_r_rotation3\" pos=\"0 0 0\" axis=\"-0.124293 0.989762 -0.0701648\" range=\"1.08939e-08 0.262788\"/>",
+      "             <geom name=\"r_tibia1_col\" class=\"coll\" size=\"0.056 0.0701895\" pos=\"-0.005 -0.07 0.00125\" quat=\"0.700782 -0.711563 0.0508259 0\" mass=\"0\"/>"
+    ]
+  }
+}

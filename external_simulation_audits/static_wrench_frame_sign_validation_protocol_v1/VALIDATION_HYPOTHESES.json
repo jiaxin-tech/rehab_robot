@@ -1,0 +1,32 @@
+{
+  "frozen_before_physical_result": true,
+  "hypotheses": [
+    {
+      "id": "H1",
+      "primary": true,
+      "statement": "For a known static physical force direction, the reported world-frame force has its primary response aligned with that physical direction under one globally determined sign convention."
+    },
+    {
+      "id": "H2",
+      "primary": true,
+      "statement": "Reversing the physical force direction produces a reliable sign reversal in the corresponding reported component."
+    },
+    {
+      "id": "H3",
+      "primary": true,
+      "statement": "For the same world-referenced physical force direction at different tool orientations, the reported world-frame direction remains world-consistent rather than rotating with the tool."
+    },
+    {
+      "id": "H4",
+      "primary": true,
+      "statement": "Zero-load baseline wrench can be quantified and pose dependence can be identified without assuming its controller/sensor origin."
+    },
+    {
+      "id": "H5",
+      "primary": true,
+      "statement": "Host query timestamps are sufficient for steady-state static averaging but do not validate controller-source timing or dynamic synchronization."
+    }
+  ],
+  "hypothesis_set_id": "STATIC_WRENCH_HYPOTHESES_V1",
+  "post_result_hypothesis_modification_allowed": false
+}

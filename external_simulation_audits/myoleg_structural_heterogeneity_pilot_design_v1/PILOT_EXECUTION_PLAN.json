@@ -1,0 +1,18 @@
+{
+  "blocker": "S1_DEFINITION_INCOMPLETE",
+  "cohort_v2_generated": false,
+  "execution_authorized": false,
+  "new_virtual_subject_count": 0,
+  "next_stage": null,
+  "pilot_stage_not_authorized": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1",
+  "required_resolution": [
+    "freeze exact members for hip monoarticular antagonist F0",
+    "freeze exact members for knee monoarticular antagonist F0",
+    "freeze positive/negative direction and invariant normalization for every balance/profile",
+    "freeze whether each factor replaces or supplements V1"
+  ],
+  "scientific_pilot_outcome_executed": false,
+  "status": "BLOCKED",
+  "structural_diagnostic_model_count": 0,
+  "trajectory_replay_count": 0
+}

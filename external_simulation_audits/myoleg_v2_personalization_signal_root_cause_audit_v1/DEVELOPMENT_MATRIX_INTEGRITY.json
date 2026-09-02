@@ -1,0 +1,36 @@
+{
+  "development_subject_ids_loaded": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003",
+    "MYOLEG_VP_005",
+    "MYOLEG_VP_006",
+    "MYOLEG_VP_007",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_010",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_013",
+    "MYOLEG_VP_014",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_017",
+    "MYOLEG_VP_018",
+    "MYOLEG_VP_019",
+    "MYOLEG_VP_021",
+    "MYOLEG_VP_022",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_025",
+    "MYOLEG_VP_026",
+    "MYOLEG_VP_027",
+    "MYOLEG_VP_029",
+    "MYOLEG_VP_030",
+    "MYOLEG_VP_031"
+  ],
+  "finite": true,
+  "held_out_scientific_truth_access_count": 0,
+  "held_out_subject_ids_loaded": [],
+  "objective_reconstruction_max_abs_error": 0.0,
+  "shape": [
+    24,
+    16675
+  ]
+}

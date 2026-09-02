@@ -1,0 +1,16 @@
+case_id,subject_id,policy_id,truth_alpha_hip,truth_alpha_knee,truth_alpha_phase,truth_optimum_J,final_alpha_hip,final_alpha_knee,final_alpha_phase,global_truth_regret,objective_modified,truth_used_to_modify_policy,truth_optimum_on_generator_boundary,final_alpha_on_generator_boundary,boundary_classification
+prospective_subject_001__matched_linear,prospective_subject_001,P2_V1_G0_C0_S0,2,-5,0.0125,0.964933220542,0,-5,0,0.00427479418365,False,False,True,True,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_001__matched_linear,prospective_subject_001,P2_V2A_G2_C0_S2,2,-5,0.0125,0.964933220542,0,-5,0,0.00427479418365,False,False,True,True,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_001__matched_linear,prospective_subject_001,P2_V2A_G3_C0_S2_SENSITIVITY,2,-5,0.0125,0.964933220542,0,-1,0,0.0287161683901,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_001__matched_linear,prospective_subject_001,P2_V2A_G2_C0_S1_SENSITIVITY,2,-5,0.0125,0.964933220542,0,-5,0,0.00427479418365,False,False,True,True,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_001__matched_linear,prospective_subject_001,P2_V2A_G2_C0_S3_SENSITIVITY,2,-5,0.0125,0.964933220542,0,-5,0,0.00427479418365,False,False,True,True,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_002__matched_linear,prospective_subject_002,P2_V1_G0_C0_S0,2,-5,0.03,0.974173691782,0,-1,0,0.0207975482133,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_002__matched_linear,prospective_subject_002,P2_V2A_G2_C0_S2,2,-5,0.03,0.974173691782,0,0,0,0.0258263082185,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_002__matched_linear,prospective_subject_002,P2_V2A_G3_C0_S2_SENSITIVITY,2,-5,0.03,0.974173691782,0,0,0,0.0258263082185,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_002__matched_linear,prospective_subject_002,P2_V2A_G2_C0_S1_SENSITIVITY,2,-5,0.03,0.974173691782,0,0,0,0.0258263082185,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_002__matched_linear,prospective_subject_002,P2_V2A_G2_C0_S3_SENSITIVITY,2,-5,0.03,0.974173691782,0,0,0,0.0258263082185,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_003__matched_linear,prospective_subject_003,P2_V1_G0_C0_S0,2,-5,0.03,0.972872528207,0,-5,0,0.000837074344438,False,False,True,True,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_003__matched_linear,prospective_subject_003,P2_V2A_G2_C0_S2,2,-5,0.03,0.972872528207,0,0,0,0.0271274717933,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_003__matched_linear,prospective_subject_003,P2_V2A_G3_C0_S2_SENSITIVITY,2,-5,0.03,0.972872528207,0,0,0,0.0271274717933,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_003__matched_linear,prospective_subject_003,P2_V2A_G2_C0_S1_SENSITIVITY,2,-5,0.03,0.972872528207,0,0,0,0.0271274717933,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM
+prospective_subject_003__matched_linear,prospective_subject_003,P2_V2A_G2_C0_S3_SENSITIVITY,2,-5,0.03,0.972872528207,0,0,0,0.0271274717933,False,False,True,False,OBJECTIVE_TRUTH_BOUNDARY_OPTIMUM

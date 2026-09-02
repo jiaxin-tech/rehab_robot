@@ -1,0 +1,390 @@
+{
+  "candidate_effect_diagnostics": {
+    "ROM_EXTREMA_EXPLAINED_COMMON_EFFECT": "R2 of primary_ROM_model on candidate-main effect",
+    "causal_interpretation_forbidden": true,
+    "dominant_threshold": 0.9,
+    "full_kinematic_model": "ordinary least squares over fixed standardized descriptor list; descriptive only",
+    "primary_ROM_model": "ordinary least squares with hip ROM, knee ROM, their squares, and interaction",
+    "production_learner": false,
+    "secondary_timing_model": "ordinary least squares quadratic in hip ROM, knee ROM, and phase including pair interactions",
+    "substantial_threshold": 0.75,
+    "targets": [
+      "mean_development_J",
+      "candidate_main_effect"
+    ],
+    "univariate": "Pearson and Spearman association for preregistered descriptors"
+  },
+  "decision_rules": {
+    "ROM_effect": "DOMINANT if R2>=0.90; SUBSTANTIAL if >=0.75; otherwise LIMITED",
+    "V2_inadequate": "task amplitude changes AND broad fixed-ROM path effect is not identifiable AND phase-only variation remains common-monotonic",
+    "V3_fallback": "next highest structurally distinct option satisfying those invariants",
+    "V3_primary": "highest preregistered structural score that preserves extrema, closure, C2 and branch asymmetry with 2-4 parameters",
+    "fixed_ROM_identifiability": "CURRENT_GRID_CANNOT_IDENTIFY_FIXED_ROM_PATH_EFFECT if fewer than two independent path-shape coordinates vary within matched-ROM groups",
+    "next_branch": "Branch A when V2 is inadequate and a structurally better parameterization exists; otherwise Branch B if objective remains primary, else Branch C if heterogeneity remains primary"
+  },
+  "descriptor_definitions": {
+    "ROM_extrema_deg": [
+      "hip_min",
+      "hip_max",
+      "hip_range",
+      "knee_min",
+      "knee_max",
+      "knee_range"
+    ],
+    "continuity": [
+      "q_closure",
+      "dq_closure",
+      "ddq_closure"
+    ],
+    "kinematics": [
+      "peak_abs_dq",
+      "time_weighted_rms_dq",
+      "peak_abs_ddq",
+      "time_weighted_rms_ddq"
+    ],
+    "path_geometry": [
+      "joint_space_path_length_deg",
+      "signed_qspace_area_deg2",
+      "absolute_qspace_area_deg2",
+      "normalized_path_length",
+      "branch_coordination_slope"
+    ],
+    "timing_s": [
+      "cycle_duration",
+      "flexion_duration",
+      "extension_duration",
+      "flexion_midpoint_lag",
+      "extension_midpoint_lag"
+    ]
+  },
+  "frozen_before_new_development_scientific_values_read": true,
+  "generator_audit": {
+    "exact_source_path": "external_simulation/myoleg_v2_candidate_domain_design_v1/build_candidate_domain.py",
+    "exact_source_sha256": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "functions_executed": [
+      "load_reference_adapter",
+      "generate_candidate"
+    ],
+    "no_reimplementation_of_frozen_generator": true
+  },
+  "hypotheses": {
+    "H_BOUNDARY_MIXED_SOURCE": "oracle coordinates mix arbitrary proposal and simulator-validity boundaries",
+    "H_FIXED_ROM_LIMITED": "the frozen grid has only one independent fixed-ROM path/timing dimension",
+    "H_PARAMETER_TASK_MIXING": "amplitude parameters change prescribed extrema/ROM rather than path shape alone",
+    "H_PHASE_COMMON_MONOTONIC": "phase-only variation remains common-monotonic across development subjects",
+    "H_ROM_COMMON_EFFECT": "simple ROM/extrema descriptors explain most common candidate effect"
+  },
+  "matched_ROM": {
+    "equivalence_tolerance_deg": 0.001,
+    "grouping": "quantize all four joint extrema by tolerance; require at least five phase-distinct candidates",
+    "metrics": [
+      "pairwise Kendall rank similarity",
+      "rank inversion",
+      "subject-candidate interaction fraction",
+      "shared optimum count",
+      "common regret"
+    ],
+    "minimum_independent_path_dimensions_for_broad_identification": 2
+  },
+  "phase_mechanism": {
+    "components": [
+      "mass",
+      "bias_gravity",
+      "passive",
+      "zero_control_actuator",
+      "constraint",
+      "total_tau"
+    ],
+    "phase_values": [
+      -0.03,
+      -0.0025,
+      0.0,
+      0.0025,
+      0.03
+    ],
+    "reused_prior_deterministic_cache_sha256": "6e74603d52b6dfd7ef6bbc3919f7de34dcbbf57cd5d73fe0404ce3205d3d7afe",
+    "selection_modified_after_results": false,
+    "subject_count": 6
+  },
+  "phase_only": {
+    "amplitude_pairs": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        2.0,
+        0.5
+      ],
+      [
+        -5.0,
+        -5.0
+      ],
+      [
+        -2.0,
+        -2.0
+      ],
+      [
+        2.0,
+        -2.0
+      ],
+      [
+        -2.0,
+        0.5
+      ]
+    ],
+    "common_monotonic_rule": "at least 23/24 subjects have all 24 adjacent J differences with the same nonzero sign for every preregistered amplitude pair",
+    "phase_values": [
+      -0.03,
+      -0.0275,
+      -0.025,
+      -0.0225,
+      -0.02,
+      -0.0175,
+      -0.015,
+      -0.0125,
+      -0.01,
+      -0.0075,
+      -0.005,
+      -0.0025,
+      -0.0,
+      0.0025,
+      0.005,
+      0.0075,
+      0.01,
+      0.0125,
+      0.015,
+      0.0175,
+      0.02,
+      0.0225,
+      0.025,
+      0.0275,
+      0.03
+    ]
+  },
+  "population": {
+    "candidate_count": 16675,
+    "development_count": 24,
+    "development_subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_006",
+      "MYOLEG_VP_007",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_010",
+      "MYOLEG_VP_011",
+      "MYOLEG_VP_013",
+      "MYOLEG_VP_014",
+      "MYOLEG_VP_015",
+      "MYOLEG_VP_017",
+      "MYOLEG_VP_018",
+      "MYOLEG_VP_019",
+      "MYOLEG_VP_021",
+      "MYOLEG_VP_022",
+      "MYOLEG_VP_023",
+      "MYOLEG_VP_025",
+      "MYOLEG_VP_026",
+      "MYOLEG_VP_027",
+      "MYOLEG_VP_029",
+      "MYOLEG_VP_030",
+      "MYOLEG_VP_031"
+    ],
+    "held_out_scientific_values_allowed": false,
+    "held_out_subject_ids": [
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_008",
+      "MYOLEG_VP_012",
+      "MYOLEG_VP_016",
+      "MYOLEG_VP_020",
+      "MYOLEG_VP_024",
+      "MYOLEG_VP_028",
+      "MYOLEG_VP_032"
+    ]
+  },
+  "prior_frozen_conclusion": "PERSONALIZATION_SIGNAL_ROOT_CAUSE_IDENTIFIED",
+  "protocol_freeze_inputs": {
+    "candidate_admission": "13ff61daf55560953d1b1ff7a590af7f132b2f88d880dad0202cd3fb79e017b2",
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "generator_source": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "root_cause_checksums": "d30910fa6ea2b6ce2346212cfb1b1013a07ff0c4c90d4db99a19abf66b170c3f",
+    "root_cause_metadata": "7a7e63f8ab03584484ba41ae29be2236fad719f0545972f477c0b3a15bb9e6a6",
+    "root_cause_protocol": "2beac2ffb512783bcbe6dfcf60e8d64d9b6be8a5fe2122b8c77da876e6202bbb",
+    "root_cause_replay_cache": "6e74603d52b6dfd7ef6bbc3919f7de34dcbbf57cd5d73fe0404ce3205d3d7afe",
+    "root_cause_replay_manifest": "9956ebca4746778a634d1ef32231bf63b9c91464f16a69fe5b326ac186749298",
+    "trusted_rom_decision": "0383984f3b49835dd014d8de13f54d69d258fe8099a02d46dd398cd045a6e902",
+    "truth_landscape_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "truth_landscape_protocol": "2fe115d8c34685c70672bcc6a4d9752a88dfbb2cf12fb12d60df877755b7fdcc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "protocol_id": "TRAJECTORY_PARAMETERIZATION_BOUNDARY_AUDIT_PROTOCOL_V1",
+  "prototype_basis": {
+    "definitions": [
+      {
+        "dimension": 1,
+        "generator": "unchanged frozen V2 phase_warp",
+        "parameterization_id": "P1_PHASE_COORDINATION_ONLY",
+        "parameters": [
+          "knee_branch_internal_phase_warp"
+        ]
+      },
+      {
+        "dimension": 4,
+        "generator": "branch-wise degree-6 interior Bezier/B-spline basis",
+        "parameterization_id": "P2_INTERIOR_BSPLINE_JOINT_PERTURBATION",
+        "parameters": [
+          "hip_flex",
+          "hip_extension",
+          "knee_flex",
+          "knee_extension"
+        ]
+      },
+      {
+        "dimension": 2,
+        "generator": "branch-wise smooth envelope times angle-space normal",
+        "parameterization_id": "P3_JOINT_SPACE_NORMAL_DISPLACEMENT",
+        "parameters": [
+          "flex_normal",
+          "extension_normal"
+        ]
+      },
+      {
+        "dimension": 2,
+        "generator": "knee perturbation as interior function of normalized hip progress",
+        "parameterization_id": "P4_BRANCH_AWARE_COORDINATION_FUNCTION",
+        "parameters": [
+          "flex_knee_coordination",
+          "extension_knee_coordination"
+        ]
+      }
+    ],
+    "diagnostic_coefficient_magnitude_deg": 0.25,
+    "diagnostic_value_is_not_a_frozen_range": true,
+    "extrema_equivalence_tolerance_deg": 0.001,
+    "kinematic_only": true,
+    "requirements": [
+      "closure",
+      "C2",
+      "fixed duration",
+      "fixed branch endpoints",
+      "no clipping",
+      "finite q/dq/ddq"
+    ]
+  },
+  "scope_guards": {
+    "bo": false,
+    "candidate_domain_modified": false,
+    "cohort_modified": false,
+    "five_parameter": false,
+    "held_out_truth": false,
+    "myoleg_model_modified": false,
+    "new_v3_landscape": false,
+    "nn_or_pinn": false,
+    "normalization_modified": false,
+    "objective_modified": false,
+    "reference_modified": false,
+    "robot_or_hardware": false,
+    "subject_ranges_modified": false,
+    "truth_landscape_modified": false
+  },
+  "stage_id": "MYOLEG_V2_TRAJECTORY_PARAMETERIZATION_BOUNDARY_AUDIT_V1",
+  "structural_comparison": {
+    "dimension_target": "2-4 preferred, <=5 audited, >10 TOO_HIGH_DIMENSIONAL_FOR_LOW_BUDGET_PERSONALIZATION_V1",
+    "outcome_diversity_or_new_J_used": false,
+    "rows": [
+      {
+        "C2_feasibility": 2,
+        "branch_asymmetry_control": 0,
+        "closed_cycle_feasibility": 2,
+        "coordination_shape_expressiveness": 1,
+        "dimension": 1,
+        "extrema_preservation": 2,
+        "future_robot_auditability": 2,
+        "interpretability": 2,
+        "local_reference_perturbation": 2,
+        "low_budget_BO_suitability": 2,
+        "low_dimensionality": 2,
+        "maximum_score": 30,
+        "no_clipping_generation": 2,
+        "parameterization_id": "P1_PHASE_COORDINATION_ONLY",
+        "prescribed_task_preservation": 2,
+        "reversible_semantics": 2,
+        "simulator_compatibility": 2,
+        "smooth_dq_ddq": 2,
+        "structural_score": 27
+      },
+      {
+        "C2_feasibility": 2,
+        "branch_asymmetry_control": 2,
+        "closed_cycle_feasibility": 2,
+        "coordination_shape_expressiveness": 2,
+        "dimension": 4,
+        "extrema_preservation": 1,
+        "future_robot_auditability": 1,
+        "interpretability": 2,
+        "local_reference_perturbation": 2,
+        "low_budget_BO_suitability": 1,
+        "low_dimensionality": 2,
+        "maximum_score": 30,
+        "no_clipping_generation": 2,
+        "parameterization_id": "P2_INTERIOR_BSPLINE_JOINT_PERTURBATION",
+        "prescribed_task_preservation": 2,
+        "reversible_semantics": 2,
+        "simulator_compatibility": 2,
+        "smooth_dq_ddq": 2,
+        "structural_score": 27
+      },
+      {
+        "C2_feasibility": 1,
+        "branch_asymmetry_control": 2,
+        "closed_cycle_feasibility": 2,
+        "coordination_shape_expressiveness": 2,
+        "dimension": 2,
+        "extrema_preservation": 0,
+        "future_robot_auditability": 0,
+        "interpretability": 1,
+        "local_reference_perturbation": 2,
+        "low_budget_BO_suitability": 2,
+        "low_dimensionality": 2,
+        "maximum_score": 30,
+        "no_clipping_generation": 2,
+        "parameterization_id": "P3_JOINT_SPACE_NORMAL_DISPLACEMENT",
+        "prescribed_task_preservation": 1,
+        "reversible_semantics": 1,
+        "simulator_compatibility": 1,
+        "smooth_dq_ddq": 1,
+        "structural_score": 20
+      },
+      {
+        "C2_feasibility": 2,
+        "branch_asymmetry_control": 2,
+        "closed_cycle_feasibility": 2,
+        "coordination_shape_expressiveness": 2,
+        "dimension": 2,
+        "extrema_preservation": 2,
+        "future_robot_auditability": 2,
+        "interpretability": 2,
+        "local_reference_perturbation": 2,
+        "low_budget_BO_suitability": 2,
+        "low_dimensionality": 2,
+        "maximum_score": 30,
+        "no_clipping_generation": 2,
+        "parameterization_id": "P4_BRANCH_AWARE_COORDINATION_FUNCTION",
+        "prescribed_task_preservation": 2,
+        "reversible_semantics": 2,
+        "simulator_compatibility": 2,
+        "smooth_dq_ddq": 2,
+        "structural_score": 30
+      }
+    ],
+    "score_values": {
+      "0": "structurally unsupported/poor",
+      "1": "conditional/moderate",
+      "2": "direct/strong"
+    },
+    "weights": "equal and frozen"
+  }
+}

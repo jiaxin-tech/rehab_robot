@@ -1,0 +1,9 @@
+{
+  "ddq_array_equal": true,
+  "ddq_max_abs_error": 0.0,
+  "dq_array_equal": true,
+  "dq_max_abs_error": 0.0,
+  "pass": true,
+  "q_array_equal": true,
+  "q_max_abs_error": 0.0
+}

@@ -1,0 +1,33 @@
+{
+  "fallback_action": "replace only the failed factor-sign primary model with its pre-frozen half-magnitude fallback and rerun the full 13-point integrity/replay set once",
+  "fallback_failure_action": "factor=INVALID_FOR_PILOT; stop that factor; do not tune or add levels",
+  "fallback_trigger": "primary level integrity failure only; never effect size, J, oracle, rank, nonproportionality, configuration dependence, or gradient outcome",
+  "frozen_before_scientific_pilot_outcomes": true,
+  "future_replay_gates": {
+    "C2_and_branch_anchor_gates": "preserve all frozen V3 gates",
+    "V3_extrema_ROM_error_max_deg": 0.001,
+    "ddq_closure_error_max_rad_s2": 1e-09,
+    "dq_closure_error_max_rad_s": 1e-10,
+    "duration_s_exact": 24.0,
+    "finite_q_dq_ddq": true,
+    "finite_truth_torque_and_actuator_tendon_arrays": true,
+    "joint_limit_active_count_max": 1,
+    "joint_limit_contribution_max_abs_Nm": 0.005,
+    "joint_limit_contribution_max_relative": 0.0005,
+    "model_compile": "PASS",
+    "muscle_reconstruction_residual_max_abs_Nm": 1e-08,
+    "only_declared_model_fields_changed": true,
+    "q_closure_error_max_rad": 1e-10,
+    "sample_count_exact": 401,
+    "solver_warning_count_max": 0,
+    "source_equality_residual_max": 0.001,
+    "tendon_limit_active_count_max": 0,
+    "topology_fingerprint_unchanged": true,
+    "truth_decomposition_residual_max_abs_Nm": 1e-08,
+    "unexpected_contact_active_count_max": 0
+  },
+  "gate_id": "PILOT_V2_INTEGRITY_AND_FALLBACK_RULES_V1",
+  "maximum_fallback_attempts_per_factor_sign": 1,
+  "primary_and_fallback_levels_source": "PILOT_V2_DIAGNOSTIC_LEVELS.json",
+  "scientific_small_effect_action": "INCONCLUSIVE; fallback prohibited"
+}

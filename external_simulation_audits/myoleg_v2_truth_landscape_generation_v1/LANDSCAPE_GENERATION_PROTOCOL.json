@@ -1,0 +1,375 @@
+{
+  "controlled_crosscheck_subset": {
+    "candidate_ids": [
+      "MYOLEG_V2_P15012",
+      "MYOLEG_V2_P00574",
+      "MYOLEG_V2_P09042"
+    ],
+    "pair_count": 12,
+    "subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_031",
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_032"
+    ]
+  },
+  "controlled_thresholds": {
+    "max_abs_max_nm": 65.0,
+    "p95_max_nm": 10.0,
+    "relative_rms_max": 0.2,
+    "rmse_max_nm": 5.0
+  },
+  "detailed_validation_subset": {
+    "all_subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_006",
+      "MYOLEG_VP_007",
+      "MYOLEG_VP_008",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_010",
+      "MYOLEG_VP_011",
+      "MYOLEG_VP_012",
+      "MYOLEG_VP_013",
+      "MYOLEG_VP_014",
+      "MYOLEG_VP_015",
+      "MYOLEG_VP_016",
+      "MYOLEG_VP_017",
+      "MYOLEG_VP_018",
+      "MYOLEG_VP_019",
+      "MYOLEG_VP_020",
+      "MYOLEG_VP_021",
+      "MYOLEG_VP_022",
+      "MYOLEG_VP_023",
+      "MYOLEG_VP_024",
+      "MYOLEG_VP_025",
+      "MYOLEG_VP_026",
+      "MYOLEG_VP_027",
+      "MYOLEG_VP_028",
+      "MYOLEG_VP_029",
+      "MYOLEG_VP_030",
+      "MYOLEG_VP_031",
+      "MYOLEG_VP_032"
+    ],
+    "candidate_rows": [
+      {
+        "alpha": [
+          -5.0,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P00512",
+        "proposal_index": 512,
+        "role": "GLOBAL_HIP_LOW"
+      },
+      {
+        "alpha": [
+          -5.0,
+          0.5,
+          0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P00574",
+        "proposal_index": 574,
+        "role": "KNEE_TRUSTED_BOUND_NEIGHBOR"
+      },
+      {
+        "alpha": [
+          -4.75,
+          0.5,
+          0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P01299",
+        "proposal_index": 1299,
+        "role": "KNEE_TRUSTED_BOUND_NEIGHBOR"
+      },
+      {
+        "alpha": [
+          -2.0,
+          -1.75,
+          0.0125
+        ],
+        "candidate_id": "MYOLEG_V2_P09042",
+        "proposal_index": 9042,
+        "role": "FIXED_HASH_INTERIOR"
+      },
+      {
+        "alpha": [
+          -1.75,
+          -1.0,
+          -0.0075
+        ],
+        "candidate_id": "MYOLEG_V2_P09834",
+        "proposal_index": 9834,
+        "role": "FIXED_HASH_INTERIOR"
+      },
+      {
+        "alpha": [
+          0.0,
+          -5.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P14512",
+        "proposal_index": 14512,
+        "role": "GLOBAL_KNEE_LOW"
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          -0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P15000",
+        "proposal_index": 15000,
+        "role": "GLOBAL_PHASE_LOW"
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P15012",
+        "proposal_index": 15012,
+        "role": "REFERENCE"
+      },
+      {
+        "alpha": [
+          0.0,
+          0.0,
+          0.03
+        ],
+        "candidate_id": "MYOLEG_V2_P15024",
+        "proposal_index": 15024,
+        "role": "GLOBAL_PHASE_HIGH"
+      },
+      {
+        "alpha": [
+          0.0,
+          0.5,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P15062",
+        "proposal_index": 15062,
+        "role": "GLOBAL_KNEE_HIGH"
+      },
+      {
+        "alpha": [
+          2.0,
+          0.0,
+          -0.0
+        ],
+        "candidate_id": "MYOLEG_V2_P20812",
+        "proposal_index": 20812,
+        "role": "GLOBAL_HIP_HIGH"
+      }
+    ],
+    "pair_count": 352,
+    "repeat_prescribed_replay": 2,
+    "selection_uses_geometry_and_candidate_id_only": true
+  },
+  "evaluation_set": {
+    "candidate_count": 16675,
+    "development_count": 24,
+    "expected_pair_count": 533600,
+    "held_out_count": 8,
+    "nominal_control_included": false,
+    "reference_candidate_id": "MYOLEG_V2_P15012",
+    "replacement_or_skip_allowed": false,
+    "subject_count": 32,
+    "subject_specific_candidate_filtering": false
+  },
+  "frozen_before_landscape_outcomes": true,
+  "input_sha256": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "oracle": {
+    "allowed_only_after_complete_checksummed_landscape_freeze": true,
+    "equivalence_tolerance_j": 1e-12,
+    "personalization_interpretation_in_this_stage": false,
+    "tie_rule": "minimum float64 J; values within tolerance are equivalent; lowest original proposal_index wins"
+  },
+  "pair_integrity_gates": {
+    "contact_active_count": 0,
+    "finite_tau_and_j": true,
+    "joint_limit_contribution_max_abs_nm": 0.005,
+    "joint_limit_contribution_max_relative": 0.0005,
+    "sample_count": 401,
+    "solver_warning_count": 0,
+    "source_equality_residual_max": 0.001,
+    "tendon_limit_active_count": 0,
+    "trusted_ROM_from_frozen_candidate_admission": true
+  },
+  "parallelism": {
+    "benchmark_fixed_set": {
+      "candidate_ids": [
+        "MYOLEG_V2_P15012",
+        "MYOLEG_V2_P00512",
+        "MYOLEG_V2_P00574",
+        "MYOLEG_V2_P01299"
+      ],
+      "pair_count": 32,
+      "subject_ids": [
+        "MYOLEG_VP_001",
+        "MYOLEG_VP_002",
+        "MYOLEG_VP_003",
+        "MYOLEG_VP_005",
+        "MYOLEG_VP_004",
+        "MYOLEG_VP_008",
+        "MYOLEG_VP_012",
+        "MYOLEG_VP_016"
+      ]
+    },
+    "benchmark_worker_counts": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "formal_worker_count": "TO_BE_FROZEN_BY_BENCHMARK_BEFORE_LANDSCAPE",
+    "implementation": "process-based isolation",
+    "selection_rule": "highest-throughput stable deterministic count with efficiency >= 0.35; otherwise highest-throughput stable deterministic count",
+    "worker_owns_independent_model_and_MjData": true
+  },
+  "protocol_id": "MYOLEG_V2_TRUTH_LANDSCAPE_GENERATION_PROTOCOL_V1",
+  "runtime_environment": {
+    "frozen_expected": {
+      "mujoco": "3.6.0",
+      "myosuite": "2.12.2",
+      "numpy": "2.2.6",
+      "python": "3.10.19"
+    },
+    "frozen_match": true,
+    "logical_cpu_count": 8,
+    "mujoco": "3.6.0",
+    "myosuite": "2.12.2",
+    "numpy": "2.2.6",
+    "platform": "macOS-26.4.1-arm64-arm-64bit",
+    "python": "3.10.19",
+    "python_executable": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python"
+  },
+  "scientific_role": "HIDDEN_OFFLINE_VIRTUAL_TRUTH_LANDSCAPE",
+  "scope_guards": {
+    "bo": false,
+    "five_parameter_features_or_fit": false,
+    "human_ready": false,
+    "learner_training": false,
+    "nn_or_pinn": false,
+    "robot_or_hardware": false
+  },
+  "stage_id": "MYOLEG_V2_TRUTH_LANDSCAPE_GENERATION_V1",
+  "storage": {
+    "chunk_size": 250,
+    "chunking": "subject then stable candidate rank blocks",
+    "chunks_per_subject": 67,
+    "estimated_uncompressed_landscape_bytes": 126463200,
+    "format": "deterministic compressed NPZ shards",
+    "prohibited_full_replay_storage_estimate_gb": 386,
+    "schema": [
+      {
+        "dtype": "<U13",
+        "name": "subject_id"
+      },
+      {
+        "dtype": "<U16",
+        "name": "candidate_id"
+      },
+      {
+        "dtype": "<i4",
+        "name": "proposal_index"
+      },
+      {
+        "dtype": "<f8",
+        "name": "alpha_hip_deg"
+      },
+      {
+        "dtype": "<f8",
+        "name": "alpha_knee_deg"
+      },
+      {
+        "dtype": "<f8",
+        "name": "alpha_phase"
+      },
+      {
+        "dtype": "<f8",
+        "name": "hip_tau_rms_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "knee_tau_rms_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "hip_tau_peak_abs_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "knee_tau_peak_abs_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "subject_reference_hip_rms_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "subject_reference_knee_rms_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "j_truth"
+      },
+      {
+        "dtype": "<f8",
+        "name": "source_equality_residual_max"
+      },
+      {
+        "dtype": "<f8",
+        "name": "joint_limit_contribution_max_abs_nm"
+      },
+      {
+        "dtype": "<f8",
+        "name": "joint_limit_contribution_max_relative"
+      },
+      {
+        "dtype": "<i4",
+        "name": "solver_warning_count"
+      },
+      {
+        "dtype": "<i2",
+        "name": "joint_limit_active_count_max"
+      },
+      {
+        "dtype": "<i2",
+        "name": "tendon_limit_active_count_max"
+      },
+      {
+        "dtype": "<i2",
+        "name": "contact_active_count_max"
+      },
+      {
+        "dtype": "<i2",
+        "name": "sample_count"
+      },
+      {
+        "dtype": "u1",
+        "name": "integrity_status"
+      }
+    ],
+    "total_chunks": 2144,
+    "uncompressed_bytes_per_row": 237,
+    "zip_timestamp": "1980-01-01T00:00:00 for deterministic binary identity"
+  },
+  "truth": {
+    "controlled_method_role": "small frozen diagnostic subset only; never replaces prescribed truth",
+    "field": "TAU_MY0LEG_REQUIRED_DRIVE",
+    "objective": "sqrt(0.5*((hip_rms/subject_reference_hip_rms)^2+(knee_rms/subject_reference_knee_rms)^2))",
+    "primary_method": "prescribed-state inverse dynamics replay",
+    "rms_quadrature": "sqrt(trapezoid(tau^2,time)/(time[-1]-time[0]))",
+    "semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1"
+  }
+}

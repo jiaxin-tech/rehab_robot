@@ -1,0 +1,18 @@
+{
+  "bo_run_count": 0,
+  "calibration_call_count": 0,
+  "design_only": true,
+  "human_collection_count": 0,
+  "motion_command_count": 0,
+  "pinn_training_count": 0,
+  "read_only_diagnostic_scripts_inspected_not_executed": [
+    "scripts/check_wrench_query_timing.py",
+    "scripts/check_snapshot_alignment.py",
+    "scripts/check_wrench_frame_rotation.py",
+    "scripts/check_wrench_pose_dependence.py"
+  ],
+  "robot_adapter_imported": false,
+  "robot_connected": false,
+  "robot_constructed": false,
+  "robot_powered_or_enabled": false
+}

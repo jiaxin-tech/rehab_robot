@@ -1,0 +1,5 @@
+framework_id,horizon_steps,calibrated_uncertainty,case_count,trials,explore,exploit,missed_improvement,false_improvement,conservative_stop,mean_decision_latency_trials,median_decision_latency_trials,latent_intermediate_nodes_skipped,intermediate_trajectory_executions,endpoint_executions,final_J,global_regret,small_step_recovery,trial_change_vs_single,missed_change_vs_single,false_change_vs_single,final_J_change_vs_single,global_regret_change_vs_single,small_step_recovery_change_vs_single,truth_used_for_framework_selection,new_policy_enabled
+SINGLE_STEP,1,0.00196762280892,15,56,56,0,0,0,0,3.73333333333,0,0,0,0,0.999663936359,0.0347058543723,0,0,0,0,0,0,0,False,False
+BUNDLE_2,2,0.00164217053717,15,56,56,0,1,0,1,3.73333333333,0,0,0,0,0.999663936359,0.0347058543723,0,0,1,0,0,0,0,False,False
+BUNDLE_3,3,0.00244544326845,15,57,56,1,5,0,4,3.26666666667,0,2,0,1,0.999665674918,0.0347079049329,0,1,5,0,1.73855864571e-06,2.0505605613e-06,0,False,False
+BUNDLE_5,5,0.00400496043747,15,116,56,60,7,0,0,0.466666666667,0,240,0,60,0.968794100338,0.00384021720457,9,60,7,0,-0.0308698360208,-0.0308656371677,9,False,False

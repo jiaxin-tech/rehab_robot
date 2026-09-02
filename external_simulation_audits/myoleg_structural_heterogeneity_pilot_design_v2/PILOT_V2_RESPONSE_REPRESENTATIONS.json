@@ -1,0 +1,225 @@
+{
+  "derived_for_every_primary_scalar_representation": [
+    "perturbed-versus-nominal proportional fit",
+    "perturbed-versus-nominal affine fit",
+    "delta response configuration statistics",
+    "local beta-flex gradient",
+    "local beta-extend gradient"
+  ],
+  "gradient_stencil": {
+    "candidate_ids": [
+      "MYOLEG_V3_K0156",
+      "MYOLEG_V3_K0168",
+      "MYOLEG_V3_K0456",
+      "MYOLEG_V3_K0468"
+    ],
+    "d_beta_extend": "(mean(y(-h,+h),y(+h,+h))-mean(y(-h,-h),y(+h,-h)))/(2*h)",
+    "d_beta_flex": "(mean(y(+h,-h),y(+h,+h))-mean(y(-h,-h),y(-h,+h)))/(2*h)",
+    "h": 0.015
+  },
+  "personalization_or_oracle_is_endpoint": false,
+  "post_outcome_representation_addition_allowed": false,
+  "primary_endpoint": "CONFIGURATION_DEPENDENT_NONPROPORTIONAL_MECHANICAL_RESPONSE",
+  "representations": [
+    {
+      "applicable_factors": [
+        "S1F1_BIARTICULAR_LMAX",
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+        "S1F3_HIP_MONO_ANTAGONIST_F0",
+        "S1F4_KNEE_MONO_ANTAGONIST_F0"
+      ],
+      "definition": "time RMS of prescribed-trajectory project-coordinate hip required torque over 24 s",
+      "response_id": "HIP_REQUIRED_TORQUE_RMS",
+      "role": "PRIMARY_REQUIRED_TORQUE",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F1_BIARTICULAR_LMAX",
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+        "S1F3_HIP_MONO_ANTAGONIST_F0",
+        "S1F4_KNEE_MONO_ANTAGONIST_F0"
+      ],
+      "definition": "time RMS of prescribed-trajectory project-coordinate knee required torque over 24 s",
+      "response_id": "KNEE_REQUIRED_TORQUE_RMS",
+      "role": "PRIMARY_REQUIRED_TORQUE",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F1_BIARTICULAR_LMAX"
+      ],
+      "definition": "time RMS of the signed sum of frozen truth muscle_torque_contribution_nm over declared members, hip coordinate",
+      "members": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ],
+      "response_id": "S1F1_AFFECTED_BIARTICULAR_HIP_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "semantic_limit": "zero-control affected-actuator contribution; not a measured passive tissue torque",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F1_BIARTICULAR_LMAX"
+      ],
+      "definition": "time RMS of the signed sum of frozen truth muscle_torque_contribution_nm over declared members, knee coordinate",
+      "members": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ],
+      "response_id": "S1F1_AFFECTED_BIARTICULAR_KNEE_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "semantic_limit": "zero-control affected-actuator contribution; not a measured passive tissue torque",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+      ],
+      "definition": "hip-coordinate time RMS of signed declared rectus-group contributions",
+      "members": [
+        "recfem_r"
+      ],
+      "response_id": "S1F2_RECTUS_HIP_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+      ],
+      "definition": "knee-coordinate time RMS of signed declared rectus-group contributions",
+      "members": [
+        "recfem_r"
+      ],
+      "response_id": "S1F2_RECTUS_KNEE_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+      ],
+      "definition": "hip-coordinate time RMS of signed declared hamstring-family contributions",
+      "members": [
+        "bflh_r",
+        "semimem_r",
+        "semiten_r"
+      ],
+      "response_id": "S1F2_HAMSTRING_HIP_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+      ],
+      "definition": "knee-coordinate time RMS of signed declared hamstring-family contributions",
+      "members": [
+        "bflh_r",
+        "semimem_r",
+        "semiten_r"
+      ],
+      "response_id": "S1F2_HAMSTRING_KNEE_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+      ],
+      "definition": "hip-coordinate time RMS of the signed sum over both oppositely scaled declared families",
+      "members": {
+        "HAMSTRING_GROUP": [
+          "bflh_r",
+          "semimem_r",
+          "semiten_r"
+        ],
+        "RECTUS_GROUP": [
+          "recfem_r"
+        ]
+      },
+      "response_id": "S1F2_NET_DECLARED_BIARTICULAR_HIP_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+      ],
+      "definition": "knee-coordinate time RMS of the signed sum over both oppositely scaled declared families",
+      "members": {
+        "HAMSTRING_GROUP": [
+          "bflh_r",
+          "semimem_r",
+          "semiten_r"
+        ],
+        "RECTUS_GROUP": [
+          "recfem_r"
+        ]
+      },
+      "response_id": "S1F2_NET_DECLARED_BIARTICULAR_KNEE_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F3_HIP_MONO_ANTAGONIST_F0"
+      ],
+      "definition": "time RMS of signed declared-group contribution in the hip coordinate",
+      "members": [
+        "addmagDist_r",
+        "addmagIsch_r",
+        "addmagMid_r",
+        "glmax2_r",
+        "glmax3_r",
+        "glmed3_r",
+        "piri_r"
+      ],
+      "response_id": "S1F3_DECLARED_HIP_ANTAGONIST_HIP_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "semantic_limit": "glmed3_r and piri_r remain mechanically classified and anatomically multi-action/configuration-dependent",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F4_KNEE_MONO_ANTAGONIST_F0"
+      ],
+      "definition": "time RMS of signed declared-group contribution in the knee coordinate",
+      "members": [
+        "vasint_r",
+        "vaslat_r",
+        "vasmed_r"
+      ],
+      "response_id": "S1F4_DECLARED_KNEE_ANTAGONIST_KNEE_CONTRIBUTION_RMS",
+      "role": "PRIMARY_MECHANISTIC_COMPONENT",
+      "units": "N*m"
+    },
+    {
+      "applicable_factors": [
+        "S1F1_BIARTICULAR_LMAX",
+        "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+        "S1F3_HIP_MONO_ANTAGONIST_F0",
+        "S1F4_KNEE_MONO_ANTAGONIST_F0"
+      ],
+      "definition": "sqrt(0.5*((hip_tau_rms/model_own_reference_hip_rms)^2+(knee_tau_rms/model_own_reference_knee_rms)^2))",
+      "normalization_policy": "use each structural diagnostic model's own MYOLEG_V3_K0312 reference denominators exactly as the frozen subject-reference normalization; do not renormalize after result reveal",
+      "not_sole_endpoint": true,
+      "response_id": "FROZEN_COMBINED_J",
+      "role": "SECONDARY_DIAGNOSTIC_ONLY",
+      "units": "dimensionless"
+    }
+  ],
+  "status": "FROZEN_BEFORE_SCIENTIFIC_PILOT_OUTCOMES"
+}

@@ -1,0 +1,11 @@
+{
+  "endpoint_computation_count": 0,
+  "formal_traction_load_count": 0,
+  "geometry_experiment_count": 0,
+  "human_subject_count": 0,
+  "motion_or_probing_command_count": 0,
+  "power_or_enable_count": 0,
+  "protocol_design_only": true,
+  "robot_connected": false,
+  "robot_constructed": false
+}

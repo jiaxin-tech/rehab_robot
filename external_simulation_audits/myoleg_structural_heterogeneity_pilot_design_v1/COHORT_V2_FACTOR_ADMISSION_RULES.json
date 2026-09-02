@@ -1,0 +1,21 @@
+{
+  "additional_review": [
+    "evidence",
+    "interpretability",
+    "reproducibility",
+    "truth-learner independence",
+    "dimensionality",
+    "calibration feasibility"
+  ],
+  "automatic_admission": false,
+  "future_identity": "MYOLEG_VIRTUAL_PATIENT_COHORT_V2",
+  "new_version_required": true,
+  "old_v1_heldout_is_automatic_confirmation": false,
+  "range_gap_status": "COHORT_V2_CANDIDATE_WITH_RANGE_EVIDENCE_GAP",
+  "required_conjunction": [
+    "model semantics defensible",
+    "integrity PASS",
+    "configuration-dependent non-proportional response demonstrated",
+    "future range calibration pathway exists"
+  ]
+}

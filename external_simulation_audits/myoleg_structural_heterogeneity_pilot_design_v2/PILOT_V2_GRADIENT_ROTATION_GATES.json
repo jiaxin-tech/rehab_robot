@@ -1,0 +1,32 @@
+{
+  "classification_role": "supporting directional-preference evidence; not mandatory if the primary nonproportionality-plus-configuration gate passes",
+  "direction_evidence": {
+    "any_one_direction_criterion_after_resolution": true,
+    "cosine_similarity_max_inclusive": 0.995,
+    "equivalent_minimum_angle_deg": 5.731967965197727,
+    "resolved_component_sign_change_is_sufficient_alternative": true,
+    "unit_direction_component_change_max_min_inclusive": 0.05
+  },
+  "frozen_before_scientific_pilot_outcomes": true,
+  "full_sign_reversal_required": false,
+  "gate_id": "PILOT_V2_GRADIENT_ROTATION_GATE_V1",
+  "gradient": "[d(response)/d beta_flex,d(response)/d beta_extend] from the frozen centered diagonal stencil",
+  "gradient_resolution": {
+    "both_nominal_and_perturbed_gradients_required": true,
+    "h": 0.015,
+    "minimum_norm_times_h_over_nominal_response_RMS_inclusive": 1e-05
+  },
+  "magnitude_only_gradient_change_is_direction_evidence": false,
+  "required_outputs": [
+    "nominal_gradient",
+    "perturbed_gradient",
+    "cosine_similarity",
+    "angle_difference_deg",
+    "resolved_sign_pattern",
+    "unit_direction_component_change_max",
+    "gradient_norm_ratio"
+  ],
+  "resolved_component_sign_rule": "a component sign is comparable only when abs(component)*h/nominal_response_RMS>=1e-5 for both models",
+  "stencil": "four symmetric interior points at beta=[+/-0.015,+/-0.015]",
+  "threshold_tuning_after_outcome": false
+}

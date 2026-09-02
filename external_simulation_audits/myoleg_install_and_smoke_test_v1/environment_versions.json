@@ -1,0 +1,67 @@
+{
+  "architecture": "arm64",
+  "current_rehab_robot_env_unchanged": true,
+  "environment_path": "/Users/fengjiaxin/.virtualenvs/myosuite-v2",
+  "headless_smoke_status": "PASS",
+  "macos_version": "26.4.1",
+  "official_test": {
+    "attempt_1_exit_code": 1,
+    "attempt_1_root_cause": "UNDECLARED_SCIPY_RUNTIME_DEPENDENCY_IN_MYOCHALLENGE_BIMANUAL",
+    "attempt_2_exit_code": 0,
+    "attempt_2_wall_time_seconds": 45.59559383295709,
+    "final_status": "PASS"
+  },
+  "packages": {
+    "gymnasium": {
+      "location": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages",
+      "version": "1.2.3"
+    },
+    "jax": {
+      "location": null,
+      "version": null
+    },
+    "jaxlib": {
+      "location": null,
+      "version": null
+    },
+    "mjrl": {
+      "location": null,
+      "version": null
+    },
+    "mujoco": {
+      "location": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages",
+      "version": "3.6.0"
+    },
+    "myosuite": {
+      "location": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages",
+      "version": "2.12.2"
+    },
+    "numpy": {
+      "location": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages",
+      "version": "2.2.6"
+    },
+    "pink-noise-rl": {
+      "location": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages",
+      "version": "2.0.1"
+    },
+    "scipy": {
+      "location": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages",
+      "version": "1.15.3"
+    },
+    "stable-baselines3": {
+      "location": null,
+      "version": null
+    }
+  },
+  "pip_status": "NOT_INSTALLED_IN_UV_VENV",
+  "pip_version": null,
+  "platform": "macOS-26.4.1-arm64-arm-64bit",
+  "python_executable": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python",
+  "python_version": "3.10.19",
+  "registered_environment_total_count": 461,
+  "registered_myoleg_matching_count": 15,
+  "shell": "/bin/zsh",
+  "stage_id": "MYOLEG_INSTALL_AND_SMOKE_TEST_V1",
+  "uv_path": "/Library/Frameworks/Python.framework/Versions/3.13/bin/uv",
+  "uv_version": "uv 0.9.7 (0adb44480 2025-10-30)"
+}

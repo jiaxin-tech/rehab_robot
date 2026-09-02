@@ -1,0 +1,8 @@
+{
+  "candidate_count_per_complete_group_max": 25,
+  "candidate_count_per_complete_group_min": 25,
+  "matched_group_count": 667,
+  "maximum_independent_path_shape_dimensions_within_matched_ROM": 1,
+  "qualified_statement": "the grid identifies its one-dimensional phase warp at fixed ROM, but cannot identify broader fixed-ROM path-shape effects",
+  "status": "CURRENT_GRID_CANNOT_IDENTIFY_FIXED_ROM_PATH_EFFECT"
+}

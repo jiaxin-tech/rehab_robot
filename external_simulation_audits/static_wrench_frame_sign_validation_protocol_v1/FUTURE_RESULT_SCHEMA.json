@@ -1,0 +1,107 @@
+{
+  "$id": "STATIC_WRENCH_FRAME_SIGN_FUTURE_RESULT_V1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "full_validation_requirements": [
+    "H1 PASS all axes",
+    "H2 PASS all paired axes with one global sign",
+    "H3 PASS at >=2 approved orientations",
+    "H4 zero/bias characterized",
+    "H5 interpretation respected",
+    "all thresholds frozen before reveal",
+    "no missing required cell"
+  ],
+  "moment_remains_not_fully_validated": true,
+  "partial_axis_success_cannot_produce_full_validation": true,
+  "properties": {
+    "cell_results": {
+      "description": "all preregistered cells including invalid/not-executed cells; response, both direction angles, leakage and repeats"
+    },
+    "decision": {
+      "enum": [
+        "STATIC_WRENCH_FRAME_SIGN_VALIDATED",
+        "STATIC_WRENCH_FRAME_SIGN_PARTIALLY_VALIDATED",
+        "STATIC_WRENCH_FRAME_SIGN_NOT_VALIDATED"
+      ]
+    },
+    "execution_authorization": {
+      "properties": {
+        "authorized": {
+          "const": true
+        },
+        "precondition_gate_sha256": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "hypotheses": {
+      "description": "H1-H5 pass/fail/indeterminate with preregistered evidence"
+    },
+    "protocol_identity": {
+      "properties": {
+        "protocol_sha256": {
+          "const": "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1"
+        },
+        "result_reveal_after_threshold_freeze": {
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "raw_data": {
+      "description": "immutable PRE/LOAD/POST host-query and state records with checksums"
+    },
+    "setup": {
+      "description": "robot/SDK/controller, active tool/payload/TCP, compensation state, fixture/calibration, world registration, exact pose hashes and approved load values"
+    },
+    "update_eligibility": {
+      "properties": {
+        "BASE_WRENCH_ROTATION_VERIFIED": {
+          "type": "boolean"
+        },
+        "VERIFIED_WRENCH_FRAME": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "WRENCH_FORCE_SIGN_CONVENTION": {
+          "enum": [
+            "SAME_DIRECTION",
+            "OPPOSITE_DIRECTION",
+            null
+          ]
+        },
+        "WRENCH_FORCE_SIGN_VERIFIED": {
+          "type": "boolean"
+        },
+        "moment_validated": {
+          "const": false
+        },
+        "primary_endpoint_ready": {
+          "const": false
+        },
+        "task_direction_status": {
+          "const": "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION"
+        }
+      },
+      "type": "object"
+    },
+    "zero_results": {
+      "description": "per axis/pose pre/post mean median SD drift and pose dependence"
+    }
+  },
+  "required": [
+    "protocol_identity",
+    "execution_authorization",
+    "setup",
+    "raw_data",
+    "zero_results",
+    "cell_results",
+    "hypotheses",
+    "decision",
+    "update_eligibility"
+  ],
+  "static_validation_does_not_validate_dynamic_synchronization": true,
+  "type": "object"
+}

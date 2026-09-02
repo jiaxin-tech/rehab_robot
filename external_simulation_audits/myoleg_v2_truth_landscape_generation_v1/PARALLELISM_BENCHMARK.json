@@ -1,0 +1,87 @@
+{
+  "fixed_pair_set": {
+    "candidate_ids": [
+      "MYOLEG_V2_P15012",
+      "MYOLEG_V2_P00512",
+      "MYOLEG_V2_P00574",
+      "MYOLEG_V2_P01299"
+    ],
+    "pair_count": 32,
+    "subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_008",
+      "MYOLEG_VP_012",
+      "MYOLEG_VP_016"
+    ]
+  },
+  "protocol_sha256": "2fe115d8c34685c70672bcc6a4d9752a88dfbb2cf12fb12d60df877755b7fdcc",
+  "selected_worker_count": 4,
+  "selection_rule_frozen_before_landscape": "highest-throughput stable deterministic count with efficiency >= 0.35; otherwise highest-throughput stable deterministic count",
+  "stage_id": "MYOLEG_V2_TRUTH_LANDSCAPE_GENERATION_V1",
+  "worker_results": [
+    {
+      "aggregate_worker_cpu_time_s": 3.2273520000000007,
+      "deterministic_equal_to_one_worker": true,
+      "estimated_cpu_utilization_percent": 86.80839251706037,
+      "maximum_worker_peak_rss_bytes": 326811648,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 1.0,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "a6dd9ec26cbe0f32847803d3548f5ebd3b4dafbf1f1a3f3d1f9c18487548dbfe",
+      "stable": true,
+      "throughput_pairs_per_s": 8.607268623149663,
+      "wall_time_s": 3.7177880000090227,
+      "workers": 1
+    },
+    {
+      "aggregate_worker_cpu_time_s": 3.491053999999999,
+      "deterministic_equal_to_one_worker": true,
+      "estimated_cpu_utilization_percent": 87.63917434061027,
+      "maximum_worker_peak_rss_bytes": 335822848,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 0.9333108874689983,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "a6dd9ec26cbe0f32847803d3548f5ebd3b4dafbf1f1a3f3d1f9c18487548dbfe",
+      "stable": true,
+      "throughput_pairs_per_s": 16.06651503471175,
+      "wall_time_s": 1.9917200420168228,
+      "workers": 2
+    },
+    {
+      "aggregate_worker_cpu_time_s": 4.001710999999999,
+      "deterministic_equal_to_one_worker": true,
+      "estimated_cpu_utilization_percent": 72.14542557461277,
+      "maximum_worker_peak_rss_bytes": 287080448,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 0.6702667870239492,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "a6dd9ec26cbe0f32847803d3548f5ebd3b4dafbf1f1a3f3d1f9c18487548dbfe",
+      "stable": true,
+      "throughput_pairs_per_s": 23.0766651403623,
+      "wall_time_s": 1.386682165961247,
+      "workers": 4
+    },
+    {
+      "aggregate_worker_cpu_time_s": 5.554796,
+      "deterministic_equal_to_one_worker": true,
+      "estimated_cpu_utilization_percent": 50.31243767339705,
+      "maximum_worker_peak_rss_bytes": 250052608,
+      "pair_count": 32,
+      "parallel_efficiency_vs_one": 0.336737797451711,
+      "process_failure_count": 0,
+      "process_failures": [],
+      "result_fingerprint_sha256": "a6dd9ec26cbe0f32847803d3548f5ebd3b4dafbf1f1a3f3d1f9c18487548dbfe",
+      "stable": true,
+      "throughput_pairs_per_s": 23.18714142587711,
+      "wall_time_s": 1.3800752499955706,
+      "workers": 8
+    }
+  ]
+}

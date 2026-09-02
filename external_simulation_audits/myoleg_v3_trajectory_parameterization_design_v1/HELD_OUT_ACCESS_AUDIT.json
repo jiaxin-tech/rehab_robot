@@ -1,0 +1,32 @@
+{
+  "allowed_operations": [
+    "manifest identity",
+    "file existence",
+    "file size",
+    "stream SHA-256"
+  ],
+  "classification": "SEALED_CONFIRMATORY_TRUTH",
+  "held_out_J_oracle_rank_component_access_count": 0,
+  "held_out_scientific_truth_access_count": 0,
+  "held_out_subject_count": 8,
+  "held_out_subject_ids": [
+    "MYOLEG_VP_004",
+    "MYOLEG_VP_008",
+    "MYOLEG_VP_012",
+    "MYOLEG_VP_016",
+    "MYOLEG_VP_020",
+    "MYOLEG_VP_024",
+    "MYOLEG_VP_028",
+    "MYOLEG_VP_032"
+  ],
+  "local_shard_bytes_stream_hashed": 9148003,
+  "local_shards_present": 536,
+  "local_shards_stream_sha256_verified": 536,
+  "manifest_chunk_count": 536,
+  "manifest_row_count": 133400,
+  "nominal_smoke_completed_at_freeze": false,
+  "np_load_held_out_count": 0,
+  "protocol_sha256": "debe43f5a5c9e0766f79656646b2409706fdd47e205d1e8924650d477768d1f1",
+  "stage_id": "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_V1",
+  "wide_sweep_completed_at_freeze": false
+}

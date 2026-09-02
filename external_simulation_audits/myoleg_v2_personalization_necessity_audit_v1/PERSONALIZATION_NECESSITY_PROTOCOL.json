@@ -1,0 +1,256 @@
+{
+  "alpha_geometry": {
+    "admitted_max": [
+      2.0,
+      0.5,
+      0.03
+    ],
+    "admitted_min": [
+      -5.0,
+      -5.0,
+      -0.03
+    ],
+    "clearly_separated": "neither exact nor immediate-grid-neighbor",
+    "exact_same_oracle": "same candidate_id",
+    "grid_step": [
+      0.25,
+      0.25,
+      0.0025
+    ],
+    "immediate_grid_neighbor": "not exact and maximum absolute integer grid-index difference <= 1",
+    "normalization_range": [
+      7.0,
+      5.5,
+      0.06
+    ],
+    "normalized_distance": "sqrt(mean(((alpha_i-alpha_j)/(admitted_max-admitted_min))^2))",
+    "order": [
+      "alpha_hip_deg",
+      "alpha_knee_deg",
+      "alpha_phase"
+    ]
+  },
+  "analysis_population": {
+    "candidate_count": 16675,
+    "development_count": 24,
+    "development_subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_006",
+      "MYOLEG_VP_007",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_010",
+      "MYOLEG_VP_011",
+      "MYOLEG_VP_013",
+      "MYOLEG_VP_014",
+      "MYOLEG_VP_015",
+      "MYOLEG_VP_017",
+      "MYOLEG_VP_018",
+      "MYOLEG_VP_019",
+      "MYOLEG_VP_021",
+      "MYOLEG_VP_022",
+      "MYOLEG_VP_023",
+      "MYOLEG_VP_025",
+      "MYOLEG_VP_026",
+      "MYOLEG_VP_027",
+      "MYOLEG_VP_029",
+      "MYOLEG_VP_030",
+      "MYOLEG_VP_031"
+    ],
+    "held_out_count": 8,
+    "held_out_scientific_values_allowed": false,
+    "held_out_subject_ids": [
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_008",
+      "MYOLEG_VP_012",
+      "MYOLEG_VP_016",
+      "MYOLEG_VP_020",
+      "MYOLEG_VP_024",
+      "MYOLEG_VP_028",
+      "MYOLEG_VP_032"
+    ]
+  },
+  "candidate_variability": [
+    "mean",
+    "sample SD",
+    "CV=SD/abs(mean)",
+    "min",
+    "max",
+    "range"
+  ],
+  "common_baselines": {
+    "primary": "DEV_MEAN_OPTIMAL_COMMON: argmin candidate of mean development J",
+    "reference_candidate_id": "MYOLEG_V2_P15012",
+    "secondary": "DEV_WORSTCASE_OPTIMAL_COMMON: argmin candidate of maximum development J",
+    "tie_break": "lowest original proposal_index",
+    "tie_tolerance_j": 1e-12
+  },
+  "decision_logic": {
+    "classification": "operational research rule frozen before development outcomes; not a clinical threshold",
+    "not_supported_all_required": {
+      "median_relative_common_regret_below": 0.001,
+      "median_spearman_at_least": 0.98,
+      "p95_relative_common_regret_below": 0.005,
+      "unique_oracle_candidates_at_most": 2,
+      "universal_24_of_24_near_oracle_at_epsilon_0.001": true
+    },
+    "otherwise": "PERSONALIZATION_NECESSITY_WEAK_OR_LIMITED",
+    "supported_all_required": {
+      "clearly_separated_oracle_pair_fraction_at_least": 0.5,
+      "max_common_near_oracle_coverage_at_epsilon_0.001_below": 22,
+      "median_relative_common_regret_at_least": 0.005,
+      "p75_relative_common_regret_at_least": 0.01,
+      "rank_or_topset_subject_dependence": "median Spearman <=0.95 OR median Top-5% Jaccard <=0.75",
+      "unique_oracle_candidates_at_least": 4
+    }
+  },
+  "effect_band_language": "descriptive normalized-objective engineering bands only; not clinical, comfort, or safety thresholds",
+  "engineering_effect_bands_relative_j": [
+    {
+      "label": "NEGLIGIBLE",
+      "lower_inclusive": 0.0,
+      "upper_exclusive": 0.001
+    },
+    {
+      "label": "VERY_SMALL",
+      "lower_inclusive": 0.001,
+      "upper_exclusive": 0.005
+    },
+    {
+      "label": "SMALL",
+      "lower_inclusive": 0.005,
+      "upper_exclusive": 0.01
+    },
+    {
+      "label": "MODERATE_ENGINEERING_SEPARATION",
+      "lower_inclusive": 0.01,
+      "upper_exclusive": 0.02
+    },
+    {
+      "label": "LARGER_ENGINEERING_SEPARATION",
+      "lower_inclusive": 0.02,
+      "upper_exclusive": null
+    }
+  ],
+  "figures": [
+    "oracle alpha scatter/distributions",
+    "development rank-correlation heatmap",
+    "common-vs-oracle regret distribution",
+    "oracle cross-transfer regret heatmap",
+    "near-oracle count by subject and epsilon",
+    "phase=0 landscape slices for frozen geometry-selected subjects"
+  ],
+  "frozen_before_development_truth_reveal": true,
+  "input_sha256": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "truth_landscape_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515"
+  },
+  "landscape_contrast": {
+    "top5_to_oracle_spread": "J at deterministic Top-5% rank K minus oracle J"
+  },
+  "near_oracle": {
+    "broad_plateau_rule": "median count at epsilon=0.001 >= ceil(10% of 16675)=1668",
+    "common_coverage_thresholds": [
+      24,
+      22,
+      18
+    ],
+    "epsilons_j": [
+      0.0001,
+      0.0005,
+      0.001
+    ],
+    "subject_metrics": [
+      "candidate count",
+      "per-axis min/max/range",
+      "normalized bounding-box diagonal"
+    ]
+  },
+  "oracle": {
+    "rule": "minimum float64 J; candidates within tie tolerance are equivalent; lowest original proposal_index wins",
+    "tie_tolerance_j": 1e-12
+  },
+  "parameter_associations": {
+    "frozen_parameter_count": 6,
+    "method": "descriptive Spearman; raw p and Benjamini-Hochberg q across 30 exploratory tests; no predictive model",
+    "outcomes": [
+      "oracle alpha hip",
+      "oracle alpha knee",
+      "oracle alpha phase",
+      "oracle J",
+      "common regret"
+    ]
+  },
+  "personalization_gap": {
+    "absolute": "J_i(DEV_MEAN_OPTIMAL_COMMON)-J_i(subject_oracle)",
+    "bootstrap": {
+      "interval": "percentile 95% CI",
+      "resamples": 10000,
+      "seed": 20260830,
+      "statistics": [
+        "mean",
+        "median"
+      ]
+    },
+    "relative": "absolute/J_i(DEV_MEAN_OPTIMAL_COMMON)"
+  },
+  "protocol_id": "MYOLEG_V2_PERSONALIZATION_NECESSITY_PROTOCOL_V1",
+  "rank_similarity": {
+    "metrics": [
+      "Spearman rank correlation",
+      "Kendall tau-b"
+    ],
+    "subject_pair_count": 276
+  },
+  "representative_landscape_subjects": [
+    {
+      "selection_role": "NEAREST_PARAMETER_CENTROID",
+      "subject_id": "MYOLEG_VP_031"
+    },
+    {
+      "selection_role": "FARTHEST_PARAMETER_CENTROID",
+      "subject_id": "MYOLEG_VP_011"
+    },
+    {
+      "selection_role": "MAXIMIN_3",
+      "subject_id": "MYOLEG_VP_009"
+    },
+    {
+      "selection_role": "MAXIMIN_4",
+      "subject_id": "MYOLEG_VP_015"
+    }
+  ],
+  "scientific_role": "development-only offline oracle upper-bound audit under the frozen normalized torque objective",
+  "scope_guards": {
+    "bo": false,
+    "candidate_domain_modification": false,
+    "cohort_modification": false,
+    "five_parameter_training": false,
+    "human_or_clinical_claim": false,
+    "nn_or_pinn": false,
+    "objective_modification": false,
+    "robot_or_hardware": false
+  },
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_NECESSITY_AUDIT_V1",
+  "top_sets": {
+    "counts": {
+      "top_10_percent": 1668,
+      "top_1_percent": 167,
+      "top_5_percent": 834
+    },
+    "fractions": [
+      0.01,
+      0.05,
+      0.1
+    ],
+    "metrics": [
+      "Jaccard",
+      "overlap coefficient"
+    ],
+    "selection": "exact K ordered by (J, original proposal_index); no outcome-dependent K change"
+  },
+  "transfer": "TRANSFER[i,j]=development subject i truth J at development subject j oracle; diagonal own oracle; all off-diagonal metrics frozen"
+}

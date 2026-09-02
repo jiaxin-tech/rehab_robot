@@ -1,0 +1,115 @@
+{
+  "evidence_policy": {
+    "LEVEL_1": "official/model field semantics or a model-verified allowed range",
+    "LEVEL_2": "public human/musculoskeletal literature may support a range but this project has not verified it",
+    "LEVEL_3": "synthetic numerical stress range only",
+    "rule": "No scientific cohort range is frozen by this stage."
+  },
+  "families": [
+    {
+      "family_id": "SEGMENT_MASS_INERTIA_COUPLED_SCALE",
+      "field_semantics_evidence": "LEVEL_1",
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "smoke_values_are_scientific_range": false,
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    {
+      "family_id": "MUSCLE_FORCE_CAPACITY_SCALE",
+      "field_semantics_evidence": "LEVEL_1",
+      "observed_native_force_n": [
+        245.514,
+        5322.59
+      ],
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "smoke_values_are_scientific_range": false,
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    {
+      "family_id": "BIARTICULAR_FORCE_CAPACITY_SCALE",
+      "field_semantics_evidence": "LEVEL_1",
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "smoke_values_are_scientific_range": false,
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "structurally_verified_actuators": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ]
+    },
+    {
+      "family_id": "MUSCLE_PASSIVE_FP_MAX_SCALE",
+      "field_semantics_evidence": "LEVEL_1",
+      "observed_native_fpmax": [
+        0.806346,
+        2.0
+      ],
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "smoke_values_are_scientific_range": false,
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    {
+      "family_id": "BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "field_semantics_evidence": "LEVEL_1",
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "smoke_values_are_scientific_range": false,
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "structurally_verified_actuators": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ]
+    },
+    {
+      "family_id": "MUSCLE_ACTIVATION_TIME_CONSTANTS",
+      "field_semantics_evidence": "LEVEL_1",
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [],
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    },
+    {
+      "family_id": "LOW_BACKGROUND_ACTIVATION_STATE",
+      "field_semantics_evidence": "LEVEL_1_ALLOWED_CONTROL_RANGE_ONLY",
+      "note": "Negative activation is outside the frozen [0,1] muscle control domain; this stage therefore did not force a nominal/negative/positive perturbation triplet.",
+      "range_evidence": "LEVEL_2_NOT_YET_COLLECTED",
+      "smoke_values": [],
+      "status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE"
+    }
+  ],
+  "official_sources": {
+    "muscle_model": "https://mujoco.readthedocs.io/en/3.6.0/modeling.html#muscle-actuators",
+    "muscle_xml": "https://mujoco.readthedocs.io/en/3.6.0/XMLreference.html#actuator-muscle"
+  }
+}

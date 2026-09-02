@@ -1,0 +1,7 @@
+{
+  "development_truth_values_read_at_freeze_time": false,
+  "freeze_id": "MYOLEG_V2_PERSONALIZATION_NECESSITY_ANALYSIS_EXECUTION_FREEZE_V1",
+  "held_out_policy_sha256": "b5e103a20869e626bd190479a91f09b3199791a895b6f91061c3d0363cfbef73",
+  "held_out_truth_values_read": false,
+  "protocol_sha256": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f"
+}

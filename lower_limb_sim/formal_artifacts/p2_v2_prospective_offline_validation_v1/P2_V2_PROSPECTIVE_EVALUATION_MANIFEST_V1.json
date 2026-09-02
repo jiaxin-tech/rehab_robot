@@ -1,0 +1,399 @@
+{
+  "P2_V2_default_enabled": false,
+  "bundle_uncertainty": {
+    "C2": "SHADOW_ONLY_NOT_CALIBRATED",
+    "C3": "SHADOW_ONLY_NOT_CALIBRATED",
+    "C5": "SHADOW_ONLY_NOT_CALIBRATED",
+    "P2_V2B_active": false,
+    "n_times_bound_prohibited": true,
+    "sqrt_n_times_bound_prohibited": true
+  },
+  "cohort_immutable_after_manifest_freeze": true,
+  "decision_value_forbidden_inputs": [
+    "future_truth",
+    "future_exploit",
+    "future_best"
+  ],
+  "decision_value_observables": [
+    "parameter_change",
+    "prediction_map_change",
+    "validation_uncertainty_change",
+    "exploit_eligibility_change",
+    "information_gain",
+    "support_growth",
+    "predicted_ranking_change",
+    "predicted_best_trajectory_change"
+  ],
+  "development_cases": [
+    {
+      "case_id": "baseline__matched_linear",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "hip_stiff__matched_linear",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "knee_stiff__matched_linear",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "heavy_leg__matched_linear",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "baseline__nonlinear_stiffness_mild",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "baseline__hip_knee_coupling_mild",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "baseline__nonlinear_damping_mild",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "baseline__structured_residual",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    },
+    {
+      "case_id": "baseline__combined_mild",
+      "data_split": "DEVELOPMENT_ONLY",
+      "primary_metrics": false
+    }
+  ],
+  "evaluation_metrics": [
+    "executed_trials",
+    "explore_count",
+    "exploit_count",
+    "executed_false_improvement",
+    "missed_improvement_rounds",
+    "premature_conservative_stops",
+    "correct_local_stops",
+    "final_best_actual_J",
+    "J_reduction_from_reference",
+    "local_regret",
+    "cumulative_regret",
+    "support_growth",
+    "low_decision_value_exploration_count",
+    "natural_stop_reason",
+    "final_alpha"
+  ],
+  "frozen_scientific_baseline": {
+    "active_reference_id": "reference_measured_asymmetric_closed_slow",
+    "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "algorithm_equivalence_tolerance": 0.005,
+    "five_parameter_names": [
+      "mass_scale",
+      "k_hip_nm_per_rad",
+      "k_knee_nm_per_rad",
+      "b_hip_nm_s_per_rad",
+      "b_knee_nm_s_per_rad"
+    ],
+    "generator_bounds": {
+      "hip_amplitude_delta_deg": [
+        -5.0,
+        2.0
+      ],
+      "knee_amplitude_delta_deg": [
+        -5.0,
+        2.0
+      ],
+      "knee_phase_shift": [
+        -0.03,
+        0.03
+      ]
+    },
+    "hip_rom_deg": [
+      0.0,
+      120.0
+    ],
+    "knee_rom_deg": [
+      5.0,
+      145.0
+    ],
+    "mechanical_objective_version": "mechanical_joint_torque_objective_v1",
+    "model_support_gate_percent": 90.0,
+    "rom_protocol_version": "ROM_PROTOCOL_V2",
+    "theta_shank_definition": "q_hip - q_knee"
+  },
+  "held_out_final_test": {
+    "contributes_to_metrics": false,
+    "read_during_experiment": false,
+    "status": "HELD_OUT_FINAL_TEST_NOT_READ"
+  },
+  "human_ready": false,
+  "inactive_policy_candidates": [
+    {
+      "policy_variant_id": "P2_V2B_G2_C2_S2",
+      "status": "NOT_ACTIVE_BUNDLE_UNCERTAINTY_NOT_CALIBRATED"
+    }
+  ],
+  "initial_identification_protocol": "SAFEGUARDED_SEQUENTIAL_INITIAL_IDENTIFICATION_V1_UNCHANGED",
+  "local_validation": {
+    "local_P95": 0.000430956758923898,
+    "local_P99": 0.001276942013587856,
+    "local_max": 0.0016827379049442204,
+    "pair_count": 324,
+    "pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+    "prospective_outcomes_may_update_calibration": false,
+    "protocol_id": "DESIGNATED_LOCAL_VALIDATION_PROTOCOL_V1"
+  },
+  "manifest_id": "P2_V2_PROSPECTIVE_EVALUATION_MANIFEST_V1",
+  "manifest_must_precede_truth": true,
+  "maximum_research_diagnostic_horizon": 20,
+  "operational_envelope_fixture": "VIRTUAL_RESEARCH_ENVELOPE_DEFAULT",
+  "policy_variants": [
+    {
+      "active_in_prospective_execution": true,
+      "cumulative_rule_id": "C0_SINGLE_STEP",
+      "guard_id": "G0_CURRENT_GLOBAL_MAX",
+      "policy_variant_id": "P2_V1_G0_C0_S0",
+      "role": "PRIMARY_P2_V1",
+      "stopping_k": null,
+      "stopping_rule_id": "S0_CURRENT_CONTINUATION"
+    },
+    {
+      "active_in_prospective_execution": true,
+      "cumulative_rule_id": "C0_SINGLE_STEP",
+      "guard_id": "G2_FROZEN_LOCAL_P95",
+      "policy_variant_id": "P2_V2A_G2_C0_S2",
+      "role": "PRIMARY_P2_V2A_DEFAULT_OFF",
+      "stopping_k": 2,
+      "stopping_rule_id": "S2_DECISION_VALUE_K2"
+    },
+    {
+      "active_in_prospective_execution": true,
+      "cumulative_rule_id": "C0_SINGLE_STEP",
+      "guard_id": "G3_FROZEN_LOCAL_P99",
+      "policy_variant_id": "P2_V2A_G3_C0_S2_SENSITIVITY",
+      "role": "SENSITIVITY_LOCAL_P99",
+      "stopping_k": 2,
+      "stopping_rule_id": "S2_DECISION_VALUE_K2"
+    },
+    {
+      "active_in_prospective_execution": true,
+      "cumulative_rule_id": "C0_SINGLE_STEP",
+      "guard_id": "G2_FROZEN_LOCAL_P95",
+      "policy_variant_id": "P2_V2A_G2_C0_S1_SENSITIVITY",
+      "role": "SENSITIVITY_STOPPING_K1",
+      "stopping_k": 1,
+      "stopping_rule_id": "S1_DECISION_VALUE_K1"
+    },
+    {
+      "active_in_prospective_execution": true,
+      "cumulative_rule_id": "C0_SINGLE_STEP",
+      "guard_id": "G2_FROZEN_LOCAL_P95",
+      "policy_variant_id": "P2_V2A_G2_C0_S3_SENSITIVITY",
+      "role": "SENSITIVITY_STOPPING_K3",
+      "stopping_k": 3,
+      "stopping_rule_id": "S3_DECISION_VALUE_K3"
+    }
+  ],
+  "pre_registered_final_status_rule": {
+    "otherwise": "P2_V2_PROSPECTIVE_EVIDENCE_INSUFFICIENT",
+    "rejects": "V2A false improvements > V1 or mean final J/regret exceeds V1 by >0.005",
+    "supports": "V2A total missed rounds <= V1, false improvements <= V1, mean final J and mean regret each <= V1 + 0.005, and mean trials <= V1"
+  },
+  "prospective_cases": [
+    {
+      "case_class": "PROSPECTIVE_MATCHED",
+      "case_id": "prospective_subject_001__matched_linear",
+      "data_split": "PROSPECTIVE",
+      "development_case": false,
+      "heldout_final_test": false,
+      "primary_prospective_cohort": true,
+      "research_status": "OFFLINE_SYNTHETIC_RESEARCH_ONLY",
+      "scenario_name": "matched_linear",
+      "subject_id": "prospective_subject_001",
+      "subject_selection_hash": "019d167984d2b9ebf9c58faf76dc00338a8f52f67b3c7689bb1d1df17f05abd1",
+      "subject_selection_seed": 20260823,
+      "truth_used_for_case_selection": false
+    },
+    {
+      "case_class": "PROSPECTIVE_MODEL_MISMATCH",
+      "case_id": "prospective_subject_001__nonlinear_stiffness_strong",
+      "data_split": "PROSPECTIVE",
+      "development_case": false,
+      "heldout_final_test": false,
+      "primary_prospective_cohort": true,
+      "research_status": "OFFLINE_SYNTHETIC_RESEARCH_ONLY",
+      "scenario_name": "nonlinear_stiffness_strong",
+      "subject_id": "prospective_subject_001",
+      "subject_selection_hash": "019d167984d2b9ebf9c58faf76dc00338a8f52f67b3c7689bb1d1df17f05abd1",
+      "subject_selection_seed": 20260823,
+      "truth_used_for_case_selection": false
+    },
+    {
+      "case_class": "PROSPECTIVE_MATCHED",
+      "case_id": "prospective_subject_002__matched_linear",
+      "data_split": "PROSPECTIVE",
+      "development_case": false,
+      "heldout_final_test": false,
+      "primary_prospective_cohort": true,
+      "research_status": "OFFLINE_SYNTHETIC_RESEARCH_ONLY",
+      "scenario_name": "matched_linear",
+      "subject_id": "prospective_subject_002",
+      "subject_selection_hash": "02e93f3bb94ddf34fb60a020788645ff991baee8cb2e0bd371fd4683b64fe954",
+      "subject_selection_seed": 20260823,
+      "truth_used_for_case_selection": false
+    },
+    {
+      "case_class": "PROSPECTIVE_MODEL_MISMATCH",
+      "case_id": "prospective_subject_002__hip_knee_coupling_strong",
+      "data_split": "PROSPECTIVE",
+      "development_case": false,
+      "heldout_final_test": false,
+      "primary_prospective_cohort": true,
+      "research_status": "OFFLINE_SYNTHETIC_RESEARCH_ONLY",
+      "scenario_name": "hip_knee_coupling_strong",
+      "subject_id": "prospective_subject_002",
+      "subject_selection_hash": "02e93f3bb94ddf34fb60a020788645ff991baee8cb2e0bd371fd4683b64fe954",
+      "subject_selection_seed": 20260823,
+      "truth_used_for_case_selection": false
+    },
+    {
+      "case_class": "PROSPECTIVE_MATCHED",
+      "case_id": "prospective_subject_003__matched_linear",
+      "data_split": "PROSPECTIVE",
+      "development_case": false,
+      "heldout_final_test": false,
+      "primary_prospective_cohort": true,
+      "research_status": "OFFLINE_SYNTHETIC_RESEARCH_ONLY",
+      "scenario_name": "matched_linear",
+      "subject_id": "prospective_subject_003",
+      "subject_selection_hash": "02f5d519f1880b99b189b389758f7133fa806809abdd21a87d0211a21beb132f",
+      "subject_selection_seed": 20260823,
+      "truth_used_for_case_selection": false
+    },
+    {
+      "case_class": "PROSPECTIVE_MODEL_MISMATCH",
+      "case_id": "prospective_subject_003__combined_strong",
+      "data_split": "PROSPECTIVE",
+      "development_case": false,
+      "heldout_final_test": false,
+      "primary_prospective_cohort": true,
+      "research_status": "OFFLINE_SYNTHETIC_RESEARCH_ONLY",
+      "scenario_name": "combined_strong",
+      "subject_id": "prospective_subject_003",
+      "subject_selection_hash": "02f5d519f1880b99b189b389758f7133fa806809abdd21a87d0211a21beb132f",
+      "subject_selection_seed": 20260823,
+      "truth_used_for_case_selection": false
+    }
+  ],
+  "prospective_start_commit_sha": "d7fe80945ae625fffc7919e1735e9e2df8c8fa00",
+  "prospective_subject_definitions": [
+    {
+      "candidate_grid_size": 128,
+      "damping_scale": 0.9,
+      "mass_scale": 0.88,
+      "parameter_interpretation": "OFFLINE_EQUIVALENT_SYNTHETIC_NOT_CLINICAL",
+      "parameters": {
+        "b_hip_nm_s_per_rad": 1.8,
+        "b_knee_nm_s_per_rad": 1.35,
+        "com_shank_m": 0.16,
+        "com_thigh_m": 0.18,
+        "gravity_m_s2": 9.81,
+        "inertia_shank_kg_m2": 0.0528,
+        "inertia_thigh_kg_m2": 0.1056,
+        "k_hip_nm_per_rad": 11.0,
+        "k_knee_nm_per_rad": 9.0,
+        "mass_shank_kg": 3.52,
+        "mass_thigh_kg": 6.16,
+        "q0_hip_rad": 0.17453292519943295,
+        "q0_knee_rad": 0.17453292519943295,
+        "subject_id": "prospective_subject_001"
+      },
+      "selection_hash": "019d167984d2b9ebf9c58faf76dc00338a8f52f67b3c7689bb1d1df17f05abd1",
+      "selection_rule": "LOWEST_SHA256_OVER_FIXED_DISCRETE_SYNTHETIC_GRID",
+      "selection_seed": 20260823,
+      "subject_id": "prospective_subject_001",
+      "truth_used_for_selection": false
+    },
+    {
+      "candidate_grid_size": 128,
+      "damping_scale": 1.1,
+      "mass_scale": 1.12,
+      "parameter_interpretation": "OFFLINE_EQUIVALENT_SYNTHETIC_NOT_CLINICAL",
+      "parameters": {
+        "b_hip_nm_s_per_rad": 2.2,
+        "b_knee_nm_s_per_rad": 1.6500000000000001,
+        "com_shank_m": 0.16,
+        "com_thigh_m": 0.18,
+        "gravity_m_s2": 9.81,
+        "inertia_shank_kg_m2": 0.06720000000000001,
+        "inertia_thigh_kg_m2": 0.13440000000000002,
+        "k_hip_nm_per_rad": 27.0,
+        "k_knee_nm_per_rad": 21.0,
+        "mass_shank_kg": 4.48,
+        "mass_thigh_kg": 7.840000000000001,
+        "q0_hip_rad": 0.17453292519943295,
+        "q0_knee_rad": 0.17453292519943295,
+        "subject_id": "prospective_subject_002"
+      },
+      "selection_hash": "02e93f3bb94ddf34fb60a020788645ff991baee8cb2e0bd371fd4683b64fe954",
+      "selection_rule": "LOWEST_SHA256_OVER_FIXED_DISCRETE_SYNTHETIC_GRID",
+      "selection_seed": 20260823,
+      "subject_id": "prospective_subject_002",
+      "truth_used_for_selection": false
+    },
+    {
+      "candidate_grid_size": 128,
+      "damping_scale": 0.9,
+      "mass_scale": 1.04,
+      "parameter_interpretation": "OFFLINE_EQUIVALENT_SYNTHETIC_NOT_CLINICAL",
+      "parameters": {
+        "b_hip_nm_s_per_rad": 1.8,
+        "b_knee_nm_s_per_rad": 1.35,
+        "com_shank_m": 0.16,
+        "com_thigh_m": 0.18,
+        "gravity_m_s2": 9.81,
+        "inertia_shank_kg_m2": 0.0624,
+        "inertia_thigh_kg_m2": 0.1248,
+        "k_hip_nm_per_rad": 27.0,
+        "k_knee_nm_per_rad": 16.0,
+        "mass_shank_kg": 4.16,
+        "mass_thigh_kg": 7.28,
+        "q0_hip_rad": 0.17453292519943295,
+        "q0_knee_rad": 0.17453292519943295,
+        "subject_id": "prospective_subject_003"
+      },
+      "selection_hash": "02f5d519f1880b99b189b389758f7133fa806809abdd21a87d0211a21beb132f",
+      "selection_rule": "LOWEST_SHA256_OVER_FIXED_DISCRETE_SYNTHETIC_GRID",
+      "selection_seed": 20260823,
+      "subject_id": "prospective_subject_003",
+      "truth_used_for_selection": false
+    }
+  ],
+  "prospective_subject_selection_seed": 20260823,
+  "protected_source_sha256": {
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "protocol_id": "P2_V2_PROSPECTIVE_OFFLINE_VALIDATION_V1",
+  "robot_motion_approved": false,
+  "truth_access_policy": {
+    "one_selection_token_per_executed_trajectory": true,
+    "policy_action_frozen_before_truth": true,
+    "post_policy_landscape_truth_role": "POST_POLICY_EVALUATION_ONLY",
+    "truth_may_update_policy_or_calibration": false
+  },
+  "truth_used_to_construct_manifest": false
+}

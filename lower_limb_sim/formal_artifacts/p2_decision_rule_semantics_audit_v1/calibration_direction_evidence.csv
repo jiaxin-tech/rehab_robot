@@ -1,0 +1,10 @@
+coordinate,trust_level,calibration_pair_count,direction_support_count,direction_contradiction_count,direction_supported_by_majority,majority_rule,probability_claimed,threshold_tuned_on_development
+hip,HALF,36,33,3,True,support_count > contradiction_count,False,False
+hip,INITIAL,36,33,3,True,support_count > contradiction_count,False,False
+hip,MINIMUM,36,33,3,True,support_count > contradiction_count,False,False
+knee,HALF,36,36,0,True,support_count > contradiction_count,False,False
+knee,INITIAL,36,36,0,True,support_count > contradiction_count,False,False
+knee,MINIMUM,36,36,0,True,support_count > contradiction_count,False,False
+phase,HALF,36,33,3,True,support_count > contradiction_count,False,False
+phase,INITIAL,36,35,1,True,support_count > contradiction_count,False,False
+phase,MINIMUM,36,31,5,True,support_count > contradiction_count,False,False

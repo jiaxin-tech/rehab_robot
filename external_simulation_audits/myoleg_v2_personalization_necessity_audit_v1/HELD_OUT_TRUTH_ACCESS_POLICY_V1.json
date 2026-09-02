@@ -1,0 +1,53 @@
+{
+  "allowed_operations": [
+    "manifest identity check",
+    "raw file existence/size check",
+    "streaming SHA-256 check",
+    "manifest row-count check"
+  ],
+  "classification": "SEALED_CONFIRMATORY_TRUTH",
+  "effective_until": "final algorithm freeze and a separately authorized confirmatory evaluation",
+  "enforcement": "DevelopmentTruthStore rejects every subject not in the frozen 24-development allowlist before path resolution or np.load",
+  "existing_post_freeze_oracle_summary_opened": false,
+  "existing_subject_landscape_summary_opened": false,
+  "forbidden_existing_summary_files_for_this_stage": [
+    "external_simulation_audits/myoleg_v2_truth_landscape_generation_v1/POST_FREEZE_ORACLE_SUMMARY.csv",
+    "external_simulation_audits/myoleg_v2_truth_landscape_generation_v1/SUBJECT_LANDSCAPE_SUMMARY.csv"
+  ],
+  "forbidden_operations": [
+    "np.load on a held-out shard",
+    "held-out candidate J read",
+    "held-out oracle/rank/alpha/J read",
+    "held-out landscape plot or statistic",
+    "held-out outcome use in metric/threshold/model selection"
+  ],
+  "local_shard_bytes_hashed_without_np_load": 9148003,
+  "local_shard_count_present": 536,
+  "local_shard_count_sha256_verified": 536,
+  "manifest_chunk_count": 536,
+  "manifest_row_count": 133400,
+  "manifest_subject_landscape_sha256": {
+    "MYOLEG_VP_004": "e0f1553630540d9c34fd08c2da9fa5d9f53ba03e12d51faebfee920314fc245f",
+    "MYOLEG_VP_008": "59d4e9e60f3f28d6ec36e5cd40f9f5315822aa75ef90df6cd0628114a6a214cc",
+    "MYOLEG_VP_012": "e53821c6f1435d15f035e66308642694d7b6b076a139ffa3122282cecdbfc17f",
+    "MYOLEG_VP_016": "3b88096920d2b6e2306db49c4a49854550b87d51eac48470bfc1fbda998bfb88",
+    "MYOLEG_VP_020": "a6e9cab01b3385650a1c57c2c79702b97a7b605e057017c2b921ec313f82c554",
+    "MYOLEG_VP_024": "433b0e95d2afee972d521312caf9a70381a2fc7fcceaac2f91363f5b80cafd13",
+    "MYOLEG_VP_028": "a72c9e5e250e6207cb0be0cf739e1f11ad6457f8a1ed0ba25afbe9aaf95506d7",
+    "MYOLEG_VP_032": "7501997a876d945898f90930c83a16ae3407a2bf5c83bd3fc0da74e3581e1ef2"
+  },
+  "policy_id": "HELD_OUT_TRUTH_ACCESS_POLICY_V1",
+  "scientific_array_values_loaded": false,
+  "sealed_subject_count": 8,
+  "sealed_subject_ids": [
+    "MYOLEG_VP_004",
+    "MYOLEG_VP_008",
+    "MYOLEG_VP_012",
+    "MYOLEG_VP_016",
+    "MYOLEG_VP_020",
+    "MYOLEG_VP_024",
+    "MYOLEG_VP_028",
+    "MYOLEG_VP_032"
+  ],
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_NECESSITY_AUDIT_V1"
+}

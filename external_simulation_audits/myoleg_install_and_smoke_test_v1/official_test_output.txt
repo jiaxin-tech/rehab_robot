@@ -1,0 +1,693 @@
+ATTEMPT 1 (base PyPI dependencies only)
+exit_code: 1
+result: FAIL
+tests: 3
+errors: 1
+root_cause: MyoChallenge myoChallengeBimanual-v0 imports scipy.spatial.transform,
+  but MyoSuite 2.12.2 did not declare scipy as a base dependency.
+traceback_terminal: ModuleNotFoundError: No module named 'scipy'
+MyoBase_result: PASS (included all registered MyoLeg environments)
+remediation: scipy==1.15.3 added only to the isolated myosuite-v2 environment.
+
+
+ATTEMPT 2 (after isolated scipy remediation)
+command: /Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python -m myosuite.tests.test_myo
+exit_code: 0
+wall_time_seconds: 45.595593833
+
+=== STDOUT ===
+MyoSuite:> Registering Myo Envs
+
+=================================
+Testing module::  MyoChallenge Suite
+Testing env:  myoChallengeBaodingP1-v1
+    MyoSuite: A contact-rich simulation suite for musculoskeletal motor control
+        Vittorio Caggiano, Huawei Wang, Guillaume Durandau, Massimo Sartori, Vikash Kumar
+        L4DC-2019 | https://sites.google.com/view/myosuite
+    
+Testing env:  myoChallengeBaodingP2-v1
+Testing env:  myoChallengeBimanual-v0
+Testing env:  myoChallengeChaseTagP1-v0
+Testing env:  myoChallengeChaseTagP2-v0
+Testing env:  myoChallengeChaseTagP2eval-v0
+Testing env:  myoChallengeDieReorientDemo-v0
+Testing env:  myoChallengeDieReorientP1-v0
+Testing env:  myoChallengeDieReorientP2-v0
+Testing env:  myoChallengeOslRunFixed-v0
+Testing env:  myoChallengeOslRunRandom-v0
+Testing env:  myoChallengeRelocateP1-v0
+Testing env:  myoChallengeRelocateP2-v0
+Testing env:  myoChallengeRelocateP2eval-v0
+Testing env:  myoChallengeSoccerP1-v0
+Testing env:  myoChallengeSoccerP2-v0
+Testing env:  myoChallengeTableTennisP0-v0
+Testing env:  myoChallengeTableTennisP1-v0
+Testing env:  myoChallengeTableTennisP2-v0
+Testing env:  myoFatiChallengeBaodingP1-v1
+Testing env:  myoFatiChallengeBaodingP2-v1
+Testing env:  myoFatiChallengeBimanual-v0
+Testing env:  myoFatiChallengeChaseTagP1-v0
+Testing env:  myoFatiChallengeChaseTagP2-v0
+Testing env:  myoFatiChallengeChaseTagP2eval-v0
+Testing env:  myoFatiChallengeDieReorientDemo-v0
+Testing env:  myoFatiChallengeDieReorientP1-v0
+Testing env:  myoFatiChallengeDieReorientP2-v0
+Testing env:  myoFatiChallengeOslRunFixed-v0
+Testing env:  myoFatiChallengeOslRunRandom-v0
+Testing env:  myoFatiChallengeRelocateP1-v0
+Testing env:  myoFatiChallengeRelocateP2-v0
+Testing env:  myoFatiChallengeRelocateP2eval-v0
+Testing env:  myoFatiChallengeSoccerP1-v0
+Testing env:  myoFatiChallengeSoccerP2-v0
+Testing env:  myoFatiChallengeTableTennisP0-v0
+Testing env:  myoFatiChallengeTableTennisP1-v0
+Testing env:  myoFatiChallengeTableTennisP2-v0
+Testing env:  myoSarcChallengeBaodingP1-v1
+Testing env:  myoSarcChallengeBaodingP2-v1
+Testing env:  myoSarcChallengeBimanual-v0
+Testing env:  myoSarcChallengeChaseTagP1-v0
+Testing env:  myoSarcChallengeChaseTagP2-v0
+Testing env:  myoSarcChallengeChaseTagP2eval-v0
+Testing env:  myoSarcChallengeDieReorientDemo-v0
+Testing env:  myoSarcChallengeDieReorientP1-v0
+Testing env:  myoSarcChallengeDieReorientP2-v0
+Testing env:  myoSarcChallengeOslRunFixed-v0
+Testing env:  myoSarcChallengeOslRunRandom-v0
+Testing env:  myoSarcChallengeRelocateP1-v0
+Testing env:  myoSarcChallengeRelocateP2-v0
+Testing env:  myoSarcChallengeRelocateP2eval-v0
+Testing env:  myoSarcChallengeSoccerP1-v0
+Testing env:  myoSarcChallengeSoccerP2-v0
+Testing env:  myoSarcChallengeTableTennisP0-v0
+Testing env:  myoSarcChallengeTableTennisP1-v0
+Testing env:  myoSarcChallengeTableTennisP2-v0
+
+=================================
+Testing module::  MyoDM Suite
+Testing env:  MyoHandAirplaneFixed-v0
+    MyoDex: A Generalizable Prior for Dexterous Manipulation
+        Vittorio Caggiano, Sudeep Dasari, Vikash Kumar
+        ICML-2023, https://arxiv.org/abs/2309.03130
+    
+Testing env:  MyoHandAirplaneFly-v0
+Testing env:  MyoHandAirplaneLift-v0
+Testing env:  MyoHandAirplanePass-v0
+Testing env:  MyoHandAirplaneRandom-v0
+Testing env:  MyoHandAlarmclockFixed-v0
+Testing env:  MyoHandAlarmclockLift-v0
+Testing env:  MyoHandAlarmclockPass-v0
+Testing env:  MyoHandAlarmclockRandom-v0
+Testing env:  MyoHandAlarmclockSee-v0
+Testing env:  MyoHandAppleFixed-v0
+Testing env:  MyoHandAppleLift-v0
+Testing env:  MyoHandApplePass-v0
+Testing env:  MyoHandAppleRandom-v0
+Testing env:  MyoHandBananaFixed-v0
+Testing env:  MyoHandBananaPass-v0
+Testing env:  MyoHandBananaRandom-v0
+Testing env:  MyoHandBinocularsFixed-v0
+Testing env:  MyoHandBinocularsPass-v0
+Testing env:  MyoHandBinocularsRandom-v0
+Testing env:  MyoHandBowlDrink2-v0
+Testing env:  MyoHandBowlFixed-v0
+Testing env:  MyoHandBowlPass-v0
+Testing env:  MyoHandBowlRandom-v0
+Testing env:  MyoHandCameraFixed-v0
+Testing env:  MyoHandCameraPass-v0
+Testing env:  MyoHandCameraRandom-v0
+Testing env:  MyoHandCoffeemugFixed-v0
+Testing env:  MyoHandCoffeemugRandom-v0
+Testing env:  MyoHandCubelargeFixed-v0
+Testing env:  MyoHandCubelargePass-v0
+Testing env:  MyoHandCubelargeRandom-v0
+Testing env:  MyoHandCubemediumFixed-v0
+Testing env:  MyoHandCubemediumLInspect-v0
+Testing env:  MyoHandCubemediumRandom-v0
+Testing env:  MyoHandCubesmallFixed-v0
+Testing env:  MyoHandCubesmallLift-v0
+Testing env:  MyoHandCubesmallPass-v0
+Testing env:  MyoHandCubesmallRandom-v0
+Testing env:  MyoHandCupDrink-v0
+Testing env:  MyoHandCupFixed-v0
+Testing env:  MyoHandCupPass-v0
+Testing env:  MyoHandCupPour-v0
+Testing env:  MyoHandCupRandom-v0
+Testing env:  MyoHandCylinderlargeFixed-v0
+Testing env:  MyoHandCylinderlargeInspect-v0
+Testing env:  MyoHandCylinderlargeRandom-v0
+Testing env:  MyoHandCylindermediumFixed-v0
+Testing env:  MyoHandCylindermediumLift-v0
+Testing env:  MyoHandCylindermediumPass-v0
+Testing env:  MyoHandCylindermediumRandom-v0
+Testing env:  MyoHandCylindersmallFixed-v0
+Testing env:  MyoHandCylindersmallInspect-v0
+Testing env:  MyoHandCylindersmallPass-v0
+Testing env:  MyoHandCylindersmallRandom-v0
+Testing env:  MyoHandDuckFixed-v0
+Testing env:  MyoHandDuckInspect-v0
+Testing env:  MyoHandDuckLift-v0
+Testing env:  MyoHandDuckPass-v0
+Testing env:  MyoHandDuckRandom-v0
+Testing env:  MyoHandElephantFixed-v0
+Testing env:  MyoHandElephantLift-v0
+Testing env:  MyoHandElephantPass-v0
+Testing env:  MyoHandElephantRandom-v0
+Testing env:  MyoHandEyeglassesFixed-v0
+Testing env:  MyoHandEyeglassesPass-v0
+Testing env:  MyoHandEyeglassesRandom-v0
+Testing env:  MyoHandFlashlight1On-v0
+Testing env:  MyoHandFlashlight2On-v0
+Testing env:  MyoHandFlashlightFixed-v0
+Testing env:  MyoHandFlashlightLift-v0
+Testing env:  MyoHandFlashlightPass-v0
+Testing env:  MyoHandFlashlightRandom-v0
+Testing env:  MyoHandFluteFixed-v0
+Testing env:  MyoHandFlutePass-v0
+Testing env:  MyoHandFluteRandom-v0
+Testing env:  MyoHandGamecontrollerFixed-v0
+Testing env:  MyoHandGamecontrollerPass-v0
+Testing env:  MyoHandGamecontrollerRandom-v0
+Testing env:  MyoHandHammerFixed-v0
+Testing env:  MyoHandHammerPass-v0
+Testing env:  MyoHandHammerRandom-v0
+Testing env:  MyoHandHammerUse-v0
+Testing env:  MyoHandHandFixed-v0
+Testing env:  MyoHandHandInspect-v0
+Testing env:  MyoHandHandRandom-v0
+Testing env:  MyoHandHeadphonesFixed-v0
+Testing env:  MyoHandHeadphonesPass-v0
+Testing env:  MyoHandHeadphonesRandom-v0
+Testing env:  MyoHandKnifeChop-v0
+Testing env:  MyoHandKnifeFixed-v0
+Testing env:  MyoHandKnifeRandom-v0
+Testing env:  MyoHandLightbulbFixed-v0
+Testing env:  MyoHandLightbulbPass-v0
+Testing env:  MyoHandLightbulbRandom-v0
+Testing env:  MyoHandMouseFixed-v0
+Testing env:  MyoHandMouseLift-v0
+Testing env:  MyoHandMousePass-v0
+Testing env:  MyoHandMouseRandom-v0
+Testing env:  MyoHandMouseUse-v0
+Testing env:  MyoHandMugDrink3-v0
+Testing env:  MyoHandMugFixed-v0
+Testing env:  MyoHandMugLift-v0
+Testing env:  MyoHandMugPass-v0
+Testing env:  MyoHandMugRandom-v0
+Testing env:  MyoHandPhoneFixed-v0
+Testing env:  MyoHandPhoneLift-v0
+Testing env:  MyoHandPhoneRandom-v0
+Testing env:  MyoHandPiggybankFixed-v0
+Testing env:  MyoHandPiggybankPass-v0
+Testing env:  MyoHandPiggybankRandom-v0
+Testing env:  MyoHandPiggybankUse-v0
+Testing env:  MyoHandPyramidlargeFixed-v0
+Testing env:  MyoHandPyramidlargePass-v0
+Testing env:  MyoHandPyramidlargeRandom-v0
+Testing env:  MyoHandPyramidmediumFixed-v0
+Testing env:  MyoHandPyramidmediumPass-v0
+Testing env:  MyoHandPyramidmediumRandom-v0
+Testing env:  MyoHandPyramidsmallFixed-v0
+Testing env:  MyoHandPyramidsmallInspect-v0
+Testing env:  MyoHandPyramidsmallRandom-v0
+Testing env:  MyoHandScissorsFixed-v0
+Testing env:  MyoHandScissorsRandom-v0
+Testing env:  MyoHandScissorsUse-v0
+Testing env:  MyoHandSpherelargeFixed-v0
+Testing env:  MyoHandSpherelargePass-v0
+Testing env:  MyoHandSpherelargeRandom-v0
+Testing env:  MyoHandSpheremediumFixed-v0
+Testing env:  MyoHandSpheremediumInspect-v0
+Testing env:  MyoHandSpheremediumLift-v0
+Testing env:  MyoHandSpheremediumRandom-v0
+Testing env:  MyoHandSpheresmallFixed-v0
+Testing env:  MyoHandSpheresmallInspect-v0
+Testing env:  MyoHandSpheresmallLift-v0
+Testing env:  MyoHandSpheresmallPass-v0
+Testing env:  MyoHandSpheresmallRandom-v0
+Testing env:  MyoHandStampFixed-v0
+Testing env:  MyoHandStampLift-v0
+Testing env:  MyoHandStampRandom-v0
+Testing env:  MyoHandStampStamp-v0
+Testing env:  MyoHandStanfordbunnyFixed-v0
+Testing env:  MyoHandStanfordbunnyInspect-v0
+Testing env:  MyoHandStanfordbunnyPass-v0
+Testing env:  MyoHandStanfordbunnyRandom-v0
+Testing env:  MyoHandStaplerFixed-v0
+Testing env:  MyoHandStaplerLift-v0
+Testing env:  MyoHandStaplerRandom-v0
+Testing env:  MyoHandStaplerStaple1-v0
+Testing env:  MyoHandStaplerStaple2-v0
+Testing env:  MyoHandTeapotFixed-v0
+Testing env:  MyoHandTeapotPour2-v0
+Testing env:  MyoHandTeapotRandom-v0
+Testing env:  MyoHandToothbrushBrush1-v0
+Testing env:  MyoHandToothbrushFixed-v0
+Testing env:  MyoHandToothbrushLift-v0
+Testing env:  MyoHandToothbrushRandom-v0
+Testing env:  MyoHandToothpasteFixed-v0
+Testing env:  MyoHandToothpasteLift-v0
+Testing env:  MyoHandToothpasteRandom-v0
+Testing env:  MyoHandToothpasteSqueeze1-v0
+Testing env:  MyoHandToruslargeFixed-v0
+Testing env:  MyoHandToruslargeInspect-v0
+Testing env:  MyoHandToruslargeLift-v0
+Testing env:  MyoHandToruslargeRandom-v0
+Testing env:  MyoHandTorusmediumFixed-v0
+Testing env:  MyoHandTorusmediumLift-v0
+Testing env:  MyoHandTorusmediumPass-v0
+Testing env:  MyoHandTorusmediumRandom-v0
+Testing env:  MyoHandTorussmallFixed-v0
+Testing env:  MyoHandTorussmallLift-v0
+Testing env:  MyoHandTorussmallPass-v0
+Testing env:  MyoHandTorussmallRandom-v0
+Testing env:  MyoHandTrainFixed-v0
+Testing env:  MyoHandTrainPlay-v0
+Testing env:  MyoHandTrainRandom-v0
+Testing env:  MyoHandWatchFixed-v0
+Testing env:  MyoHandWatchLift-v0
+Testing env:  MyoHandWatchPass-v0
+Testing env:  MyoHandWatchRandom-v0
+Testing env:  MyoHandWaterbottleFixed-v0
+Testing env:  MyoHandWaterbottleLift-v0
+Testing env:  MyoHandWaterbottlePass-v0
+Testing env:  MyoHandWaterbottleRandom-v0
+Testing env:  MyoHandWaterbottleShake-v0
+Testing env:  MyoHandWineglassDrink2-v0
+Testing env:  MyoHandWineglassFixed-v0
+Testing env:  MyoHandWineglassLift-v0
+Testing env:  MyoHandWineglassPass-v0
+Testing env:  MyoHandWineglassRandom-v0
+Testing env:  MyoHandWineglassToast1-v0
+Testing reference motion playback on: MyoHandAirplaneFixed-v0
+Testing reference motion playback on: MyoHandAirplaneFly-v0
+Testing reference motion playback on: MyoHandAirplaneLift-v0
+Testing reference motion playback on: MyoHandAirplanePass-v0
+Testing reference motion playback on: MyoHandAirplaneRandom-v0
+Testing reference motion playback on: MyoHandAlarmclockFixed-v0
+Testing reference motion playback on: MyoHandAlarmclockLift-v0
+Testing reference motion playback on: MyoHandAlarmclockPass-v0
+Testing reference motion playback on: MyoHandAlarmclockRandom-v0
+Testing reference motion playback on: MyoHandAlarmclockSee-v0
+Testing reference motion playback on: MyoHandAppleFixed-v0
+Testing reference motion playback on: MyoHandAppleLift-v0
+Testing reference motion playback on: MyoHandApplePass-v0
+Testing reference motion playback on: MyoHandAppleRandom-v0
+Testing reference motion playback on: MyoHandBananaFixed-v0
+Testing reference motion playback on: MyoHandBananaPass-v0
+Testing reference motion playback on: MyoHandBananaRandom-v0
+Testing reference motion playback on: MyoHandBinocularsFixed-v0
+Testing reference motion playback on: MyoHandBinocularsPass-v0
+Testing reference motion playback on: MyoHandBinocularsRandom-v0
+Testing reference motion playback on: MyoHandBowlDrink2-v0
+Testing reference motion playback on: MyoHandBowlFixed-v0
+Testing reference motion playback on: MyoHandBowlPass-v0
+Testing reference motion playback on: MyoHandBowlRandom-v0
+Testing reference motion playback on: MyoHandCameraFixed-v0
+Testing reference motion playback on: MyoHandCameraPass-v0
+Testing reference motion playback on: MyoHandCameraRandom-v0
+Testing reference motion playback on: MyoHandCoffeemugFixed-v0
+Testing reference motion playback on: MyoHandCoffeemugRandom-v0
+Testing reference motion playback on: MyoHandCubelargeFixed-v0
+Testing reference motion playback on: MyoHandCubelargePass-v0
+Testing reference motion playback on: MyoHandCubelargeRandom-v0
+Testing reference motion playback on: MyoHandCubemediumFixed-v0
+Testing reference motion playback on: MyoHandCubemediumLInspect-v0
+Testing reference motion playback on: MyoHandCubemediumRandom-v0
+Testing reference motion playback on: MyoHandCubesmallFixed-v0
+Testing reference motion playback on: MyoHandCubesmallLift-v0
+Testing reference motion playback on: MyoHandCubesmallPass-v0
+Testing reference motion playback on: MyoHandCubesmallRandom-v0
+Testing reference motion playback on: MyoHandCupDrink-v0
+Testing reference motion playback on: MyoHandCupFixed-v0
+Testing reference motion playback on: MyoHandCupPass-v0
+Testing reference motion playback on: MyoHandCupPour-v0
+Testing reference motion playback on: MyoHandCupRandom-v0
+Testing reference motion playback on: MyoHandCylinderlargeFixed-v0
+Testing reference motion playback on: MyoHandCylinderlargeInspect-v0
+Testing reference motion playback on: MyoHandCylinderlargeRandom-v0
+Testing reference motion playback on: MyoHandCylindermediumFixed-v0
+Testing reference motion playback on: MyoHandCylindermediumLift-v0
+Testing reference motion playback on: MyoHandCylindermediumPass-v0
+Testing reference motion playback on: MyoHandCylindermediumRandom-v0
+Testing reference motion playback on: MyoHandCylindersmallFixed-v0
+Testing reference motion playback on: MyoHandCylindersmallInspect-v0
+Testing reference motion playback on: MyoHandCylindersmallPass-v0
+Testing reference motion playback on: MyoHandCylindersmallRandom-v0
+Testing reference motion playback on: MyoHandDuckFixed-v0
+Testing reference motion playback on: MyoHandDuckInspect-v0
+Testing reference motion playback on: MyoHandDuckLift-v0
+Testing reference motion playback on: MyoHandDuckPass-v0
+Testing reference motion playback on: MyoHandDuckRandom-v0
+Testing reference motion playback on: MyoHandElephantFixed-v0
+Testing reference motion playback on: MyoHandElephantLift-v0
+Testing reference motion playback on: MyoHandElephantPass-v0
+Testing reference motion playback on: MyoHandElephantRandom-v0
+Testing reference motion playback on: MyoHandEyeglassesFixed-v0
+Testing reference motion playback on: MyoHandEyeglassesPass-v0
+Testing reference motion playback on: MyoHandEyeglassesRandom-v0
+Testing reference motion playback on: MyoHandFlashlight1On-v0
+Testing reference motion playback on: MyoHandFlashlight2On-v0
+Testing reference motion playback on: MyoHandFlashlightFixed-v0
+Testing reference motion playback on: MyoHandFlashlightLift-v0
+Testing reference motion playback on: MyoHandFlashlightPass-v0
+Testing reference motion playback on: MyoHandFlashlightRandom-v0
+Testing reference motion playback on: MyoHandFluteFixed-v0
+Testing reference motion playback on: MyoHandFlutePass-v0
+Testing reference motion playback on: MyoHandFluteRandom-v0
+Testing reference motion playback on: MyoHandGamecontrollerFixed-v0
+Testing reference motion playback on: MyoHandGamecontrollerPass-v0
+Testing reference motion playback on: MyoHandGamecontrollerRandom-v0
+Testing reference motion playback on: MyoHandHammerFixed-v0
+Testing reference motion playback on: MyoHandHammerPass-v0
+Testing reference motion playback on: MyoHandHammerRandom-v0
+Testing reference motion playback on: MyoHandHammerUse-v0
+Testing reference motion playback on: MyoHandHandFixed-v0
+Testing reference motion playback on: MyoHandHandInspect-v0
+Testing reference motion playback on: MyoHandHandRandom-v0
+Testing reference motion playback on: MyoHandHeadphonesFixed-v0
+Testing reference motion playback on: MyoHandHeadphonesPass-v0
+Testing reference motion playback on: MyoHandHeadphonesRandom-v0
+Testing reference motion playback on: MyoHandKnifeChop-v0
+Testing reference motion playback on: MyoHandKnifeFixed-v0
+Testing reference motion playback on: MyoHandKnifeRandom-v0
+Testing reference motion playback on: MyoHandLightbulbFixed-v0
+Testing reference motion playback on: MyoHandLightbulbPass-v0
+Testing reference motion playback on: MyoHandLightbulbRandom-v0
+Testing reference motion playback on: MyoHandMouseFixed-v0
+Testing reference motion playback on: MyoHandMouseLift-v0
+Testing reference motion playback on: MyoHandMousePass-v0
+Testing reference motion playback on: MyoHandMouseRandom-v0
+Testing reference motion playback on: MyoHandMouseUse-v0
+Testing reference motion playback on: MyoHandMugDrink3-v0
+Testing reference motion playback on: MyoHandMugFixed-v0
+Testing reference motion playback on: MyoHandMugLift-v0
+Testing reference motion playback on: MyoHandMugPass-v0
+Testing reference motion playback on: MyoHandMugRandom-v0
+Testing reference motion playback on: MyoHandPhoneFixed-v0
+Testing reference motion playback on: MyoHandPhoneLift-v0
+Testing reference motion playback on: MyoHandPhoneRandom-v0
+Testing reference motion playback on: MyoHandPiggybankFixed-v0
+Testing reference motion playback on: MyoHandPiggybankPass-v0
+Testing reference motion playback on: MyoHandPiggybankRandom-v0
+Testing reference motion playback on: MyoHandPiggybankUse-v0
+Testing reference motion playback on: MyoHandPyramidlargeFixed-v0
+Testing reference motion playback on: MyoHandPyramidlargePass-v0
+Testing reference motion playback on: MyoHandPyramidlargeRandom-v0
+Testing reference motion playback on: MyoHandPyramidmediumFixed-v0
+Testing reference motion playback on: MyoHandPyramidmediumPass-v0
+Testing reference motion playback on: MyoHandPyramidmediumRandom-v0
+Testing reference motion playback on: MyoHandPyramidsmallFixed-v0
+Testing reference motion playback on: MyoHandPyramidsmallInspect-v0
+Testing reference motion playback on: MyoHandPyramidsmallRandom-v0
+Testing reference motion playback on: MyoHandScissorsFixed-v0
+Testing reference motion playback on: MyoHandScissorsRandom-v0
+Testing reference motion playback on: MyoHandScissorsUse-v0
+Testing reference motion playback on: MyoHandSpherelargeFixed-v0
+Testing reference motion playback on: MyoHandSpherelargePass-v0
+Testing reference motion playback on: MyoHandSpherelargeRandom-v0
+Testing reference motion playback on: MyoHandSpheremediumFixed-v0
+Testing reference motion playback on: MyoHandSpheremediumInspect-v0
+Testing reference motion playback on: MyoHandSpheremediumLift-v0
+Testing reference motion playback on: MyoHandSpheremediumRandom-v0
+Testing reference motion playback on: MyoHandSpheresmallFixed-v0
+Testing reference motion playback on: MyoHandSpheresmallInspect-v0
+Testing reference motion playback on: MyoHandSpheresmallLift-v0
+Testing reference motion playback on: MyoHandSpheresmallPass-v0
+Testing reference motion playback on: MyoHandSpheresmallRandom-v0
+Testing reference motion playback on: MyoHandStampFixed-v0
+Testing reference motion playback on: MyoHandStampLift-v0
+Testing reference motion playback on: MyoHandStampRandom-v0
+Testing reference motion playback on: MyoHandStampStamp-v0
+Testing reference motion playback on: MyoHandStanfordbunnyFixed-v0
+Testing reference motion playback on: MyoHandStanfordbunnyInspect-v0
+Testing reference motion playback on: MyoHandStanfordbunnyPass-v0
+Testing reference motion playback on: MyoHandStanfordbunnyRandom-v0
+Testing reference motion playback on: MyoHandStaplerFixed-v0
+Testing reference motion playback on: MyoHandStaplerLift-v0
+Testing reference motion playback on: MyoHandStaplerRandom-v0
+Testing reference motion playback on: MyoHandStaplerStaple1-v0
+Testing reference motion playback on: MyoHandStaplerStaple2-v0
+Testing reference motion playback on: MyoHandTeapotFixed-v0
+Testing reference motion playback on: MyoHandTeapotPour2-v0
+Testing reference motion playback on: MyoHandTeapotRandom-v0
+Testing reference motion playback on: MyoHandToothbrushBrush1-v0
+Testing reference motion playback on: MyoHandToothbrushFixed-v0
+Testing reference motion playback on: MyoHandToothbrushLift-v0
+Testing reference motion playback on: MyoHandToothbrushRandom-v0
+Testing reference motion playback on: MyoHandToothpasteFixed-v0
+Testing reference motion playback on: MyoHandToothpasteLift-v0
+Testing reference motion playback on: MyoHandToothpasteRandom-v0
+Testing reference motion playback on: MyoHandToothpasteSqueeze1-v0
+Testing reference motion playback on: MyoHandToruslargeFixed-v0
+Testing reference motion playback on: MyoHandToruslargeInspect-v0
+Testing reference motion playback on: MyoHandToruslargeLift-v0
+Testing reference motion playback on: MyoHandToruslargeRandom-v0
+Testing reference motion playback on: MyoHandTorusmediumFixed-v0
+Testing reference motion playback on: MyoHandTorusmediumLift-v0
+Testing reference motion playback on: MyoHandTorusmediumPass-v0
+Testing reference motion playback on: MyoHandTorusmediumRandom-v0
+Testing reference motion playback on: MyoHandTorussmallFixed-v0
+Testing reference motion playback on: MyoHandTorussmallLift-v0
+Testing reference motion playback on: MyoHandTorussmallPass-v0
+Testing reference motion playback on: MyoHandTorussmallRandom-v0
+Testing reference motion playback on: MyoHandTrainFixed-v0
+Testing reference motion playback on: MyoHandTrainPlay-v0
+Testing reference motion playback on: MyoHandTrainRandom-v0
+Testing reference motion playback on: MyoHandWatchFixed-v0
+Testing reference motion playback on: MyoHandWatchLift-v0
+Testing reference motion playback on: MyoHandWatchPass-v0
+Testing reference motion playback on: MyoHandWatchRandom-v0
+Testing reference motion playback on: MyoHandWaterbottleFixed-v0
+Testing reference motion playback on: MyoHandWaterbottleLift-v0
+Testing reference motion playback on: MyoHandWaterbottlePass-v0
+Testing reference motion playback on: MyoHandWaterbottleRandom-v0
+Testing reference motion playback on: MyoHandWaterbottleShake-v0
+Testing reference motion playback on: MyoHandWineglassDrink2-v0
+Testing reference motion playback on: MyoHandWineglassFixed-v0
+Testing reference motion playback on: MyoHandWineglassLift-v0
+Testing reference motion playback on: MyoHandWineglassPass-v0
+Testing reference motion playback on: MyoHandWineglassRandom-v0
+Testing reference motion playback on: MyoHandWineglassToast1-v0
+
+=================================
+Testing module::  MyoBase Suite
+Testing env:  motorFingerPoseFixed-v0
+Testing env:  motorFingerPoseRandom-v0
+Testing env:  motorFingerReachFixed-v0
+Testing env:  motorFingerReachRandom-v0
+Testing env:  myoElbowPose1D6MExoFixed-v0
+Testing env:  myoElbowPose1D6MExoRandom-v0
+Testing env:  myoElbowPose1D6MFixed-v0
+Testing env:  myoElbowPose1D6MRandom-v0
+Testing env:  myoFatiElbowPose1D6MExoFixed-v0
+Testing env:  myoFatiElbowPose1D6MExoRandom-v0
+Testing env:  myoFatiElbowPose1D6MFixed-v0
+Testing env:  myoFatiElbowPose1D6MRandom-v0
+Testing env:  myoFatiFingerPoseFixed-v0
+Testing env:  myoFatiFingerPoseRandom-v0
+Testing env:  myoFatiFingerReachFixed-v0
+Testing env:  myoFatiFingerReachRandom-v0
+Testing env:  myoFatiHandKeyTurnFixed-v0
+Testing env:  myoFatiHandKeyTurnRandom-v0
+Testing env:  myoFatiHandObjHoldFixed-v0
+Testing env:  myoFatiHandObjHoldRandom-v0
+Testing env:  myoFatiHandPenTwirlFixed-v0
+Testing env:  myoFatiHandPenTwirlRandom-v0
+Testing env:  myoFatiHandPose0Fixed-v0
+Testing env:  myoFatiHandPose1Fixed-v0
+Testing env:  myoFatiHandPose2Fixed-v0
+Testing env:  myoFatiHandPose3Fixed-v0
+Testing env:  myoFatiHandPose4Fixed-v0
+Testing env:  myoFatiHandPose5Fixed-v0
+Testing env:  myoFatiHandPose6Fixed-v0
+Testing env:  myoFatiHandPose7Fixed-v0
+Testing env:  myoFatiHandPose8Fixed-v0
+Testing env:  myoFatiHandPose9Fixed-v0
+Testing env:  myoFatiHandPoseFixed-v0
+Testing env:  myoFatiHandPoseRandom-v0
+Testing env:  myoFatiHandReachFixed-v0
+Testing env:  myoFatiHandReachRandom-v0
+Testing env:  myoFatiHandReorient100-v0
+    SAR: Generalization of Physiological Agility and Dexterity via Synergistic Action Representation
+        Cameron Berg, Vittorio Caggiano*, Vikash Kumar*
+        RSS-2023 | https://sites.google.com/view/sar-rl/
+    
+Testing env:  myoFatiHandReorient8-v0
+Testing env:  myoFatiHandReorientID-v0
+Testing env:  myoFatiHandReorientOOD-v0
+Testing env:  myoFatiLegHillyTerrainWalk-v0
+Testing env:  myoFatiLegRoughTerrainWalk-v0
+Testing env:  myoFatiLegStairTerrainWalk-v0
+Testing env:  myoFatiLegStandRandom-v0
+Testing env:  myoFatiLegWalk-v0
+Testing env:  myoFatiTorsoExoPoseFixed-v0
+Testing env:  myoFatiTorsoPoseFixed-v0
+Testing env:  myoFingerPoseFixed-v0
+Testing env:  myoFingerPoseRandom-v0
+Testing env:  myoFingerReachFixed-v0
+Testing env:  myoFingerReachRandom-v0
+Testing env:  myoHandKeyTurnFixed-v0
+Testing env:  myoHandKeyTurnRandom-v0
+Testing env:  myoHandObjHoldFixed-v0
+Testing env:  myoHandObjHoldRandom-v0
+Testing env:  myoHandPenTwirlFixed-v0
+Testing env:  myoHandPenTwirlRandom-v0
+Testing env:  myoHandPose0Fixed-v0
+Testing env:  myoHandPose1Fixed-v0
+Testing env:  myoHandPose2Fixed-v0
+Testing env:  myoHandPose3Fixed-v0
+Testing env:  myoHandPose4Fixed-v0
+Testing env:  myoHandPose5Fixed-v0
+Testing env:  myoHandPose6Fixed-v0
+Testing env:  myoHandPose7Fixed-v0
+Testing env:  myoHandPose8Fixed-v0
+Testing env:  myoHandPose9Fixed-v0
+Testing env:  myoHandPoseFixed-v0
+Testing env:  myoHandPoseRandom-v0
+Testing env:  myoHandReachFixed-v0
+Testing env:  myoHandReachRandom-v0
+Testing env:  myoHandReorient100-v0
+Testing env:  myoHandReorient8-v0
+Testing env:  myoHandReorientID-v0
+Testing env:  myoHandReorientOOD-v0
+Testing env:  myoLegHillyTerrainWalk-v0
+Testing env:  myoLegRoughTerrainWalk-v0
+Testing env:  myoLegStairTerrainWalk-v0
+Testing env:  myoLegStandRandom-v0
+Testing env:  myoLegWalk-v0
+Testing env:  myoReafHandKeyTurnFixed-v0
+Testing env:  myoReafHandKeyTurnRandom-v0
+Testing env:  myoReafHandObjHoldFixed-v0
+Testing env:  myoReafHandObjHoldRandom-v0
+Testing env:  myoReafHandPenTwirlFixed-v0
+Testing env:  myoReafHandPenTwirlRandom-v0
+Testing env:  myoReafHandPose0Fixed-v0
+Testing env:  myoReafHandPose1Fixed-v0
+Testing env:  myoReafHandPose2Fixed-v0
+Testing env:  myoReafHandPose3Fixed-v0
+Testing env:  myoReafHandPose4Fixed-v0
+Testing env:  myoReafHandPose5Fixed-v0
+Testing env:  myoReafHandPose6Fixed-v0
+Testing env:  myoReafHandPose7Fixed-v0
+Testing env:  myoReafHandPose8Fixed-v0
+Testing env:  myoReafHandPose9Fixed-v0
+Testing env:  myoReafHandPoseFixed-v0
+Testing env:  myoReafHandPoseRandom-v0
+Testing env:  myoReafHandReachFixed-v0
+Testing env:  myoReafHandReachRandom-v0
+Testing env:  myoReafHandReorient100-v0
+Testing env:  myoReafHandReorient8-v0
+Testing env:  myoReafHandReorientID-v0
+Testing env:  myoReafHandReorientOOD-v0
+Testing env:  myoSarcElbowPose1D6MExoFixed-v0
+Testing env:  myoSarcElbowPose1D6MExoRandom-v0
+Testing env:  myoSarcElbowPose1D6MFixed-v0
+Testing env:  myoSarcElbowPose1D6MRandom-v0
+Testing env:  myoSarcFingerPoseFixed-v0
+Testing env:  myoSarcFingerPoseRandom-v0
+Testing env:  myoSarcFingerReachFixed-v0
+Testing env:  myoSarcFingerReachRandom-v0
+Testing env:  myoSarcHandKeyTurnFixed-v0
+Testing env:  myoSarcHandKeyTurnRandom-v0
+Testing env:  myoSarcHandObjHoldFixed-v0
+Testing env:  myoSarcHandObjHoldRandom-v0
+Testing env:  myoSarcHandPenTwirlFixed-v0
+Testing env:  myoSarcHandPenTwirlRandom-v0
+Testing env:  myoSarcHandPose0Fixed-v0
+Testing env:  myoSarcHandPose1Fixed-v0
+Testing env:  myoSarcHandPose2Fixed-v0
+Testing env:  myoSarcHandPose3Fixed-v0
+Testing env:  myoSarcHandPose4Fixed-v0
+Testing env:  myoSarcHandPose5Fixed-v0
+Testing env:  myoSarcHandPose6Fixed-v0
+Testing env:  myoSarcHandPose7Fixed-v0
+Testing env:  myoSarcHandPose8Fixed-v0
+Testing env:  myoSarcHandPose9Fixed-v0
+Testing env:  myoSarcHandPoseFixed-v0
+Testing env:  myoSarcHandPoseRandom-v0
+Testing env:  myoSarcHandReachFixed-v0
+Testing env:  myoSarcHandReachRandom-v0
+Testing env:  myoSarcHandReorient100-v0
+Testing env:  myoSarcHandReorient8-v0
+Testing env:  myoSarcHandReorientID-v0
+Testing env:  myoSarcHandReorientOOD-v0
+Testing env:  myoSarcLegHillyTerrainWalk-v0
+Testing env:  myoSarcLegRoughTerrainWalk-v0
+Testing env:  myoSarcLegStairTerrainWalk-v0
+Testing env:  myoSarcLegStandRandom-v0
+Testing env:  myoSarcLegWalk-v0
+Testing env:  myoSarcTorsoExoPoseFixed-v0
+Testing env:  myoSarcTorsoPoseFixed-v0
+Testing env:  myoTorsoExoPoseFixed-v0
+Testing env:  myoTorsoPoseFixed-v0
+
+=== STDERR ===
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/gymnasium/spaces/box.py:236: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/gymnasium/spaces/box.py:306: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:565: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.manip_joint_range = np.arange(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:570: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.manip_dof_range = np.arange(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:197: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.obj_vert_addr = np.arange(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:201: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  q = self.mj_model.geom(self.obj_gid - 1).quat
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:209: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid - 1).quat = [1, 0, 0, 0]
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:211: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid - 1).pos
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:212: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  - self.mj_model.geom(self.obj_gid).pos
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:215: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid - 1).pos = self.mj_model.geom(self.obj_gid).pos
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/gymnasium/spaces/box.py:236: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/gymnasium/spaces/box.py:306: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:470: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid).size = self.obj_size0 * obj_scales
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:461: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ("time_cost", float(self.obs_dict["time"])),
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:564: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_data.joint(jnt).qpos[0] += self.np_random.uniform(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:570: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_data.joint("root").qpos[0] += self.np_random.uniform(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:573: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_data.joint("root").qpos[1] += self.np_random.uniform(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/gymnasium/spaces/box.py:236: UserWarning: [33mWARN: Box low's precision lowered by casting to float32, current low.dtype=float64[0m
+  gym.logger.warn(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/gymnasium/spaces/box.py:306: UserWarning: [33mWARN: Box high's precision lowered by casting to float32, current high.dtype=float64[0m
+  gym.logger.warn(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:565: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.manip_joint_range = np.arange(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:570: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.manip_dof_range = np.arange(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:197: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.obj_vert_addr = np.arange(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:201: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  q = self.mj_model.geom(self.obj_gid - 1).quat
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:209: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid - 1).quat = [1, 0, 0, 0]
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:211: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid - 1).pos
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:212: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  - self.mj_model.geom(self.obj_gid).pos
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:215: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid - 1).pos = self.mj_model.geom(self.obj_gid).pos
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/bimanual_v0.py:470: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_model.geom(self.obj_gid).size = self.obj_size0 * obj_scales
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:461: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  ("time_cost", float(self.obs_dict["time"])),
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:564: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_data.joint(jnt).qpos[0] += self.np_random.uniform(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:570: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_data.joint("root").qpos[0] += self.np_random.uniform(
+/Users/fengjiaxin/.virtualenvs/myosuite-v2/lib/python3.10/site-packages/myosuite/envs/myo/myochallenge/soccer_v0.py:573: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  self.mj_data.joint("root").qpos[1] += self.np_random.uniform(
+...
+----------------------------------------------------------------------
+Ran 3 tests in 45.396s
+
+OK

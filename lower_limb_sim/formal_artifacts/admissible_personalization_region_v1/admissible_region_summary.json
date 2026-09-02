@@ -1,0 +1,162 @@
+{
+  "admissible_fraction": 0.549346016646849,
+  "admissible_parameter_sample_count": 11550,
+  "artifact_status": "FORMAL_OFFLINE_SOFTWARE_REGION_AUDIT",
+  "boundary_rejected_parameter_sample_count": 2368,
+  "global_pull_x_max_m": 0.6625930269346805,
+  "global_pull_x_min_m": 0.1351926172257138,
+  "global_pull_z_max_m": 0.37657389505813565,
+  "global_pull_z_min_m": 0.21943842223205104,
+  "interior_rejected_parameter_sample_count": 7107,
+  "joint_extrema": {
+    "maximum_negative_hip_deviation_deg": {
+      "global_phase": 0.5666659636352096,
+      "hip_delta": -5.0,
+      "kind": "minimum",
+      "knee_delta": -5.0,
+      "phase_delta": -0.03,
+      "sample_index": 199,
+      "value": -5.000000000000033
+    },
+    "maximum_negative_knee_deviation_deg": {
+      "global_phase": 0.7671006583466666,
+      "hip_delta": -5.0,
+      "kind": "minimum",
+      "knee_delta": -5.0,
+      "phase_delta": 0.03,
+      "sample_index": 296,
+      "value": -7.697943753485363
+    },
+    "maximum_positive_hip_deviation_deg": {
+      "global_phase": 0.634495605866875,
+      "hip_delta": 0.0,
+      "kind": "maximum",
+      "knee_delta": -5.0,
+      "phase_delta": -0.03,
+      "sample_index": 259,
+      "value": 5.088887490341627e-14
+    },
+    "maximum_positive_knee_deviation_deg": {
+      "global_phase": 0.7833333333333333,
+      "hip_delta": -5.0,
+      "kind": "maximum",
+      "knee_delta": 0.25,
+      "phase_delta": -0.03,
+      "sample_index": 300,
+      "value": 5.075483273592488
+    }
+  },
+  "maximum_phasewise_pull_radial_deviation_mm": 45.8572476174703,
+  "model_reliability_rule_status": "NOT_FROZEN",
+  "parameter_box_claimed_fully_feasible": false,
+  "parameter_box_contains_interior_infeasible_samples": true,
+  "parameter_sample_count": 21025,
+  "pull_extrema": {
+    "maximum_delta_x_pull_mm": {
+      "global_phase": 0.6586857957652084,
+      "hip_delta": -5.0,
+      "kind": "maximum",
+      "knee_delta": -5.0,
+      "phase_delta": 0.03,
+      "sample_index": 267,
+      "value": 35.51950387721944
+    },
+    "maximum_delta_z_pull_mm": {
+      "global_phase": 0.7671006583466666,
+      "hip_delta": 0.0,
+      "kind": "maximum",
+      "knee_delta": -5.0,
+      "phase_delta": 0.03,
+      "sample_index": 296,
+      "value": 38.25281720637519
+    },
+    "maximum_radial_pull_deviation_mm": {
+      "global_phase": 0.7792711041585416,
+      "hip_delta": -5.0,
+      "kind": "maximum",
+      "knee_delta": 0.25,
+      "phase_delta": -0.03,
+      "sample_index": 299,
+      "value": 45.8572476174703
+    },
+    "minimum_delta_x_pull_mm": {
+      "global_phase": 0.7711531438589583,
+      "hip_delta": 0.0,
+      "kind": "minimum",
+      "knee_delta": 0.25,
+      "phase_delta": -0.03,
+      "sample_index": 297,
+      "value": -10.37507831263862
+    },
+    "minimum_delta_z_pull_mm": {
+      "global_phase": 0.7792711041585416,
+      "hip_delta": -5.0,
+      "kind": "minimum",
+      "knee_delta": 0.25,
+      "phase_delta": -0.03,
+      "sample_index": 299,
+      "value": -45.857009992836566
+    }
+  },
+  "real_robot_safety_region_status": "NOT_DEFINED_NOT_APPROVED",
+  "region_version": "REFERENCE_CENTERED_ADMISSIBLE_REGION_V1",
+  "rejected_parameter_sample_count": 9475,
+  "rejected_reason_counts": {
+    "identification_domain_insufficient": 9475
+  },
+  "representative_trajectories": [
+    {
+      "hip_delta": 0.0,
+      "invalid_reason": "",
+      "knee_delta": 0.0,
+      "label": "neutral",
+      "phase_delta": 0.0,
+      "trajectory_admissible": true
+    },
+    {
+      "hip_delta": -3.0,
+      "invalid_reason": "",
+      "knee_delta": 0.0,
+      "label": "hip_negative",
+      "phase_delta": 0.0,
+      "trajectory_admissible": true
+    },
+    {
+      "hip_delta": 0.0,
+      "invalid_reason": "",
+      "knee_delta": -3.0,
+      "label": "knee_negative",
+      "phase_delta": 0.0,
+      "trajectory_admissible": true
+    },
+    {
+      "hip_delta": 0.0,
+      "invalid_reason": "",
+      "knee_delta": 0.0,
+      "label": "positive_phase",
+      "phase_delta": 0.03,
+      "trajectory_admissible": true
+    },
+    {
+      "hip_delta": 0.0,
+      "invalid_reason": "",
+      "knee_delta": 0.0,
+      "label": "negative_phase",
+      "phase_delta": -0.03,
+      "trajectory_admissible": true
+    },
+    {
+      "hip_delta": -3.0,
+      "invalid_reason": "",
+      "knee_delta": -3.0,
+      "label": "combined_perturbation",
+      "phase_delta": 0.03,
+      "trajectory_admissible": true
+    }
+  ],
+  "rms_cartesian_envelope_width_definition": "sqrt(mean((1000*sqrt((x_max-x_min)^2+(z_max-z_min)^2))^2))",
+  "rms_cartesian_envelope_width_mm": 46.55772142864785,
+  "runtime_seconds": 484.3124052500352,
+  "trajectory_sample_count": 401,
+  "visual_envelope_is_robot_safety_boundary": false
+}

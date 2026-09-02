@@ -1,0 +1,19 @@
+{
+  "access_boundary": "external_simulation/myoleg_v3_development_truth_landscape_generation_v1/truth_access.py",
+  "development_generation_stage_oracle_reveal": false,
+  "held_out_access": "prohibited until final algorithm freeze; this API rejects all held-out IDs",
+  "landscape_oracle_access_allowed_only_for": [
+    "post-freeze personalization audit",
+    "oracle/regret evaluation under separately frozen protocol"
+  ],
+  "landscape_role": "hidden post-freeze development oracle artifact",
+  "policy_id": "V3_TRUTH_ACCESS_POLICY_V1",
+  "prohibited": [
+    "learner reads unqueried J or torque",
+    "BO reads unqueried candidate outcomes",
+    "candidate selection uses landscape rank",
+    "held-out replay/J/torque/oracle/rank"
+  ],
+  "query_access": "future model/BO may receive only candidates explicitly executed through replay_v3_subject_candidate; bulk compact arrays are not a learner interface",
+  "query_api": "external_simulation/myoleg_v3_development_truth_landscape_generation_v1/replay_api.py"
+}

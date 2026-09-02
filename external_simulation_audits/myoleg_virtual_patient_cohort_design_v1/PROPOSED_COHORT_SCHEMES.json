@@ -1,0 +1,102 @@
+{
+  "all_ranges_frozen": false,
+  "final_scheme_frozen": false,
+  "freeze_rule": "Every subject manifest, split and generated-model SHA must be frozen before any learner truth outcome is revealed.",
+  "future_size_options": [
+    {
+      "role": "small method-comparison pilot",
+      "subject_count": 18,
+      "warning": "limited split stability for 6-8 factors"
+    },
+    {
+      "role": "preferred candidate for first balanced evaluation",
+      "subject_count": 24,
+      "suggested_split": "16 development / 8 held-out subject models"
+    },
+    {
+      "role": "larger sensitivity/ablation option",
+      "subject_count": 30,
+      "suggested_split": "20 development / 10 held-out subject models"
+    }
+  ],
+  "p0_force_fpmax_identifiability": "At zero activation, F0 and fpmax multiply the same passive term. Same-group factors are mutually exclusive in primary P0 schemes.",
+  "recommended_next_evaluation_after_evidence": "Evaluate Scheme A first; do not generate it until factor ranges and group membership receive external evidence review.",
+  "sampling_candidates": [
+    "deterministic maximin Latin hypercube with preregistered seed and nominal anchor",
+    "deterministic predefined profiles for interpretable ablation",
+    "small factorial corners only for selected factors; full factorial is rejected as combinatorial"
+  ],
+  "schemes": [
+    {
+      "biarticular_underlying_actuators": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ],
+      "episode_level_nuisance": [],
+      "purpose": "first low-dimensional interpretable cohort candidate",
+      "scheme_id": "SCHEME_A_MINIMAL_INTERPRETABLE",
+      "status": "CANDIDATE_AFTER_RANGE_EVIDENCE",
+      "subject_factor_count": 6,
+      "subject_level_factors": [
+        "FEMUR_MASS_INERTIA_SCALE",
+        "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+        "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+        "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+        "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+        "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+      ]
+    },
+    {
+      "biarticular_underlying_actuators": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ],
+      "episode_level_nuisance": [],
+      "p0_identifiability_rule": "Do not include force-capacity and fpmax scales on the same actuator group as independent P0 factors.",
+      "purpose": "separate structurally verified muscle transmission families without 80 independent random multipliers",
+      "scheme_id": "SCHEME_B_MODERATE_HETEROGENEITY",
+      "status": "CANDIDATE_AFTER_RANGE_AND_GROUP_REVIEW",
+      "subject_factor_count": 8,
+      "subject_level_factors": [
+        "FEMUR_MASS_INERTIA_SCALE",
+        "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+        "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+        "HIP_ONLY_FLEXOR_PASSIVE_FP_MAX_SCALE",
+        "HIP_ONLY_EXTENSOR_PASSIVE_FP_MAX_SCALE",
+        "KNEE_ONLY_FLEXOR_PASSIVE_FP_MAX_SCALE",
+        "KNEE_ONLY_EXTENSOR_PASSIVE_FP_MAX_SCALE",
+        "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+      ]
+    },
+    {
+      "episode_level_nuisance": [
+        "LOW_BACKGROUND_ACTIVATION_STATE"
+      ],
+      "purpose": "robustness boundary only; contains Class B/D factors and is not a physiologically motivated cohort",
+      "scheme_id": "SCHEME_C_STRESS_RICH",
+      "status": "STRESS_ONLY_NOT_PRIMARY_COHORT",
+      "subject_factor_count": 8,
+      "subject_level_factors": [
+        "RIGHT_LOWER_LIMB_MASS_INERTIA_SCALE",
+        "GLOBAL_RIGHT_TARGET_MUSCLE_FORCE_SCALE",
+        "HIP_KNEE_BIARTICULAR_FORCE_SCALE",
+        "GLOBAL_RIGHT_TARGET_FP_MAX_SCALE",
+        "MUSCLE_OPERATING_RANGE_STRESS_FACTOR",
+        "MUSCLE_ACTIVATION_TIME_CONSTANT_STRESS_FACTOR",
+        "JOINT_PASSIVE_STRESS_FACTOR",
+        "TENDON_ELASTICITY_STRESS_FACTOR"
+      ]
+    }
+  ],
+  "stage_id": "MYOLEG_VIRTUAL_PATIENT_COHORT_DESIGN_V1"
+}

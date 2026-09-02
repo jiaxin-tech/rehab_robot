@@ -1,0 +1,19 @@
+item_id,category,requirement,current_evidence,classification,mandatory_for_p0,mandatory_for_full_pose,current_blocker,resolution
+S01,site authorization,site owner approval for static nonhuman procedure,no approval record,MISSING,True,True,True,obtain signed site-specific review
+S02,experiment safety,experiment_safety reviewed flag,reviewed=false,DEFINED_BUT_NOT_REVIEWED,True,True,True,review every field and set only through site approval
+S03,robot identity,model/serial/controller identity,all expected values null,MISSING,True,True,True,record and independently match live identity
+S04,tool/TCP/payload,"tool, workpiece, payload and TCP configuration",names/mass/CoG/inertia null; active HMI setup not verified,MISSING,True,True,True,freeze reviewed installed configuration
+S05,static force limits,reviewed external-force and robot/fixture margins,max_force_n and max_torque_nm null,MISSING,True,True,True,approve limits before choosing load levels
+S06,static duration,maximum PRE/LOAD/POST dwell and total duration,null/not recorded,MISSING,True,True,True,"freeze dwell, timeout and maximum session duration"
+S07,workspace/joints/collision,"workspace, soft limits and collision configuration",workspace/soft limits null; reviews false,DEFINED_BUT_NOT_REVIEWED,True,True,True,verify exact P0; additionally review positioning path for P1/P2
+S08,state freshness,"state/wrench age, skew and query failure limits",schema exists; site safety values null,DEFINED_BUT_NOT_REVIEWED,True,True,True,review static acquisition acceptance limits
+S09,operation state,stationary safe robot state,protocol requirement exists; no current episode record,DEFINED_BUT_NOT_REVIEWED,True,True,True,confirm and record on execution day
+S10,emergency response,"E-stop access, supervisor/operator roles and communications",no reviewed role/stop record,MISSING,True,True,True,freeze roles and abort authority
+S11,abort conditions,"fixture slip, overload, state/logger failure and operator concern",principle defined; thresholds/dwell/load-release sequence missing,DEFINED_BUT_NOT_REVIEWED,True,True,True,freeze static-specific abort and load-release procedure
+S12,cleanup/disconnect,"safe unload, fixture release, cleanup and disconnect",read-only disconnect helper exists; physical unload procedure unreviewed,DEFINED_BUT_NOT_REVIEWED,True,True,True,review unloading before disconnect and failure cleanup
+S13,wrench semantics,raw frame/sign/compensation interpretation,raw_wrench_frame/sign/delay null; compensation unresolved,DEFINED_BUT_NOT_REVIEWED,True,True,True,record controller compensation state; validation may resolve frame/sign
+S14,rehab frame,T_B_R / rehab axes calibration,axes null; reviewed=false,MISSING,False,True,True,calibrate and freeze transform for geometry/full task direction
+S15,P0 pose,exact existing stationary pose and its eligibility,P0 role defined; joint/TCP coordinates null,DEFINED_BUT_NOT_REVIEWED,True,True,True,freeze current pose hash and approve no-positioning procedure
+S16,P1/P2 poses,exact alternative orientations and positioning safety,coordinates null; positioning unauthorized,MISSING,False,True,True,"separate motion, path, collision and pose approval"
+S17,human safeguards,human anthropometry/subject safety configuration,no human permitted,NOT_APPLICABLE,False,False,False,do not introduce a human
+S18,rehabilitation motion,trajectory execution safety,motion prohibited in this stage,NOT_APPLICABLE,False,False,False,readiness cannot authorize trajectory motion

@@ -1,0 +1,32 @@
+{
+  "artifact_size_bytes_before_metadata_and_checksums": 98489,
+  "candidate_landscape_executed": false,
+  "cohort_directory_size_bytes": 24855469,
+  "cohort_reference_replay_total_s": 77.27275232918328,
+  "engineering_estimates": {
+    "basis": "mean per-subject frozen complete prescribed+controlled reference replay; conservative and hardware-specific",
+    "formula_for_domain_size_n": "32 * N_domain * mean_complete_reference_replay_s",
+    "full_candidate_domain_status": "NOT_FROZEN_UNTIL_MYOLEG_V2_CANDIDATE_DOMAIN_DESIGN_V1",
+    "illustrative_21025_is_frozen_myoleg_domain": false,
+    "illustrative_only_if_N_domain_21025_s": 1624659.6177210785,
+    "per_subject_1000_candidates_s": 2414.7735102869774,
+    "per_subject_100_candidates_s": 241.47735102869774,
+    "whole_32_subject_cohort_1000_candidates_s": 77272.75232918328,
+    "whole_32_subject_cohort_100_candidates_s": 7727.275232918328
+  },
+  "model_generation_s": {
+    "max": 0.07687354198424146,
+    "mean": 0.04536537243620842,
+    "median": 0.04282241649343632,
+    "min": 0.039785875007510185,
+    "total": 1.4516919179586694
+  },
+  "per_subject_reference_replay_s": {
+    "complete_mean": 2.4147735102869774,
+    "complete_median": 2.4140373125264887,
+    "controlled_mean": 2.246280274754099,
+    "prescribed_mean": 0.16849323553287832
+  },
+  "runtime_id": "MYOLEG_VIRTUAL_PATIENT_COHORT_V1_RUNTIME",
+  "subject_count": 32
+}

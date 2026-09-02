@@ -1,0 +1,153 @@
+{
+  "protocol_id": "MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_PROTOCOL_V1",
+  "stage_id": "MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_AUDIT_V1",
+  "scientific_role": "development-only design, model-semantics, and evidence audit; not a personalization experiment",
+  "frozen_before_structural_model_inventory_or_local_sensitivity_results": true,
+  "preserved_negative_results": [
+    "V3_PERSONALIZATION_NECESSITY_NOT_SUPPORTED",
+    "HETEROGENEITY_LIMITATION_DOMINANT",
+    "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE",
+    "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_LIMITED"
+  ],
+  "frozen_inputs": {
+    "prior_final_branch_sha256": "76d3878e278cd2bc79fa56a67c13a3e95142dbb165c7ee40810f197c987624c1",
+    "prior_objective_decision_sha256": "90efa25073f51fb31c682cedcd7fc69a11b68945ffecd17f4e66fb7626447798",
+    "prior_heterogeneity_decision_sha256": "0798ac84b25ba3fe6ff0f12a1f93a3d682dbf9e5bb939d6eb85f4c54a6a62e95",
+    "prior_metadata_sha256": "3e2e442095f53836697ce31cd3497bea0c1f0674af6dc51c947fad06be52859b",
+    "prior_checksums_sha256": "0559a8850f79567a9da5b6c1788a45a9f31991d713e5c46a2bc61baff7868396",
+    "cohort_v1_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "v3_candidate_manifest_sha256": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "v3_candidate_table_sha256": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774",
+    "v3_replay_api_sha256": "5e25c9c8a96e9c778de320802352691c759e04a1d5ae2dcb29d444b9f37c4674",
+    "v3_landscape_builder_sha256": "a945caf84f0024bb1c9f51943247294f2bc4aea8964986dcd75a58b4bad2dcaa",
+    "cohort_v1_builder_sha256": "f5d3c68e3898dffd0cb8f3904ae3dc9619a09940c3e0506b0ad2f86593ab50eb",
+    "myoleg_xml_sha256": "27a9bec4544acfc15fec2bda2b410820ed1cbc9fe45fcbb44cb4c2ba8de6f91e",
+    "myosuite_version": "2.12.2",
+    "mujoco_version": "3.6.0"
+  },
+  "scope_guards": {
+    "cohort_v1_modified": false,
+    "existing_32_subjects_modified": false,
+    "v3_parameterization_modified": false,
+    "v3_candidate_domain_modified": false,
+    "objective_modified": false,
+    "normalization_modified": false,
+    "fpmax_range_expanded": false,
+    "new_formal_cohort_generated": false,
+    "new_truth_landscape_generated": false,
+    "five_parameter_or_ml_training": false,
+    "bo_run": false,
+    "robot_or_hardware": false,
+    "held_out_scientific_truth": false
+  },
+  "candidate_factor_classes": [
+    "MUSCLE_OPERATING_LENGTH_AND_PASSIVE_FORCE_LENGTH_STRUCTURE",
+    "BIARTICULAR_STRUCTURAL_COUPLING",
+    "MOMENT_ARM_ATTACHMENT_AND_WRAP_GEOMETRY",
+    "SEGMENT_GEOMETRY_AND_ANTHROPOMETRY",
+    "JOINT_AND_PASSIVE_MECHANICS",
+    "TENDON_COMPLIANCE_AND_ELASTICITY",
+    "MUSCLE_GROUP_INTERNAL_HETEROGENEITY",
+    "ACTIVATION_AS_EPISODE_NUISANCE"
+  ],
+  "required_parameter_semantics": [
+    "exact XML or compiled field",
+    "MuJoCo semantic and MyoLeg usage",
+    "units and nominal value",
+    "specificity level",
+    "recompilation requirement",
+    "geometry effect",
+    "normalized-muscle-coordinate effect",
+    "knee/patella equality compatibility",
+    "truth-learner parameterization independence"
+  ],
+  "protected_fields": {
+    "actuator_lengthrange": "DO_NOT_PERTURB unless exact physiological and geometry-consistent mapping is independently established; no smoke perturbation",
+    "soft_joint_limit": "simulator artifact, never subject physiology",
+    "background_activation": "EPISODE_NUISANCE by default",
+    "single_site_geometry_move": "DO_NOT_PERTURB without coupled path rebuild and calibration"
+  },
+  "evidence_hierarchy": {
+    "E1": "direct human or experimental evidence",
+    "E2": "validated subject-specific musculoskeletal model evidence",
+    "E3": "physiologically motivated but indirect mapping",
+    "E4": "synthetic or model-stress only"
+  },
+  "evidence_record_fields": [
+    "source_id", "source", "parameter_definition", "population_or_model",
+    "reported_variability", "mapping_to_myoleg", "limitations", "evidence_level"
+  ],
+  "geometry_consistency_classes": [
+    "GEOMETRY_CONSISTENTLY_PERTURBABLE",
+    "REQUIRES_REBUILD/CALIBRATION",
+    "DO_NOT_PERTURB"
+  ],
+  "factor_taxonomy_classes": {
+    "A": "PRIMARY_STRUCTURAL_HETEROGENEITY_CANDIDATE",
+    "B": "SECONDARY_PHYSIOLOGICAL_LIKE_VARIABILITY",
+    "C": "EPISODE_NUISANCE",
+    "D": "STRESS_ONLY",
+    "E": "DO_NOT_PERTURB"
+  },
+  "mechanistic_value_rule": "A factor must have actual model semantics and a plausible configuration-dependent effect; larger perturbation producing larger torque alone is insufficient",
+  "mechanistic_nonproportionality_metrics": {
+    "proportional_fit": "perturbed response versus nominal response through origin over the frozen trajectory subset",
+    "affine_fit": "perturbed response versus nominal response with intercept",
+    "residual_trajectory_dependence": "NRMSE after proportional and affine fits",
+    "local_sensitivity_shape": "coefficient of variation of central finite-difference log sensitivity across trajectories",
+    "gradient_direction": "sign and cosine of beta-flex/beta-extend local finite differences",
+    "component_interaction": "two-way perturbation-level by trajectory residual where an existing frozen component semantic is available"
+  },
+  "mechanistic_nonproportionality_thresholds": {
+    "affine_r2_below": 0.9999,
+    "proportional_nrmse_above": 0.0001,
+    "finite_difference_log_sensitivity_cv_above": 0.01,
+    "gradient_direction_cosine_below": 0.995,
+    "gradient_sign_change_required_for_direction_evidence": true,
+    "interpretation": "thresholds classify local numerical non-proportionality only, never a population effect size or subject range"
+  },
+  "tiny_smoke_test_policy": {
+    "enabled": true,
+    "scientific_role": "LOCAL_NUMERICAL_SENSITIVITY_ONLY",
+    "candidate_selection_uses_personalization_outcome": false,
+    "maximum_factor_probes": 4,
+    "trajectory_candidate_ids": [
+      "MYOLEG_V3_K0312",
+      "MYOLEG_V3_K0000", "MYOLEG_V3_K0024", "MYOLEG_V3_K0600", "MYOLEG_V3_K0624",
+      "MYOLEG_V3_K0012", "MYOLEG_V3_K0612", "MYOLEG_V3_K0300", "MYOLEG_V3_K0324"
+    ],
+    "trajectory_selection": "reference, four corners, and four axis extrema from beta geometry only",
+    "levels": ["LOCAL_MINUS", "NOMINAL", "LOCAL_PLUS"],
+    "magnitude_rule": "dimensionless fields use plus/minus 1e-4 in their native normalized coordinate; positive scale fields use plus/minus 1e-4 in log scale; positive dimensional fields use plus/minus 1e-4 relative change; no value is a subject bound",
+    "probe_priority_order": [
+      "normalized muscle operating-range position/shape field if exact built-in-muscle semantics and safe coherent mutation are confirmed",
+      "anatomically declared antagonist or biarticular relative fpmax balance using existing muscle-specific fpmax fields",
+      "actual non-limit joint damping or stiffness field if nonzero and semantically separable from simulator limit handling",
+      "actual tendon elastic field only if present, calibrated, and independently mutable"
+    ],
+    "ineligible_probe_action": "record NOT_RUN_WITH_REASON; do not substitute a post-result factor",
+    "no_oracle": true,
+    "no_full_grid": true,
+    "no_range_inference": true
+  },
+  "scheme_ranking_criteria_in_order": [
+    "model validity", "geometry consistency", "physiological interpretability",
+    "structural non-proportionality", "evidence level", "low dimensionality", "reproducibility"
+  ],
+  "scheme_ranking_prohibited_inputs": [
+    "oracle diversity", "personalization gain", "best candidate identity", "held-out outcome"
+  ],
+  "design_readiness_rules": {
+    "MYOLEG_HETEROGENEITY_EXPANSION_DESIGN_READY": "at least one 4-8D primary scheme uses only exact, geometry-consistent fields; every primary factor has E1/E2 range evidence or a predeclared calibration route; and eligible local probes show integrity plus mechanistic non-proportionality",
+    "MYOLEG_HETEROGENEITY_EXPANSION_DESIGN_READY_WITH_EVIDENCE_GAPS": "at least one 4-8D primary scheme is field-implementable and geometry-consistent with plausible or locally demonstrated non-proportionality, but one or more population ranges or mappings remain RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+    "MYOLEG_HETEROGENEITY_EXPANSION_DESIGN_NOT_READY": "no parsimonious scheme has exact field semantics and geometry consistency, or every eligible candidate is magnitude-only/stress-only/unsafe"
+  },
+  "cohort_versioning": {
+    "new_version_required_default": true,
+    "v1_identity_permanently_preserved": "MYOLEG_VIRTUAL_PATIENT_COHORT_V1",
+    "old_v1_heldout_sufficient_for_new_space": false,
+    "new_subjects_generated_in_this_stage": false
+  },
+  "next_stage_if_ready_or_ready_with_gaps": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1",
+  "next_stage_executed": false
+}

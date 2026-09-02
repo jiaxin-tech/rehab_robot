@@ -1,0 +1,29 @@
+{
+  "branch_independence": {
+    "beta_extend": "extension interior only",
+    "beta_flex": "flexion interior only"
+  },
+  "dimension": 2,
+  "endpoint_conditions": [
+    "w(0)=0",
+    "w(1)=1",
+    "w'(0)=w'(1)=1",
+    "w''(0)=w''(1)=0"
+  ],
+  "hip_trajectory": "array-identical to frozen V2 reference for every candidate",
+  "identity": "beta_flex=beta_extend=0 returns array-identical frozen q/dq/ddq",
+  "mathematical_transformation": "w_b(s; beta_b)=s+beta_b*64*s^3*(1-s)^3; q_hip=q_hip_ref; q_knee=q_knee_ref_branch(w_b)",
+  "objective_dependency": false,
+  "parameter_order": [
+    "beta_flex",
+    "beta_extend"
+  ],
+  "parameterization_id": "V3_PARAMETERIZATION_SEMANTICS_V1",
+  "pointwise_clipping": false,
+  "sign_semantics": {
+    "negative": "delays knee progression along the measured branch relative to frozen hip/reference phase",
+    "positive": "advances knee progression along the measured branch relative to frozen hip/reference phase",
+    "zero": "identity on that branch"
+  },
+  "subject_truth_dependency": false
+}

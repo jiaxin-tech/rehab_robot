@@ -1,0 +1,38 @@
+{
+  "blocker": "S1_DEFINITION_INCOMPLETE",
+  "execution_authorized": false,
+  "factor_outcomes": [
+    "STRUCTURALLY_INFORMATIVE",
+    "MAGNITUDE_ONLY",
+    "INCONCLUSIVE",
+    "INVALID"
+  ],
+  "personalization_is_not_a_success_metric": true,
+  "required_metric_families": {
+    "configuration_dependence": [
+      "delta response range",
+      "SD",
+      "normalized variation",
+      "beta dependence"
+    ],
+    "fit_statistics": [
+      "R2",
+      "NRMSE",
+      "residual range",
+      "residual RMS"
+    ],
+    "gradient_rotation": [
+      "cosine similarity",
+      "angle change",
+      "sign change",
+      "relative component change"
+    ],
+    "proportional_and_affine": [
+      "hip torque RMS",
+      "knee torque RMS",
+      "combined diagnostic if mathematically frozen",
+      "predeclared physical component"
+    ]
+  },
+  "status": "NOT_NUMERICALLY_FROZEN"
+}

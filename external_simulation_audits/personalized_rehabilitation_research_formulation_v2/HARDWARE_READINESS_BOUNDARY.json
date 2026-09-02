@@ -1,0 +1,11 @@
+{
+  "algorithm_formulation_ready_does_not_equal_robot_execution_ready": true,
+  "algorithm_status": "FORMULATION_ONLY",
+  "base_wrench_rotation_verified": false,
+  "experiment_safety_reviewed": false,
+  "hardware_or_human_action_performed": false,
+  "human_ready": false,
+  "offline_v3_bounds_robot_approved": false,
+  "real_identification_config_reviewed": false,
+  "robot_approved": false
+}

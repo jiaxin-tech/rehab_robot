@@ -1,0 +1,17 @@
+{
+  "all_arrays_equal": true,
+  "array_key_count": 37,
+  "array_keys_equal": true,
+  "candidate_id": "MYOLEG_V3_K0312",
+  "compact_landscape_or_oracle_read": false,
+  "first_array_payload_sha256": "c000b8f8f138a93a6275ad319f8768fcd66a61884b03be5280e8c6d89fabc323",
+  "held_out_error": "held-out scientific replay is sealed",
+  "held_out_rejected_before_replay": true,
+  "held_out_test_subject_id": "MYOLEG_VP_004",
+  "pass": true,
+  "second_array_payload_sha256": "c000b8f8f138a93a6275ad319f8768fcd66a61884b03be5280e8c6d89fabc323",
+  "subject_id": "MYOLEG_VP_001",
+  "truth_field": "TAU_MY0LEG_REQUIRED_DRIVE",
+  "truth_semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1",
+  "validation_id": "V3_DETERMINISTIC_REPLAY_API_VALIDATION_V1"
+}

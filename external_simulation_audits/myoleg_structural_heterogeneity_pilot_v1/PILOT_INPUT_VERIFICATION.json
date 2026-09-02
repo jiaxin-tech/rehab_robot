@@ -1,0 +1,192 @@
+{
+  "J_or_oracle_or_rank_used_for_design_or_selection": false,
+  "authoritative_factor_ids": [
+    "S1F1_BIARTICULAR_LMAX",
+    "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+    "S1F3_HIP_MONO_ANTAGONIST_F0",
+    "S1F4_KNEE_MONO_ANTAGONIST_F0"
+  ],
+  "authoritative_factor_reconstruction": [
+    {
+      "evidence_provenance": [
+        "MuJoCo official muscle semantics",
+        "compiled MyoLeg fields",
+        "401-state moment classification"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,5]",
+        "actuator_biasprm[:,5]"
+      ],
+      "exact_members": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ],
+      "factor_id": "S1F1_BIARTICULAR_LMAX",
+      "inherited_name": "biarticular normalized-curve lmax profile",
+      "invariants": [
+        "gain/bias synchronized",
+        "lmin<lmax",
+        "range/lengthrange/geometry unchanged"
+      ],
+      "known_limitations": [
+        "physiological one-to-one mapping unavailable",
+        "population range unavailable"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "for each member i: lmax_i(z)=lmax_i0*exp(z); set gainprm[i,5]=biasprm[i,5]=lmax_i(z)",
+      "semantics": "changes MuJoCo built-in normalized lmax curve parameter; may affect active/passive curve evaluation; not optimal fiber length or tendon slack length",
+      "v1_relationship": "collectively replaces V1 common biarticular fpmax as primary structural role"
+    },
+    {
+      "evidence_provenance": [
+        "compiled transmission and 401-state torque signs",
+        "post-mechanical anatomical review"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,7]",
+        "actuator_biasprm[:,7]"
+      ],
+      "exact_members": {
+        "HAMSTRING_GROUP": [
+          "bflh_r",
+          "semimem_r",
+          "semiten_r"
+        ],
+        "RECTUS_GROUP": [
+          "recfem_r"
+        ],
+        "UNCHANGED": [
+          "grac_r",
+          "sart_r",
+          "tfl_r"
+        ]
+      },
+      "factor_id": "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+      "inherited_name": "rectus-vs-hamstring relative fpmax balance",
+      "invariants": [
+        "gain/bias synchronized",
+        "positive fpmax",
+        "family log-center balance",
+        "nonfamily unchanged"
+      ],
+      "known_limitations": [
+        "population range unavailable",
+        "fpmax is not measured tissue stiffness"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "rectus fpmax_i(z)=fpmax_i0*exp(z); hamstring fpmax_i(z)=fpmax_i0*exp(-z); synchronize gain/bias; other biarticular unchanged",
+      "semantics": "within-biarticular passive-force curve family balance; no global common scale",
+      "v1_relationship": "replaces V1 common biarticular fpmax primary role; V1 global factor removed"
+    },
+    {
+      "evidence_provenance": [
+        "compiled monoarticular transmission",
+        "401-state negative flexion-effect consistency"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,2]",
+        "actuator_biasprm[:,2]"
+      ],
+      "exact_members": [
+        "addmagDist_r",
+        "addmagIsch_r",
+        "addmagMid_r",
+        "glmax2_r",
+        "glmax3_r",
+        "glmed3_r",
+        "piri_r"
+      ],
+      "factor_id": "S1F3_HIP_MONO_ANTAGONIST_F0",
+      "inherited_name": "hip monoarticular antagonist relative F0",
+      "invariants": [
+        "gain/bias synchronized",
+        "positive F0",
+        "nonmembers unchanged"
+      ],
+      "known_limitations": [
+        "population range unavailable",
+        "glmed3_r and piri_r anatomical action is multi-action/ambiguous"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "for each included member i: F0_i(z)=F0_i0*exp(z); synchronize gain/bias; all nonmembers unchanged",
+      "semantics": "MuJoCo muscle force scale F0 multiplies the built-in muscle active-plus-passive force expression; not pure active strength",
+      "v1_relationship": "replaces V1 hip-only fpmax primary role; V1 factor secondary only"
+    },
+    {
+      "evidence_provenance": [
+        "compiled monoarticular transmission",
+        "401-state negative flexion-effect consistency"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,2]",
+        "actuator_biasprm[:,2]"
+      ],
+      "exact_members": [
+        "vasint_r",
+        "vaslat_r",
+        "vasmed_r"
+      ],
+      "factor_id": "S1F4_KNEE_MONO_ANTAGONIST_F0",
+      "inherited_name": "knee monoarticular antagonist relative F0",
+      "invariants": [
+        "gain/bias synchronized",
+        "positive F0",
+        "nonmembers unchanged"
+      ],
+      "known_limitations": [
+        "population range unavailable"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "for each included member i: F0_i(z)=F0_i0*exp(z); synchronize gain/bias; all nonmembers unchanged",
+      "semantics": "MuJoCo muscle force scale F0 multiplies the built-in muscle active-plus-passive force expression; not pure active strength",
+      "v1_relationship": "replaces V1 knee-only fpmax primary role; V1 factor secondary only"
+    }
+  ],
+  "candidate_subset_count": 13,
+  "design_artifact_count": 14,
+  "design_checksum_entry_count": 13,
+  "execution_protocol_sha256": "a92b4c95b0f76337e3405a2e36fc0a2571eabffd47bf1c925199e8231f2d9b20",
+  "expected_primary_replay_count": 117,
+  "frozen_input_sha256": {
+    "amended_s1": "3faf531f127bce1a26dd13b01dae07bc332bb107ac9d562c314f296780921763",
+    "candidate_builder": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "cohort_v1_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "design_builder": "4eefeb992dd65d7e4e45e3462fc43f975f0c1f31de7b7e989f3727b65565356e",
+    "design_checksums": "ac2fad3b2f5b5180ac9d2a138db91235aef3a373a1c591bb391bc28e09795d44",
+    "design_cohort_rules": "f866fa7668492fecf3890a40fd47e4d3f748edb6835ee4df8e41c1efa2518d07",
+    "design_configuration_gates": "7d7af49f951f7ae970d64a65f68094c921b6be16ddf2917f2aa30bcff328bd1c",
+    "design_execution_plan": "7afd5c99244bc64ffb1c4466b5c8e8834d4c8c172800c6a28f8246621941b494",
+    "design_gradient_gates": "f6508a405f59847f5105273df0a48e3e19470ca123819825a6eba8faf1394410",
+    "design_input_verification": "8a6af9380140e8b206b2fc0104f6100a8e5038a91f936f0db64b784ad9eb1bb4",
+    "design_integrity_rules": "d03acf452f34d5965b5d6bf8c2bb0c877ee63b6873c3a6155ff23721cf92a3e3",
+    "design_levels": "285d7cb108f0579774a4ce3b825de23cd6aba5987f0079315682b20ed176728d",
+    "design_metadata": "cbfc657917f67ed9885799312db717285ba95f1f5c227ee769d19e1a16376b4f",
+    "design_nonproportionality_gates": "0ce4968e1bd9d215fa008678f3c3a6e463c5575e77ea7582f7b6f9f744a09ebd",
+    "design_protocol": "b3d1f7acc427e5a592a8045ba3e0bab921df1834596d6291c5e4cb3368b69d00",
+    "design_report": "bcb5ba8c83f0c3fb1091b82770ad6d7aa5d589a9b01a85b21a020893287b3fb7",
+    "design_response_representations": "254ea17c2f05d3c2e771660f2eb49a363596a9f876a2313367735dfd159d62d3",
+    "design_subset": "d005ddc4590c4c58db81a4ee625609b0a29db02c681b67238b9790e044c658e4",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "replay_builder": "d60a9b1651b49307155b8b36bfdd881b595c604288f7c07a3237afe5f5feb32e",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_domain_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+    "v3_design_builder": "5902c24970418d45671ca307d1f403592ed8d83544391caf26476a3bc6df3eae",
+    "v3_manifest": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "v3_parameterization": "e830b5cadd6d970107e59eb9b346650af5ab254b42beecdfaf6b70a5985957ef",
+    "v3_table": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774"
+  },
+  "held_out_scientific_access_count": 0,
+  "primary_model_count": 9,
+  "scientific_replay_started": false,
+  "stage_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1",
+  "status": "PASS",
+  "verified_before_scientific_replay": true
+}

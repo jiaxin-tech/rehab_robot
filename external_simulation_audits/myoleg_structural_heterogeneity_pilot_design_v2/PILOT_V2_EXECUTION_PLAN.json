@@ -1,0 +1,31 @@
+{
+  "automatic_execution_from_design_builder": false,
+  "design_stage_only": true,
+  "expected_primary_replay_count": 117,
+  "fallback_only_replaces_failed_factor_sign_model": true,
+  "future_execution_order": [
+    "freeze code/environment/input hashes",
+    "construct nominal and eight one-factor-at-a-time primary models",
+    "run 13 geometry-frozen trajectories/model with integrity first",
+    "use at most one frozen fallback only for a failed factor-sign integrity gate",
+    "compute every preregistered representation and gate without adding variants",
+    "classify factor-sign then factor; stop without generating Cohort V2"
+  ],
+  "future_separate_invocation_required": true,
+  "held_out_access": 0,
+  "maximum_optional_fallback_model_count": 8,
+  "maximum_optional_fallback_replay_count": 104,
+  "maximum_total_replay_count_including_fallback": 221,
+  "maximum_total_unique_model_count_including_fallback": 17,
+  "model_label": "STRUCTURAL_DIAGNOSTIC_MODEL",
+  "model_structure": "ONE_FACTOR_AT_A_TIME",
+  "nominal_model_count": 1,
+  "plan_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1_EXECUTION_PLAN",
+  "primary_perturbed_model_count": 8,
+  "primary_structural_diagnostic_model_count": 9,
+  "scientific_pilot_executed": false,
+  "status": "READY_FOR_SEPARATE_FUTURE_EXECUTION",
+  "training_or_test_split_membership": "NONE_DIAGNOSTIC_MODELS_ARE_NOT_SUBJECTS",
+  "trajectories_per_model": 13,
+  "virtual_patient_label_prohibited": true
+}

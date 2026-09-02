@@ -1,0 +1,58 @@
+{
+  "cache_id": "MYOLEG_V2_ROOT_CAUSE_DEVELOPMENT_REPLAY_CACHE_V1",
+  "cache_path": "external_simulation/data/myoleg_v2_personalization_signal_root_cause_audit_v1/development_replay_subset.npz",
+  "cache_sha256": "6e74603d52b6dfd7ef6bbc3919f7de34dcbbf57cd5d73fe0404ce3205d3d7afe",
+  "candidate_ids": [
+    "MYOLEG_V2_P00512",
+    "MYOLEG_V2_P09042",
+    "MYOLEG_V2_P10437",
+    "MYOLEG_V2_P11791",
+    "MYOLEG_V2_P14287",
+    "MYOLEG_V2_P14512",
+    "MYOLEG_V2_P14987",
+    "MYOLEG_V2_P15000",
+    "MYOLEG_V2_P15011",
+    "MYOLEG_V2_P15012",
+    "MYOLEG_V2_P15013",
+    "MYOLEG_V2_P15024",
+    "MYOLEG_V2_P15037",
+    "MYOLEG_V2_P15062",
+    "MYOLEG_V2_P15737",
+    "MYOLEG_V2_P20125",
+    "MYOLEG_V2_P20812",
+    "MYOLEG_V2_P20825",
+    "MYOLEG_V2_P20850",
+    "MYOLEG_V2_P20851"
+  ],
+  "held_out_replay_api_call_count": 0,
+  "held_out_scientific_truth_access_count": 0,
+  "protocol_sha256": "2beac2ffb512783bcbe6dfcf60e8d64d9b6be8a5fe2122b8c77da876e6202bbb",
+  "replay_api_sha256": "1105247b8d553951dc3a090c499c43a9cda032cf64dd7fb4818d1b07ff736259",
+  "replay_pair_count": 120,
+  "runtime_environment": {
+    "mujoco": "3.6.0",
+    "myosuite": "2.12.2",
+    "numpy": "2.2.6",
+    "python": "3.10.19",
+    "python_executable": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python"
+  },
+  "runtime_s": 25.574349500006065,
+  "sample_count_per_pair": 401,
+  "stored_array_names": [
+    "tau_truth_nm",
+    "mass_term_nm",
+    "bias_term_nm",
+    "passive_internal_nm",
+    "actuator_internal_nm",
+    "constraint_internal_nm"
+  ],
+  "subject_ids": [
+    "MYOLEG_VP_031",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_001"
+  ],
+  "warning_count_max": 0
+}

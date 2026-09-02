@@ -1,0 +1,111 @@
+{
+  "L1_m": 0.42,
+  "L2_m": 0.3,
+  "artifact_sha256": {
+    "admissible_parameter_samples.csv": "cf71105b040092e56c581b80c97c1dc1852b75ae27ed263d0f1d1a1681ab0118",
+    "admissible_region_summary.json": "5fba24f50ef27e0e50c26a3b5b12ccf0134d6e051771670c028f35575fbfeebc",
+    "hip_corridor_vs_phase.png": "e452ad33b31e7e3d28bab5322d112228a103a6fd5cd7a519dce87f12200ef7c8",
+    "joint_corridor_by_phase.csv": "d049ebf6d5d70bfea297eb0323bfa0fe83bdbe4836aae9565c022348f3f3b539",
+    "joint_space_admissible_region.png": "7c98f21d790665fe3158e3140fad3973aa089c0652e341f9a5768c4613574571",
+    "knee_corridor_vs_phase.png": "4bdd13891c1805d8ac14343eea0a6eb784053b4b36193b47a357fa1ec4a000bc",
+    "parameter_space_admissibility.csv": "f5eddf4c3a05e9e638bf9254c9f74acf36c80420a1b1ea5f4580e5ce4721a16b",
+    "parameter_space_admissibility_slices.png": "3a8e6609ddeb4fbc464a2e1dd74169417ad89760a280de073eb8ab73c83d768e",
+    "pull_corridor_by_phase.csv": "1e89478b0bb476b19230b131c26b2afaa251dfbd078f268671a3e55bfcc8ed91",
+    "pull_deviation_vs_phase.png": "ce2fc14ca0b74e6d49cf9fa1de99b14d7203a2490b6b48eb9315347dfa0d9ce1",
+    "pull_point_admissible_corridor.png": "8fb517cf10a4055fafa06b8806a8fbd24eea832c7508512d9df33762934a8cec",
+    "rejected_parameter_samples.csv": "847a3adbf16d7f4a0de8f7ee3725d749176658d652c22ca673b402bad931b9f2",
+    "representative_trajectory_admissibility.csv": "226d0e7180455bcb5778138b17f1d412ab0eb7a07dcc46ad3f596620f98f63c1"
+  },
+  "bounds_edges_included": true,
+  "corners_included": true,
+  "created_at_utc": "2026-08-14T08:45:27.886872+00:00",
+  "created_git_commit": "115bb977f6b17693d8c653c9c7ab6eafb1286096",
+  "duration_s": 24.0,
+  "envelope_construction_method": "deterministic_full_cartesian_lattice_at_existing_frozen_minimum_trust_region_steps;phasewise_envelope_of_all_generator_samples_passing_existing_full_trajectory_gates",
+  "files": [
+    "admissible_parameter_samples.csv",
+    "admissible_region_summary.json",
+    "hip_corridor_vs_phase.png",
+    "joint_corridor_by_phase.csv",
+    "joint_space_admissible_region.png",
+    "knee_corridor_vs_phase.png",
+    "parameter_space_admissibility.csv",
+    "parameter_space_admissibility_slices.png",
+    "pull_corridor_by_phase.csv",
+    "pull_deviation_vs_phase.png",
+    "pull_point_admissible_corridor.png",
+    "rejected_parameter_samples.csv",
+    "representative_trajectory_admissibility.csv"
+  ],
+  "formal_membership_test": "alpha_bounds_plus_phasewise_joint_and_pull_corridors_plus_direct_full_trajectory_existing_generator_gates",
+  "formal_sequential_experiment_rerun": false,
+  "generator_source_path": "/Users/fengjiaxin/VScodeprojects/rehab_robot/lower_limb_sim/continuous_reference_neighborhood.py",
+  "generator_source_sha256": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+  "generator_version": "continuous_asymmetric_reference_neighborhood_v1",
+  "global_physical_model_rom": {
+    "classification": "GLOBAL_PHYSICAL_MODEL_ROM",
+    "hip_deg": [
+      0.0,
+      120.0
+    ],
+    "knee_deg": [
+      5.0,
+      145.0
+    ]
+  },
+  "grid_axis_counts": {
+    "hip_amplitude_delta_deg": 29,
+    "knee_amplitude_delta_deg": 29,
+    "knee_phase_shift": 25
+  },
+  "grid_resolution": {
+    "hip_amplitude_delta_deg": 0.25,
+    "knee_amplitude_delta_deg": 0.25,
+    "knee_phase_shift": 0.0025
+  },
+  "grid_resolution_source": "existing_frozen_minimum_trust_region_steps_read_only;trust_region_algorithm_not_modified",
+  "grid_sample_count": 21025,
+  "grid_sampling_method": "inclusive_cartesian_product_lexical_nested_order",
+  "identification_domain_artifact": "/Users/fengjiaxin/VScodeprojects/rehab_robot/lower_limb_sim/data/reference_local_active_asymmetric/state_domain_bounds.json",
+  "identification_domain_sha256": "2f94f63a24248fc19e7d040529c0f9cbb02090a5262915e0be2a90f00c81fc87",
+  "mechanical_objective_modified": false,
+  "model_reliability_rule_status": "NOT_FROZEN",
+  "neutral_included": true,
+  "offline_personalization_alpha_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "offline_region_is_real_robot_safety_region": false,
+  "optimizer_ranking_modified": false,
+  "parent_reference_id": "reference_measured_asymmetric_closed_slow",
+  "parent_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "pointwise_clipping_allowed": false,
+  "real_robot_safety_region_status": "NOT_DEFINED_NOT_APPROVED",
+  "region_classification": "OFFLINE_PERSONALIZATION_ADMISSIBLE_REGION",
+  "region_version": "REFERENCE_CENTERED_ADMISSIBLE_REGION_V1",
+  "representative_points_included": [
+    "neutral",
+    "hip_negative",
+    "knee_negative",
+    "positive_phase",
+    "negative_phase",
+    "combined_perturbation"
+  ],
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "theta_shank_definition": "q_hip - q_knee",
+  "time_scale": 1.0,
+  "trust_region_steps_modified": false,
+  "visual_envelope_is_final_membership_test": false,
+  "workspace_artifact": "/Users/fengjiaxin/VScodeprojects/rehab_robot/lower_limb_sim/formal_artifacts/rom_protocol_v2/workspace/workspace_atlas.csv",
+  "workspace_artifact_sha256": "5e532945df09127990721b16a0da0aff3048b9f0fe5e81f7edb9f67499d4d43e"
+}

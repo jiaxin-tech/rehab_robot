@@ -1,0 +1,5 @@
+factor_id,member_count,unit_z,nominal_identity_bitwise,only_declared_members_and_field_changed,gain_bias_synchronized,positive_domain,lmin_lt_lmax,single_state_forward_finite,solver_warning_count,topology_fingerprint_unchanged,scientific_trajectory_replay,J_or_oracle_read,pass
+S1F1_BIARTICULAR_LMAX,7,1e-08,True,True,True,True,True,True,0,True,False,False,True
+S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE,4,1e-08,True,True,True,True,True,True,0,True,False,False,True
+S1F3_HIP_MONO_ANTAGONIST_F0,7,1e-08,True,True,True,True,True,True,0,True,False,False,True
+S1F4_KNEE_MONO_ANTAGONIST_F0,3,1e-08,True,True,True,True,True,True,0,True,False,False,True

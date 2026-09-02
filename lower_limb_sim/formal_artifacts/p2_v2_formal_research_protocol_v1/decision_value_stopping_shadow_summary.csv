@@ -1,0 +1,4 @@
+consecutive_zero_value_candidate,evaluated_case_count,trigger_case_count,historical_trials_potentially_avoided,later_exploit_trials_in_frozen_history,later_accepted_best_changes_in_frozen_history,automatic_stop_executed,candidate_frozen,truth_feature_used,current_P2_modified
+1,4,4,25,0,0,False,False,False,False
+2,4,4,21,0,0,False,False,False,False
+3,4,4,17,0,0,False,False,False,False

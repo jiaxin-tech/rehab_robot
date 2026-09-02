@@ -1,0 +1,144 @@
+{
+  "audit_id": "MYOLEG_VIRTUAL_PATIENT_COHORT_V1_PARAMETER_SPACE_COVERAGE",
+  "convex_hull_not_used": "small split and no need to introduce SciPy/Qhull version dependence; normalized bounding-box and pairwise metrics retained",
+  "development": {
+    "central_profile_count_all_dimensions_inside_0p3_0p7": 0,
+    "centroid_radius_max": 0.9214776686116707,
+    "centroid_radius_median": 0.7067492732511214,
+    "centroid_radius_min": 0.465089877066788,
+    "count": 24,
+    "dimension_max": [
+      0.984375,
+      0.984375,
+      0.953125,
+      0.984375,
+      0.984375,
+      0.984375
+    ],
+    "dimension_mean": [
+      0.57421875,
+      0.5690104166666666,
+      0.5104166666666666,
+      0.53515625,
+      0.5364583333333334,
+      0.4388020833333333
+    ],
+    "dimension_min": [
+      0.046875,
+      0.015625,
+      0.078125,
+      0.046875,
+      0.046875,
+      0.015625
+    ],
+    "extreme_profile_count_any_dimension_outside_0p1_0p9": 17,
+    "max_pairwise_distance": 1.57526039514107,
+    "median_pairwise_distance": 0.9677414104501264,
+    "min_pairwise_distance": 0.427337322849292,
+    "normalized_bounding_box_volume": 0.676620751619339
+  },
+  "held_out": {
+    "central_profile_count_all_dimensions_inside_0p3_0p7": 0,
+    "centroid_radius_max": 0.858948757930297,
+    "centroid_radius_median": 0.7424516801318977,
+    "centroid_radius_min": 0.5479899348984432,
+    "count": 8,
+    "dimension_max": [
+      0.890625,
+      0.578125,
+      0.984375,
+      0.828125,
+      0.734375,
+      0.921875
+    ],
+    "dimension_mean": [
+      0.27734375,
+      0.29296875,
+      0.46875,
+      0.39453125,
+      0.390625,
+      0.68359375
+    ],
+    "dimension_min": [
+      0.015625,
+      0.046875,
+      0.015625,
+      0.015625,
+      0.015625,
+      0.359375
+    ],
+    "extreme_profile_count_any_dimension_outside_0p1_0p9": 8,
+    "max_pairwise_distance": 1.263597913697233,
+    "median_pairwise_distance": 0.9027377702765054,
+    "min_pairwise_distance": 0.5796011559684815,
+    "normalized_bounding_box_volume": 0.14792530238628387
+  },
+  "held_out_all_central": false,
+  "held_out_all_extreme": true,
+  "learner_performance_compared": false,
+  "overall_lhs": {
+    "all_dimensions_centered_stratified": true,
+    "all_inside_open_unit_cube": true,
+    "boundary_behavior": "centered strata; theoretical unit-cube min/max are 0.5/N and 1-0.5/N; no exact 0 or 1",
+    "dimensions": [
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 0,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 1,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 2,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 3,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 4,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      },
+      {
+        "centered_stratification_pass": true,
+        "dimension_zero_based": 5,
+        "max": 0.984375,
+        "mean": 0.5,
+        "min": 0.015625,
+        "unique_strata": 32
+      }
+    ],
+    "duplicate_row_count": 0,
+    "max_pairwise_distance": 1.6138439167094196,
+    "median_pairwise_distance": 0.9921566195903444,
+    "min_pairwise_distance": 0.427337322849292,
+    "shape": [
+      32,
+      6
+    ]
+  },
+  "sampling_freeze_manifest_sha256": "81451f87e817062e5e56cc1de13d2a71a148989db06454514818fa268300fecb",
+  "split_rule": "protocol-frozen index modulo rule; independent of torque, learner or future landscape"
+}

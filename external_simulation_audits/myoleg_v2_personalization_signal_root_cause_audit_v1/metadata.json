@@ -1,0 +1,37 @@
+{
+  "analysis_code_sha256": "e86445e7f4f1accd79d1931fc1119e5974f746a10217089ac4dc3a5a25a564ae",
+  "candidate_count": 16675,
+  "development_subject_count": 24,
+  "frozen_input_sha256": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "necessity_checksums": "0b4a449186b571b9c39207dc18cab1ec1366004821b8d9fd74e97792d87437d3",
+    "necessity_protocol": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f",
+    "truth_landscape_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "truth_landscape_protocol": "2fe115d8c34685c70672bcc6a4d9752a88dfbb2cf12fb12d60df877755b7fdcc"
+  },
+  "held_out_scientific_truth_access_count": 0,
+  "held_out_subject_count": 8,
+  "hypothesis_decisions": {
+    "H1_NORMALIZATION_CANCELLATION": "PARTIALLY_SUPPORTED",
+    "H2_WEAK_SUBJECT_TRAJECTORY_INTERACTION": "SUPPORTED",
+    "H3_RMS_OBJECTIVE_COMPRESSION": "PARTIALLY_SUPPORTED",
+    "H4_CANDIDATE_DOMAIN_MONOTONICITY": "SUPPORTED"
+  },
+  "outcome": "PERSONALIZATION_SIGNAL_ROOT_CAUSE_IDENTIFIED",
+  "protocol_sha256": "2beac2ffb512783bcbe6dfcf60e8d64d9b6be8a5fe2122b8c77da876e6202bbb",
+  "replay_pair_count": 120,
+  "replay_runtime_s": 1.048416042001918,
+  "runtime_s": 6.10278091696091,
+  "scope": {
+    "bo_run": false,
+    "candidate_or_generator_modified": false,
+    "cohort_or_ranges_modified": false,
+    "models_trained": false,
+    "normalization_modified": false,
+    "objective_modified": false,
+    "offline_only": true,
+    "robot_or_hardware": false
+  },
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_SIGNAL_ROOT_CAUSE_AUDIT_V1"
+}

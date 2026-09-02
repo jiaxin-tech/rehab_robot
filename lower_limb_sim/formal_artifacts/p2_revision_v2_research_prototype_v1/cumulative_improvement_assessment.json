@@ -1,0 +1,18 @@
+{
+  "analysis_id": "KNEE_STIFF_CUMULATIVE_IMPROVEMENT_AUDIT_V1",
+  "subject_id": "knee_stiff",
+  "path_definition": "existing_generator_knee_direction_from_0_to_minus5_in_existing_1deg_trust_steps",
+  "single_step_count": 5,
+  "all_single_steps_below_existing_0p005": true,
+  "maximum_single_step_improvement": 0.004467187930999983,
+  "final_five_step_cumulative_improvement": 0.02204223216900003,
+  "cumulative_improvement_crosses_existing_0p005": true,
+  "first_step_count_crossing_existing_0p005": 2,
+  "first_cumulative_improvement_crossing_existing_0p005": 0.008905285109000016,
+  "cumulative_decision_rule_research_design_required": true,
+  "assessment": "CUMULATIVE_RULE_RESEARCH_CANDIDATE_REQUIRED_TO_ADDRESS_OBSERVED_KNEE_GAP_NOT_FORMAL_POLICY_APPROVAL",
+  "cumulative_rule_enabled": false,
+  "objective_modified": false,
+  "truth_used_to_modify_policy": false,
+  "formal_policy_approval": false
+}

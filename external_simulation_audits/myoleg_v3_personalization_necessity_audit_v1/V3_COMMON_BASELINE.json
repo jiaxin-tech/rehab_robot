@@ -1,0 +1,39 @@
+{
+  "REFERENCE": {
+    "beta_extend": 0.0,
+    "beta_flex": 0.0,
+    "candidate_id": "MYOLEG_V3_K0312",
+    "candidate_index": 312,
+    "j": 1.0
+  },
+  "V3_DEV_MEAN_OPTIMAL_COMMON": {
+    "beta_extend": -0.03,
+    "beta_flex": 0.03,
+    "candidate_id": "MYOLEG_V3_K0600",
+    "candidate_index": 600,
+    "mean_j": 0.9945375638571936,
+    "median_j": 0.9945448934788146,
+    "worst_case_j": 0.9948577359760704
+  },
+  "V3_DEV_WORSTCASE_OPTIMAL_COMMON": {
+    "beta_extend": -0.03,
+    "beta_flex": 0.03,
+    "candidate_id": "MYOLEG_V3_K0600",
+    "candidate_index": 600,
+    "mean_j": 0.9945375638571936,
+    "median_j": 0.9945448934788146,
+    "worst_case_j": 0.9948577359760704
+  },
+  "personalization_gap_bootstrap": {
+    "mean_95_percentile_ci": [
+      0.0,
+      0.0
+    ],
+    "median_95_percentile_ci": [
+      0.0,
+      0.0
+    ],
+    "resamples": 10000,
+    "seed": 20260830
+  }
+}

@@ -1,0 +1,263 @@
+{
+  "evidence_hierarchy": {
+    "E1": "DIRECT",
+    "E2": "MODEL_DERIVED",
+    "E3": "INDIRECT",
+    "E4": "STRESS_ONLY_OR_SYNTHETIC_SENSITIVITY"
+  },
+  "factors": [
+    {
+      "confidence": "MODERATE_FOR_MASS_LOW_FOR_COUPLED_INERTIA",
+      "conservative": [
+        0.88,
+        1.0,
+        1.12
+      ],
+      "derivation": "primary +/-12% rounds the larger sex-specific thigh-mass SD/mean (11.7%); extended doubles that fractional SD",
+      "evidence_class": "E2",
+      "extended": [
+        0.76,
+        1.0,
+        1.24
+      ],
+      "factor_id": "FEMUR_MASS_INERTIA_SCALE",
+      "factor_type": "ANTHROPOMETRY",
+      "mapping_assumptions": [
+        "thigh mass maps to femur_r body mass",
+        "body inertia receives the same scalar while body_ipos/COM and geometry remain fixed",
+        "INERTIA_SCALING_IS_MODELING_APPROXIMATION"
+      ],
+      "nominal": 1.0,
+      "primary_suitability": "PRIMARY_ANTHROPOMETRIC_APPROXIMATION",
+      "sources": [
+        "KUDZIA2022",
+        "DURKIN2003",
+        "RAJAGOPAL2016"
+      ],
+      "targets": [
+        "femur_r"
+      ]
+    },
+    {
+      "confidence": "MODERATE_FOR_SHANK_MASS_LOW_FOR_PATELLA_AND_COUPLED_INERTIA",
+      "conservative": [
+        0.87,
+        1.0,
+        1.13
+      ],
+      "derivation": "primary +/-13% rounds the larger sex-specific shank-mass SD/mean (12.8%); extended doubles that fractional SD",
+      "evidence_class": "E2",
+      "extended": [
+        0.74,
+        1.0,
+        1.26
+      ],
+      "factor_id": "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+      "factor_type": "ANTHROPOMETRY",
+      "mapping_assumptions": [
+        "shank mass maps to tibia_r and the mechanically coupled patella_r",
+        "patella was not separately estimated in the source study",
+        "body inertia receives the same scalar while body_ipos/COM and geometry remain fixed",
+        "INERTIA_SCALING_IS_MODELING_APPROXIMATION"
+      ],
+      "nominal": 1.0,
+      "primary_suitability": "PRIMARY_ANTHROPOMETRIC_APPROXIMATION",
+      "sources": [
+        "KUDZIA2022",
+        "DURKIN2003",
+        "RAJAGOPAL2016"
+      ],
+      "targets": [
+        "tibia_r",
+        "patella_r"
+      ]
+    },
+    {
+      "confidence": "LOW_TO_MODERATE_FOR_MASS_LOW_FOR_COUPLED_INERTIA",
+      "conservative": [
+        0.82,
+        1.0,
+        1.18
+      ],
+      "derivation": "primary +/-18% rounds the reported foot-mass SD/mean (18.2%); extended doubles that fractional SD",
+      "evidence_class": "E2",
+      "extended": [
+        0.64,
+        1.0,
+        1.36
+      ],
+      "factor_id": "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+      "factor_type": "ANTHROPOMETRY",
+      "mapping_assumptions": [
+        "whole-foot mass maps to the talus/calcaneus/toes model complex",
+        "small-segment scan estimates have greater measurement variability",
+        "body inertia receives the same scalar while body_ipos/COM and geometry remain fixed",
+        "INERTIA_SCALING_IS_MODELING_APPROXIMATION"
+      ],
+      "nominal": 1.0,
+      "primary_suitability": "PRIMARY_ANTHROPOMETRIC_APPROXIMATION",
+      "sources": [
+        "KUDZIA2022",
+        "DURKIN2003",
+        "RAJAGOPAL2016"
+      ],
+      "targets": [
+        "talus_r",
+        "calcn_r",
+        "toes_r"
+      ]
+    },
+    {
+      "confidence": "LOW_SYNTHETIC",
+      "conservative": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "derivation": "primary retains the frozen +/-5% sensitivity amplitude; extended is a two-amplitude stress interval",
+      "evidence_class": "E4",
+      "extended": [
+        0.9,
+        1.0,
+        1.1
+      ],
+      "factor_id": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "factor_type": "PASSIVE_FPMAX",
+      "mapping_assumptions": [
+        "fpmax is a MuJoCo normalized passive-FLV curve parameter, not measured human passive stiffness",
+        "no population-level conversion is available"
+      ],
+      "nominal": 1.0,
+      "primary_suitability": "PRIMARY_SYNTHETIC_HETEROGENEITY_ONLY",
+      "sources": [
+        "MUJOCO_MUSCLE_36",
+        "SILDER2007",
+        "UHLRICH2022_CALIBRATION"
+      ],
+      "structural_group": "HIP_ONLY"
+    },
+    {
+      "confidence": "LOW_SYNTHETIC",
+      "conservative": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "derivation": "primary retains the frozen +/-5% sensitivity amplitude; extended is a two-amplitude stress interval",
+      "evidence_class": "E4",
+      "extended": [
+        0.9,
+        1.0,
+        1.1
+      ],
+      "factor_id": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "factor_type": "PASSIVE_FPMAX",
+      "mapping_assumptions": [
+        "fpmax is a MuJoCo normalized passive-FLV curve parameter, not measured human passive stiffness",
+        "no population-level conversion is available"
+      ],
+      "nominal": 1.0,
+      "primary_suitability": "PRIMARY_SYNTHETIC_HETEROGENEITY_ONLY",
+      "sources": [
+        "MUJOCO_MUSCLE_36",
+        "SILDER2007",
+        "UHLRICH2022_CALIBRATION"
+      ],
+      "structural_group": "KNEE_ONLY"
+    },
+    {
+      "confidence": "LOW_SYNTHETIC",
+      "conservative": [
+        0.95,
+        1.0,
+        1.05
+      ],
+      "derivation": "same common +/-5% base interval as other passive groups; no evidence supports a distinct relative fpmax range",
+      "evidence_class": "E4",
+      "extended": [
+        0.9,
+        1.0,
+        1.1
+      ],
+      "factor_id": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "factor_type": "PASSIVE_FPMAX",
+      "mapping_assumptions": [
+        "the frozen transmission-derived group is used unchanged",
+        "passive biarticular behavior is evidenced, but not a population-to-MuJoCo-fpmax mapping"
+      ],
+      "nominal": 1.0,
+      "primary_suitability": "PRIMARY_SYNTHETIC_HETEROGENEITY_ONLY",
+      "sources": [
+        "MUJOCO_MUSCLE_36",
+        "SILDER2007",
+        "WINTER2010",
+        "MAGNUSSON2000",
+        "UHLRICH2022_CALIBRATION"
+      ],
+      "structural_group": "HIP_KNEE_BIARTICULAR"
+    }
+  ],
+  "frozen_before_replay": true,
+  "integrity_thresholds": {
+    "algebraic_residual_max_nm": 1e-08,
+    "native_knee_max_deg": 120.0,
+    "native_knee_min_deg": 0.0,
+    "peak_force_ratio_vs_nominal_max": 2.0,
+    "source_equality_residual_max": 0.001,
+    "tracking_q_max_abs_deg": 1.0
+  },
+  "interaction_profiles": {
+    "ALL_CONSERVATIVE_HIGH": {
+      "FEMUR_MASS_INERTIA_SCALE": 1.12,
+      "FOOT_COMPLEX_MASS_INERTIA_SCALE": 1.18,
+      "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 1.05,
+      "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "TIBIA_PATELLA_MASS_INERTIA_SCALE": 1.13
+    },
+    "ALL_CONSERVATIVE_LOW": {
+      "FEMUR_MASS_INERTIA_SCALE": 0.88,
+      "FOOT_COMPLEX_MASS_INERTIA_SCALE": 0.82,
+      "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 0.95,
+      "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 0.95,
+      "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 0.95,
+      "TIBIA_PATELLA_MASS_INERTIA_SCALE": 0.87
+    },
+    "HIGH_MASS_HIGH_PASSIVE": {
+      "FEMUR_MASS_INERTIA_SCALE": 1.12,
+      "FOOT_COMPLEX_MASS_INERTIA_SCALE": 1.18,
+      "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 1.05,
+      "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "TIBIA_PATELLA_MASS_INERTIA_SCALE": 1.13
+    },
+    "LOW_MASS_HIGH_PASSIVE": {
+      "FEMUR_MASS_INERTIA_SCALE": 0.88,
+      "FOOT_COMPLEX_MASS_INERTIA_SCALE": 0.82,
+      "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 1.05,
+      "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "TIBIA_PATELLA_MASS_INERTIA_SCALE": 0.87
+    },
+    "REPRESENTATIVE_MIXED": {
+      "FEMUR_MASS_INERTIA_SCALE": 1.12,
+      "FOOT_COMPLEX_MASS_INERTIA_SCALE": 1.0,
+      "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE": 1.0,
+      "HIP_ONLY_PASSIVE_FP_MAX_SCALE": 1.05,
+      "KNEE_ONLY_PASSIVE_FP_MAX_SCALE": 0.95,
+      "TIBIA_PATELLA_MASS_INERTIA_SCALE": 0.87
+    }
+  },
+  "p0_semantics": {
+    "condition": "P0_ZERO_MINIMUM_CONTROL_MUSCULOSKELETAL",
+    "f0_factor_present": false,
+    "force_fpmax_indistinguishable": true,
+    "rule": "Do not add F0 as an independent P0 dimension; retain frozen fpmax groups."
+  },
+  "proposal_content_sha256": "fc826049859960654d593f7ce1c2096c3df563f92915c07758a8ea84645e37de",
+  "range_selection_used_learner_or_landscape_outcome": false,
+  "range_selection_used_mechanical_objective": false,
+  "scheme_id": "SCHEME_A_MINIMAL_INTERPRETABLE",
+  "scheme_source_sha256": "a460befdbbfa7dc7f54078673067843467740ed6ecbf7c4cd5cee533e6269bff",
+  "stage_id": "MYOLEG_COHORT_PARAMETER_RANGE_EVIDENCE_V1"
+}

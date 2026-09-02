@@ -1,0 +1,165 @@
+{
+  "generated_at_utc": "2026-08-13T15:05:46.299475+00:00",
+  "artifact_status": "offline_generator_verification_only",
+  "generator_version": "continuous_asymmetric_reference_neighborhood_v1",
+  "parent_reference_id": "reference_measured_asymmetric_closed_slow",
+  "parent_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "parent_sha_verified_before_generation": true,
+  "generator_git_commit": "115bb977f6b17693d8c653c9c7ab6eafb1286096",
+  "generator_source_sha256": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+  "domain_bounds_source": "/Users/fengjiaxin/VScodeprojects/rehab_robot/lower_limb_sim/data/reference_local_active_asymmetric/state_domain_bounds.json",
+  "domain_bounds_sha256": "2f94f63a24248fc19e7d040529c0f9cbb02090a5262915e0be2a90f00c81fc87",
+  "offline_personalization_search_bounds": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      2.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.03
+    ]
+  },
+  "time_scale": 1.0,
+  "duration_optimization_enabled": false,
+  "grid_axes": {
+    "hip_amplitude_delta_deg": [
+      -5.0,
+      -2.5,
+      0.0
+    ],
+    "knee_amplitude_delta_deg": [
+      -5.0,
+      -2.5,
+      0.0
+    ],
+    "knee_phase_shift": [
+      -0.03,
+      0.0,
+      0.03
+    ]
+  },
+  "grid_sample_count": 27,
+  "grid_feasible_count": 27,
+  "representative_points": {
+    "neutral": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "hip_minus_3deg": [
+      -3.0,
+      0.0,
+      0.0
+    ],
+    "hip_minus_5deg": [
+      -5.0,
+      0.0,
+      0.0
+    ],
+    "knee_minus_3deg": [
+      0.0,
+      -3.0,
+      0.0
+    ],
+    "knee_minus_5deg": [
+      0.0,
+      -5.0,
+      0.0
+    ],
+    "phase_plus_3pct": [
+      0.0,
+      0.0,
+      0.03
+    ],
+    "phase_minus_3pct": [
+      0.0,
+      0.0,
+      -0.03
+    ]
+  },
+  "neutral_generator_sha": "35e053273c6f22ce3c6016889e9867ebf5a0d1f8c496c1aed8b10e88a81559d8",
+  "neutral_reference_max_abs_state_error": 0.0,
+  "neutral_exact_numeric_state_copy": true,
+  "trajectory_sha256_definition": "sha256_of_utf8_canonical_csv_selected_trajectory_columns_float17g_lf",
+  "trajectory_sha256_columns": [
+    "time_s",
+    "cycle_phase",
+    "segment_phase",
+    "global_phase",
+    "q_hip_rad",
+    "q_knee_rad",
+    "dq_hip_rad_s",
+    "dq_knee_rad_s",
+    "ddq_hip_rad_s2",
+    "ddq_knee_rad_s2",
+    "theta_shank_rad",
+    "x_knee_m",
+    "z_knee_m",
+    "x_pull_m",
+    "z_pull_m"
+  ],
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "theta_shank_definition": "q_hip - q_knee",
+  "continuity_audit_neutral": {
+    "continuity_order": 2,
+    "position_continuity_warning_count": 0,
+    "velocity_continuity_warning_count": 0,
+    "acceleration_continuity_warning_count": 0,
+    "maximum_position_jump_rad": 0.0,
+    "maximum_velocity_jump_rad_s": 0.0,
+    "maximum_acceleration_jump_rad_s2": 0.0,
+    "position_tolerance_rad": 1e-10,
+    "velocity_tolerance_rad_s": 1e-10,
+    "acceleration_tolerance_rad_s2": 1e-09,
+    "internal_representation": "periodic_cubic_B_spline_composed_with_C2_polynomials",
+    "passed": true
+  },
+  "asymmetry_audit_neutral": {
+    "measured_extension_is_reversed_flexion": false,
+    "comparison_only_reverses_extension_time_axis": true,
+    "parent_hip_flexion_extension_asymmetry_rmse_deg": 19.780881694104384,
+    "parent_knee_flexion_extension_asymmetry_rmse_deg": 20.118644153149422,
+    "parent_pull_path_asymmetry_rmse_mm": 140.0115702904004,
+    "generated_hip_flexion_extension_asymmetry_rmse_deg": 19.780881694104384,
+    "generated_knee_flexion_extension_asymmetry_rmse_deg": 20.118644153149422,
+    "generated_pull_path_asymmetry_rmse_mm": 140.0115702904004,
+    "hip_asymmetry_retention_ratio": 1.0,
+    "knee_asymmetry_retention_ratio": 1.0,
+    "pull_asymmetry_retention_ratio": 1.0,
+    "minimum_asymmetry_retention_ratio": 0.8,
+    "asymmetry_valid": true
+  },
+  "measured_extension_is_reversed_flexion": false,
+  "optimizer_implemented": false,
+  "robot_connection_performed": false,
+  "robot_motion_authorized": false,
+  "hardware_safety_thresholds_modified": false,
+  "files": [
+    "candidate_family_hip.png",
+    "candidate_family_knee.png",
+    "candidate_family_phase.png",
+    "candidate_pull_paths.png",
+    "continuous_candidate_parameter_space.csv",
+    "representative_regression_points.csv"
+  ],
+  "artifact_sha256": {
+    "candidate_family_hip.png": "ce0198916050769cfec39c91f83ae3c2646d912e848ce6752d24ccd4a7659c28",
+    "candidate_family_knee.png": "85bd03cf0b9e1565e01d8f48edbda4bdcaadf3aeddf011b517af098cf9d770dd",
+    "candidate_family_phase.png": "ef16a35b3b90640ff6a6edf9f2205a0d4016b70b9a4299baaf5f6ba4ca26dfa8",
+    "candidate_pull_paths.png": "9425cbbf47a1f6a7ff1e896a0e92ec3fbc3bc281b9976e23a25a0c5bd8f9bdfa",
+    "continuous_candidate_parameter_space.csv": "56a94b5911c7de6f681a9d389a5abc151a173e626bfdce381b2f1f3d103244d0",
+    "representative_regression_points.csv": "90536d7cf035b0c81c4401cfe564f53d38b1dd1943bd8a38f1ed9488581a00fe"
+  }
+}

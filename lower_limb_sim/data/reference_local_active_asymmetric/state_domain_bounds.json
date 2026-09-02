@@ -1,0 +1,40 @@
+{
+  "generated_at_utc": "2026-08-11T14:59:01.196911+00:00",
+  "git_commit": "be04568877eceade1ebbd47bc9aa799574cd715b",
+  "software_version_or_git_commit": "be04568877eceade1ebbd47bc9aa799574cd715b",
+  "workspace_dirty_at_generation": true,
+  "experiment_model_version": "lower_limb_sim_reference_local_active_asymmetric_v1",
+  "model_configuration_id": "lower_limb_sim_reference_local_active_asymmetric_v1",
+  "split_definition_id": "active_asymmetric_reference_local_split_v1",
+  "active_reference_identifier": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "random_seed": 20260811,
+  "domain_model": "axis_aligned_6d_active_asymmetric_reference_local_train_only",
+  "bounds": {
+    "columns": [
+      "q_hip_est_rad",
+      "q_knee_est_rad",
+      "dq_hip_est_rad_s",
+      "dq_knee_est_rad_s",
+      "ddq_hip_est_rad_s2",
+      "ddq_knee_est_rad_s2"
+    ],
+    "lower": [
+      0.5045625144728696,
+      0.31972891177607166,
+      -0.7736616097823219,
+      -1.052961490765051,
+      -1.106068215120056,
+      -1.4759222889070438
+    ],
+    "upper": [
+      1.9552127490384106,
+      2.177937097274948,
+      0.5168080575096341,
+      0.8076815224067472,
+      1.266615376716505,
+      1.5722823662618417
+    ],
+    "valid_training_samples": 2406
+  }
+}

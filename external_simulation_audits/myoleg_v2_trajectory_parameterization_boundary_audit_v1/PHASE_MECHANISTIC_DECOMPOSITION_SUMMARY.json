@@ -1,0 +1,21 @@
+{
+  "component_extreme_deltas": {
+    "hip_bias_gravity_high_minus_low_rms_nm": 0.026055581918058124,
+    "hip_constraint_high_minus_low_rms_nm": 0.0,
+    "hip_mass_high_minus_low_rms_nm": -0.011092174906105381,
+    "hip_passive_high_minus_low_rms_nm": 0.0,
+    "hip_total_tau_high_minus_low_rms_nm": 0.023320179595721413,
+    "hip_zero_control_actuator_high_minus_low_rms_nm": -0.017692905487017185,
+    "knee_bias_gravity_high_minus_low_rms_nm": 0.022803543335005116,
+    "knee_constraint_high_minus_low_rms_nm": -6.126481312374358e-06,
+    "knee_mass_high_minus_low_rms_nm": -0.004210532316062061,
+    "knee_passive_high_minus_low_rms_nm": 0.003447136414783336,
+    "knee_total_tau_high_minus_low_rms_nm": 0.023380456028860408,
+    "knee_zero_control_actuator_high_minus_low_rms_nm": -0.0021979761494739236
+  },
+  "held_out_replay_pair_count": 0,
+  "phase_value_count": 5,
+  "replay_pair_count_used": 30,
+  "row_count": 60,
+  "subject_count": 6
+}

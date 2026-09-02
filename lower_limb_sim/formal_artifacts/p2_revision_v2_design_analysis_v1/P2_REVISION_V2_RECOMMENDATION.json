@@ -1,0 +1,24 @@
+{
+  "local_uncertainty_next_version": "PROMISING_AS_AN_ARCHITECTURE;P95_RETROSPECTIVE_CANDIDATE_REQUIRES_INDEPENDENT_DESIGNATED_LOCAL_VALIDATION",
+  "local_P95_change_in_missed_candidates_vs_G0": -4,
+  "local_P95_change_in_false_candidates_vs_G0": 0,
+  "decision_value_aware_exploration_next_version": "PROMISING_AS_RESEARCH_CANDIDATE_NO_STOP_RULE_FROZEN",
+  "S1_historical_trials_avoided": 25,
+  "S1_later_exploits_in_frozen_history": 0,
+  "objective_change_needed": false,
+  "objective_reason": "retains_subject_discrimination_and_is_frozen;boundary_interpretation_not_an_authorization_to_change_formula",
+  "generator_direction_expansion_needed": false,
+  "generator_reason": "observed_truth_optima_are_already_inside_current_space;expansion_would_extend_boundary_chasing_without_scientific_review",
+  "meaningful_subject_gap_count": 1,
+  "minimum_revision_set": [
+    "add_a_reviewed_local_decision_uncertainty_provider_but_keep_current_G0_default_until_frozen",
+    "add_separate_MODEL_VALUE_SUPPORT_VALUE_DECISION_VALUE_observability",
+    "add_a_disabled_decision_value_stopping_candidate_with_audit_output",
+    "retain_all_frozen_objective_model_generator_reference_ROM_tolerance_and_support_gates"
+  ],
+  "implementation_status": "P2_V2_RESEARCH_PROTOTYPE_WORTH_IMPLEMENTING_AFTER_DESIGN_FREEZE",
+  "design_status": "REVISION_DESIGN_NOT_FROZEN",
+  "offline_method_status": "OFFLINE_METHOD_REQUIRES_REVISION",
+  "formal_personalization_executed": false,
+  "current_P2_modified": false
+}

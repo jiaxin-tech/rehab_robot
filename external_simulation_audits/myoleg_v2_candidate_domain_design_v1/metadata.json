@@ -1,0 +1,54 @@
+{
+  "admissible_candidate_count": 16675,
+  "all_phase_pass": true,
+  "all_smoke_pass": true,
+  "bo": false,
+  "boundary_row_count": 5940,
+  "candidate_manifest_sha256": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+  "evidence_level": "OFFLINE_SIMULATOR_DOMAIN_DESIGN_AND_SPARSE_PRESCRIBED_REPLAY",
+  "five_parameter_fit": false,
+  "full_truth_landscape_generated": false,
+  "input_sha256_after": {
+    "base_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "sampling_manifest": "81451f87e817062e5e56cc1de13d2a71a148989db06454514818fa268300fecb",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "input_sha256_before": {
+    "base_model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "sampling_manifest": "81451f87e817062e5e56cc1de13d2a71a148989db06454514818fa268300fecb",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "nn_or_pinn": false,
+  "original_proposal_count": 21025,
+  "outcome": "MYOLEG_V2_CANDIDATE_DOMAIN_VALID_WITH_LIMITATIONS",
+  "protocol_sha256": "e5e973c84c59909f3307591b87b0597fb826a9b96f98118e1e306c224a38a40e",
+  "robot_or_hardware": false,
+  "runtime_environment": {
+    "frozen_expected": {
+      "mujoco": "3.6.0",
+      "myosuite": "2.12.2",
+      "numpy": "2.2.6",
+      "python": "3.10.19",
+      "scipy": "1.15.3"
+    },
+    "frozen_match": true,
+    "mujoco": "3.6.0",
+    "myosuite": "2.12.2",
+    "numpy": "2.2.6",
+    "platform": "macOS-26.4.1-arm64-arm-64bit",
+    "python": "3.10.19",
+    "python_executable": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python",
+    "scipy": "1.15.3"
+  },
+  "runtime_s": 56.205654708028305,
+  "smoke_replay_count": 210,
+  "stage_id": "MYOLEG_V2_CANDIDATE_DOMAIN_DESIGN_V1"
+}

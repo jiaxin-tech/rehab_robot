@@ -1,0 +1,111 @@
+{
+  "P2_V1_modified": false,
+  "ROM_modified": false,
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "adaptive_rule": {
+    "direction_consistency": "all finite per-grid-step predicted objective increments from the current endpoint are strictly negative on one coordinate and one signed direction",
+    "direction_consistency_numeric_threshold": 0.0,
+    "direction_gate": "deltaJ_pred + independent_scale_P95[horizon] < 0",
+    "escalate_only_if_at_least_one_nondecision-valid_direction_is_consistent": true,
+    "escalate_only_if_no_shorter_endpoint_passes": true,
+    "horizon_evaluation_order": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "magnitude_gate": "predicted_endpoint_improvement > 0.005",
+    "new_distance_definition": false,
+    "new_threshold_frozen": false,
+    "select_first_horizon_with_any_eligible_endpoint": true,
+    "start_horizon_steps": 1,
+    "truth_used_for_horizon_selection": false,
+    "within_horizon_selection": "lowest_J_pred_then_trajectory_id_among_eligible_endpoints"
+  },
+  "checkpoint_commit": "5e8cea91d056c27605d78515b170c0ad02cbc7a2",
+  "comparators": [
+    {
+      "decision_horizon": "FIXED_1",
+      "prototype_variant_id": "H1_SINGLE_STEP_ONLY",
+      "source": "FROZEN_PRIOR_MULTI_STEP_ARTIFACT"
+    },
+    {
+      "decision_horizon": "FIXED_5",
+      "prototype_variant_id": "H2_FIXED_BUNDLE_5",
+      "source": "FROZEN_PRIOR_MULTI_STEP_ARTIFACT"
+    },
+    {
+      "decision_horizon": "ADAPTIVE_1_2_3_5",
+      "prototype_variant_id": "H3_ADAPTIVE_HORIZON",
+      "source": "THIS_DEFAULT_OFF_SHADOW"
+    }
+  ],
+  "data_roles": {
+    "development": "ORIGINAL_9_PLUS_POST_REJECTION_DEVELOPMENT_6_SHADOW_ONLY",
+    "heldout_final_test": "NOT_READ",
+    "independent_calibration": "RESIDUAL_SCALE_ONLY",
+    "prior_framework_artifacts": "FROZEN_H1_H2_COMPARATORS_ONLY",
+    "prospective": "NOT_RUN"
+  },
+  "default_enabled": false,
+  "endpoint_execution": {
+    "authorization_invalidated_after_execution": true,
+    "authorization_scope": "SELECTED_DIRECT_ENDPOINT_ONLY",
+    "intermediate_trajectories_executed": false,
+    "latent_nodes_checked_with_existing_nondecision_gates": true,
+    "model_refit_after_endpoint_execution": true,
+    "whole_map_recomputed_after_endpoint_execution": true
+  },
+  "evaluation_questions_frozen_before_truth": {
+    "approaches_bundle_5_performance_if": [
+      "small_step_recovery_equals_H2",
+      "mean_final_J_not_worse_than_H2_by_0.005",
+      "mean_global_regret_not_worse_than_H2_by_0.005"
+    ],
+    "reduces_boundary_collapse_if": [
+      "boundary_saturated_case_count < H2",
+      "or unique_final_alpha_count > H2"
+    ],
+    "reduces_bundle_5_trial_cost_if": "total_trials < H2_total_trials",
+    "results_may_modify_these_criteria": false
+  },
+  "evidence_level": "OFFLINE_ONLY",
+  "five_parameter_model_modified": false,
+  "generator_modified": false,
+  "human_ready": "NOT_HUMAN_READY",
+  "manifest_id": "P2_ADAPTIVE_HORIZON_DECISION_PROTOTYPE_MANIFEST_V1",
+  "model_support_gate_percent": 90.0,
+  "objective_equivalence_tolerance": 0.005,
+  "objective_modified": false,
+  "prior_framework_manifest_sha256": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+  "protected_source_sha256": {
+    "P2_V1_core": "522a1c73ea01f8269a54443964be9eb0df1c852ab3e82408360672ceed16b685",
+    "active_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "adaptive_core": "5c2da24cfd03220a55bd734f3d7d173c8410303159ab03599d6b7ff0312d5ac1",
+    "adaptive_runner": "7fdc0bdaa18ed2244349b36225d39e42f3769bef8a95c559d9bb461890db4c83",
+    "five_parameter_estimator": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "formal_protocol": "73407c404a3d6a77c4d290c06f1d23d9d02074761ffe5cfc641aa6d2e05c0821",
+    "generator": "01a57d8542e310dccf064df8aa7dc319ec6f1391b3f0fc026742e543bb4690a1",
+    "mechanical_objective": "e20a391ecb8362346ed742a01593aa7a58f41ec2493b8c5defcbf385b3e18d67",
+    "prior_framework_artifact:MANIFEST.json": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+    "prior_framework_artifact:framework_case_summary.csv": "e55e7b82174765db99d16468db89396d92ddeec0180ad512da1704aa9ca2f676",
+    "prior_framework_artifact:framework_trial_history.csv": "c84e0f5ea265060aabdf3fc8fa9b9662bcb866ab01bc55b2237acbe665c0b615",
+    "prior_framework_artifact:small_step_recovery.csv": "4ec4dd60f3ed37d2615475ce67b157b9f3d9d4db39d684ae96f6c19c4a28de61",
+    "prior_framework_artifact:subject_specificity_analysis.csv": "eb58276761df0f34ec3e9c3a7928243da2e0d392222299bc573d89a58b023596",
+    "prior_framework_manifest": "a640f7c897291bf044f2f67dd41c84af87cd867be8140030cc4304a4b57d5731",
+    "tree:collection": "33d8a91b3a26f20fe8b98972247a816d9af4357d8f8a190de2fb388e641c7de1",
+    "tree:control": "106a6ac2ddbdbd585c6acfe12ff8d2ca07573f37c3ded37baf7c43f922b55e76",
+    "tree:hardware": "a29400ba6f1b5d0c9ab1b140310f7fbe73db653b67e95ef39b26518ca1d2e214",
+    "tree:safety": "d6e6a6082f61632741e7de7c866454b8ce5a917f59ed895f326888b564dd6bd1"
+  },
+  "prototype_id": "P2_ADAPTIVE_HORIZON_DECISION_PROTOTYPE_V1",
+  "robot_approved": "NOT_ROBOT_APPROVED",
+  "status": "FROZEN_BEFORE_DEVELOPMENT_SHADOW_TRUTH",
+  "support_gate_modified": false,
+  "uncertainty_P95_by_horizon": {
+    "1": 0.00196762280892,
+    "2": 0.00164217053717,
+    "3": 0.00244544326845,
+    "5": 0.00400496043747
+  }
+}

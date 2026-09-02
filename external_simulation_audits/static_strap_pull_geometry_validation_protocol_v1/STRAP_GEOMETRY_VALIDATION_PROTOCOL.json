@@ -1,0 +1,439 @@
+{
+  "attachments": {
+    "direction": {
+      "construction": "d_task_B(t) = normalize(p_robot_attach_B(t) - p_limb_attach_B(t))",
+      "positive_geometric_direction": "limb/cuff exit toward robot attachment (robotward)",
+      "wrench_physical_sign_resolved": false
+    },
+    "limb_side": {
+      "configuration_dependent": true,
+      "direct_line_alternative": "fit the taut free-span line from at least two independently digitized free-segment fiducials; orient limb-to-robot",
+      "future_equation": "p_limb_attach_B(t) = T_B_R * T_R_S(t) * homogeneous(p_exit_S(configuration))",
+      "global_constant_allowed": false,
+      "invalid_if": [
+        "slack",
+        "multiple free-span lines",
+        "broad or indeterminate exit region",
+        "routing contact outside frozen cuff",
+        "slip",
+        "placement mismatch"
+      ],
+      "meaning": "one observable point on the validated taut free-span line at the contact-to-free-span boundary; not claimed as the physical resultant application point",
+      "point_id": "p_limb_attach_B(t)",
+      "selected_operational_definition": "EQUIVALENT_LINE_POINT_AT_OBSERVED_STRAP_EXIT"
+    },
+    "robot_side": {
+      "future_equation": "p_robot_attach_B(t) = T_B_TCP(t) * homogeneous(p_attach_TCP)",
+      "local_coordinates_m": null,
+      "local_point_id": "p_attach_TCP",
+      "measurement": "independent caliper/CMM/3-D digitization or rigid fixture survey; repeat after remove/reinstall if removable",
+      "not_selected_as_default": [
+        "TCP_ORIGIN",
+        "FLANGE_ORIGIN"
+      ],
+      "selected_definition": "PHYSICAL_STRAP_EYELET_OR_HOOK_LOAD_TRANSFER_CENTER",
+      "tcp_origin_allowed_only_if": "measured fixed offset is consistent with zero within preregistered metrology uncertainty"
+    }
+  },
+  "forbidden_operations": [
+    "connect_robot",
+    "power_or_enable_robot",
+    "send_motion_or_probe",
+    "execute_rehabilitation_trajectory",
+    "use_human_subject",
+    "apply_formal_traction_load",
+    "execute_geometry_experiment",
+    "modify_hardware_control_or_safety",
+    "modify_reference_ROM_or_L2",
+    "run_PINN",
+    "run_BO",
+    "compute_or_finalize_primary_endpoint",
+    "use_TCP_tangent_or_bed_direction_as_fallback",
+    "change_repeat_count_threshold_or_definition_after_results"
+  ],
+  "formal_status": "STATIC_STRAP_PULL_GEOMETRY_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED",
+  "future_result_classes": [
+    "STRAP_PULL_GEOMETRY_VALIDATED",
+    "STRAP_PULL_GEOMETRY_VALIDATED_WITH_LIMITATIONS",
+    "STRAP_PULL_GEOMETRY_NOT_VALIDATED"
+  ],
+  "input_files": [
+    {
+      "input_id": "PARENT_STATIC_WRENCH_PROTOCOL",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/STATIC_WRENCH_VALIDATION_PROTOCOL.json",
+      "semantic_markers": [
+        "STATIC_WRENCH_FRAME_SIGN_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED",
+        "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION",
+        "this protocol changes no wrench flag"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1"
+    },
+    {
+      "input_id": "PARENT_TASK_DIRECTION_DEFINITION",
+      "path": "external_simulation_audits/wrench_frame_and_task_direction_resolution_v1/TASK_DIRECTION_FORMAL_DEFINITION.json",
+      "semantic_markers": [
+        "ACTUAL_STRAP_PULL_LINE_OF_ACTION",
+        "p_robot_attach_B(t)",
+        "p_limb_attach_B(t)",
+        "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "17e7e42a24393a3c1d0d4bb2f9ddfdfde6e0bbe664b01a7e242ba32ca2a37995"
+    },
+    {
+      "input_id": "PARENT_STRAP_GEOMETRY_AUDIT",
+      "path": "external_simulation_audits/wrench_frame_and_task_direction_resolution_v1/STRAP_PULL_GEOMETRY_AUDIT.md",
+      "semantic_markers": [
+        "physical eyelet/cuff connection",
+        "not an ankle",
+        "actual line of action remains unknown"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "d3e48f38d7102d5da2f01aeae4b86e0f95141610f586254af6a886e8ae23fc30"
+    },
+    {
+      "input_id": "PARENT_STATIC_GEOMETRY_PLAN",
+      "path": "external_simulation_audits/wrench_frame_and_task_direction_resolution_v1/FUTURE_STATIC_GEOMETRY_VALIDATION_PLAN.md",
+      "semantic_markers": [
+        "rigid rehabilitation fixture/phantom",
+        "robot-side strap eye/attachment center",
+        "task-direction angular uncertainty"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "b8cf4a3ff4818ca7531e231e619925451a4ad76f8f4c0dd885f99229f89ae9a9"
+    },
+    {
+      "input_id": "FORMAL_EXPERIMENT_MANIFEST",
+      "path": "config/formal_experiment_manifest.json",
+      "semantic_markers": [
+        "ROM_PROTOCOL_V2",
+        "q_hip - q_knee",
+        "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+    },
+    {
+      "input_id": "ACTIVE_REFERENCE",
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "semantic_markers": [
+        "reference_measured_asymmetric_closed_slow",
+        "theta_shank = q_hip - q_knee",
+        "knee_to_strap_equivalent_pull_point"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    },
+    {
+      "input_id": "REHAB_FRAME_CONFIG",
+      "path": "config/rehab_frame_config.json",
+      "semantic_markers": [
+        "\"rehab_x_axis_in_base\": null",
+        "\"rehab_z_axis_in_base\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "eeb4b28a359acc74ab9cf9dcdf5ebbf41bf8f40e4eae1020045011aecdd57606"
+    },
+    {
+      "input_id": "START_ANCHORED_TRAJECTORY",
+      "path": "control/start_anchored_relative_trajectory.py",
+      "semantic_markers": [
+        "L2_knee_to_equivalent_shank_strap_pull_point_m",
+        "\"hip_center_required\": False",
+        "\"observed_ankle_used_as_pull_point\": False"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f9a9ec92183fe490ea64e909dcd1a00a1819daf369e1ed4b05403d50f51ca8e6"
+    },
+    {
+      "input_id": "MODEL_CONFIG",
+      "path": "lower_limb_sim/config.py",
+      "semantic_markers": [
+        "L2 = 0.30",
+        "\u5b8c\u6574\u5c0f\u817f\u957f\u5ea6\u4e0d\u7b49\u4e8e L2",
+        "\u819d\u5173\u8282\u5230\u675f\u7f1a\u5e26\u7b49\u6548\u7275\u5f15\u70b9"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5f4da8438ad7776b374eee6870307a0b5cf81ef6bb21c29b2dc964c540a8d234"
+    },
+    {
+      "input_id": "MODEL_KINEMATICS",
+      "path": "lower_limb_sim/kinematics.py",
+      "semantic_markers": [
+        "shank_angle = q_hip_array - q_knee_array",
+        "x_pull",
+        "z_pull"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "cc18b3d62b491c009959f72601f15b838f9cb2dbafcaabd06df0906af6de0b94"
+    },
+    {
+      "input_id": "CURRENT_ARCHITECTURE",
+      "path": "CURRENT_ARCHITECTURE.md",
+      "semantic_markers": [
+        "equivalent strap pull point",
+        "q_hip - q_knee",
+        "L2"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "ea05150712f5422c71b0226e0e1e739364a2e36793766b79642430f7a2b61cfb"
+    },
+    {
+      "input_id": "REAL_ROBOT_EXPERIMENT_BOUNDARY",
+      "path": "REAL_ROBOT_EXPERIMENT.md",
+      "semantic_markers": [
+        "strap",
+        "dummy",
+        "subject"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "0404269be7a2428ab5c81873468cfdde7b281ef905dd97911de95a39a161514b"
+    },
+    {
+      "input_id": "PROJECT_README",
+      "path": "README.md",
+      "semantic_markers": [
+        "\u4ef0\u5367\u4f4d",
+        "\u7b49\u6548",
+        "\u675f\u5e26"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "3fcd4e2c546eef1dc5d2365971d9cc0233e14d7cad47e7861a87df6826e76417"
+    }
+  ],
+  "model_pull_point_mapping_status": "NOT_YET_CALIBRATED",
+  "parent_status": "WRENCH_AND_TASK_DIRECTION_PARTIALLY_RESOLVED_REQUIRES_STATIC_VALIDATION",
+  "parent_task_direction_definition_sha256": "17e7e42a24393a3c1d0d4bb2f9ddfdfde6e0bbe664b01a7e242ba32ca2a37995",
+  "parent_wrench_protocol_sha256": "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1",
+  "parent_wrench_protocol_status": "STATIC_WRENCH_FRAME_SIGN_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED",
+  "primary_endpoint_finalized": false,
+  "primary_endpoint_validated": false,
+  "protocol_frozen_before_any_physical_result": true,
+  "protocol_id": "STRAP_GEOMETRY_VALIDATION_PROTOCOL_V1",
+  "protocol_scope": "STATIC_NONHUMAN_GEOMETRY_PROTOCOL_DESIGN_ONLY",
+  "rehab_setup_frame": {
+    "axes": {
+      "+x_R": "bed-plane longitudinal vector from proximal-side fiducial toward distal/foot-side fiducial",
+      "+y_R": "normalize(z_R cross x_R)",
+      "+z_R": "upward unit normal to the fitted rigid bed/setup reference plane"
+    },
+    "frame_chain": {
+      "common_computation_frame": "robot base B",
+      "limb_side": "p_exit_S -> T_R_S(t) -> T_B_R -> p_limb_attach_B(t)",
+      "robot_side": "p_attach_TCP -> T_B_TCP(t) -> p_robot_attach_B(t)",
+      "world_optional": "only through a separately validated T_W_B; not assumed"
+    },
+    "frame_id": "REHAB_SETUP_FRAME",
+    "handedness": "right-handed; x_R cross y_R = z_R",
+    "no_unmeasured_transform_filled": true,
+    "origin": "preregistered durable origin fiducial on the rigid bed/setup base",
+    "physical_landmarks": [
+      "origin fiducial",
+      "distal longitudinal fiducial",
+      "at least two additional non-collinear bed-plane fiducials"
+    ],
+    "symbol": "R",
+    "transform_to_robot_base": {
+      "id": "T_B_R",
+      "method": "rigid registration from >=3 non-collinear reference points observed in both base-associated and setup metrology frames",
+      "status": "ROBOT_TO_REHAB_SETUP_FRAME_CALIBRATION_REQUIRED",
+      "value": null
+    }
+  },
+  "stage_id": "STATIC_STRAP_PULL_GEOMETRY_VALIDATION_PROTOCOL_V1",
+  "static_measurement": {
+    "configuration_roles": [
+      {
+        "exact_fixture_coordinates": null,
+        "id": "G0_NOMINAL",
+        "role": "nominal frozen rehab setup"
+      },
+      {
+        "exact_fixture_coordinates": null,
+        "id": "G1_FLEXION_SIDE",
+        "role": "representative flexion-side surrogate configuration"
+      },
+      {
+        "exact_fixture_coordinates": null,
+        "id": "G2_EXTENSION_SIDE",
+        "role": "representative extension-side surrogate configuration"
+      }
+    ],
+    "configuration_status": "EXACT_JIG_COORDINATES_MUST_BE_FROZEN_IN_AUTHORIZED_EXECUTION_MANIFEST_BEFORE_RESULTS",
+    "execution_authorized": false,
+    "geometry_preload_n": null,
+    "geometry_preload_status": "GEOMETRY_PRELOAD_REQUIRES_INDEPENDENT_FIXTURE_AND_SAFETY_REVIEW",
+    "metrology_repeats_per_setup": 3,
+    "minimum_equipment": [
+      "rigid shank surrogate or mannequin fixture",
+      "actual identified strap/cuff and fixed robot-side attachment fixture",
+      "repeatable jig and setup reference markers/fiducials",
+      "calibrated ruler/caliper only where its uncertainty is demonstrably adequate",
+      "3-D digitizer, photogrammetry or tracked pointer if required by the uncertainty budget",
+      "independent registration artifacts for robot base and rehab setup frames"
+    ],
+    "per_repetition_sequence": [
+      "confirm equipment IDs/calibration and rigid frame fiducials",
+      "remove cuff/strap completely",
+      "reset surrogate in the preregistered jig configuration",
+      "reattach cuff using preregistered landmarks, wrap order and closure procedure",
+      "establish a nonhuman fixture geometry state; preload value remains null pending independent review",
+      "digitize setup fiducials, robot attachment, surrogate pose, cuff landmarks, strap exit and >=2 free-span fiducials",
+      "repeat metrology three times without reinstalling to separate measurement noise from setup variability",
+      "remove strap before the next setup repetition"
+    ],
+    "plan_id": "STATIC_NONHUMAN_STRAP_GEOMETRY_MEASUREMENT_V1",
+    "post_result_repeat_extension_allowed": false,
+    "robot_tcp_probing": "OPTIONAL_ONLY_AFTER_INDEPENDENT_ROBOT_SAFETY_AUTHORIZATION; not required by this protocol",
+    "setup_repetitions": 10,
+    "subject": "rigid cylindrical shank surrogate/mannequin fixture; no human"
+  },
+  "target": "ACTUAL_STRAP_PULL_LINE_OF_ACTION",
+  "task_direction_construction": "d_task_B(t) = normalize(p_robot_attach_B(t) - p_limb_attach_B(t))",
+  "task_direction_status": "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION",
+  "topology": {
+    "ASSUMED_NOT_VALIDATED": [
+      "TCP origin equals robot-side physical attachment",
+      "wide cuff has one fixed physical limb-side attachment point",
+      "bed/setup frame is already aligned with robot base/world",
+      "static line remains constant throughout the trajectory"
+    ],
+    "MODEL_EQUIVALENT": [
+      "L1/L2 planar kinematics",
+      "L2=0.30 m knee-to-strap-equivalent traction point",
+      "start-anchored TCP displacement generated from that equivalent point"
+    ],
+    "PHYSICAL_HARDWARE_DEFINED": [
+      "component roles exist in the intended setup",
+      "hardware-specific dimensions, offsets, routing and identifiers are not yet recorded"
+    ],
+    "ordered_chain": [
+      "robot flange and configured tool/TCP",
+      "physical robot-side strap eyelet/hook/fixture load-transfer center",
+      "taut free strap segment",
+      "strap exit/tangent region at wide cuff",
+      "wide cuff wrap and distributed shank contact",
+      "rigid shank surrogate during initial validation"
+    ],
+    "topology_id": "STRAP_MECHANICAL_TOPOLOGY_V1"
+  },
+  "uncertainty_model": {
+    "covariance_components": [
+      "instrument/metrology repeatability",
+      "robot-attachment localization and removable-fixture reinstall",
+      "T_B_R rigid-registration covariance",
+      "surrogate-pose localization",
+      "cuff placement and strap exit setup-to-setup covariance",
+      "free-span line fit residual and point cross-covariance"
+    ],
+    "definitions": [
+      "v = p_r - p_l",
+      "L = norm(v)",
+      "d = v / L",
+      "J_d_v = (I - d d^T) / L",
+      "Sigma_v = Sigma_r + Sigma_l - Sigma_rl - Sigma_lr",
+      "Sigma_d ~= J_d_v Sigma_v J_d_v^T",
+      "small_angle_E_theta2_rad2 ~= trace(Sigma_d)"
+    ],
+    "estimation": {
+      "analytic": "first-order covariance propagation above",
+      "between_setup": "from 10 complete remove/reattach repetitions",
+      "monte_carlo_samples": 100000,
+      "monte_carlo_seed": 20260901,
+      "nonlinear_check": "deterministic Monte Carlo using measured covariance and the exact normalization",
+      "within_setup": "from 3 metrology repeats per setup"
+    },
+    "model_id": "TASK_DIRECTION_GEOMETRY_UNCERTAINTY_MODEL",
+    "report": [
+      "mean direction",
+      "angular SD",
+      "P95 angular error",
+      "maximum observed setup angular deviation",
+      "endpoint displacement covariance",
+      "line-fit residual"
+    ],
+    "scientific_endpoint_outcomes_used": false,
+    "threshold_status": "THRESHOLDS_REQUIRE_METROLOGY_AND_ENDPOINT_ERROR_BUDGET_REVIEW_BEFORE_RESULTS",
+    "thresholds": {
+      "maximum_P95_angular_error_deg": null,
+      "maximum_line_fit_residual_m": null,
+      "maximum_setup_displacement_m": null,
+      "minimum_endpoint_separation_m": null
+    }
+  },
+  "validity_gate": {
+    "all_checks_required": true,
+    "checks": [
+      {
+        "check_id": "G01",
+        "current_pass": false,
+        "requirement": "required robot attachment, exit/free-span and setup points available"
+      },
+      {
+        "check_id": "G02",
+        "current_pass": false,
+        "requirement": "T_B_TCP and calibrated T_B_R available with versioned uncertainty"
+      },
+      {
+        "check_id": "G03",
+        "current_pass": false,
+        "requirement": "all points expressed in common robot base frame"
+      },
+      {
+        "check_id": "G04",
+        "current_pass": false,
+        "requirement": "identified strap/cuff/fixture and frozen placement procedure match"
+      },
+      {
+        "check_id": "G05",
+        "current_pass": false,
+        "requirement": "strap is taut and has one observable free-span line"
+      },
+      {
+        "check_id": "G06",
+        "current_pass": false,
+        "requirement": "no slip, extra routing contact, split path or ambiguous broad exit"
+      },
+      {
+        "check_id": "G07",
+        "current_pass": false,
+        "requirement": "endpoint separation exceeds prefrozen metrology threshold"
+      },
+      {
+        "check_id": "G08",
+        "current_pass": false,
+        "requirement": "direction is finite and unit-normalizable"
+      },
+      {
+        "check_id": "G09",
+        "current_pass": false,
+        "requirement": "ten setup repetitions completed without posthoc extension"
+      },
+      {
+        "check_id": "G10",
+        "current_pass": false,
+        "requirement": "repeatability and propagated uncertainty meet prefrozen thresholds"
+      },
+      {
+        "check_id": "G11",
+        "current_pass": false,
+        "requirement": "dynamic use additionally has synchronized valid endpoint/pose data"
+      }
+    ],
+    "current_status": "FAIL_CLOSED_NOT_EXECUTED",
+    "explicitly_prohibited_fallbacks": [
+      "TCP_TRAJECTORY_TANGENT",
+      "FIXED_BED_DIRECTION",
+      "MODEL_L2_DIRECTION",
+      "GUESSED_ATTACHMENT_POINT"
+    ],
+    "gate_id": "STRAP_PULL_GEOMETRY_VALIDITY_GATE_V1",
+    "on_any_failure": {
+      "d_task": null,
+      "fallback_direction_allowed": false,
+      "reason": "GEOMETRY_INVALID_OR_UNVALIDATED"
+    }
+  }
+}

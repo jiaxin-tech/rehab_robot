@@ -1,0 +1,12 @@
+{
+  "allowed_operation_performed": "streaming SHA-256 of manifest only",
+  "classification": "SEALED_V1_HELD_OUT_NOT_APPLICABLE_TO_STRUCTURAL_DIAGNOSTIC_PILOT",
+  "cohort_v1_manifest_path": "external_simulation_audits/myoleg_virtual_patient_cohort_generation_v1/MYOLEG_VIRTUAL_PATIENT_COHORT_V1_MANIFEST.json",
+  "cohort_v1_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+  "execution_protocol_sha256": "a92b4c95b0f76337e3405a2e36fc0a2571eabffd47bf1c925199e8231f2d9b20",
+  "held_out_J_tau_oracle_rank_access_count": 0,
+  "held_out_metadata_or_model_or_truth_loaded": false,
+  "held_out_replay_count": 0,
+  "held_out_scientific_access_count": 0,
+  "old_v1_heldout_is_cohort_v2_confirmation": false
+}

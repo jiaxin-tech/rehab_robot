@@ -1,0 +1,95 @@
+{
+  "failed": 0,
+  "passed": 22,
+  "status": "PASS",
+  "tests": [
+    {
+      "status": "PASS",
+      "test": "upstream_myosuite_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "formal_reference_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "rom_protocol_v2_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "knee125_model_hash_frozen"
+    },
+    {
+      "status": "PASS",
+      "test": "native_candidate_hash_frozen"
+    },
+    {
+      "status": "PASS",
+      "test": "muscles_and_tendons_preserved"
+    },
+    {
+      "status": "PASS",
+      "test": "fourteen_knee_equalities_preserved"
+    },
+    {
+      "status": "PASS",
+      "test": "method_a_b_deterministic"
+    },
+    {
+      "status": "PASS",
+      "test": "torque_sign_mapping"
+    },
+    {
+      "status": "PASS",
+      "test": "no_nan_or_inf"
+    },
+    {
+      "status": "PASS",
+      "test": "dynamics_balance"
+    },
+    {
+      "status": "PASS",
+      "test": "sample_timestamps_reproducible"
+    },
+    {
+      "status": "PASS",
+      "test": "no_pointwise_clipping"
+    },
+    {
+      "status": "PASS",
+      "test": "no_five_parameter_fitting"
+    },
+    {
+      "status": "PASS",
+      "test": "no_pinn"
+    },
+    {
+      "status": "PASS",
+      "test": "no_bo"
+    },
+    {
+      "status": "PASS",
+      "test": "no_robot_hardware_access"
+    },
+    {
+      "status": "PASS",
+      "test": "prior_artifacts_unchanged"
+    },
+    {
+      "status": "PASS",
+      "test": "truth_semantics_pass"
+    },
+    {
+      "status": "PASS",
+      "test": "zero_control_p0"
+    },
+    {
+      "status": "PASS",
+      "test": "no_warmup"
+    },
+    {
+      "status": "PASS",
+      "test": "theta_shank_preserved"
+    }
+  ]
+}

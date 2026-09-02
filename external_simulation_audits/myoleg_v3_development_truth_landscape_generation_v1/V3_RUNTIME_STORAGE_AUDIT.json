@@ -1,0 +1,15 @@
+{
+  "actual_generation_throughput_pairs_per_s": 41.87661598731533,
+  "aggregate_new_shard_cpu_time_s": 1414.3308409999997,
+  "aggregate_new_shard_worker_wall_time_s": 1425.775004956231,
+  "bulk_full_time_series_generated": false,
+  "checksum_sidecar_bytes": 2016,
+  "compact_shard_bytes": 501833,
+  "compact_shard_count": 24,
+  "estimated_uncompressed_landscape_bytes": 3450000,
+  "formal_worker_count": 4,
+  "full_401_sample_time_series_reconstructable_on_demand": true,
+  "generation_command_wall_time_s": 358.19513220799854,
+  "total_compact_data_and_sidecar_bytes": 503849,
+  "uncompressed_schema_bytes_per_pair": 230
+}

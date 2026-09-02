@@ -1,0 +1,346 @@
+{
+  "coordinate_convention": {
+    "q_hip": "MyoLeg hip_flexion_r; project-positive hip flexion; rad",
+    "q_knee": "MyoLeg knee_angle_r; project-positive knee flexion; rad",
+    "theta_shank": "q_hip - q_knee",
+    "torque_unit": "N*m"
+  },
+  "default_off": true,
+  "evidence_level": "OFFLINE_HEADLESS_VIRTUAL_MODEL_ONLY",
+  "forbidden_operations": {
+    "bo": false,
+    "controller_tuning": false,
+    "five_parameter_fit": false,
+    "formal_reference_modification": false,
+    "landscape": false,
+    "pinn_training": false,
+    "robot_connection": false
+  },
+  "force_semantics_validation_thresholds_frozen_before_retained_replay": {
+    "decomposition_max_abs_nm": 1e-09,
+    "dynamics_balance_max_abs_nm": 1e-08,
+    "high_flexion_delta_to_sensitivity_rms_ratio_max": 1.0,
+    "inverse_formula_max_abs_nm": 1e-09,
+    "method_ab_max_abs_nm": 65.0,
+    "method_ab_p95_max_nm": 10.0,
+    "method_ab_relative_rms_max": 0.2,
+    "method_ab_rmse_max_nm": 5.0,
+    "muscle_reconstruction_max_abs_nm": 1e-08,
+    "primary_to_sensitivity_peak_ratio_max": 2.0,
+    "primary_to_sensitivity_rms_ratio_max": 2.0,
+    "sign_response_min_rad_s2_per_nm": 0.0,
+    "source_equality_residual_max": 0.001,
+    "tracking_ddq_max_abs_deg_s2": 900.0,
+    "tracking_ddq_p95_max_deg_s2": 5.0,
+    "tracking_ddq_rmse_max_deg_s2": 50.0,
+    "tracking_dq_max_abs_deg_s": 6.0,
+    "tracking_dq_p95_max_deg_s": 1.0,
+    "tracking_dq_rmse_max_deg_s": 1.0,
+    "tracking_q_max_abs_deg": 1.0,
+    "tracking_q_p95_max_deg": 1.0,
+    "tracking_q_rmse_max_deg": 1.0
+  },
+  "high_flexion_interval_s": [
+    10.54,
+    16.824
+  ],
+  "input_trajectory_audit": {
+    "PRIMARY": {
+      "c2_fields_present_and_finite": true,
+      "closure": {
+        "ddq_max_abs_rad_s2": 0.0,
+        "dq_max_abs_rad_s": 0.0,
+        "q_max_abs_rad": 0.0
+      },
+      "condition": "PRIMARY",
+      "duration_s": 24.0,
+      "measured_asymmetric_flexion_and_extension": true,
+      "model_joint_range_deg": {
+        "hip": [
+          -30.000012857270395,
+          120.0002806121996
+        ],
+        "knee": [
+          0.0,
+          124.99991033251118
+        ]
+      },
+      "model_range_valid": true,
+      "model_timestep_s": 0.001,
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "phase_counts": {
+        "extension": 200,
+        "flexion": 201
+      },
+      "pointwise_clipping_used": false,
+      "q_range_deg": {
+        "hip": [
+          28.90933692566648,
+          112.02543857007235
+        ],
+        "knee": [
+          18.31912469027814,
+          124.78660371882795
+        ]
+      },
+      "rescaling_performed_by_this_stage": false,
+      "sample_count": 401,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+      "strictly_increasing_timestamps": true,
+      "timestamps_exact_integer_model_steps": true
+    },
+    "SENSITIVITY": {
+      "c2_fields_present_and_finite": true,
+      "closure": {
+        "ddq_max_abs_rad_s2": 0.0,
+        "dq_max_abs_rad_s": 0.0,
+        "q_max_abs_rad": 0.0
+      },
+      "condition": "SENSITIVITY",
+      "duration_s": 24.0,
+      "measured_asymmetric_flexion_and_extension": true,
+      "model_joint_range_deg": {
+        "hip": [
+          -30.000012857270395,
+          120.0002806121996
+        ],
+        "knee": [
+          0.0,
+          120.0002806121996
+        ]
+      },
+      "model_range_valid": true,
+      "model_timestep_s": 0.001,
+      "path": "external_simulation_audits/myoleg_knee_rom_compatibility_audit_v1/NATIVE_ROM_REFERENCE_CANDIDATE.csv",
+      "phase_counts": {
+        "extension": 200,
+        "flexion": 201
+      },
+      "pointwise_clipping_used": false,
+      "q_range_deg": {
+        "hip": [
+          28.90933692566648,
+          112.02543857007235
+        ],
+        "knee": [
+          18.320897421647064,
+          119.5
+        ]
+      },
+      "rescaling_performed_by_this_stage": false,
+      "sample_count": 401,
+      "sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+      "strictly_increasing_timestamps": true,
+      "timestamps_exact_integer_model_steps": true
+    }
+  },
+  "model_inventory": {
+    "PRIMARY": {
+      "neq": 27,
+      "nq": 35,
+      "ntendon": 80,
+      "nu": 80,
+      "nv": 34,
+      "source_knee_equalities": [
+        {
+          "child_joint": "knee_angle_r_translation2",
+          "equality_id": 0,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_translation1",
+          "equality_id": 1,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_rotation2",
+          "equality_id": 2,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_rotation3",
+          "equality_id": 3,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_beta_translation2",
+          "equality_id": 4,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_beta_translation1",
+          "equality_id": 5,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_beta_rotation1",
+          "equality_id": 6,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_l_translation2",
+          "equality_id": 7,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_translation1",
+          "equality_id": 8,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_rotation2",
+          "equality_id": 9,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_rotation3",
+          "equality_id": 10,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_beta_translation2",
+          "equality_id": 11,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_beta_translation1",
+          "equality_id": 12,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_beta_rotation1",
+          "equality_id": 13,
+          "parent_joint": "knee_angle_l"
+        }
+      ],
+      "source_knee_equality_count": 14,
+      "target_joint_types": {
+        "hip": 3,
+        "knee": 3
+      },
+      "timestep_s": 0.001
+    },
+    "SENSITIVITY": {
+      "neq": 27,
+      "nq": 35,
+      "ntendon": 80,
+      "nu": 80,
+      "nv": 34,
+      "source_knee_equalities": [
+        {
+          "child_joint": "knee_angle_r_translation2",
+          "equality_id": 0,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_translation1",
+          "equality_id": 1,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_rotation2",
+          "equality_id": 2,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_rotation3",
+          "equality_id": 3,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_beta_translation2",
+          "equality_id": 4,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_beta_translation1",
+          "equality_id": 5,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_r_beta_rotation1",
+          "equality_id": 6,
+          "parent_joint": "knee_angle_r"
+        },
+        {
+          "child_joint": "knee_angle_l_translation2",
+          "equality_id": 7,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_translation1",
+          "equality_id": 8,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_rotation2",
+          "equality_id": 9,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_rotation3",
+          "equality_id": 10,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_beta_translation2",
+          "equality_id": 11,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_beta_translation1",
+          "equality_id": 12,
+          "parent_joint": "knee_angle_l"
+        },
+        {
+          "child_joint": "knee_angle_l_beta_rotation1",
+          "equality_id": 13,
+          "parent_joint": "knee_angle_l"
+        }
+      ],
+      "source_knee_equality_count": 14,
+      "target_joint_types": {
+        "hip": 3,
+        "knee": 3
+      },
+      "timestep_s": 0.001
+    }
+  },
+  "non_retained_implementation_check": "a pre-artifact dry run was used only to detect and correct the required constraint-tangent virtual-work projection; no model/reference/result was retained and no controller gain was changed",
+  "p0_condition": {
+    "initial_activation": 0.0,
+    "muscle_control": 0.0,
+    "physiological_passive_claim": false,
+    "tendon_state": "computed by mj_forward at each prescribed state; full arrays retained",
+    "warmup_duration_s": 0.0
+  },
+  "primary_condition": {
+    "model_path": "external_simulation/myoleg_knee_rom_compatibility_v1/myoleg_supine_right_knee125_v1.xml",
+    "model_sha256": "c652424679308411fb73a211ad1fc770002fd760c8339c1ed9553888c14e0d41",
+    "reference_path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+    "reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+  },
+  "replay_method": {
+    "diagnostic_driver": {
+      "controller_tuning_runs": 0,
+      "kd_nm_s_per_rad": 150.0,
+      "kp_nm_per_rad": 5000.0,
+      "source": "reused unchanged from frozen knee-ROM low-control sweep",
+      "stabilization_adjustments_allowed": 0,
+      "torque_limit_nm": 3000.0,
+      "truth_role": false,
+      "type": "generalized_PD_diagnostic_driver"
+    },
+    "duration_s": 24.0,
+    "model_timestep_s": 0.001,
+    "sample_count": 401,
+    "target_interpolation": "piecewise_quintic_matching_q_dq_ddq_at_all_401_samples"
+  },
+  "sensitivity_condition": {
+    "model_path": "external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml",
+    "model_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "reference_path": "external_simulation_audits/myoleg_knee_rom_compatibility_audit_v1/NATIVE_ROM_REFERENCE_CANDIDATE.csv",
+    "reference_sha256": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "stage_id": "MYOLEG_REFERENCE_TRAJECTORY_REPLAY_V1"
+}

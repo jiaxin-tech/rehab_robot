@@ -1,0 +1,4 @@
+metric_id,uncertainty_value,designated_pair_count,formal_threshold_frozen,used_by_P2_V1
+local_max,0.00168273790494,324,False,False
+local_P95,0.000430956758924,324,False,False
+local_P99,0.00127694201359,324,False,False

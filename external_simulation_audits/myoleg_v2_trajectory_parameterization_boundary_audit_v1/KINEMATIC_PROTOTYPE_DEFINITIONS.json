@@ -1,0 +1,46 @@
+{
+  "definitions": [
+    {
+      "dimension": 1,
+      "generator": "unchanged frozen V2 phase_warp",
+      "parameterization_id": "P1_PHASE_COORDINATION_ONLY",
+      "parameters": [
+        "knee_branch_internal_phase_warp"
+      ]
+    },
+    {
+      "dimension": 4,
+      "generator": "branch-wise degree-6 interior Bezier/B-spline basis",
+      "parameterization_id": "P2_INTERIOR_BSPLINE_JOINT_PERTURBATION",
+      "parameters": [
+        "hip_flex",
+        "hip_extension",
+        "knee_flex",
+        "knee_extension"
+      ]
+    },
+    {
+      "dimension": 2,
+      "generator": "branch-wise smooth envelope times angle-space normal",
+      "parameterization_id": "P3_JOINT_SPACE_NORMAL_DISPLACEMENT",
+      "parameters": [
+        "flex_normal",
+        "extension_normal"
+      ]
+    },
+    {
+      "dimension": 2,
+      "generator": "knee perturbation as interior function of normalized hip-reference branch phase",
+      "parameterization_id": "P4_BRANCH_AWARE_COORDINATION_FUNCTION",
+      "parameters": [
+        "flex_knee_coordination",
+        "extension_knee_coordination"
+      ]
+    }
+  ],
+  "formal_numeric_ranges_frozen": false,
+  "objective_evaluated": false,
+  "prototype_id": "MYOLEG_V3_KINEMATIC_ONLY_PARAMETERIZATION_PROTOTYPES_V1",
+  "source_path": "external_simulation/myoleg_v2_trajectory_parameterization_boundary_audit_v1/prototype_parameterizations.py",
+  "source_sha256": "dc2a5a043cbc885a7b0c5095da3710cbdd8cf2387dfb54122c9d9d7d207b1f16"
+}

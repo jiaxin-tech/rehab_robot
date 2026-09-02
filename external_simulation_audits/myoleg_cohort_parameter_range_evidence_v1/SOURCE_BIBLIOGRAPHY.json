@@ -1,0 +1,67 @@
+{
+  "DURKIN2003": {
+    "doi": "10.1115/1.1590359",
+    "role": "DXA evidence of population and individual BSP variability",
+    "title": "Analysis of body segment parameter differences between four human populations and the estimation errors of four popular mathematical models",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/12968576/",
+    "year": 2003
+  },
+  "KUDZIA2022": {
+    "doi": "10.1371/journal.pone.0262296",
+    "role": "adult thigh, shank and foot mass/inertia mean and SD",
+    "title": "Estimating body segment parameters from three-dimensional human body scans",
+    "url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0262296",
+    "year": 2022
+  },
+  "MAGNUSSON2000": {
+    "role": "passive hamstring behavior differs between flexible and inflexible groups",
+    "title": "Passive tensile stress and energy of the human hamstring muscles in vivo",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/11085563/",
+    "year": 2000
+  },
+  "MUJOCO_MUSCLE_36": {
+    "role": "official actuator force, F0, tendon-length and FLV semantics",
+    "title": "MuJoCo 3.6 Modeling - Muscle actuators",
+    "url": "https://mujoco.readthedocs.io/en/3.6.0/modeling.html#muscle-actuators",
+    "year": 2026
+  },
+  "MUJOCO_XML_36": {
+    "role": "official fpmax field definition",
+    "title": "MuJoCo 3.6 XML Reference - actuator/muscle",
+    "url": "https://mujoco.readthedocs.io/en/3.6.0/XMLreference.html#actuator-muscle",
+    "year": 2026
+  },
+  "MYOSUITE_DOCS": {
+    "role": "official model provenance; says MyoLeg takes the Rajagopal full-body gait model as close reference",
+    "title": "Models and Tasks - MyoSuite documentation: myoLeg",
+    "url": "https://myosuite.readthedocs.io/en/stable/suite.html",
+    "year": 2026
+  },
+  "RAJAGOPAL2016": {
+    "doi": "10.1109/TBME.2016.2586891",
+    "role": "source-model population, architecture and limitations",
+    "title": "Full-Body Musculoskeletal Model for Muscle-Driven Simulation of Human Gait",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/27392337/",
+    "year": 2016
+  },
+  "SILDER2007": {
+    "doi": "10.1016/j.jbiomech.2006.12.017",
+    "role": "subject-specific passive hip/knee/ankle moments and biarticular effects",
+    "title": "Identification of passive elastic joint moment-angle relationships in the lower extremity",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2020832/",
+    "year": 2007
+  },
+  "UHLRICH2022_CALIBRATION": {
+    "doi": "10.1038/s41598-022-13386-9",
+    "role": "official laboratory calibration materials: shifts OpenSim passive-curve strain parameters, not MuJoCo fpmax",
+    "title": "Calibration of Passive Muscle Force Curves in OpenSim Musculoskeletal Models",
+    "url": "https://github.com/stanfordnmbl/PassiveMuscleForceCalibration",
+    "year": 2022
+  },
+  "WINTER2010": {
+    "role": "intersubject and intermuscle variability in expressed force-length sections",
+    "title": "The force-length curves of the human rectus femoris and gastrocnemius muscles in vivo",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/20147757/",
+    "year": 2010
+  }
+}

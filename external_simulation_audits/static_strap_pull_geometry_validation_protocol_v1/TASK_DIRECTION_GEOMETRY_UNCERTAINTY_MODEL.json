@@ -1,0 +1,44 @@
+{
+  "covariance_components": [
+    "instrument/metrology repeatability",
+    "robot-attachment localization and removable-fixture reinstall",
+    "T_B_R rigid-registration covariance",
+    "surrogate-pose localization",
+    "cuff placement and strap exit setup-to-setup covariance",
+    "free-span line fit residual and point cross-covariance"
+  ],
+  "definitions": [
+    "v = p_r - p_l",
+    "L = norm(v)",
+    "d = v / L",
+    "J_d_v = (I - d d^T) / L",
+    "Sigma_v = Sigma_r + Sigma_l - Sigma_rl - Sigma_lr",
+    "Sigma_d ~= J_d_v Sigma_v J_d_v^T",
+    "small_angle_E_theta2_rad2 ~= trace(Sigma_d)"
+  ],
+  "estimation": {
+    "analytic": "first-order covariance propagation above",
+    "between_setup": "from 10 complete remove/reattach repetitions",
+    "monte_carlo_samples": 100000,
+    "monte_carlo_seed": 20260901,
+    "nonlinear_check": "deterministic Monte Carlo using measured covariance and the exact normalization",
+    "within_setup": "from 3 metrology repeats per setup"
+  },
+  "model_id": "TASK_DIRECTION_GEOMETRY_UNCERTAINTY_MODEL",
+  "report": [
+    "mean direction",
+    "angular SD",
+    "P95 angular error",
+    "maximum observed setup angular deviation",
+    "endpoint displacement covariance",
+    "line-fit residual"
+  ],
+  "scientific_endpoint_outcomes_used": false,
+  "threshold_status": "THRESHOLDS_REQUIRE_METROLOGY_AND_ENDPOINT_ERROR_BUDGET_REVIEW_BEFORE_RESULTS",
+  "thresholds": {
+    "maximum_P95_angular_error_deg": null,
+    "maximum_line_fit_residual_m": null,
+    "maximum_setup_displacement_m": null,
+    "minimum_endpoint_separation_m": null
+  }
+}

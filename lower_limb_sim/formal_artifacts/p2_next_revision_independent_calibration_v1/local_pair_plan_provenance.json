@@ -1,0 +1,12 @@
+{
+  "protocol_id": "INDEPENDENT_LOCAL_CALIBRATION_PAIR_PLAN_V1",
+  "source_protocol_id": "DESIGNATED_LOCAL_VALIDATION_PROTOCOL_V1",
+  "source_pair_plan_path": "/Users/fengjiaxin/VScodeprojects/rehab_robot/lower_limb_sim/formal_artifacts/p2_v2_formal_research_protocol_v1/designated_local_validation_pair_plan.csv",
+  "source_pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+  "independent_pair_plan_sha256": "ffaf01c65f9097bae35d165c25c2dddf5a617fd97835fd3fa5d50604c4beeb55",
+  "geometry_and_strata_unchanged": true,
+  "case_identity_bound_in_source_plan": false,
+  "new_case_assignment_sha256": "6ae1ec751b4242fa97f9dd220f370d3fd84a7152f221eb5f6d0803aaf105c15a",
+  "assignment_frozen_before_truth": true,
+  "truth_used_for_plan_or_assignment": false
+}

@@ -1,0 +1,87 @@
+{
+  "all_required_to_authorize": true,
+  "checks": [
+    {
+      "check_id": "SITE_SAFETY_REVIEW",
+      "current_pass": false,
+      "requirement": "site owner approves static non-human fixture and procedure"
+    },
+    {
+      "check_id": "EXPERIMENT_SAFETY_CONFIG_REVIEWED",
+      "current_pass": false,
+      "requirement": "config/experiment_safety.json reviewed=true"
+    },
+    {
+      "check_id": "STATIC_FORCE_LIMITS_APPROVED",
+      "current_pass": false,
+      "requirement": "both load values and fixture/robot margins approved"
+    },
+    {
+      "check_id": "MAXIMUM_STATIC_DWELL_APPROVED",
+      "current_pass": false,
+      "requirement": "maximum load and zero window dwell approved"
+    },
+    {
+      "check_id": "ROBOT_IDENTITY_TOOL_PAYLOAD_TCP_VERIFIED",
+      "current_pass": false,
+      "requirement": "model/serial/controller/tool/load/TCP match reviewed record"
+    },
+    {
+      "check_id": "COMPENSATION_STATE_RESOLVED",
+      "current_pass": false,
+      "requirement": "controller/tool/load compensation state documented or explicitly unresolved for interpretation"
+    },
+    {
+      "check_id": "WORLD_AXIS_REGISTRATION_VALID",
+      "current_pass": false,
+      "requirement": "independent physical world/fixture registration and uncertainty frozen"
+    },
+    {
+      "check_id": "POSES_AND_POSITIONING_SEPARATELY_APPROVED",
+      "current_pass": false,
+      "requirement": "exact poses and any positioning procedure independently approved"
+    },
+    {
+      "check_id": "OPERATION_STATE_STABLE_CONFIRMED",
+      "current_pass": false,
+      "requirement": "stationary safe state confirmed"
+    },
+    {
+      "check_id": "EMERGENCY_STOP_AND_OPERATOR_ROLES_READY",
+      "current_pass": false,
+      "requirement": "stop access, roles and communications reviewed"
+    },
+    {
+      "check_id": "CALIBRATED_NONHUMAN_LOAD_EQUIPMENT_READY",
+      "current_pass": false,
+      "requirement": "certificate/uncertainty/retention and fixture inspection pass"
+    },
+    {
+      "check_id": "NO_HUMAN_SUBJECT_OR_HAND_LOADING",
+      "current_pass": true,
+      "requirement": "protocol prohibits human/hand calibrated load"
+    },
+    {
+      "check_id": "LOGGER_AND_RAW_PROVENANCE_VALIDATED",
+      "current_pass": false,
+      "requirement": "all raw/time/metadata streams verified before load"
+    },
+    {
+      "check_id": "CLEANUP_DISCONNECT_PROCEDURE_REVIEWED",
+      "current_pass": false,
+      "requirement": "safe release/cleanup/disconnect plan reviewed"
+    },
+    {
+      "check_id": "METRIC_THRESHOLDS_FROZEN_BEFORE_RESULT",
+      "current_pass": false,
+      "requirement": "calibration-derived gates preregistered before reveal"
+    }
+  ],
+  "current_authorization": "NOT_AUTHORIZED",
+  "fail_closed": true,
+  "gate_id": "STATIC_WRENCH_FUTURE_EXECUTION_PRECONDITIONS_V1",
+  "null_or_unreviewed_values_may_not_be_filled_by_protocol": true,
+  "on_any_failure": "DO_NOT_CONNECT_OR_APPLY_LOAD; preserve NOT_AUTHORIZED",
+  "this_protocol_authorizes_physical_execution": false,
+  "this_protocol_authorizes_robot_positioning": false
+}

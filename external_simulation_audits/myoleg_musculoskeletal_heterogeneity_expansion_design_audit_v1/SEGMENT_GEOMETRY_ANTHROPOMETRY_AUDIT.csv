@@ -1,0 +1,5 @@
+factor,compiled_fields,configuration_effect,required_coupled_changes,rtb3_or_strap_effect,decision
+femur length/proportion,body_pos|joint pos|site_pos|geom_pos,joint and muscle paths,joint position|attachments|wraps|muscle length calibration|inertia,indirect through distal chain,DO_NOT_PERTURB_IN_PRIMARY_EXPANDED_COHORT
+tibia length/proportion,body_pos|joint pos|site_pos|geom_pos,joint and muscle paths,joint position|attachments|wraps|muscle length calibration|inertia|RTB3,direct,DO_NOT_PERTURB_IN_PRIMARY_EXPANDED_COHORT
+body COM,body_ipos,gravity/inertial torque,consistent segment inertial identification,none if geometry unchanged,SECONDARY
+mass and inertia,body_mass|body_inertia,mostly magnitude in V1,physically consistent inertia tensor,none,BACKGROUND_SECONDARY

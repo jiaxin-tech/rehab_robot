@@ -1,0 +1,7 @@
+actuator_id,muscle,mechanically_included,target_effective_fraction,target_negative_fraction,other_joint_max_abs_m,anatomical_review,exclusion_reason
+7,bfsh_r,False,1,0.214463840399,3.87058307948e-17,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+12,gaslat_r,False,1,0.339152119701,5.64667056557e-17,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+13,gasmed_r,False,1,0,5.20944434967e-17,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+37,vasint_r,True,1,1,6.05479734921e-17,ANATOMICALLY_CONSISTENT_KNEE_EXTENSOR,
+38,vaslat_r,True,1,1,6.93737874778e-17,ANATOMICALLY_CONSISTENT_KNEE_EXTENSOR,
+39,vasmed_r,True,1,1,4.68781201691e-17,ANATOMICALLY_CONSISTENT_KNEE_EXTENSOR,

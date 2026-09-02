@@ -1,0 +1,1207 @@
+{
+  "protocol_id": "DECISION_RELEVANT_GLOBAL_MODEL_RELIABILITY_CHARACTERIZATION_V1",
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "theta_shank_definition": "q_hip - q_knee",
+  "five_parameter_names": [
+    "mass_scale",
+    "k_hip_nm_per_rad",
+    "k_knee_nm_per_rad",
+    "b_hip_nm_s_per_rad",
+    "b_knee_nm_s_per_rad"
+  ],
+  "mechanical_objective_version": "mechanical_joint_torque_objective_v1",
+  "mechanical_objective_formula": "sqrt((R_h^2 + R_k^2) / 2)",
+  "decision_equivalence_tolerance": 0.005,
+  "decision_equivalence_tolerance_status": "RESEARCH_DECISION_EQUIVALENCE_BAND",
+  "model_support_coverage_gate_percent": 90.0,
+  "global_model_reliability_rule_status": "NOT_FROZEN_REQUIRES_REVIEW",
+  "initial_identification_acceptance_status": "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_REQUIRES_REVIEW",
+  "formal_theta_hat_0_available": false,
+  "human_ready_theta_hat_0_available": false,
+  "personalization_executed": false,
+  "real_robot_connected": false,
+  "generated_at_utc": "2026-08-15T08:02:31.487256+00:00",
+  "evidence_level": "OFFLINE_VIRTUAL_RESEARCH_ONLY",
+  "analysis_status": "FORMAL_CHARACTERIZATION_OUTPUT_NOT_A_RELEASE_GATE",
+  "parameter_map_path": "lower_limb_sim/formal_artifacts/admissible_personalization_region_v1/parameter_space_admissibility.csv",
+  "parameter_map_sha256": "f5eddf4c3a05e9e638bf9254c9f74acf36c80420a1b1ea5f4580e5ce4721a16b",
+  "formal_geometrically_admissible_point_count": 21025,
+  "evaluated_point_count_per_case": 21025,
+  "test_lattice_truncation_applied": false,
+  "analysis_case_count": 9,
+  "matched_positive_control_count": 4,
+  "mild_mismatch_case_count": 5,
+  "diagnostic_initial_models": [
+    {
+      "case_id": "baseline__matched_linear",
+      "subject_id": "baseline",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 2,
+      "parameters": {
+        "mass_scale": 1.0000000000345897,
+        "k_hip_nm_per_rad": 14.99999999980913,
+        "k_knee_nm_per_rad": 12.000000000127748,
+        "b_hip_nm_s_per_rad": 2.0000000236898585,
+        "b_knee_nm_s_per_rad": 1.4999999999917641
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631112514893,
+          0.3197290416428389,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9377594565565512,
+          2.16048717811808,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 802
+      },
+      "identification_dataset_sha256": "0ef1cf8055f483d5c7ecc2d0be5dc6739d7f3ac835b42357b53e4b51bc7eda56",
+      "truth_scenario_definition": {
+        "scenario_name": "matched_linear",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260802,
+        "model_mismatch_terms": []
+      }
+    },
+    {
+      "case_id": "hip_stiff__matched_linear",
+      "subject_id": "hip_stiff",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 2,
+      "parameters": {
+        "mass_scale": 0.9999999999999999,
+        "k_hip_nm_per_rad": 30.0,
+        "k_knee_nm_per_rad": 11.999999999999893,
+        "b_hip_nm_s_per_rad": 1.9999999999999998,
+        "b_knee_nm_s_per_rad": 1.4999999999950528
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631112514893,
+          0.3197290416428389,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9377594565565512,
+          2.16048717811808,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 802
+      },
+      "identification_dataset_sha256": "fd716f99cbf59a29cdcba64b01b0778433fd7429507de9dd4846e3a78477a802",
+      "truth_scenario_definition": {
+        "scenario_name": "matched_linear",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260802,
+        "model_mismatch_terms": []
+      }
+    },
+    {
+      "case_id": "knee_stiff__matched_linear",
+      "subject_id": "knee_stiff",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 2,
+      "parameters": {
+        "mass_scale": 0.9999999999999999,
+        "k_hip_nm_per_rad": 15.0,
+        "k_knee_nm_per_rad": 30.0,
+        "b_hip_nm_s_per_rad": 2.000000000000028,
+        "b_knee_nm_s_per_rad": 1.5
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631112514893,
+          0.3197290416428389,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9377594565565512,
+          2.16048717811808,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 802
+      },
+      "identification_dataset_sha256": "0dec463027845c2ffc335f9e9ecff86d4d0b9856dd80b61267412368aff345b2",
+      "truth_scenario_definition": {
+        "scenario_name": "matched_linear",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260802,
+        "model_mismatch_terms": []
+      }
+    },
+    {
+      "case_id": "heavy_leg__matched_linear",
+      "subject_id": "heavy_leg",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 2,
+      "parameters": {
+        "mass_scale": 1.3000000000000123,
+        "k_hip_nm_per_rad": 15.000000000000258,
+        "k_knee_nm_per_rad": 12.000000000000046,
+        "b_hip_nm_s_per_rad": 2.0000000000159313,
+        "b_knee_nm_s_per_rad": 1.4999999999999958
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631112514893,
+          0.3197290416428389,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9377594565565512,
+          2.16048717811808,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 802
+      },
+      "identification_dataset_sha256": "6320b14027cb7d4e37d658296199565f513aca4c754a049467acc3a1b64a02ff",
+      "truth_scenario_definition": {
+        "scenario_name": "matched_linear",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260802,
+        "model_mismatch_terms": []
+      }
+    },
+    {
+      "case_id": "baseline__nonlinear_stiffness_mild",
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_stiffness_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 5,
+      "parameters": {
+        "mass_scale": 0.9638610684793563,
+        "k_hip_nm_per_rad": 17.140770126731706,
+        "k_knee_nm_per_rad": 13.832431294753903,
+        "b_hip_nm_s_per_rad": 2.148493749662592,
+        "b_knee_nm_s_per_rad": 1.7506579366397959
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631099166065,
+          0.3197290415227828,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9726660415202704,
+          2.1779370972749486,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 2005
+      },
+      "identification_dataset_sha256": "5520fb3fec0dce1f2cb2ac9247a765e2a5ae689018d75fb3b78a436ed567626e",
+      "truth_scenario_definition": {
+        "scenario_name": "nonlinear_stiffness_mild",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.8,
+          "k3_knee_nm_per_rad3": 0.6,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260803,
+        "model_mismatch_terms": [
+          "nonlinear_stiffness"
+        ]
+      }
+    },
+    {
+      "case_id": "baseline__hip_knee_coupling_mild",
+      "subject_id": "baseline",
+      "scenario_name": "hip_knee_coupling_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 5,
+      "parameters": {
+        "mass_scale": 1.002667196561702,
+        "k_hip_nm_per_rad": 15.808337943470459,
+        "k_knee_nm_per_rad": 11.726909785230161,
+        "b_hip_nm_s_per_rad": 2.156971846718297,
+        "b_knee_nm_s_per_rad": 1.4208043413732663
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631099166065,
+          0.3197290415227828,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9726660415202704,
+          2.1779370972749486,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 2005
+      },
+      "identification_dataset_sha256": "747f50e06b3157939a4e28e56b7ebc43ca65acc87bb820e5713199ed87a0035a",
+      "truth_scenario_definition": {
+        "scenario_name": "hip_knee_coupling_mild",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 1.5,
+          "k_coupling_asymmetry": 0.4,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260805,
+        "model_mismatch_terms": [
+          "hip_knee_coupling"
+        ]
+      }
+    },
+    {
+      "case_id": "baseline__nonlinear_damping_mild",
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_damping_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 5,
+      "parameters": {
+        "mass_scale": 1.0000134353084367,
+        "k_hip_nm_per_rad": 14.998547727379272,
+        "k_knee_nm_per_rad": 11.998807312971527,
+        "b_hip_nm_s_per_rad": 2.0618756919538894,
+        "b_knee_nm_s_per_rad": 1.5679568518804825
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631099166065,
+          0.3197290415227828,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9726660415202704,
+          2.1779370972749486,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 2005
+      },
+      "identification_dataset_sha256": "c75219486d49435b582a41795d9c510f7cbb69a921480bc6b2252b2f26c48e63",
+      "truth_scenario_definition": {
+        "scenario_name": "nonlinear_damping_mild",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.15,
+          "b2_knee_nm_s2_per_rad2": 0.12,
+          "residual_torque_scale_nm": 0.0,
+          "residual_torque_frequency": 0.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260807,
+        "model_mismatch_terms": [
+          "nonlinear_damping"
+        ]
+      }
+    },
+    {
+      "case_id": "baseline__structured_residual",
+      "subject_id": "baseline",
+      "scenario_name": "structured_residual",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 5,
+      "parameters": {
+        "mass_scale": 0.9825580633739819,
+        "k_hip_nm_per_rad": 14.874698707653943,
+        "k_knee_nm_per_rad": 11.814972600434768,
+        "b_hip_nm_s_per_rad": 2.1043708878465135,
+        "b_knee_nm_s_per_rad": 1.3822715226571523
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631099166065,
+          0.3197290415227828,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9726660415202704,
+          2.1779370972749486,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 2005
+      },
+      "identification_dataset_sha256": "a8b6ec2c403bad04c10c5349cf7ab95cc79bbfd501e576d125c33cb5727039f1",
+      "truth_scenario_definition": {
+        "scenario_name": "structured_residual",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.0,
+          "k3_knee_nm_per_rad3": 0.0,
+          "k_coupling_nm_per_rad": 0.0,
+          "k_coupling_asymmetry": 0.0,
+          "b2_hip_nm_s2_per_rad2": 0.0,
+          "b2_knee_nm_s2_per_rad2": 0.0,
+          "residual_torque_scale_nm": 0.6,
+          "residual_torque_frequency": 1.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260808,
+        "model_mismatch_terms": [
+          "structured_residual"
+        ]
+      }
+    },
+    {
+      "case_id": "baseline__combined_mild",
+      "subject_id": "baseline",
+      "scenario_name": "combined_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "model_type": "DIAGNOSTIC_INITIAL_MODEL",
+      "model_status": "DIAGNOSTIC_ONLY",
+      "approval_status": "NOT_APPROVED_FOR_PERSONALIZATION",
+      "human_readiness": "NOT_HUMAN_READY",
+      "selected_actual_trial_id": 5,
+      "parameters": {
+        "mass_scale": 0.9886432330535775,
+        "k_hip_nm_per_rad": 16.76028757125857,
+        "k_knee_nm_per_rad": 13.230992603172872,
+        "b_hip_nm_s_per_rad": 2.2458516935474777,
+        "b_knee_nm_s_per_rad": 1.6296072221635243
+      },
+      "identification_domain": {
+        "columns": [
+          "q_hip_est_rad",
+          "q_knee_est_rad",
+          "dq_hip_est_rad_s",
+          "dq_knee_est_rad_s",
+          "ddq_hip_est_rad_s2",
+          "ddq_knee_est_rad_s2"
+        ],
+        "lower": [
+          0.5045631099166065,
+          0.3197290415227828,
+          -0.6561629342087781,
+          -0.8909978049510898,
+          -0.7092630374597347,
+          -1.0238282742003126
+        ],
+        "upper": [
+          1.9726660415202704,
+          2.1779370972749486,
+          0.43961043994507654,
+          0.7060059079903492,
+          0.7496935232054315,
+          0.8197614219333362
+        ],
+        "valid_training_samples": 2005
+      },
+      "identification_dataset_sha256": "e6c80a3dac58cb39f5fafed1a732df679135275c225df39ad53ae1da1f33f220",
+      "truth_scenario_definition": {
+        "scenario_name": "combined_mild",
+        "generator_parameters": {
+          "k3_hip_nm_per_rad3": 0.5,
+          "k3_knee_nm_per_rad3": 0.4,
+          "k_coupling_nm_per_rad": 1.0,
+          "k_coupling_asymmetry": 0.6,
+          "b2_hip_nm_s2_per_rad2": 0.08,
+          "b2_knee_nm_s2_per_rad2": 0.06,
+          "residual_torque_scale_nm": 0.3,
+          "residual_torque_frequency": 1.0
+        },
+        "estimator_model_description": "five_parameter_linear_gray_box: mass_scale, k_hip, k_knee, b_hip, b_knee; no nonlinear, coupling, or residual terms",
+        "random_seed": 20260809,
+        "model_mismatch_terms": [
+          "nonlinear_stiffness",
+          "hip_knee_coupling",
+          "nonlinear_damping",
+          "structured_residual"
+        ]
+      }
+    }
+  ],
+  "validation_diagnostics": [
+    {
+      "case_id": "baseline__matched_linear",
+      "subject_id": "baseline",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "diagnostic_model_trial_id": 2,
+      "validation_combined_rmse_nm": 3.0880106519594794e-09,
+      "validation_combined_nrmse_percent": 7.50995439879882e-09,
+      "validation_e_J": 8.639311488423118e-12,
+      "validation_relative_e_J_percent": 8.639311488423118e-10,
+      "existing_model_adequacy_trend_diagnosis": "NO_STRUCTURE_LIMITATION_DIAGNOSIS_FROM_TREND_ONLY",
+      "precise_dynamics_status": "NO_PRECISE_DYNAMICS_LIMITATION_DIAGNOSED_FROM_EXISTING_TREND",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "hip_stiff__matched_linear",
+      "subject_id": "hip_stiff",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "diagnostic_model_trial_id": 2,
+      "validation_combined_rmse_nm": 1.123265391240487e-12,
+      "validation_combined_nrmse_percent": 2.14920182768945e-12,
+      "validation_e_J": 9.43689570931383e-15,
+      "validation_relative_e_J_percent": 9.43689570931383e-13,
+      "existing_model_adequacy_trend_diagnosis": "NO_STRUCTURE_LIMITATION_DIAGNOSIS_FROM_TREND_ONLY",
+      "precise_dynamics_status": "NO_PRECISE_DYNAMICS_LIMITATION_DIAGNOSED_FROM_EXISTING_TREND",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "knee_stiff__matched_linear",
+      "subject_id": "knee_stiff",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "diagnostic_model_trial_id": 2,
+      "validation_combined_rmse_nm": 1.2004314091023213e-14,
+      "validation_combined_nrmse_percent": 2.1249981773654193e-14,
+      "validation_e_J": 0.0,
+      "validation_relative_e_J_percent": 0.0,
+      "existing_model_adequacy_trend_diagnosis": "NO_STRUCTURE_LIMITATION_DIAGNOSIS_FROM_TREND_ONLY",
+      "precise_dynamics_status": "NO_PRECISE_DYNAMICS_LIMITATION_DIAGNOSED_FROM_EXISTING_TREND",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "heavy_leg__matched_linear",
+      "subject_id": "heavy_leg",
+      "scenario_name": "matched_linear",
+      "evidence_role": "MATCHED_POSITIVE_CONTROL",
+      "diagnostic_model_trial_id": 2,
+      "validation_combined_rmse_nm": 2.0657911588452484e-12,
+      "validation_combined_nrmse_percent": 3.922785651655058e-12,
+      "validation_e_J": 6.8833827526759706e-15,
+      "validation_relative_e_J_percent": 6.883382752675971e-13,
+      "existing_model_adequacy_trend_diagnosis": "NO_STRUCTURE_LIMITATION_DIAGNOSIS_FROM_TREND_ONLY",
+      "precise_dynamics_status": "NO_PRECISE_DYNAMICS_LIMITATION_DIAGNOSED_FROM_EXISTING_TREND",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "baseline__nonlinear_stiffness_mild",
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_stiffness_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "diagnostic_model_trial_id": 5,
+      "validation_combined_rmse_nm": 0.9508406773989131,
+      "validation_combined_nrmse_percent": 2.3094508943082137,
+      "validation_e_J": 0.059688550335888824,
+      "validation_relative_e_J_percent": 5.968855033588882,
+      "existing_model_adequacy_trend_diagnosis": "MODEL_STRUCTURE_LIMITATION",
+      "precise_dynamics_status": "MODEL_INADEQUATE_FOR_PRECISE_DYNAMICS",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "baseline__hip_knee_coupling_mild",
+      "subject_id": "baseline",
+      "scenario_name": "hip_knee_coupling_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "diagnostic_model_trial_id": 5,
+      "validation_combined_rmse_nm": 0.3593317557795471,
+      "validation_combined_nrmse_percent": 0.8650962397877727,
+      "validation_e_J": 0.02006142508243669,
+      "validation_relative_e_J_percent": 2.006142508243669,
+      "existing_model_adequacy_trend_diagnosis": "MODEL_STRUCTURE_LIMITATION",
+      "precise_dynamics_status": "MODEL_INADEQUATE_FOR_PRECISE_DYNAMICS",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "baseline__nonlinear_damping_mild",
+      "subject_id": "baseline",
+      "scenario_name": "nonlinear_damping_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "diagnostic_model_trial_id": 5,
+      "validation_combined_rmse_nm": 0.011619276858096286,
+      "validation_combined_nrmse_percent": 0.028254176946900664,
+      "validation_e_J": 0.00010360640598272575,
+      "validation_relative_e_J_percent": 0.010360640598272575,
+      "existing_model_adequacy_trend_diagnosis": "MODEL_STRUCTURE_LIMITATION",
+      "precise_dynamics_status": "MODEL_INADEQUATE_FOR_PRECISE_DYNAMICS",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "baseline__structured_residual",
+      "subject_id": "baseline",
+      "scenario_name": "structured_residual",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "diagnostic_model_trial_id": 5,
+      "validation_combined_rmse_nm": 0.20524993627477833,
+      "validation_combined_nrmse_percent": 0.5117388054474048,
+      "validation_e_J": 0.005636979819184762,
+      "validation_relative_e_J_percent": 0.5636979819184762,
+      "existing_model_adequacy_trend_diagnosis": "MODEL_STRUCTURE_LIMITATION",
+      "precise_dynamics_status": "MODEL_INADEQUATE_FOR_PRECISE_DYNAMICS",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    },
+    {
+      "case_id": "baseline__combined_mild",
+      "subject_id": "baseline",
+      "scenario_name": "combined_mild",
+      "evidence_role": "MILD_MODEL_MISMATCH",
+      "diagnostic_model_trial_id": 5,
+      "validation_combined_rmse_nm": 0.7871846052381305,
+      "validation_combined_nrmse_percent": 1.88910668285192,
+      "validation_e_J": 0.05686103308472634,
+      "validation_relative_e_J_percent": 5.686103308472634,
+      "existing_model_adequacy_trend_diagnosis": "MODEL_STRUCTURE_LIMITATION",
+      "precise_dynamics_status": "MODEL_INADEQUATE_FOR_PRECISE_DYNAMICS",
+      "validation_split_only": true,
+      "heldout_final_test_read": false
+    }
+  ],
+  "prediction_stage_audit": [
+    {
+      "case_id": "baseline__matched_linear",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "hip_stiff__matched_linear",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "knee_stiff__matched_linear",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "heavy_leg__matched_linear",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "baseline__nonlinear_stiffness_mild",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "baseline__hip_knee_coupling_mild",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "baseline__nonlinear_damping_mild",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "baseline__structured_residual",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    },
+    {
+      "case_id": "baseline__combined_mild",
+      "J_pred_reference": 1.0,
+      "J_pred_reference_verified_one": true,
+      "truth_evaluated_during_prediction": false,
+      "truth_used_for_fitting": false,
+      "truth_used_for_prediction_ranking": false
+    }
+  ],
+  "truth_evaluation_stage_audit": [
+    {
+      "case_id": "baseline__matched_linear",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "hip_stiff__matched_linear",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "knee_stiff__matched_linear",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "heavy_leg__matched_linear",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "baseline__nonlinear_stiffness_mild",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "baseline__hip_knee_coupling_mild",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "baseline__nonlinear_damping_mild",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "baseline__structured_residual",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    },
+    {
+      "case_id": "baseline__combined_mild",
+      "J_truth_reference": 1.0,
+      "J_truth_reference_verified_one": true,
+      "truth_evaluation_stage": "POST_PREDICTION_EVALUATION_ONLY",
+      "truth_used_for_fitting": false,
+      "truth_used_for_support_construction": false,
+      "truth_used_for_pre_evaluation_ranking": false
+    }
+  ],
+  "truth_attached_only_after_prediction_and_predicted_best_selection": true,
+  "heldout_final_test_read": false,
+  "heldout_final_test_used_for_factor_selection": false,
+  "relative_error_definition": "100 * abs(J_pred - J_truth) / abs(J_truth)",
+  "distance_to_supported_region_definition": "euclidean_distance_to_nearest_supported_alpha_after_scaling_hip_by_0.25_deg_knee_by_0.25_deg_and_phase_by_0.0025",
+  "distance_is_physical_or_safety_threshold": false,
+  "formal_grid_steps": {
+    "hip_deg": 0.25,
+    "knee_deg": 0.25,
+    "phase": 0.0025
+  },
+  "coverage_gate_discontinuity_audit": [
+    {
+      "case_id": "baseline__matched_linear",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 3.010457380457266e-14,
+      "above_mean_e_J_abs": 2.592454029226587e-13,
+      "mean_e_J_abs_step_above_minus_below": 2.2914082911808606e-13,
+      "below_sign_accuracy": 1.0,
+      "above_sign_accuracy": 1.0,
+      "sign_accuracy_step_above_minus_below": 0.0,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "hip_stiff__matched_linear",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 7.596262800066861e-17,
+      "above_mean_e_J_abs": 8.937295348232511e-17,
+      "mean_e_J_abs_step_above_minus_below": 1.34103254816565e-17,
+      "below_sign_accuracy": 1.0,
+      "above_sign_accuracy": 1.0,
+      "sign_accuracy_step_above_minus_below": 0.0,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "knee_stiff__matched_linear",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 4.0902953538821554e-17,
+      "above_mean_e_J_abs": 3.9412917374193055e-17,
+      "mean_e_J_abs_step_above_minus_below": -1.4900361646284993e-18,
+      "below_sign_accuracy": 1.0,
+      "above_sign_accuracy": 1.0,
+      "sign_accuracy_step_above_minus_below": 0.0,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "heavy_leg__matched_linear",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 9.933574430856664e-17,
+      "above_mean_e_J_abs": 5.800915303666443e-17,
+      "mean_e_J_abs_step_above_minus_below": -4.1326591271902213e-17,
+      "below_sign_accuracy": 1.0,
+      "above_sign_accuracy": 1.0,
+      "sign_accuracy_step_above_minus_below": 0.0,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "baseline__nonlinear_stiffness_mild",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 0.0008674334833422887,
+      "above_mean_e_J_abs": 0.000646026796362629,
+      "mean_e_J_abs_step_above_minus_below": -0.00022140668697965974,
+      "below_sign_accuracy": 0.9668874172185431,
+      "above_sign_accuracy": 0.92,
+      "sign_accuracy_step_above_minus_below": -0.04688741721854306,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "baseline__hip_knee_coupling_mild",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 0.00034576392461577654,
+      "above_mean_e_J_abs": 0.0006740619601403949,
+      "mean_e_J_abs_step_above_minus_below": 0.0003282980355246184,
+      "below_sign_accuracy": 0.9867549668874173,
+      "above_sign_accuracy": 0.9514285714285714,
+      "sign_accuracy_step_above_minus_below": -0.03532639545884586,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "baseline__nonlinear_damping_mild",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 4.305973724889788e-07,
+      "above_mean_e_J_abs": 4.6839404042930967e-07,
+      "mean_e_J_abs_step_above_minus_below": 3.779666794033089e-08,
+      "below_sign_accuracy": 1.0,
+      "above_sign_accuracy": 1.0,
+      "sign_accuracy_step_above_minus_below": 0.0,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "baseline__structured_residual",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 2.453949415524765e-05,
+      "above_mean_e_J_abs": 7.654821759749314e-05,
+      "mean_e_J_abs_step_above_minus_below": 5.200872344224549e-05,
+      "below_sign_accuracy": 1.0,
+      "above_sign_accuracy": 0.9942857142857143,
+      "sign_accuracy_step_above_minus_below": -0.005714285714285672,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    },
+    {
+      "case_id": "baseline__combined_mild",
+      "auditable": true,
+      "nearest_below_coverage_percent": 86.0349127182045,
+      "nearest_above_coverage_percent": 93.51620947630923,
+      "below_mean_e_J_abs": 0.0008347881292238523,
+      "above_mean_e_J_abs": 0.00020746464166929965,
+      "mean_e_J_abs_step_above_minus_below": -0.0006273234875545527,
+      "below_sign_accuracy": 0.8543046357615894,
+      "above_sign_accuracy": 0.9628571428571429,
+      "sign_accuracy_step_above_minus_below": 0.10855250709555342,
+      "below_false_improvement_rate": 0.0,
+      "above_false_improvement_rate": 0.0,
+      "coverage_gate_modified": false,
+      "formal_threshold_inferred": false
+    }
+  ],
+  "coverage_gate_modified": false,
+  "reliability_candidate_factor_diagnostics": {
+    "analysis_status": "GLOBAL_RELIABILITY_CANDIDATE_ANALYSIS",
+    "rule_frozen": false,
+    "point_level_spearman": {
+      "domain_coverage_vs_e_J_abs": 0.3922906348578964,
+      "distance_to_support_vs_e_J_abs": -0.3407297397771923,
+      "domain_coverage_vs_false_improvement": 0.016184597390936445,
+      "distance_to_support_vs_false_improvement": -0.023511756139544624
+    },
+    "case_level_spearman": {
+      "validation_e_J_vs_local_decision_regret": null,
+      "radius_one_rank_vs_local_decision_regret": null
+    },
+    "candidate_factors_only": [
+      "model_supported",
+      "domain_coverage",
+      "distance_to_supported_region",
+      "validation_e_J",
+      "local_ranking_consistency",
+      "false_improvement_history"
+    ],
+    "complex_machine_learning_used": false,
+    "heldout_final_test_used": false,
+    "threshold_candidate_generated": false
+  },
+  "global_reliability_threshold_frozen": false,
+  "initial_identification_acceptance_rule_modified": false,
+  "formal_theta_hat_0_frozen": false,
+  "human_ready_theta_hat_0_frozen": false,
+  "explore_exploit_policy_implemented": false,
+  "personalization_proposed": false,
+  "hardware_connected": false,
+  "hardware_or_safety_code_modified_by_runner": false,
+  "active_reference_verified_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "recorded_task_start_git_status": [
+    "?? lower_limb_sim/.DS_Store",
+    "?? lower_limb_sim/formal_artifacts/initial_identification_acceptance_rule_v1/",
+    "?? lower_limb_sim/formal_artifacts/safeguarded_sequential_initial_identification_v1/",
+    "?? lower_limb_sim/initial_identification_acceptance_rule.py",
+    "?? lower_limb_sim/run_initial_identification_acceptance_rule.py",
+    "?? lower_limb_sim/run_safeguarded_sequential_initial_identification.py",
+    "?? lower_limb_sim/safeguarded_sequential_initial_identification.py",
+    "?? lower_limb_sim/test_initial_identification_acceptance_rule.py",
+    "?? lower_limb_sim/test_safeguarded_sequential_initial_identification.py"
+  ],
+  "git_branch": "sync/mac-20260813",
+  "git_head": "f868b9d1bb74696345f35838c80e64d3e0a4f27c",
+  "checkpoint_boundaries": [
+    "SAFEGUARDED_SEQUENTIAL_INITIAL_IDENTIFICATION_V1",
+    "INITIAL_IDENTIFICATION_ACCEPTANCE_RULE_V1",
+    "DECISION_RELEVANT_GLOBAL_MODEL_RELIABILITY_CHARACTERIZATION_V1"
+  ],
+  "checkpoint_commit_created_by_runner": false,
+  "ds_store_included": false,
+  "artifact_file_count_including_metadata": 21,
+  "artifact_manifest_excluding_metadata": {
+    "DATA_LEAKAGE_AUDIT.md": {
+      "sha256": "fec40b4df49445c1872224fac0e64190efcca5c068ad80e39e2ee81d947e20b3",
+      "size_bytes": 1197
+    },
+    "DECISION_RELEVANT_RELIABILITY_REPORT.md": {
+      "sha256": "f69036bd5f863db99982f0e30a4222e1844ff26c9f3e4cfd44e61a40840fc049",
+      "size_bytes": 4336
+    },
+    "GLOBAL_RELIABILITY_CANDIDATE_ANALYSIS.md": {
+      "sha256": "65bedd3354bc19a5c8fcfc475b892d1c8bfdd90b9603f6d1ed44ae6e6d045181",
+      "size_bytes": 1936
+    },
+    "J_pred_vs_J_truth.png": {
+      "sha256": "42bc18291450901de5a990c5cd3e8aa9e3a38c6879cbba2a3fdc7d6f62c6e7ce",
+      "size_bytes": 193606
+    },
+    "decision_sign_agreement.csv": {
+      "sha256": "054e06095c9b447a76e4963a62ac4791005296423b03a5c01bca89a0314496a2",
+      "size_bytes": 3688
+    },
+    "decision_sign_confusion.png": {
+      "sha256": "edf9cca6be71c2f1c2d7979d6c230e3828a94fe6734b65e671f18440eb79f9b4",
+      "size_bytes": 58966
+    },
+    "explore_exploit_implication_table.csv": {
+      "sha256": "a4534cac420d0c4eca32b0bd912bbdc24029d9a09c668aad5c5cbf046aaad0af",
+      "size_bytes": 6948
+    },
+    "false_improvement_cases.csv": {
+      "sha256": "693c9e806bf987638469ffe4ee84ca8659dde6a4575196709cbb200cd849aa26",
+      "size_bytes": 46782
+    },
+    "false_improvement_vs_support_distance.png": {
+      "sha256": "d6e25136d53da25a51df1dbb68e6bba114bd1b024e88a393f089c84536d9fdce",
+      "size_bytes": 90447
+    },
+    "global_prediction_truth_comparison.csv": {
+      "sha256": "841d4af30c6ba8f9a7d64d39510f24b5c35b8c5d44591724a13935d58f819fbb",
+      "size_bytes": 138922178
+    },
+    "global_rank_consistency.csv": {
+      "sha256": "a8455756fab25e3897700c7c64c8419daab36439777a9c3b9d84401643ce0ed4",
+      "size_bytes": 2822
+    },
+    "global_reliability_characterization_overview.png": {
+      "sha256": "a2f4e33969dc1dc1484b55606df020c10752b395c248fa8345d225dfc06f4bac",
+      "size_bytes": 200485
+    },
+    "local_decision_regret.csv": {
+      "sha256": "3deb92cb4b50bb7acec2833e22aaf45300f24639595ac1a01d9d8cce695e85bd",
+      "size_bytes": 3007
+    },
+    "local_rank_consistency_by_distance.csv": {
+      "sha256": "08f94b263b15cb2f69e5ccb50c8997a257d64bd66df5439cc19fec3b81074b8b",
+      "size_bytes": 4745
+    },
+    "predicted_best_regret.csv": {
+      "sha256": "c8ec171659ebb67e60ed003773884ea13f76cd13b0f8fe1f7f374422aeda65ba",
+      "size_bytes": 4428
+    },
+    "predicted_best_vs_truth_best.png": {
+      "sha256": "40ecc64b2ec6a53ba17790a220577a51488cd25fd6455243776b35da252be82f",
+      "size_bytes": 124315
+    },
+    "rank_consistency_vs_distance.png": {
+      "sha256": "3bfbfcbbb776f979c96e51a7d16c703a7faf8aef187f188d681c4b9b7c264037",
+      "size_bytes": 271273
+    },
+    "reliability_vs_domain_coverage.csv": {
+      "sha256": "59ba09deb65eae76cf8b9ba0d1f0b2591df0080c15f5ef1506a9a0ec9889a58e",
+      "size_bytes": 50257
+    },
+    "reliability_vs_support_distance.csv": {
+      "sha256": "dc5ebf4cf942f3d1d2af6e1b2fb259e8cb947bd119a81ce8599a9ce805cc703c",
+      "size_bytes": 104898
+    },
+    "scenario_decision_reliability_summary.csv": {
+      "sha256": "124e5963c950ac976fc8bef678bc0559d75684b9ef27e693a439fc58ceb7e896",
+      "size_bytes": 15745
+    }
+  },
+  "runtime_seconds": 65.89089483299904
+}

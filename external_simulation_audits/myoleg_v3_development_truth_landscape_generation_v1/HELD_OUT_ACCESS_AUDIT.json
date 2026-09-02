@@ -1,0 +1,197 @@
+{
+  "V3_truth_replay_started_at_audit": false,
+  "allowed_operations": [
+    "file existence",
+    "manifest identity",
+    "file size",
+    "streaming SHA-256"
+  ],
+  "classification": "SEALED_CONFIRMATORY_TRUTH",
+  "held_out_J_tau_oracle_rank_access_count": 0,
+  "held_out_replay_count": 0,
+  "held_out_scientific_access_count": 0,
+  "held_out_subject_count": 8,
+  "held_out_subject_ids": [
+    "MYOLEG_VP_004",
+    "MYOLEG_VP_008",
+    "MYOLEG_VP_012",
+    "MYOLEG_VP_016",
+    "MYOLEG_VP_020",
+    "MYOLEG_VP_024",
+    "MYOLEG_VP_028",
+    "MYOLEG_VP_032"
+  ],
+  "np_load_held_out_count": 0,
+  "protocol_sha256": "837f287f75d353af69bdd0e9ade5a417777c6de60a69cda693f6be9f094f133d",
+  "stream_hashed_file_count": 24,
+  "stream_hashed_files": [
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_004/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6637,
+      "stream_sha256": "f1e452df8b3ffcccf33301d5e53006f6944edef8da6a6e8280e596600ffec2b1",
+      "subject_id": "MYOLEG_VP_004"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_004/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23492,
+      "stream_sha256": "4dfd32e7c0fdaa85c9613e7ca39ee7999d6b60af6b38d96ecc148d1769b95a41",
+      "subject_id": "MYOLEG_VP_004"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_004/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723905,
+      "stream_sha256": "9511d949a10f5c699d6b1360065d2d5a25f7ac4803477c812cc94c584d3c59ca",
+      "subject_id": "MYOLEG_VP_004"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_008/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6617,
+      "stream_sha256": "12029023e7a2371d2f6e9d85df13670024217f46e3c11bf4b02527deba8d3da4",
+      "subject_id": "MYOLEG_VP_008"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_008/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23258,
+      "stream_sha256": "d21e649cbab319890d9c1b038dbb5aa74d584386860cd19c8bcbbf16b9f80d08",
+      "subject_id": "MYOLEG_VP_008"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_008/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723727,
+      "stream_sha256": "faf61b4c006c7920eb7a17b56c5a4c181f86f2b0f93022fa98fb874155d3a647",
+      "subject_id": "MYOLEG_VP_008"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_012/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6627,
+      "stream_sha256": "7122e9e0e371c727a62ec02f2b30d1403ebd0f73df0973d7ea322d1443d969af",
+      "subject_id": "MYOLEG_VP_012"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_012/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23217,
+      "stream_sha256": "e031fa6f3256a501775c78f96a93bc434f71c48743a69923b1d49aa9a6cc0b34",
+      "subject_id": "MYOLEG_VP_012"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_012/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723673,
+      "stream_sha256": "96b37a5f2a28da60c00d16a00b9ee7f437d447a58eb095fd5a772a5c987e4629",
+      "subject_id": "MYOLEG_VP_012"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_016/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6618,
+      "stream_sha256": "a1823f2d211815ef8ec0da24ad66c55fec106bc57d5b150ccde2d24401cb77de",
+      "subject_id": "MYOLEG_VP_016"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_016/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23305,
+      "stream_sha256": "df056185fa0af6042898f68b56e5eafd12af5202cfccb6bccc097d959f33b414",
+      "subject_id": "MYOLEG_VP_016"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_016/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723650,
+      "stream_sha256": "4727adca8ff0ea9e11ed14a60cbfc39c8910d917955aa50f0a8509b05fa51be5",
+      "subject_id": "MYOLEG_VP_016"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_020/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6631,
+      "stream_sha256": "47331a2eb24e8a150aa552bc8778725d4f1240c291845cf61040a3b2e96125b6",
+      "subject_id": "MYOLEG_VP_020"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_020/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23270,
+      "stream_sha256": "e3999d233e56c9ec2eb1a4cd705518fded584acb6e6d09ea6e9eb1148253597e",
+      "subject_id": "MYOLEG_VP_020"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_020/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723577,
+      "stream_sha256": "41bc634802212725d7056269ef26c303829565f1476122e2f955e7aebb63a8fb",
+      "subject_id": "MYOLEG_VP_020"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_024/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6626,
+      "stream_sha256": "0a8a1793dd3d6f6a863ddbd63d8a7ddc357e73513499df7a4c5fc5d699c522b0",
+      "subject_id": "MYOLEG_VP_024"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_024/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23262,
+      "stream_sha256": "a015a5ea7ce9a7eacca0543cf9f914f9f151f4d63a9775f297185009aceb33fa",
+      "subject_id": "MYOLEG_VP_024"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_024/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723703,
+      "stream_sha256": "fbf1510b9cdff996fc4cfe8c4c770d652a6003549da1e5efe7058cbb0e362140",
+      "subject_id": "MYOLEG_VP_024"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_028/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6625,
+      "stream_sha256": "4b531d87be840783c17f7524db9ab99e98ea392300f3ed1af1a54e5c0038e802",
+      "subject_id": "MYOLEG_VP_028"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_028/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23275,
+      "stream_sha256": "1c425655e8e697974b2491501f9a1b247c0b03b827c5c33c8eb3a784561e4494",
+      "subject_id": "MYOLEG_VP_028"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_028/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723705,
+      "stream_sha256": "c1b55be06d62d5cb50047b53add574b4ea32d5ee658329eb9d35095210622056",
+      "subject_id": "MYOLEG_VP_028"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_032/metadata.json",
+      "path_role": "metadata_path",
+      "size_bytes": 6621,
+      "stream_sha256": "3fc85bc3c8a172607b1dc365a814877ba6bbb1ecddece0d0b98ebd47fe461017",
+      "subject_id": "MYOLEG_VP_032"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_032/model_delta.json",
+      "path_role": "model_delta_path",
+      "size_bytes": 23373,
+      "stream_sha256": "85173a10ce9340071193b8d0cc2d5430022aa3d249296613729c7bc675fecc25",
+      "subject_id": "MYOLEG_VP_032"
+    },
+    {
+      "path": "external_simulation/cohorts/myoleg_virtual_patient_cohort_v1/subjects/MYOLEG_VP_032/reference_replay_truth.npz",
+      "path_role": "reference_replay_truth_path",
+      "size_bytes": 723674,
+      "stream_sha256": "bff840a8cf6ae62c25c4066aa3bffa095cdf53a97751cf48e85df526d7cc3592",
+      "subject_id": "MYOLEG_VP_032"
+    }
+  ]
+}

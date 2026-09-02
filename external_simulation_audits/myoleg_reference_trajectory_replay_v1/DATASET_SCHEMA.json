@@ -1,0 +1,19 @@
+{
+  "array_container": "compressed NumPy NPZ",
+  "coordinate_units": {
+    "ddq": "rad/s^2",
+    "dq": "rad/s",
+    "q": "rad",
+    "tau": "N*m"
+  },
+  "joint_axis": [
+    "hip",
+    "knee"
+  ],
+  "muscle_arrays": "80 preserved actuator names; force N, length/tendon length m, torque contribution N*m",
+  "sample_axis": "401 frozen timestamps over 24 s",
+  "schema_version": 1,
+  "truth_field": "TAU_MY0LEG_REQUIRED_DRIVE",
+  "truth_semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1",
+  "truth_source": "prescribed-state Method A; controlled Method B arrays are diagnostic validation only"
+}

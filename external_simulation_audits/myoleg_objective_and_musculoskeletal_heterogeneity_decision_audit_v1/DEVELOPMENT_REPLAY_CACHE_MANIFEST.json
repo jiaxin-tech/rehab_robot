@@ -1,0 +1,52 @@
+{
+  "cache_id": "MYOLEG_OBJECTIVE_HETEROGENEITY_DEVELOPMENT_REPLAY_SUBSET_V1",
+  "candidate_count": 17,
+  "candidate_ids": [
+    "MYOLEG_V3_K0000",
+    "MYOLEG_V3_K0012",
+    "MYOLEG_V3_K0024",
+    "MYOLEG_V3_K0156",
+    "MYOLEG_V3_K0174",
+    "MYOLEG_V3_K0287",
+    "MYOLEG_V3_K0300",
+    "MYOLEG_V3_K0311",
+    "MYOLEG_V3_K0312",
+    "MYOLEG_V3_K0313",
+    "MYOLEG_V3_K0324",
+    "MYOLEG_V3_K0337",
+    "MYOLEG_V3_K0456",
+    "MYOLEG_V3_K0474",
+    "MYOLEG_V3_K0600",
+    "MYOLEG_V3_K0612",
+    "MYOLEG_V3_K0624"
+  ],
+  "compact_landscape_or_oracle_read_by_replay_api": false,
+  "decomposition_residual_max_nm": 1.4210854715202004e-14,
+  "held_out_replay_count": 0,
+  "pair_count": 136,
+  "path": "external_simulation/data/myoleg_objective_and_musculoskeletal_heterogeneity_decision_audit_v1/development_replay_subset.npz",
+  "runtime_s": 27.369907999993302,
+  "sample_count": 401,
+  "scientific_arrays": [
+    "tau_truth_nm",
+    "mass_term_nm",
+    "bias_term_nm",
+    "passive_internal_nm",
+    "actuator_internal_nm",
+    "constraint_internal_nm"
+  ],
+  "selection_uses_geometry_only": true,
+  "sha256": "4e5534f9a786ce5f9ef2831bc57f2d7c03cf519ccb9ad5874c78a63cd2a09f76",
+  "subject_count": 8,
+  "subject_ids": [
+    "MYOLEG_VP_031",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_021",
+    "MYOLEG_VP_022"
+  ],
+  "warning_count_max": 0
+}

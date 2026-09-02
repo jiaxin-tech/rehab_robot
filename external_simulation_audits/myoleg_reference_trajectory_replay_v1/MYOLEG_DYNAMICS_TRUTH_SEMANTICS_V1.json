@@ -1,0 +1,192 @@
+{
+  "definition": "external generalized hip/knee drive required at prescribed q,dq,ddq under frozen P0",
+  "determinism_fingerprints": {
+    "PRIMARY": {
+      "first": "6428d64c2ea7128e671c42a9785fe904ec916601dfcda4cfcec3f4d41ff05a1c",
+      "repeat": "6428d64c2ea7128e671c42a9785fe904ec916601dfcda4cfcec3f4d41ff05a1c"
+    },
+    "SENSITIVITY": {
+      "first": "3ad24d63febd8b3922d618e741d2f514add8af6b525145fae436a99cdd4c4496",
+      "repeat": "3ad24d63febd8b3922d618e741d2f514add8af6b525145fae436a99cdd4c4496"
+    }
+  },
+  "external_diagnostic_driver": "qfrc_applied on hip_flexion_r and knee_angle_r only; Method B cross-check, not truth",
+  "full_coordinate_equation": "r = M*qacc + qfrc_bias - qfrc_passive - qfrc_constraint - qfrc_actuator(P0)",
+  "generalized_force_truth_semantics": "PASS",
+  "internal_response_terms": [
+    "qfrc_passive",
+    "qfrc_actuator(P0)",
+    "qfrc_constraint"
+  ],
+  "mechanical_objective_compatibility": "WITH_CAVEATS",
+  "method_a": "prescribed-state inverse dynamics plus explicit EOM decomposition and T^T projection",
+  "method_b": "independently integrated zero-control generalized-PD replay plus forward force-balance reconstruction",
+  "mujoCo_qfrc_inverse_identity": "qfrc_inverse = M*qacc + qfrc_bias - qfrc_passive - qfrc_constraint",
+  "official_mujoco_sources": [
+    "https://mujoco.readthedocs.io/en/latest/computation/index.html",
+    "https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html"
+  ],
+  "protocol_sha256": "5c46ed8bc6785cb23899a4ac8e895a3e487fd0e3f57f21531082122a70489837",
+  "reduced_coordinate_equation": "tau_truth = T(q)^T*r",
+  "semantic_version": "MYOLEG_DYNAMICS_TRUTH_SEMANTICS_V1",
+  "sign_convention": "positive torque increases project-positive hip flexion or knee flexion",
+  "tangent_definition": "T maps [dq_hip,dq_knee] into the full velocity space and includes all seven right knee/patella polynomial equality derivatives",
+  "torque_sign_mapping": "PASS",
+  "truth_field": "TAU_MY0LEG_REQUIRED_DRIVE",
+  "unit": "N*m",
+  "validation_metrics": {
+    "PRIMARY": {
+      "condition": "PRIMARY",
+      "exact_force_accounting": {
+        "decomposition_max_abs_nm": 1.4210854715202004e-14,
+        "dynamics_balance_full_max_abs_nm": 2.1316282072803006e-13,
+        "dynamics_balance_max_abs_nm": 2.1316282072803006e-13,
+        "inverse_formula_max_abs_nm": 1.0514682685353144e-14,
+        "muscle_reconstruction_max_abs_nm": 5.329070518200751e-15
+      },
+      "exact_force_accounting_pass": true,
+      "method_ab": [
+        {
+          "condition": "PRIMARY",
+          "correlation": 0.9903207334556782,
+          "joint": "hip",
+          "max_abs": 52.11140842999457,
+          "p95_abs": 0.2193249924823064,
+          "pass": true,
+          "relative_rms": 0.07438648239010336,
+          "rmse": 2.6956879921824073,
+          "truth_rms_nm": 36.23894967966722
+        },
+        {
+          "condition": "PRIMARY",
+          "correlation": 0.9992382665477376,
+          "joint": "knee",
+          "max_abs": 17.22027658606473,
+          "p95_abs": 9.529832571824358,
+          "pass": true,
+          "relative_rms": 0.1510692490031418,
+          "rmse": 4.273047413827341,
+          "truth_rms_nm": 28.285355504338767
+        }
+      ],
+      "method_ab_pass": true,
+      "source_equality_residual_max": 0.0006773673657263354,
+      "stable_replay": true,
+      "tracking": {
+        "hip": {
+          "ddq_error_deg_s2": {
+            "max_abs": 802.3553647693319,
+            "p95_abs": 0.6229791753711139,
+            "rmse": 41.703777615101245
+          },
+          "dq_error_deg_s": {
+            "max_abs": 5.334587657083024,
+            "p95_abs": 0.17993492710031167,
+            "rmse": 0.282972595518311
+          },
+          "q_error_deg": {
+            "max_abs": 0.6218492595167152,
+            "p95_abs": 0.5969066688391139,
+            "rmse": 0.4144753132097478
+          }
+        },
+        "knee": {
+          "ddq_error_deg_s2": {
+            "max_abs": 225.21821304318556,
+            "p95_abs": 0.7949866233282077,
+            "rmse": 11.961264913468215
+          },
+          "dq_error_deg_s": {
+            "max_abs": 1.8496938878021953,
+            "p95_abs": 0.45214225282831866,
+            "rmse": 0.1909383181051374
+          },
+          "q_error_deg": {
+            "max_abs": 0.5962666529447797,
+            "p95_abs": 0.57154425182412,
+            "rmse": 0.280173958379112
+          }
+        }
+      },
+      "tracking_pass": true,
+      "truth_semantics_pass": true
+    },
+    "SENSITIVITY": {
+      "condition": "SENSITIVITY",
+      "exact_force_accounting": {
+        "decomposition_max_abs_nm": 7.105427357601002e-15,
+        "dynamics_balance_full_max_abs_nm": 2.2737367544323206e-13,
+        "dynamics_balance_max_abs_nm": 6.616929226765933e-14,
+        "inverse_formula_max_abs_nm": 7.105427357601002e-15,
+        "muscle_reconstruction_max_abs_nm": 3.552713678800501e-15
+      },
+      "exact_force_accounting_pass": true,
+      "method_ab": [
+        {
+          "condition": "SENSITIVITY",
+          "correlation": 0.990247652305513,
+          "joint": "hip",
+          "max_abs": 52.11140842999457,
+          "p95_abs": 0.221519494006845,
+          "pass": true,
+          "relative_rms": 0.07416254732381858,
+          "rmse": 2.6956412674269643,
+          "truth_rms_nm": 36.34774376959963
+        },
+        {
+          "condition": "SENSITIVITY",
+          "correlation": 0.9809466732529208,
+          "joint": "knee",
+          "max_abs": 17.22027658606473,
+          "p95_abs": 0.5197738964949843,
+          "pass": true,
+          "relative_rms": 0.08400461501440519,
+          "rmse": 0.9359722463091658,
+          "truth_rms_nm": 11.141914597771377
+        }
+      ],
+      "method_ab_pass": true,
+      "source_equality_residual_max": 0.0005669015303355132,
+      "stable_replay": true,
+      "tracking": {
+        "hip": {
+          "ddq_error_deg_s2": {
+            "max_abs": 802.3553647693319,
+            "p95_abs": 0.6223439840789865,
+            "rmse": 41.70380505456381
+          },
+          "dq_error_deg_s": {
+            "max_abs": 5.334606746675731,
+            "p95_abs": 0.178170013717244,
+            "rmse": 0.2829310853334518
+          },
+          "q_error_deg": {
+            "max_abs": 0.621851312569234,
+            "p95_abs": 0.5970632429977619,
+            "rmse": 0.415710387913024
+          }
+        },
+        "knee": {
+          "ddq_error_deg_s2": {
+            "max_abs": 225.21821304318556,
+            "p95_abs": 0.19699453679840925,
+            "rmse": 11.944825633717768
+          },
+          "dq_error_deg_s": {
+            "max_abs": 1.8497062386058485,
+            "p95_abs": 0.040720172327369165,
+            "rmse": 0.0968687821006869
+          },
+          "q_error_deg": {
+            "max_abs": 0.20491809351532728,
+            "p95_abs": 0.1953392051158849,
+            "rmse": 0.12743479937838328
+          }
+        }
+      },
+      "tracking_pass": true,
+      "truth_semantics_pass": true
+    }
+  },
+  "why_naive_slice_is_invalid": "full-coordinate inverse force contains auxiliary-DOF drive that must be combined by virtual work before a two-coordinate knee torque is defined"
+}

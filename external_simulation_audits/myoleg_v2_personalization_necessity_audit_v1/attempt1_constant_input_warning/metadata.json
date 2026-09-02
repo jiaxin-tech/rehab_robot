@@ -1,0 +1,19 @@
+{
+  "analysis_code_sha256": "7e2984ac5c251d35c73316ea668a895e9addae35c10c1117beb7aba18414c8d6",
+  "candidate_count": 16675,
+  "development_subject_count": 24,
+  "held_out_policy_sha256": "b5e103a20869e626bd190479a91f09b3199791a895b6f91061c3d0363cfbef73",
+  "held_out_subject_count": 8,
+  "held_out_truth_revealed": false,
+  "outcome": "PERSONALIZATION_NECESSITY_NOT_SUPPORTED",
+  "protocol_sha256": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f",
+  "runtime_s": 2.4258688330301084,
+  "scope": {
+    "bo_run": false,
+    "models_trained": false,
+    "offline_only": true,
+    "robot_or_hardware": false
+  },
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_NECESSITY_AUDIT_V1",
+  "truth_landscape_manifest_sha256": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515"
+}
