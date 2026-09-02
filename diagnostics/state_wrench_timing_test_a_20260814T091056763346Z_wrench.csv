@@ -1,0 +1,1 @@
+sequence_id,host_timestamp_ns,call_start_ns,call_end_ns,query_latency_ms,request_inter_arrival_ms,success,error_code,error_message,operation_state,joint_measured_torque_nm,joint_external_torque_nm,cartesian_force_raw_n,cartesian_torque_raw_nm

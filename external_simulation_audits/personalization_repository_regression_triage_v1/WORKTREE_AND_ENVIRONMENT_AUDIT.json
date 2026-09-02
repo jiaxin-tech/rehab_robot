@@ -1,0 +1,75 @@
+{
+  "algorithm_status": "PHYSICS_INFORMED_SEQUENTIAL_PERSONALIZATION_V1_IMPLEMENTED_WITH_LIMITATIONS",
+  "benchmark_revalidation": {
+    "include_sensitivity": true,
+    "k": 4,
+    "lf_normalized_serialized_bytes_equal": true,
+    "logical_json_equal": true,
+    "pinning": {
+      "PINN_NOT_JUSTIFIED": true,
+      "PINN_TRAINING": 0
+    },
+    "primary_rows": 1440,
+    "seeds": [0, 1, 2, 3, 4],
+    "sensitivity_rows": 144,
+    "stored_summary_sha256": "0e2f07e0147095c48f86d576b23f066458559c458635fe79510562e8c61bd7b5",
+    "stored_summary_sha256_after_lf_normalization": "16327ed2c30af8eec3145d1976d06cc42f955c32b305b3e9020f91beeeef3ac7",
+    "rerun_lf_serialization_sha256": "16327ed2c30af8eec3145d1976d06cc42f955c32b305b3e9020f91beeeef3ac7"
+  },
+  "causality": {
+    "baseline_and_current_bad_node_sets_equal": true,
+    "baseline_and_current_failure_error_tags_equal": true,
+    "caused_by_new_stage": 0,
+    "current_only_bad_nodes": 0,
+    "unresolved_bad_nodes": 0
+  },
+  "dependencies": {
+    "numpy": "2.5.2",
+    "pandas": "3.0.5",
+    "pandas_to_numpy_writeable": false,
+    "pip_check": "No broken requirements found",
+    "python": "3.12.10",
+    "scikit_learn": "1.9.0",
+    "scipy": "1.18.0"
+  },
+  "diagnosis_only": true,
+  "failure_classes": [
+    {"errors": 137, "failures": 234, "name": "FROZEN_BYTE_IDENTITY_AND_CHECKPOINT_CASCADE", "total": 371},
+    {"errors": 41, "failures": 8, "name": "MISSING_IGNORED_LOCAL_INPUTS", "total": 49},
+    {"errors": 5, "failures": 21, "name": "PANDAS3_READ_ONLY_NUMPY_VIEW", "total": 26},
+    {"errors": 0, "failures": 5, "name": "CROSS_PLATFORM_PATH_SERIALIZATION", "total": 5},
+    {"errors": 0, "failures": 1, "name": "WINDOWS_DEFAULT_ENCODING_CP936", "total": 1}
+  ],
+  "full_suite": {
+    "clean_head_baseline": {"errors": 183, "failures": 269, "passed": 1442, "skipped": 1, "tests": 1895},
+    "current_worktree": {"errors": 183, "failures": 269, "passed": 1466, "skipped": 1, "tests": 1919},
+    "current_worktree_repeat_count": 2,
+    "extra_current_passes": {"new_personalization_tests": 18, "pre_existing_untracked_timing_tests": 6, "total": 24}
+  },
+  "generated_at": "2026-09-02T19:36:59.0379360+08:00",
+  "git": {
+    "branch": "physics",
+    "core_autocrlf": true,
+    "core_autocrlf_origin": "C:/Program Files/Git/etc/gitconfig",
+    "core_eol": null,
+    "core_safecrlf": null,
+    "gitattributes_present": false,
+    "head": "3ea00104e8cd90f68146cd8db3c1ee8b5ef69c29",
+    "head_ahead_of_mac_parent": 3,
+    "head_ahead_of_origin_syn_win_0813": 22,
+    "mac_parent": "cc218f31176997e63406a5837f708d14dc1f045d",
+    "merge_subject": "Merge remote-tracking branch 'origin/sync/mac-20260813' into syn/win-0813",
+    "windows_parent": "4284da5cf23a6d97f22fd3987e3534a49814fc2d"
+  },
+  "output_status": "FULL_SUITE_FAILURE_ROOT_CAUSE_IDENTIFIED",
+  "repository_root": "C:/Users/liumai/fjx/rehab_robot",
+  "temporary_worktree": {
+    "checkout_content_removed_except_protected_pytest_cache": true,
+    "git_registration_removed": true,
+    "head": "3ea00104e8cd90f68146cd8db3c1ee8b5ef69c29",
+    "path": "C:/Users/liumai/AppData/Local/Temp/rehab_robot_triage_baseline_3ea0010",
+    "residual": "C:/Users/liumai/AppData/Local/Temp/rehab_robot_triage_baseline_3ea0010/.pytest_cache",
+    "residual_reason": "Windows AccessDenied even after an escalated cleanup attempt"
+  },
+  "worktree_divergence_status": "TRACKED_FROZEN_GIT_BLOBS_EQUAL_BETWEEN_HEAD_AND_MAC_PARENT; WINDOWS_PHYSICAL_CHECKOUT_DIFFERS_FROM_CANONICAL_GIT_BLOBS_BY_CRLF; MAC_PHYSICAL_WORKTREE_UNVERIFIED; IGNORED_LOCAL_INPUTS_ABSENT_ON_WINDOWS_AND_CROSS_MACHINE_STATE_UNVERIFIED"
+}

@@ -29,7 +29,14 @@ def _error_code(error: BaseException) -> int | None:
 def _timing_summary(samples_ms: list[float]) -> dict[str, float | int | None]:
     values = sorted(float(value) for value in samples_ms)
     if not values:
-        return {"count": 0, "mean": None, "p95": None, "p99": None, "max": None}
+        return {
+            "count": 0,
+            "mean": None,
+            "median": None,
+            "p95": None,
+            "p99": None,
+            "max": None,
+        }
 
     def percentile(percent: float) -> float:
         position = (len(values) - 1) * percent
@@ -41,6 +48,7 @@ def _timing_summary(samples_ms: list[float]) -> dict[str, float | int | None]:
     return {
         "count": len(values),
         "mean": sum(values) / len(values),
+        "median": percentile(0.50),
         "p95": percentile(0.95),
         "p99": percentile(0.99),
         "max": values[-1],
@@ -152,7 +160,7 @@ class ProcessObservation:
     last_wrench_success_ns: int | None
     wrench_age_ms: float | None
     wrench_valid: bool
-    wrench_stale: bool
+    wrench_stale: bool | None
     last_error_code: int | None
     last_error: str | None
     graceful_disconnect_confirmed: bool | None
@@ -167,20 +175,25 @@ class WrenchProcessSupervisor:
     def __init__(
         self,
         *,
-        stale_age_ms: float = 150.0,
+        stale_age_ms: float | None = 150.0,
         worker_hung_ms: float = 750.0,
         worker_startup_hung_ms: float = 15_000.0,
         context: BaseContext | None = None,
         clock_ns: Callable[[], int] = time.perf_counter_ns,
     ) -> None:
-        if stale_age_ms <= 0 or worker_hung_ms <= 0 or worker_startup_hung_ms <= 0:
+        if (
+            (stale_age_ms is not None and stale_age_ms <= 0)
+            or worker_hung_ms <= 0
+            or worker_startup_hung_ms <= 0
+        ):
             raise ValueError("stale, hung, and startup thresholds must be positive")
-        self.stale_age_ms = float(stale_age_ms)
+        self.stale_age_ms = None if stale_age_ms is None else float(stale_age_ms)
         self.worker_hung_ms = float(worker_hung_ms)
         self.worker_startup_hung_ms = float(worker_startup_hung_ms)
         self.context = context or mp.get_context("spawn")
         self.clock_ns = clock_ns
         self._snapshot_queue: Any | None = None
+        self._event_queue: Any | None = None
         self._heartbeat_queue: Any | None = None
         self._stop_event: Any | None = None
         self._process: Any | None = None
@@ -189,6 +202,7 @@ class WrenchProcessSupervisor:
         self._last_heartbeat: dict[str, Any] | None = None
         self._last_error_code: int | None = None
         self._last_error: str | None = None
+        self._pending_events: list[dict[str, Any]] = []
         self._forced_termination = False
 
     @property
@@ -213,6 +227,9 @@ class WrenchProcessSupervisor:
         if self._process is not None:
             raise RuntimeError("worker process has already been created")
         self._snapshot_queue = self.context.Queue(maxsize=1)
+        self._event_queue = self.context.Queue(
+            maxsize=max(16, int(config.get("event_queue_size", 4096)))
+        )
         # A few bounded slots preserve rapid starting -> connecting -> ready
         # state transitions without creating an unbounded telemetry backlog.
         self._heartbeat_queue = self.context.Queue(maxsize=4)
@@ -224,6 +241,7 @@ class WrenchProcessSupervisor:
                 str(mode),
                 dict(config),
                 self._snapshot_queue,
+                self._event_queue,
                 self._heartbeat_queue,
                 self._stop_event,
             ),
@@ -276,7 +294,11 @@ class WrenchProcessSupervisor:
             if success_ns is None
             else max(0.0, (current_ns - int(success_ns)) / 1e6)
         )
-        stale = wrench_age_ms is None or wrench_age_ms > self.stale_age_ms
+        stale = (
+            None
+            if self.stale_age_ms is None
+            else wrench_age_ms is None or wrench_age_ms > self.stale_age_ms
+        )
         worker_state = (
             "not_started"
             if self._last_heartbeat is None
@@ -320,7 +342,7 @@ class WrenchProcessSupervisor:
             ),
             last_wrench_success_ns=None if success_ns is None else int(success_ns),
             wrench_age_ms=wrench_age_ms,
-            wrench_valid=bool(self._last_success_snapshot is not None and not stale),
+            wrench_valid=bool(self._last_success_snapshot is not None and stale is not True),
             wrench_stale=stale,
             last_error_code=self._last_error_code,
             last_error=self._last_error,
@@ -329,6 +351,19 @@ class WrenchProcessSupervisor:
             ),
         )
 
+    def drain_events(self) -> list[dict[str, Any]]:
+        """Drain the ordered per-request audit stream without blocking."""
+
+        events = self._pending_events
+        self._pending_events = []
+        if self._event_queue is None:
+            return events
+        while True:
+            try:
+                events.append(dict(self._event_queue.get_nowait()))
+            except queue.Empty:
+                return events
+
     def request_stop(self) -> None:
         if self._stop_event is not None:
             self._stop_event.set()
@@ -336,7 +371,15 @@ class WrenchProcessSupervisor:
     def join(self, timeout_s: float) -> bool:
         if self._process is None:
             return True
-        self._process.join(timeout=max(0.0, float(timeout_s)))
+        deadline = time.monotonic() + max(0.0, float(timeout_s))
+        while self._process.is_alive() and time.monotonic() < deadline:
+            self._process.join(timeout=min(0.05, max(0.0, deadline - time.monotonic())))
+            if self._event_queue is not None:
+                while True:
+                    try:
+                        self._pending_events.append(dict(self._event_queue.get_nowait()))
+                    except queue.Empty:
+                        break
         self.poll()
         return not self._process.is_alive()
 
@@ -376,7 +419,7 @@ class WrenchProcessSupervisor:
         }
 
     def close(self) -> None:
-        for channel in (self._snapshot_queue, self._heartbeat_queue):
+        for channel in (self._snapshot_queue, self._event_queue, self._heartbeat_queue):
             if channel is not None:
                 try:
                     channel.close()
@@ -415,6 +458,8 @@ def _heartbeat(
 
 def _publish_result(
     channel: Any,
+    event_channel: Any,
+    counters: dict[str, int],
     *,
     sequence_id: int,
     started_ns: int,
@@ -422,9 +467,9 @@ def _publish_result(
     success: bool,
     value: Mapping[str, Any] | None = None,
     error: BaseException | None = None,
-) -> None:
+) -> dict[str, Any]:
     value = dict(value or {})
-    publish_latest(channel, {
+    payload = {
         "schema_version": IPC_SCHEMA_VERSION,
         "sequence_id": sequence_id,
         "host_timestamp_ns": finished_ns,
@@ -438,7 +483,14 @@ def _publish_result(
         "joint_external_torque_nm": value.get("joint_external_torque_nm"),
         "cartesian_force_raw_n": value.get("cartesian_force_raw_n"),
         "cartesian_torque_raw_nm": value.get("cartesian_torque_raw_nm"),
-    })
+    }
+    publish_latest(channel, payload)
+    try:
+        event_channel.put_nowait(dict(payload))
+        counters["event_publish_count"] += 1
+    except queue.Full:
+        counters["event_drop_count"] += 1
+    return payload
 
 
 def _offline_query(config: Mapping[str, Any], sequence_id: int) -> dict[str, Any]:
@@ -505,8 +557,15 @@ def _load_live_sdk(
     }
     if operation != sdk.OperationState.idle:
         raise RuntimeError(f"requires operationState=idle, observed {operation.name}")
-    if power != sdk.PowerState.on:
-        raise RuntimeError(f"requires powerState=on, observed {power.name}")
+    allowed_power_states = {
+        str(value).strip().lower()
+        for value in config.get("allowed_power_states", ("on",))
+    }
+    metadata["allowed_power_states"] = sorted(allowed_power_states)
+    if power.name.lower() not in allowed_power_states:
+        raise RuntimeError(
+            f"requires powerState in {sorted(allowed_power_states)}, observed {power.name}"
+        )
     if operate_mode != sdk.OperateMode.automatic:
         raise RuntimeError(f"requires operateMode=automatic, observed {operate_mode.name}")
     return sdk, robot, robot.forceControl() if include_wrench else None, metadata
@@ -553,6 +612,7 @@ def _worker_entry(
     mode: str,
     config: dict[str, Any],
     snapshot_queue: Any,
+    event_queue: Any,
     heartbeat_queue: Any,
     stop_event: Any,
 ) -> None:
@@ -567,6 +627,13 @@ def _worker_entry(
     last_error: str | None = None
     graceful: bool | None = None
     sequence_id = 0
+    counters = {
+        "request_count": 0,
+        "success_count": 0,
+        "failure_count": 0,
+        "event_publish_count": 0,
+        "event_drop_count": 0,
+    }
     target_hz = float(config.get("target_hz", 20.0))
     period_ns = max(1, int(1e9 / target_hz))
     _heartbeat(
@@ -606,6 +673,7 @@ def _worker_entry(
         next_tick_ns = time.perf_counter_ns()
         while not stop_event.is_set():
             sequence_id += 1
+            counters["request_count"] += 1
             started_ns = time.perf_counter_ns()
             _heartbeat(
                 heartbeat_queue,
@@ -615,7 +683,7 @@ def _worker_entry(
                 last_success_ns=last_success_ns,
                 last_error_code=last_error_code,
                 last_error=last_error,
-                metadata=metadata,
+                metadata={**metadata, **counters},
             )
             try:
                 if mode == "live":
@@ -626,12 +694,15 @@ def _worker_entry(
                 finished_ns = time.perf_counter_ns()
                 _publish_result(
                     snapshot_queue,
+                    event_queue,
+                    counters,
                     sequence_id=sequence_id,
                     started_ns=started_ns,
                     finished_ns=finished_ns,
                     success=True,
                     value=value,
                 )
+                counters["success_count"] += 1
                 last_success_ns = finished_ns
             except Exception as exc:
                 finished_ns = time.perf_counter_ns()
@@ -639,12 +710,15 @@ def _worker_entry(
                 last_error = f"{type(exc).__name__}:{exc}"
                 _publish_result(
                     snapshot_queue,
+                    event_queue,
+                    counters,
                     sequence_id=sequence_id,
                     started_ns=started_ns,
                     finished_ns=finished_ns,
                     success=False,
                     error=exc,
                 )
+                counters["failure_count"] += 1
             _heartbeat(
                 heartbeat_queue,
                 start_ns=start_ns,
@@ -653,7 +727,7 @@ def _worker_entry(
                 last_success_ns=last_success_ns,
                 last_error_code=last_error_code,
                 last_error=last_error,
-                metadata=metadata,
+                metadata={**metadata, **counters},
             )
             next_tick_ns += period_ns
             remaining_ns = next_tick_ns - time.perf_counter_ns()
@@ -672,7 +746,7 @@ def _worker_entry(
             last_success_ns=last_success_ns,
             last_error_code=last_error_code,
             last_error=last_error,
-            metadata=metadata,
+            metadata={**metadata, **counters},
         )
     finally:
         if mode == "live" and robot is not None and connected:
@@ -695,9 +769,9 @@ def _worker_entry(
             last_error_code=last_error_code,
             last_error=last_error,
             graceful_disconnect_confirmed=graceful,
-            metadata=metadata,
+            metadata={**metadata, **counters},
         )
-        for channel in (snapshot_queue, heartbeat_queue):
+        for channel in (snapshot_queue, event_queue, heartbeat_queue):
             try:
                 channel.close()
                 channel.join_thread()
@@ -802,20 +876,38 @@ class RtLatestSharedSnapshot:
     _RT_VALID = 5
     _HEADER_SIZE = 6
     _VECTOR_SIZE = 12
+    _SOURCE_RING_SIZE = 8192
 
     def __init__(self, context: BaseContext) -> None:
         self._header = context.Array("q", self._HEADER_SIZE, lock=False)
         self._vectors = context.Array("d", self._VECTOR_SIZE, lock=False)
+        self._source_ring_sequence = context.Array(
+            "q", self._SOURCE_RING_SIZE, lock=False
+        )
+        self._source_ring_receive_ns = context.Array(
+            "q", self._SOURCE_RING_SIZE, lock=False
+        )
+        self._source_ring_publish_ns = context.Array(
+            "q", self._SOURCE_RING_SIZE, lock=False
+        )
 
     def publish(self, payload: Mapping[str, Any]) -> int:
         version = int(self._header[self._VERSION])
         if version & 1:
             version += 1
         publish_count = int(self._header[self._PUBLISH_COUNT]) + 1
+        rt_sequence = int(payload["rt_sequence"])
+        source_ns = int(payload["source_or_receive_timestamp_ns"])
+        publish_ns = int(payload["publish_timestamp_ns"])
+        ring_index = rt_sequence % self._SOURCE_RING_SIZE
+        self._source_ring_sequence[ring_index] = -rt_sequence
+        self._source_ring_receive_ns[ring_index] = source_ns
+        self._source_ring_publish_ns[ring_index] = publish_ns
+        self._source_ring_sequence[ring_index] = rt_sequence
         self._header[self._VERSION] = version + 1
-        self._header[self._RT_SEQUENCE] = int(payload["rt_sequence"])
-        self._header[self._SOURCE_NS] = int(payload["source_or_receive_timestamp_ns"])
-        self._header[self._PUBLISH_NS] = int(payload["publish_timestamp_ns"])
+        self._header[self._RT_SEQUENCE] = rt_sequence
+        self._header[self._SOURCE_NS] = source_ns
+        self._header[self._PUBLISH_NS] = publish_ns
         self._header[self._PUBLISH_COUNT] = publish_count
         self._header[self._RT_VALID] = 1 if payload.get("rt_valid") else 0
         vector = [
@@ -857,6 +949,45 @@ class RtLatestSharedSnapshot:
             }
         return None
 
+    def read_source_events(
+        self,
+        after_sequence: int,
+    ) -> tuple[list[dict[str, int]], int, int]:
+        """Read committed RT source timestamps newer than ``after_sequence``.
+
+        Returns ``(events, overwritten_count, current_sequence)``.  The fixed
+        ring is diagnostic telemetry only; the primary state IPC remains one
+        latest snapshot.
+        """
+
+        latest = self.read()
+        if latest is None:
+            return [], 0, int(after_sequence)
+        current_sequence = int(latest["rt_sequence"])
+        first_available = max(1, current_sequence - self._SOURCE_RING_SIZE + 1)
+        requested_first = int(after_sequence) + 1
+        overwritten_count = max(0, first_available - requested_first)
+        first = max(requested_first, first_available)
+        events: list[dict[str, int]] = []
+        for sequence in range(first, current_sequence + 1):
+            index = sequence % self._SOURCE_RING_SIZE
+            marker_before = int(self._source_ring_sequence[index])
+            if marker_before != sequence:
+                continue
+            source_ns = int(self._source_ring_receive_ns[index])
+            publish_ns = int(self._source_ring_publish_ns[index])
+            marker_after = int(self._source_ring_sequence[index])
+            if marker_before != marker_after:
+                continue
+            events.append(
+                {
+                    "rt_sequence": sequence,
+                    "source_or_receive_timestamp_ns": source_ns,
+                    "publish_timestamp_ns": publish_ns,
+                }
+            )
+        return events, overwritten_count, current_sequence
+
 
 @dataclass(frozen=True)
 class RtProcessObservation:
@@ -884,7 +1015,7 @@ class RtProcessObservation:
     overwrite_count: int
     publish_drop_count: int
     rt_valid: bool
-    rt_stale: bool
+    rt_stale: bool | None
     operation_state: str | None
     last_error_code: int | None
     last_error: str | None
@@ -900,15 +1031,19 @@ class RtProcessSupervisor:
     def __init__(
         self,
         *,
-        stale_age_ms: float = 50.0,
+        stale_age_ms: float | None = 50.0,
         worker_hung_ms: float = 750.0,
         worker_startup_hung_ms: float = 15_000.0,
         context: BaseContext | None = None,
         clock_ns: Callable[[], int] = time.perf_counter_ns,
     ) -> None:
-        if min(stale_age_ms, worker_hung_ms, worker_startup_hung_ms) <= 0:
+        if (
+            (stale_age_ms is not None and stale_age_ms <= 0)
+            or worker_hung_ms <= 0
+            or worker_startup_hung_ms <= 0
+        ):
             raise ValueError("RT thresholds must be positive")
-        self.stale_age_ms = float(stale_age_ms)
+        self.stale_age_ms = None if stale_age_ms is None else float(stale_age_ms)
         self.worker_hung_ms = float(worker_hung_ms)
         self.worker_startup_hung_ms = float(worker_startup_hung_ms)
         self.context = context or mp.get_context("spawn")
@@ -921,6 +1056,8 @@ class RtProcessSupervisor:
         self._last_heartbeat: dict[str, Any] | None = None
         self._last_supervisor_receive_ns: int | None = None
         self._receive_count = 0
+        self._last_drained_source_sequence = 0
+        self._source_ring_overwrite_count = 0
         self._forced_termination = False
 
     @property
@@ -1004,7 +1141,11 @@ class RtProcessSupervisor:
             if publish_timestamp_ns is None or receive_timestamp_ns is None
             else max(0.0, (int(receive_timestamp_ns) - int(publish_timestamp_ns)) / 1e6)
         )
-        stale = age_ms is None or age_ms > self.stale_age_ms
+        stale = (
+            None
+            if self.stale_age_ms is None
+            else age_ms is None or age_ms > self.stale_age_ms
+        )
         graceful = None if self._last_heartbeat is None else self._last_heartbeat.get("graceful_disconnect_confirmed")
         if self._forced_termination:
             graceful = False
@@ -1049,13 +1190,36 @@ class RtProcessSupervisor:
             publish_drop_count=(
                 0 if self._last_state is None else int(self._last_state.get("publish_drop_count", 0))
             ),
-            rt_valid=bool(self._last_state is not None and self._last_state.get("rt_valid") and not stale),
+            rt_valid=bool(
+                self._last_state is not None
+                and self._last_state.get("rt_valid")
+                and stale is not True
+            ),
             rt_stale=stale,
             operation_state=None if self._last_state is None else self._last_state.get("operation_state"),
             last_error_code=(None if self._last_heartbeat is None else self._last_heartbeat.get("last_error_code")),
             last_error=(None if self._last_heartbeat is None else self._last_heartbeat.get("last_error")),
             graceful_disconnect_confirmed=None if graceful is None else bool(graceful),
         )
+
+    @property
+    def source_ring_overwrite_count(self) -> int:
+        return self._source_ring_overwrite_count
+
+    def drain_source_events(self) -> list[dict[str, int]]:
+        """Drain exact child-side source/publish timestamps from the RT ring."""
+
+        if self._shared_state is None:
+            return []
+        events, overwritten, current = self._shared_state.read_source_events(
+            self._last_drained_source_sequence
+        )
+        self._source_ring_overwrite_count += overwritten
+        if events:
+            self._last_drained_source_sequence = int(events[-1]["rt_sequence"])
+        elif overwritten:
+            self._last_drained_source_sequence = current
+        return events
 
     def request_stop(self) -> None:
         if self._stop_event is not None:
@@ -1133,6 +1297,10 @@ def _rt_worker_entry(
     previous_source_ns: int | None = None
     previous_publish_ns: int | None = None
     update_timeout_count = 0
+    operation_state_transitions: list[dict[str, Any]] = []
+    last_operation_name: str | None = None
+    operation_poll_period_ns: int | None = None
+    next_operation_poll_ns: int | None = None
     _heartbeat(
         heartbeat_queue,
         start_ns=start_ns,
@@ -1149,6 +1317,17 @@ def _rt_worker_entry(
                 "rt_process_single_thread": True,
                 "rt_ipc_transport": "fixed_shared_memory_latest_snapshot",
                 "timestamp_source": "synthetic_host_monotonic_receive_timestamp",
+                "operation_state": "idle",
+                "operation_state_before": "idle",
+                "operation_state_after": "idle",
+                "operation_state_transitions": [
+                    {
+                        "host_monotonic_timestamp_ns": time.perf_counter_ns(),
+                        "from": None,
+                        "to": "idle",
+                        "event": "synthetic_initial_observation",
+                    }
+                ],
             }
             _heartbeat(
                 heartbeat_queue,
@@ -1246,6 +1425,7 @@ def _rt_worker_entry(
 
         info = call("robotInfo", native.robotInfo)
         operation = call("operationState", native.operationState)
+        operation_observed_ns = time.perf_counter_ns()
         power = call("powerState", native.powerState)
         operate_mode = call("operateMode", native.operateMode)
         metadata = {
@@ -1254,6 +1434,8 @@ def _rt_worker_entry(
             "robot_model": str(info.type),
             "robot_serial": str(info.id),
             "operation_state": operation.name,
+            "operation_state_before": operation.name,
+            "operation_state_after": None,
             "power_state": power.name,
             "operate_mode": operate_mode.name,
             "rt_process_single_thread": True,
@@ -1261,10 +1443,35 @@ def _rt_worker_entry(
             "timestamp_source": "host_monotonic_immediately_after_getStateData_no_controller_timestamp",
             "state_interval_ms": int(config.get("state_interval_ms", 8)),
         }
+        last_operation_name = operation.name
+        operation_state_transitions.append(
+            {
+                "host_monotonic_timestamp_ns": operation_observed_ns,
+                "from": None,
+                "to": operation.name,
+                "event": "initial_observation",
+            }
+        )
+        metadata["operation_state_transitions"] = operation_state_transitions
+        operation_poll_interval_s = config.get("operation_poll_interval_s")
+        if operation_poll_interval_s is not None:
+            parsed_poll_interval_s = float(operation_poll_interval_s)
+            if parsed_poll_interval_s <= 0:
+                raise ValueError("operation_poll_interval_s must be positive")
+            operation_poll_period_ns = int(parsed_poll_interval_s * 1e9)
+            next_operation_poll_ns = operation_observed_ns + operation_poll_period_ns
+            metadata["operation_poll_interval_s"] = parsed_poll_interval_s
         if operation != sdk.OperationState.idle:
             raise RuntimeError(f"requires operationState=idle, observed {operation.name}")
-        if power != sdk.PowerState.on:
-            raise RuntimeError(f"requires powerState=on, observed {power.name}")
+        allowed_power_states = {
+            str(value).strip().lower()
+            for value in config.get("allowed_power_states", ("on",))
+        }
+        metadata["allowed_power_states"] = sorted(allowed_power_states)
+        if power.name.lower() not in allowed_power_states:
+            raise RuntimeError(
+                f"requires powerState in {sorted(allowed_power_states)}, observed {power.name}"
+            )
         if operate_mode != sdk.OperateMode.automatic:
             raise RuntimeError(f"requires operateMode=automatic, observed {operate_mode.name}")
         interval_ms = int(config.get("state_interval_ms", 8))
@@ -1328,6 +1535,29 @@ def _rt_worker_entry(
                 "keypad_state": [bool(value) for value in keypads.content()],
             })
             counters["publish_success_count"] = counters["publish_count"]
+            if (
+                next_operation_poll_ns is not None
+                and operation_poll_period_ns is not None
+                and publish_ns >= next_operation_poll_ns
+            ):
+                observed_operation = call("operationState", native.operationState)
+                observed_operation_ns = time.perf_counter_ns()
+                if observed_operation.name != last_operation_name:
+                    operation_state_transitions.append(
+                        {
+                            "host_monotonic_timestamp_ns": observed_operation_ns,
+                            "from": last_operation_name,
+                            "to": observed_operation.name,
+                            "event": "transition",
+                        }
+                    )
+                    last_operation_name = observed_operation.name
+                next_operation_poll_ns = observed_operation_ns + operation_poll_period_ns
+                if observed_operation != sdk.OperationState.idle:
+                    raise RuntimeError(
+                        "requires operationState=idle, observed transition to "
+                        f"{observed_operation.name}"
+                    )
             if publish_ns - last_heartbeat_publish_ns >= 100_000_000:
                 _heartbeat(
                     heartbeat_queue,
@@ -1359,6 +1589,40 @@ def _rt_worker_entry(
                 if streaming:
                     native.stopReceiveRobotState()
                     streaming = False
+                try:
+                    ec: dict[str, Any] = {}
+                    operation_after = native.operationState(ec)
+                    code = int(ec.get("ec", 0))
+                    if code:
+                        raise RuntimeError(
+                            f"xCoreSDK operationState postcheck failed ({code}): "
+                            f"{ec.get('message', 'unknown xCoreSDK error')}"
+                        )
+                    operation_after_ns = time.perf_counter_ns()
+                    metadata["operation_state_after"] = operation_after.name
+                    if operation_after.name != last_operation_name:
+                        operation_state_transitions.append(
+                            {
+                                "host_monotonic_timestamp_ns": operation_after_ns,
+                                "from": last_operation_name,
+                                "to": operation_after.name,
+                                "event": "postcheck_transition",
+                            }
+                        )
+                        last_operation_name = operation_after.name
+                    power_ec: dict[str, Any] = {}
+                    power_after = native.powerState(power_ec)
+                    power_code = int(power_ec.get("ec", 0))
+                    if power_code:
+                        raise RuntimeError(
+                            f"xCoreSDK powerState postcheck failed ({power_code}): "
+                            f"{power_ec.get('message', 'unknown xCoreSDK error')}"
+                        )
+                    metadata["power_state_after"] = power_after.name
+                except BaseException as status_exc:
+                    metadata["operation_state_postcheck_error"] = (
+                        f"{type(status_exc).__name__}:{status_exc}"
+                    )
                 ec: dict[str, Any] = {}
                 native.disconnectFromRobot(ec)
                 code = int(ec.get("ec", 0))

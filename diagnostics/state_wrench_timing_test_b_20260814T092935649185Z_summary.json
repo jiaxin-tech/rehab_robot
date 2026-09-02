@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "audit": "formal_state_wrench_timing_W1",
+  "case": "test_b",
+  "strict_read_only": true,
+  "created_utc": "2026-08-14T09:32:39.440687+00:00",
+  "protocol": {
+    "duration_s": 900.0,
+    "duration_source": "cli",
+    "supervisor_hz": 100.0,
+    "rt_requested_interval_ms": 8,
+    "wrench_hz": 20.0,
+    "wrench_rate_source": "cli"
+  },
+  "metadata": {
+    "git": {
+      "commit_sha": "4284da5cf23a6d97f22fd3987e3534a49814fc2d",
+      "branch": "syn/win-0813",
+      "dirty": true
+    },
+    "windows_version": "Windows-10-10.0.19045-SP0",
+    "windows_release": [
+      "10",
+      "10.0.19045",
+      "SP0",
+      "Multiprocessor Free"
+    ],
+    "python_version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "clock": "time.perf_counter_ns host monotonic high-resolution",
+    "wall_clock_used_for_latency": false,
+    "formal_context": {
+      "formal_manifest_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\formal_experiment_manifest.json",
+      "formal_manifest_sha256": "71a06619f3e3735929cd4e33729b2a105181321b42f1ce6914693da558561245",
+      "formal_manifest": {
+        "schema_version": 1,
+        "rom_protocol_version": "ROM_PROTOCOL_V2",
+        "hip_rom_deg": [
+          0.0,
+          120.0
+        ],
+        "knee_rom_deg": [
+          5.0,
+          145.0
+        ],
+        "theta_shank_definition": "q_hip - q_knee",
+        "active_reference_id": "reference_measured_asymmetric_closed_slow",
+        "active_reference_parent_cycle_frames": [
+          5844,
+          5895,
+          5934
+        ],
+        "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+        "reference_release_manifest": "reference_release/reference_release_manifest.json",
+        "scope": "formal_offline_paper_and_active_pipeline",
+        "real_robot_safety_thresholds_reviewed": false,
+        "notes": "ROM protocol approval does not approve robot motion or site-specific safety thresholds."
+      },
+      "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment_safety.json",
+      "safety_config_sha256": "c3ee95b304be6c350f15a7dbcf10cefc103fbf2afbed7fc1aa29913a22ce23a4",
+      "safety_config": {
+        "schema_version": 3,
+        "max_tcp_speed_m_s": null,
+        "max_tcp_acceleration_m_s2": null,
+        "max_start_anchor_position_error_m": null,
+        "max_start_anchor_orientation_error_rad": null,
+        "max_command_lateness_s": null,
+        "max_force_n": null,
+        "max_torque_nm": null,
+        "max_state_age_s": null,
+        "max_wrench_age_s": null,
+        "max_state_wrench_skew_s": null,
+        "workspace_min_base_m": null,
+        "workspace_max_base_m": null,
+        "expected_robot_model": null,
+        "expected_robot_serial_number": null,
+        "expected_controller_version": null,
+        "reviewed_tool_name": null,
+        "reviewed_workpiece_name": null,
+        "reviewed_payload_mass_kg": null,
+        "reviewed_payload_cog_m": null,
+        "reviewed_payload_inertia_kg_m2": null,
+        "reviewed_joint_soft_limits_rad": null,
+        "reviewed_rt_filter_hz": null,
+        "reviewed_rt_network_tolerance_percent": null,
+        "robot_identity_reviewed": false,
+        "tool_workpiece_reviewed": false,
+        "payload_configuration_reviewed": false,
+        "collision_configuration_reviewed": false,
+        "joint_soft_limits_reviewed": false,
+        "realtime_configuration_reviewed": false,
+        "reviewed": false,
+        "notes": "All real-robot limits require site-specific human review before execute mode."
+      }
+    },
+    "robot": {
+      "sdk_version": "0.7.0",
+      "controller_version": "3.2.1",
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "operation_state": "idle",
+      "operation_state_before": "idle",
+      "operation_state_after": null,
+      "power_state": "off",
+      "operate_mode": "automatic",
+      "rt_process_single_thread": true,
+      "rt_ipc_transport": "fixed_shared_memory_latest_snapshot",
+      "timestamp_source": "host_monotonic_immediately_after_getStateData_no_controller_timestamp",
+      "state_interval_ms": 8,
+      "operation_state_transitions": [
+        {
+          "host_monotonic_timestamp_ns": 3198172850322000,
+          "from": null,
+          "to": "idle",
+          "event": "initial_observation"
+        }
+      ],
+      "operation_poll_interval_s": 1.0,
+      "allowed_power_states": [
+        "off",
+        "on"
+      ],
+      "publish_count": 21413,
+      "publish_success_count": 21413,
+      "publish_drop_count": 0
+    },
+    "wrench_worker": {
+      "sdk_version": "0.7.0",
+      "controller_version": "3.2.1",
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "operation_state": "idle",
+      "power_state": "off",
+      "operate_mode": "automatic",
+      "allowed_power_states": [
+        "off",
+        "on"
+      ],
+      "request_count": 2701,
+      "success_count": 2698,
+      "failure_count": 3,
+      "event_publish_count": 2701,
+      "event_drop_count": 0
+    },
+    "requested_rates": {
+      "supervisor_hz": 100.0,
+      "rt_interval_ms": 8,
+      "wrench_hz": 20.0
+    },
+    "actual_sample_counts": {
+      "supervisor": 16914,
+      "rt_source": 21357,
+      "wrench_requests_logged": 2701
+    }
+  },
+  "completion": {
+    "completed_requested_duration": false,
+    "requested_duration_s": 900.0,
+    "observed_duration_s": 169.6096996,
+    "fatal_error": "RuntimeError:RT worker hung"
+  },
+  "rt_source": {
+    "interval_ms": {
+      "count": 21356,
+      "mean": 8.000047527626897,
+      "median": 7.9991,
+      "p95": 8.169825,
+      "p99": 8.26648,
+      "max": 58.9632
+    },
+    "publish_interval_ms": {
+      "count": 21356,
+      "mean": 8.000047504214272,
+      "median": 7.999,
+      "p95": 8.1704,
+      "p99": 8.267445,
+      "max": 58.9601
+    },
+    "configured_interval_threshold": "NOT_FORMALLY_DEFINED",
+    "count_above_configured_threshold": "NOT_FORMALLY_DEFINED",
+    "descriptive_interval_counts": {
+      "gt_10_ms": 17,
+      "gt_20_ms": 13,
+      "gt_50_ms": 11,
+      "gt_100_ms": 0,
+      "gt_1000_ms": 0
+    },
+    "sequence_gap_count": 0,
+    "ring_overwrite_count": 0,
+    "update_timeout_count": 0
+  },
+  "rt_ipc": {
+    "age_ms": {
+      "count": 16732,
+      "mean": 4.227324886445135,
+      "median": 4.13535,
+      "p95": 7.83189,
+      "p99": 8.031838,
+      "max": 23.1982
+    },
+    "descriptive_age_counts": {
+      "gt_20_ms": 1,
+      "gt_50_ms": 0,
+      "gt_100_ms": 0,
+      "gt_1000_ms": 0
+    },
+    "formal_stale_threshold_s": "NOT_FORMALLY_DEFINED",
+    "formal_stale_count": "NOT_FORMALLY_DEFINED",
+    "invalid_tick_count": 0,
+    "current_snapshot_age_ms": {
+      "count": 16915,
+      "mean": 5.993474017144546,
+      "median": 4.2655,
+      "p95": 7.97406,
+      "p99": 10.100462000000059,
+      "max": 724.1383
+    },
+    "descriptive_current_age_counts": {
+      "gt_20_ms": 112,
+      "gt_50_ms": 75,
+      "gt_100_ms": 63,
+      "gt_1000_ms": 0
+    }
+  },
+  "supervisor": {
+    "loop_interval_ms": {
+      "count": 16914,
+      "mean": 10.027748066690316,
+      "median": 9.9756,
+      "p95": 10.764214999999998,
+      "p99": 10.976686999999998,
+      "max": 54.2967
+    },
+    "formal_lateness_threshold_s": "NOT_FORMALLY_DEFINED",
+    "formal_late_cycle_count": "NOT_FORMALLY_DEFINED",
+    "missed_cycle_count": "NOT_FORMALLY_DEFINED"
+  },
+  "wrench": {
+    "requested_rate_hz": 20.0,
+    "request_count": 2701,
+    "success_count": 2698,
+    "failure_count": 3,
+    "inter_arrival_ms": {
+      "count": 2700,
+      "mean": 57.37129292592593,
+      "median": 49.8746,
+      "p95": 50.941385,
+      "p99": 51.67339499999999,
+      "max": 10001.3071
+    },
+    "query_latency_ms": {
+      "count": 2701,
+      "mean": 12.329463754165124,
+      "median": 1.1148,
+      "p95": 1.3902,
+      "p99": 1.6924,
+      "max": 10001.1816
+    },
+    "host_observed_data_age_ms": {
+      "count": 16915,
+      "mean": 3586.9790786993794,
+      "median": 30.8853,
+      "p95": 26274.45121999999,
+      "p99": 33073.597966,
+      "max": 34765.5455
+    },
+    "formal_stale_threshold_s": "NOT_FORMALLY_DEFINED",
+    "formal_stale_count": "NOT_FORMALLY_DEFINED",
+    "error_code_histogram": {
+      "263": 3
+    },
+    "error_count_263": 3,
+    "consecutive_error_runs": [
+      {
+        "first_sequence_id": 2699,
+        "last_sequence_id": 2701,
+        "count": 3,
+        "onset_ns": 3198310213523200,
+        "end_ns": 3198340216829100,
+        "duration_ms": 30003.3059,
+        "codes": [
+          263,
+          263,
+          263
+        ],
+        "recovered": false,
+        "recovery_sequence_id": null,
+        "recovery_timestamp_ns": null
+      }
+    ],
+    "event_publish_count": 2701,
+    "event_drop_count": 0
+  },
+  "state_transitions": {
+    "before": "idle",
+    "after": null,
+    "poll_interval_s": 1.0,
+    "timeline": [
+      {
+        "host_monotonic_timestamp_ns": 3198172850322000,
+        "from": null,
+        "to": "idle",
+        "event": "initial_observation"
+      }
+    ],
+    "non_idle_transitions": []
+  },
+  "workers": {
+    "rt_hung_event_count": 1,
+    "rt_crash_event_count": 0,
+    "wrench_hung_event_count": 2,
+    "wrench_crash_event_count": 0,
+    "wrench_restart_count": 0,
+    "events": [
+      {
+        "timestamp_ns": 3198310922641900,
+        "worker": "wrench",
+        "event": "hung",
+        "heartbeat_age_ms": 758.3318
+      },
+      {
+        "timestamp_ns": 3198340969433100,
+        "worker": "wrench",
+        "event": "hung",
+        "heartbeat_age_ms": 752.3525
+      },
+      {
+        "timestamp_ns": 3198344929815200,
+        "worker": "rt",
+        "event": "hung",
+        "heartbeat_age_ms": 756.0331
+      }
+    ],
+    "rt_cleanup": {
+      "worker_exited": false,
+      "worker_exitcode": -15,
+      "latency_ms": 5000.5963,
+      "graceful_disconnect_confirmed": false,
+      "forced": true,
+      "worker_terminated": true,
+      "termination_latency_ms": 13.2995,
+      "used_kill": false
+    },
+    "wrench_cleanup": {
+      "worker_exited": false,
+      "worker_exitcode": -15,
+      "latency_ms": 4992.5019,
+      "graceful_disconnect_confirmed": false,
+      "forced": true,
+      "worker_terminated": true,
+      "termination_latency_ms": 7.8304,
+      "used_kill": false
+    }
+  },
+  "artifacts": {
+    "supervisor_csv": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_supervisor.csv",
+    "rt_source_csv": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_rt_source.csv",
+    "wrench_csv": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_wrench.csv",
+    "events_json": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_events.json",
+    "summary_json": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_summary.json",
+    "audit_markdown": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_audit.md",
+    "timing_plot": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_timing.png"
+  },
+  "SAFE_TO_PROCEED_MANUAL_PUSH": false,
+  "READY_FOR_FIRST_MOTION_TEST": false,
+  "gates": {
+    "data_integrity": {
+      "status": "FAIL",
+      "reason": "lossless audit telemetry and requested duration",
+      "evidence": {}
+    },
+    "operation_state_stability": {
+      "status": "FAIL",
+      "reason": "operationState must remain idle",
+      "evidence": {}
+    },
+    "process_stability": {
+      "status": "FAIL",
+      "reason": "no worker crash or hung event",
+      "evidence": {}
+    },
+    "cleanup": {
+      "status": "FAIL",
+      "reason": "graceful worker exit and SDK disconnect",
+      "evidence": {}
+    },
+    "rt_source_timing": {
+      "status": "UNDEFINED",
+      "reason": "no formal RT source interval threshold exists",
+      "evidence": {
+        "threshold": "NOT_FORMALLY_DEFINED"
+      }
+    },
+    "rt_ipc_freshness": {
+      "status": "UNDEFINED",
+      "reason": "max_state_age_s is unset",
+      "evidence": {
+        "threshold": "NOT_FORMALLY_DEFINED"
+      }
+    },
+    "supervisor_timing": {
+      "status": "UNDEFINED",
+      "reason": "max_command_lateness_s is unset",
+      "evidence": {
+        "threshold": "NOT_FORMALLY_DEFINED"
+      }
+    },
+    "wrench_freshness": {
+      "status": "UNDEFINED",
+      "reason": "max_wrench_age_s is unset",
+      "evidence": {
+        "threshold": "NOT_FORMALLY_DEFINED"
+      }
+    },
+    "wrench_error_reliability": {
+      "status": "UNDEFINED",
+      "reason": "no formal wrench failure/error-263 acceptance threshold exists",
+      "evidence": {
+        "threshold": "NOT_FORMALLY_DEFINED"
+      }
+    }
+  }
+}

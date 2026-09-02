@@ -1,0 +1,25 @@
+{
+  "artifact_type": "repository_regression_triage",
+  "classification": "ENGINEERING_DIAGNOSTIC_EVIDENCE",
+  "created_at": "2026-09-02T19:36:59.0379360+08:00",
+  "diagnosis_only": true,
+  "frozen_scientific_artifacts_modified": false,
+  "full_suite_bad_nodes": 452,
+  "full_suite_errors": 183,
+  "full_suite_failure_classes": 5,
+  "full_suite_failures": 269,
+  "head": "3ea00104e8cd90f68146cd8db3c1ee8b5ef69c29",
+  "new_stage_caused_bad_nodes": 0,
+  "output_files": [
+    "FROZEN_SHA_BYTE_LEVEL_AUDIT.md",
+    "FULL_SUITE_FAILURE_CLASSIFICATION.csv",
+    "NEW_STAGE_CAUSALITY_AUDIT.md",
+    "REPOSITORY_REGRESSION_TRIAGE_REPORT.md",
+    "SAFE_REMEDIATION_RECOMMENDATION.md",
+    "WORKTREE_AND_ENVIRONMENT_AUDIT.json",
+    "checksums.sha256",
+    "metadata.json"
+  ],
+  "status": "FULL_SUITE_FAILURE_ROOT_CAUSE_IDENTIFIED",
+  "task_id": "PHYSICS_INFORMED_PERSONALIZATION_REPOSITORY_REGRESSION_TRIAGE_V1"
+}

@@ -1,0 +1,6 @@
+comparison,wins,ties,losses
+Physics-Informed BO vs Model-Only Greedy,147,32,61
+Physics-Informed BO vs Random,205,1,34
+Physics-Informed BO vs Reference,234,6,0
+Physics-Informed BO vs Space Filling,209,20,11
+Physics-Informed BO vs Standard BO,170,1,69

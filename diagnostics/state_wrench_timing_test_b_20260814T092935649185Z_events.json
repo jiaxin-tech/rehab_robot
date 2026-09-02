@@ -1,0 +1,87 @@
+{
+  "error_timeline": [
+    {
+      "sequence_id": 2699,
+      "onset_ns": 3198310213523200,
+      "end_ns": 3198320214054700,
+      "duration_ms": 10000.5315,
+      "error_code": 263,
+      "error_message": "RuntimeError:xCoreSDK getEndTorque failed (263): 超时前未收到机器人回复, 可能由于网络通信问题",
+      "operation_state": "IDLE",
+      "recovered": false,
+      "recovery_sequence_id": null,
+      "recovery_timestamp_ns": null
+    },
+    {
+      "sequence_id": 2700,
+      "onset_ns": 3198320214386900,
+      "end_ns": 3198330215568500,
+      "duration_ms": 10001.1816,
+      "error_code": 263,
+      "error_message": "RuntimeError:xCoreSDK getEndTorque failed (263): 超时前未收到机器人回复, 可能由于网络通信问题",
+      "operation_state": "IDLE",
+      "recovered": false,
+      "recovery_sequence_id": null,
+      "recovery_timestamp_ns": null
+    },
+    {
+      "sequence_id": 2701,
+      "onset_ns": 3198330215694000,
+      "end_ns": 3198340216829100,
+      "duration_ms": 10001.1351,
+      "error_code": 263,
+      "error_message": "RuntimeError:xCoreSDK getEndTorque failed (263): 超时前未收到机器人回复, 可能由于网络通信问题",
+      "operation_state": "IDLE",
+      "recovered": false,
+      "recovery_sequence_id": null,
+      "recovery_timestamp_ns": null
+    }
+  ],
+  "consecutive_error_runs": [
+    {
+      "first_sequence_id": 2699,
+      "last_sequence_id": 2701,
+      "count": 3,
+      "onset_ns": 3198310213523200,
+      "end_ns": 3198340216829100,
+      "duration_ms": 30003.3059,
+      "codes": [
+        263,
+        263,
+        263
+      ],
+      "recovered": false,
+      "recovery_sequence_id": null,
+      "recovery_timestamp_ns": null
+    }
+  ],
+  "worker_events": [
+    {
+      "timestamp_ns": 3198310922641900,
+      "worker": "wrench",
+      "event": "hung",
+      "heartbeat_age_ms": 758.3318
+    },
+    {
+      "timestamp_ns": 3198340969433100,
+      "worker": "wrench",
+      "event": "hung",
+      "heartbeat_age_ms": 752.3525
+    },
+    {
+      "timestamp_ns": 3198344929815200,
+      "worker": "rt",
+      "event": "hung",
+      "heartbeat_age_ms": 756.0331
+    }
+  ],
+  "operation_state_transitions": [
+    {
+      "host_monotonic_timestamp_ns": 3198172850322000,
+      "from": null,
+      "to": "idle",
+      "event": "initial_observation"
+    }
+  ],
+  "error_263_explicitly_preserved": true
+}

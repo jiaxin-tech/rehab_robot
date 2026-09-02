@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "audit": "formal_state_wrench_timing_W1_comparison",
+  "created_utc": "2026-08-14T09:33:29.645264+00:00",
+  "test_a_summary": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_a_20260814T091310505282Z_summary.json",
+  "test_b_summary": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_test_b_20260814T092935649185Z_summary.json",
+  "descriptive_delta": {
+    "rt_source_p99_ms": -0.03762099999999968,
+    "rt_ipc_p99_ms": -0.011966999999998507,
+    "supervisor_p99_ms": -0.001813000000002063
+  },
+  "comparison_gate": {
+    "status": "UNDEFINED",
+    "reason": "no formal A-vs-B degradation threshold",
+    "threshold": "NOT_FORMALLY_DEFINED"
+  },
+  "artifacts": {
+    "comparison_json": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_comparison_20260814T093329644239Z.json",
+    "comparison_markdown": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_comparison_20260814T093329644239Z.md",
+    "comparison_plot": "C:\\Users\\liumai\\fjx\\rehab_robot\\diagnostics\\state_wrench_timing_comparison_20260814T093329644239Z.png"
+  },
+  "SAFE_TO_PROCEED_MANUAL_PUSH": false,
+  "READY_FOR_FIRST_MOTION_TEST": false
+}
