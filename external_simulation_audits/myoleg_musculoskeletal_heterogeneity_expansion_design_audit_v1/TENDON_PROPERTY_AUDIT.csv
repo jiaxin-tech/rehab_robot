@@ -1,0 +1,4 @@
+field,nominal_unique,units,actual_support,calibrated_in_current_model,trajectory_dependent_potential,decision,nominal_min,nominal_max
+tendon_stiffness,0.0,N/m,True,False,True,SECONDARY/STRESS_ONLY,,
+tendon_damping,0.0,N s/m,True,False,True,SECONDARY/STRESS_ONLY,,
+tendon_lengthspring,,m,True,False,False,DO_NOT_PERTURB_WITHOUT_STIFFNESS_AND_CALIBRATION,0.0161378,0.449497

@@ -1,0 +1,147 @@
+{
+  "candidate_ids": "MYOLEG_V3_K{zero_padded_index_4}; beta_flex outer ascending, beta_extend inner ascending",
+  "forbidden": {
+    "BO": true,
+    "NN_or_PINN": true,
+    "cohort_change": true,
+    "five_parameter_model": true,
+    "hardware_control_collection_safety": true,
+    "new_24_subject_landscape": true,
+    "objective_change": true
+  },
+  "frozen_before_nominal_simulator_smoke": true,
+  "frozen_before_wide_kinematic_sweep": true,
+  "frozen_inputs": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "frozen_generator": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "prior_checksums": "485e3f81659500e287fc9cc165472ab4971c2e4c30200a27c5024029fa9cc111",
+    "prior_metadata": "8341cd876f594a9d8d26af22616c219367ed8c15b8cc681e7b71eed480e4929b",
+    "prior_recommendation": "504e1dac8219dc0dfe97fc27a36034eecfd05b23f62e20129db448f0f3cbe41b",
+    "truth_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "grid_resolution_comparison": {
+    "maximum_adjacent_trajectory_change_fraction_of_knee_rom": 0.005,
+    "maximum_total_candidates": 1000,
+    "plans": [
+      {
+        "name": "COARSE",
+        "step": 0.01
+      },
+      {
+        "name": "MEDIUM",
+        "step": 0.005
+      },
+      {
+        "name": "FINE",
+        "step": 0.0025
+      }
+    ],
+    "selection_rule": "finest listed grid passing local-resolution and count rules; report all three"
+  },
+  "nominal_smoke": {
+    "candidate_count": 13,
+    "gates_reused_from_frozen_V2_candidate_domain": {
+      "absolute_joint_limit_knee_contribution_nm": 0.005,
+      "algebraic_residual_nm": 1e-08,
+      "contact_active_count": 0,
+      "joint_limit_active_count_max": 1,
+      "relative_joint_limit_contribution": 0.0005,
+      "solver_warnings": 0,
+      "source_equality_residual": 0.001,
+      "tendon_limit_active_count": 0
+    },
+    "model": "unmodified nominal MyoLeg V2 model",
+    "purpose": "simulator integrity only; no ranking, objective, efficacy, safety, or human inference",
+    "runs_after_manifest_freeze": true,
+    "selection": [
+      "reference",
+      "four corners",
+      "four axis extremes",
+      "four deterministic interior geometry points"
+    ],
+    "selection_uses_outcomes": false
+  },
+  "parameterization": {
+    "branch_independence": {
+      "beta_extend": "extension interior only",
+      "beta_flex": "flexion interior only"
+    },
+    "dimension": 2,
+    "endpoint_conditions": [
+      "w(0)=0",
+      "w(1)=1",
+      "w'(0)=w'(1)=1",
+      "w''(0)=w''(1)=0"
+    ],
+    "hip_trajectory": "array-identical to frozen V2 reference for every candidate",
+    "identity": "beta_flex=beta_extend=0 returns array-identical frozen q/dq/ddq",
+    "mathematical_transformation": "w_b(s; beta_b)=s+beta_b*64*s^3*(1-s)^3; q_hip=q_hip_ref; q_knee=q_knee_ref_branch(w_b)",
+    "objective_dependency": false,
+    "parameter_order": [
+      "beta_flex",
+      "beta_extend"
+    ],
+    "parameterization_id": "V3_PARAMETERIZATION_SEMANTICS_V1",
+    "pointwise_clipping": false,
+    "sign_semantics": {
+      "negative": "delays knee progression along the measured branch relative to frozen hip/reference phase",
+      "positive": "advances knee progression along the measured branch relative to frozen hip/reference phase",
+      "zero": "identity on that branch"
+    },
+    "subject_truth_dependency": false
+  },
+  "prior_frozen_conclusions": [
+    "TRAJECTORY_PARAMETERIZATION_ROOT_CAUSE_SUPPORTED",
+    "NOT_ADEQUATE_FOR_CURRENT_PERSONALIZATION_QUESTION"
+  ],
+  "protocol_id": "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_PROTOCOL_V1",
+  "reference_invariants": {
+    "closure_and_C2_required": true,
+    "duration_s": 24.0,
+    "pointwise_clipping_forbidden": true,
+    "preserve_asymmetric_measured_flexion_and_extension": true,
+    "preserve_branch_endpoints": true,
+    "preserve_cycle_endpoints": true,
+    "preserve_hip_and_knee_min_max_rom_within_deg": 0.001,
+    "preserve_q_hip_array_exactly": true,
+    "sample_count": 401,
+    "source": "external_simulation_audits/myoleg_knee_rom_compatibility_audit_v1/NATIVE_ROM_REFERENCE_CANDIDATE.csv"
+  },
+  "scientific_data_access": {
+    "development_truth_allowed": false,
+    "held_out_truth_allowed": false,
+    "mechanical_objective_allowed": false,
+    "subject_model_allowed": false
+  },
+  "stage_id": "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_V1",
+  "structural_fallback_comparison": {
+    "fallback": "P2_INTERIOR_BSPLINE_JOINT_PERTURBATION",
+    "no_objective_or_truth_used": true,
+    "primary": "P4_BRANCH_AWARE_COORDINATION_FUNCTION"
+  },
+  "structural_kinematic_gates_not_safety_thresholds": {
+    "ddq_closure_max_rad_s2": 1e-09,
+    "dq_closure_max_rad_s": 1e-10,
+    "extrema_tolerance_deg": 0.001,
+    "maximum_knee_displacement_fraction_of_reference_rom": 0.05,
+    "minimum_warp_derivative": 0.85,
+    "peak_ddq_ratio": 1.25,
+    "peak_dq_ratio": 1.1,
+    "q_closure_max_rad": 1e-10,
+    "rms_ddq_ratio": 1.15,
+    "rms_dq_ratio": 1.1,
+    "rms_knee_displacement_fraction_of_reference_rom": 0.015
+  },
+  "wide_sweep": {
+    "axis_only": true,
+    "beta_max": 0.25,
+    "beta_min": -0.25,
+    "range_rule": "largest origin-connected symmetric interval whose every +/- axis candidate passes all preregistered structural gates",
+    "selection_uses_only_kinematics": true,
+    "step": 0.0025
+  }
+}

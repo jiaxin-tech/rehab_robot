@@ -1,0 +1,268 @@
+{
+  "all_inputs_present_and_semantically_verified": true,
+  "endpoint_evaluation_count": 0,
+  "human_data_access_count": 0,
+  "input_count": 23,
+  "inputs": [
+    {
+      "input_id": "PARENT_PROTOCOL",
+      "path": "external_simulation_audits/measurement_driven_personalization_data_and_endpoint_design_v1/DATA_AND_ENDPOINT_DESIGN_PROTOCOL.json",
+      "semantic_markers": [
+        "PRIMARY_MECHANICAL_ENDPOINT_DEFINITION_INCOMPLETE",
+        "WRENCH_FRAME_SEMANTICS_NOT_VERIFIED",
+        "TASK_DIRECTION_REQUIRES_EXPERIMENTAL_VALIDATION"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "de27c80d3ca93cd299c016ccb5d80032a8af417a2d06b91e2a01e5f0b2680f9e"
+    },
+    {
+      "input_id": "PARENT_ENDPOINT",
+      "path": "external_simulation_audits/measurement_driven_personalization_data_and_endpoint_design_v1/PRIMARY_MECHANICAL_ENDPOINT_DEFINITION.json",
+      "semantic_markers": [
+        "PRIMARY_MECHANICAL_ENDPOINT_DEFINITION_INCOMPLETE",
+        "EPISODE_RMS_VALIDATED_TASK_DIRECTION_INTERACTION_FORCE",
+        "\"validated\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "0957f15738d44360d941214d192de6a42d9241aee99ffe36281019fa82e90422"
+    },
+    {
+      "input_id": "PARENT_WRENCH_AUDIT",
+      "path": "external_simulation_audits/measurement_driven_personalization_data_and_endpoint_design_v1/WRENCH_SEMANTICS_AUDIT.md",
+      "semantic_markers": [
+        "WRENCH_FRAME_SEMANTICS_NOT_VERIFIED",
+        "world`, `flange`, and `tool`",
+        "Rotation-only is not a point transform"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "e0ac15109b421106bba0d85f5e518912155869177fde7bd00535a6d3ac7ca347"
+    },
+    {
+      "input_id": "PARENT_TASK_DIRECTION_AUDIT",
+      "path": "external_simulation_audits/measurement_driven_personalization_data_and_endpoint_design_v1/TASK_DIRECTION_DEFINITION_AUDIT.md",
+      "semantic_markers": [
+        "TASK_DIRECTION_REQUIRES_EXPERIMENTAL_VALIDATION",
+        "strap/pull line of action",
+        "never from whichever direction produces the smallest RMS"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "0c6cb411cdd7e73118c4acf7c4d2cadc04ca7e5c35f4cdce6c75221aa840211c"
+    },
+    {
+      "input_id": "FORMAL_EXPERIMENT_MANIFEST",
+      "path": "config/formal_experiment_manifest.json",
+      "semantic_markers": [
+        "ROM_PROTOCOL_V2",
+        "q_hip - q_knee",
+        "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+    },
+    {
+      "input_id": "ACTIVE_REFERENCE",
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "semantic_markers": [],
+      "semantic_markers_pass": true,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    },
+    {
+      "input_id": "LOCAL_XCORE_SDK_STUB",
+      "path": "hardware/windows/xcoresdk/xCoreSDK_python/__init__.pyi",
+      "semantic_markers": [
+        "def getEndTorque",
+        "FrameType::world",
+        "FrameType::flange",
+        "FrameType::tool",
+        "\u6b27\u62c9\u89d2XYZ",
+        "\u884c\u4f18\u5148\u9f50\u6b21\u53d8\u6362\u77e9\u9635"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "62b1d42a29a49658c26838792d89c00d7c57305ab785a9cff9556720f51e884d"
+    },
+    {
+      "input_id": "XCORE_WRAPPER",
+      "path": "hardware/windows/rokae_xcore.py",
+      "semantic_markers": [
+        "_EXPECTED_SDK_VERSION = \"0.7.0\"",
+        "get_world_to_base_rotation",
+        "transpose_rotation(world_from_base)",
+        "getEndTorque"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5d5908b0e504a729357b91ca8b31158f7ed6c8c8b8e5b8659bcef25ece22cca3"
+    },
+    {
+      "input_id": "OBSERVATION_ADAPTER",
+      "path": "hardware/rokae_adapter.py",
+      "semantic_markers": [
+        "Observation-only project adapter",
+        "read_internal_wrench(self, reference_frame: str = \"world\")",
+        "does not calibrate, bias, compensate"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "23cb0b5176fcbcb83cf79844619addbe16698347d8cae9e984a6e7c3fc4368a8"
+    },
+    {
+      "input_id": "INTERNAL_WRENCH_SOURCE",
+      "path": "hardware/windows/rokae_internal_wrench.py",
+      "semantic_markers": [
+        "rotation_only_pending_robot_validation",
+        "get_world_to_base_rotation",
+        "rotate_vector",
+        "software reference bias"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "7b57aac64e3e492801a9cde22f61bec7966d427ea9a555c0bea3559879164e25"
+    },
+    {
+      "input_id": "WRENCH_MATH",
+      "path": "collection/state.py",
+      "semantic_markers": [
+        "rpy_euler_xyz_rotation_matrix",
+        "Rz(yaw) @ Ry(pitch) @ Rx(roll)",
+        "Full wrench transform",
+        "p\u00d7(R F_a)"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "d5c2b4c67baca13922e5d0e8fb80a5d10941e160d2e3990287299b8c3cef88fd"
+    },
+    {
+      "input_id": "SNAPSHOT_FAIL_CLOSED",
+      "path": "collection/snapshot.py",
+      "semantic_markers": [
+        "base_wrench_rotation_requires_robot_validation",
+        "base_wrench_unavailable"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "aa16cc4b340cb4462bf103b289f44bd02c42b6c559b9974d3c30afebd1cf892b"
+    },
+    {
+      "input_id": "PROJECT_SETTINGS",
+      "path": "config/settings.py",
+      "semantic_markers": [
+        "ROBOT_FORCE_RAW_FRAME          = \"world\"",
+        "BASE_WRENCH_TRANSFORM_KIND     = \"rotation_only\"",
+        "BASE_WRENCH_ROTATION_VERIFIED  = False",
+        "TOOL_NAME = None"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "4f8d0d9c054240c1914be83ecb9aa97ae8e8766ff38a32d05d08ea67fa863902"
+    },
+    {
+      "input_id": "SAFETY_CONFIG",
+      "path": "config/experiment_safety.json",
+      "semantic_markers": [
+        "\"reviewed_tool_name\": null",
+        "\"tool_workpiece_reviewed\": false",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "2f60266b6a16f7911a585aad85fe2bcb4191144672d337d3960fc113e5c36b66"
+    },
+    {
+      "input_id": "IDENTIFICATION_CONFIG",
+      "path": "config/real_identification_config.json",
+      "semantic_markers": [
+        "\"raw_wrench_frame\": null",
+        "\"R_rehab_from_raw_wrench\": null",
+        "\"force_sign_robot_on_leg\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8979412db4d3c7ef4d0886eaebc6edeaa2474679ef33ac434c1c57d6c3cd2ba4"
+    },
+    {
+      "input_id": "REHAB_FRAME_CONFIG",
+      "path": "config/rehab_frame_config.json",
+      "semantic_markers": [
+        "\"rehab_x_axis_in_base\": null",
+        "\"rehab_z_axis_in_base\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "eeb4b28a359acc74ab9cf9dcdf5ebbf41bf8f40e4eae1020045011aecdd57606"
+    },
+    {
+      "input_id": "START_ANCHOR_SCHEMA",
+      "path": "control/start_anchor.py",
+      "semantic_markers": [
+        "tcp_pose_base",
+        "tool_name",
+        "workpiece_name",
+        "reviewed: bool = False"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "4774c95f21f462fe81735e61683a368429821dbe09858f5b84eacaaae1c2290e"
+    },
+    {
+      "input_id": "RELATIVE_TRAJECTORY_GEOMETRY",
+      "path": "control/start_anchored_relative_trajectory.py",
+      "semantic_markers": [
+        "equivalent strap pull point",
+        "L2_knee_to_equivalent_shank_strap_pull_point_m",
+        "hip_center_required",
+        "observed_ankle_used_as_pull_point"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f9a9ec92183fe490ea64e909dcd1a00a1819daf369e1ed4b05403d50f51ca8e6"
+    },
+    {
+      "input_id": "LIMB_GEOMETRY_CONFIG",
+      "path": "lower_limb_sim/config.py",
+      "semantic_markers": [
+        "L1 = 0.42",
+        "L2 = 0.30",
+        "L2 \u4ecd\u53ea\u8868\u793a\u819d\u5173\u8282\u5230\u675f\u7f1a\u5e26\u7b49\u6548\u7275\u5f15\u70b9"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5f4da8438ad7776b374eee6870307a0b5cf81ef6bb21c29b2dc964c540a8d234"
+    },
+    {
+      "input_id": "LIMB_FORWARD_KINEMATICS",
+      "path": "lower_limb_sim/kinematics.py",
+      "semantic_markers": [
+        "x_pull",
+        "z_pull",
+        "shank_angle = q_hip_array - q_knee_array"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "cc18b3d62b491c009959f72601f15b838f9cb2dbafcaabd06df0906af6de0b94"
+    },
+    {
+      "input_id": "EXISTING_ROTATION_TESTS",
+      "path": "tests/test_units_and_frames.py",
+      "semantic_markers": [
+        "test_wrench_rotation_and_full_point_transform",
+        "transform_wrench",
+        "rotation_only_pending_robot_validation"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "3c83dad6f2b60c3828239b94026e33537adc52c0160329d6a931307314a4b4a9"
+    },
+    {
+      "input_id": "FRAME_DIAGNOSTIC",
+      "path": "scripts/check_wrench_frame_rotation.py",
+      "semantic_markers": [
+        "never sends a motion command",
+        "expected_axis_positive",
+        "does not set BASE_WRENCH_ROTATION_VERIFIED"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "2439a7f29860111fd020cff6f8e33835b227d6552aea7478de830ef6e994be35"
+    },
+    {
+      "input_id": "POSE_BIAS_DIAGNOSTIC",
+      "path": "scripts/check_wrench_pose_dependence.py",
+      "semantic_markers": [
+        "no motion is issued",
+        "does not determine whether xCoreSDK performs gravity compensation"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "ca147024560c65096cbbf439b539b40cbea545377e8257d279610411dc1c5a28"
+    }
+  ],
+  "new_physical_evidence_files_used": [],
+  "robot_access_count": 0,
+  "stage_id": "WRENCH_FRAME_AND_TASK_DIRECTION_RESOLUTION_V1"
+}

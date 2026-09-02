@@ -1,0 +1,73 @@
+{
+  "allowed_operations": [
+    "file existence",
+    "file size",
+    "streaming SHA-256",
+    "manifest row count"
+  ],
+  "classification": "SEALED_CONFIRMATORY_TRUTH",
+  "development_compact_subject_count_loaded": 24,
+  "development_compact_subject_ids_loaded": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003",
+    "MYOLEG_VP_005",
+    "MYOLEG_VP_006",
+    "MYOLEG_VP_007",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_010",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_013",
+    "MYOLEG_VP_014",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_017",
+    "MYOLEG_VP_018",
+    "MYOLEG_VP_019",
+    "MYOLEG_VP_021",
+    "MYOLEG_VP_022",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_025",
+    "MYOLEG_VP_026",
+    "MYOLEG_VP_027",
+    "MYOLEG_VP_029",
+    "MYOLEG_VP_030",
+    "MYOLEG_VP_031"
+  ],
+  "development_outcome_matrix_read_at_freeze": false,
+  "development_replay_pair_count": 120,
+  "development_replay_subject_ids": [
+    "MYOLEG_VP_031",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_001"
+  ],
+  "held_out_j_oracle_rank_component_access_count": 0,
+  "held_out_scientific_truth_access_count": 0,
+  "local_shard_bytes_stream_hashed": 9148003,
+  "local_shard_count_present": 536,
+  "local_shard_count_sha256_verified": 536,
+  "manifest_chunk_count": 536,
+  "manifest_row_count": 133400,
+  "necessity_artifact_verification": {
+    "checksums_file_sha256": "0b4a449186b571b9c39207dc18cab1ec1366004821b8d9fd74e97792d87437d3",
+    "verified_file_count": 60
+  },
+  "np_load_held_out_count": 0,
+  "post_freeze_oracle_summary_opened": false,
+  "protocol_sha256": "2beac2ffb512783bcbe6dfcf60e8d64d9b6be8a5fe2122b8c77da876e6202bbb",
+  "sealed_subject_count": 8,
+  "sealed_subject_ids": [
+    "MYOLEG_VP_004",
+    "MYOLEG_VP_008",
+    "MYOLEG_VP_012",
+    "MYOLEG_VP_016",
+    "MYOLEG_VP_020",
+    "MYOLEG_VP_024",
+    "MYOLEG_VP_028",
+    "MYOLEG_VP_032"
+  ],
+  "stage_id": "MYOLEG_V2_PERSONALIZATION_SIGNAL_ROOT_CAUSE_AUDIT_V1",
+  "subject_landscape_summary_opened": false
+}

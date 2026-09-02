@@ -1,0 +1,18 @@
+{
+  "classification_counts": {
+    "INCONCLUSIVE": 0,
+    "INVALID": 0,
+    "MAGNITUDE_ONLY": 4,
+    "STRUCTURALLY_INFORMATIVE": 0
+  },
+  "cohort_v2_generated": false,
+  "larger_z_retry_recommended": false,
+  "next_stage_executed": false,
+  "population_range_calibrated_factor_count": 0,
+  "primary_decision": "STRUCTURAL_HETEROGENEITY_PILOT_NOT_SUPPORTED",
+  "recommended_independent_next_stage": "MYOLEG_PERSONALIZATION_FORMULATION_STOP_OR_PIVOT_AUDIT_V1",
+  "stage_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1",
+  "structural_mechanism_supported_does_not_equal_population_variability_calibrated": true,
+  "structurally_informative_factor_count": 0,
+  "structurally_informative_factor_ids": []
+}

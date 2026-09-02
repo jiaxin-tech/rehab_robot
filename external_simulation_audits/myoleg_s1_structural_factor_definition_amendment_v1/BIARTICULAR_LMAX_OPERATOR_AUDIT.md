@@ -1,0 +1,74 @@
+# Biarticular lmax Operator Audit
+
+```json
+{
+  "alternatives": [
+    {
+      "decision": "CHOSEN",
+      "id": "L1",
+      "reason": "only inherited field, positive/invertible, relative to each nominal"
+    },
+    {
+      "decision": "REJECTED",
+      "id": "L2",
+      "reason": "changes lmin outside inherited exact field and remaps curve width"
+    },
+    {
+      "decision": "REJECTED",
+      "id": "L3",
+      "reason": "additive rule lacks global positivity and is not relative to heterogeneous nominals"
+    }
+  ],
+  "chosen_operator": "L1_LOG_MULTIPLICATIVE_LMAX_ONLY",
+  "factor_id": "S1F1_BIARTICULAR_LMAX",
+  "fields": [
+    "actuator_gainprm[:,5]",
+    "actuator_biasprm[:,5]"
+  ],
+  "hard_mathematical_domain": "z > max_i log(lmin_i0/lmax_i0) = -3.49097409824; no population or pilot bound",
+  "limitations": [
+    "physiological one-to-one mapping unavailable",
+    "population range unavailable"
+  ],
+  "members": [
+    "bflh_r",
+    "grac_r",
+    "recfem_r",
+    "sart_r",
+    "semimem_r",
+    "semiten_r",
+    "tfl_r"
+  ],
+  "nominal_identity": "z=0",
+  "nominal_lmax": {
+    "bflh_r": 3.5,
+    "grac_r": 3.5,
+    "recfem_r": 3.5,
+    "sart_r": 3.5,
+    "semimem_r": 3.5,
+    "semiten_r": 3.5,
+    "tfl_r": 3.28179
+  },
+  "nominal_lmin": {
+    "bflh_r": 0.05,
+    "grac_r": 0.00265608,
+    "recfem_r": 0.1,
+    "sart_r": 0.0,
+    "semimem_r": 0.0886069,
+    "semiten_r": 0.0,
+    "tfl_r": 0.1
+  },
+  "operator": "for each member i: lmax_i(z)=lmax_i0*exp(z); set gainprm[i,5]=biasprm[i,5]=lmax_i(z)",
+  "selection_used_scientific_outcome": false,
+  "semantic": "changes MuJoCo built-in normalized lmax curve parameter; may affect active/passive curve evaluation; not optimal fiber length or tendon slack length",
+  "unchanged_fields": [
+    "lmin",
+    "range",
+    "actuator_lengthrange",
+    "force",
+    "fpmax",
+    "transmission",
+    "geometry"
+  ]
+}
+```

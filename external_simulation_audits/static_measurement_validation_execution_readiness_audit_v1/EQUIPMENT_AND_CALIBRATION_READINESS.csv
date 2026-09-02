@@ -1,0 +1,18 @@
+item_id,equipment,use,availability,calibration_known,traceable_magnitude_or_geometry,direction_controllable,safe_mounting_confirmed,classification,mandatory_blocker
+E01,calibrated bidirectional force gauge or load cell,wrench,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E02,current calibration certificate and uncertainty,wrench,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E03,hands-free rigid fixture or low-friction pulley,wrench,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E04,world/load-direction registration metrology,wrench,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E05,safe mounting and secondary load retention,wrench,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E06,known calibrated masses,optional wrench method,optional; no evidence,False,False,False,False,NOT_APPLICABLE,False
+E07,rigid nonhuman loading attachment/phantom,wrench,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E08,rigid shank surrogate/cylinder,geometry,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E09,identified production strap/cuff,geometry,intended component only; no ID/dimensions,False,False,False,False,MISSING,True
+E10,identified robot eyelet/hook and fixed fixture,geometry,intended component only; no local offset,False,False,False,False,MISSING,True
+E11,repeatable surrogate jig and cuff placement landmarks,geometry,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E12,bed/setup reference markers and base-linked fiducials,geometry,frame definition exists; physical markers unconfirmed,False,False,False,False,MISSING,True
+E13,calibrated 3-D digitizer/tracked pointer or calibrated multi-view camera,geometry minimum viable method,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,True
+E14,calibrated ruler/caliper,geometry supplemental,NO_REPOSITORY_EVIDENCE,False,False,False,False,MISSING,False
+E15,robot/setup registration artifacts,geometry,T_B_R is null,False,False,False,False,MISSING,True
+E16,supervised E-stop and safe-load-release access,shared safety,required but no availability record,False,False,False,False,MISSING,True
+E17,logging computer/storage and offline logger primitives,data,repository code exists; no static-protocol dry run,True,False,False,False,DEFINED_BUT_NOT_REVIEWED,True

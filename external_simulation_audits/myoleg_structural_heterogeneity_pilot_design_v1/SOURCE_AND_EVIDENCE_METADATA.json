@@ -1,0 +1,26 @@
+{
+  "authoritative_source": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/PROPOSED_STRUCTURAL_HETEROGENEITY_SCHEMES.json",
+  "authoritative_source_sha256": "47ebf27c43ccca9621e315c1322946bb7b8687e098b243ee8d92f0f66d578394",
+  "companion_frozen_sources": {
+    "biarticular_audit": {
+      "path": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/BIARTICULAR_COUPLING_PARAMETER_AUDIT.csv",
+      "sha256": "cfec07329d8bba93773838703a9baa71bae161e49ff8cfebf4b25d96703b951c"
+    },
+    "evidence_sources": {
+      "path": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/EVIDENCE_SOURCES.csv",
+      "sha256": "bc5c67abb6a9c8955f60b80fc4da31e736b731820fbd8b4ffffb3ddbd79426f3"
+    },
+    "muscle_group_audit": {
+      "path": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/MUSCLE_GROUP_HETEROGENEITY_AUDIT.csv",
+      "sha256": "e151ca561c1554151567048a3e62f64c3f25e5807ad1664d0eddce1802f78531"
+    },
+    "operating_audit": {
+      "path": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/MUSCLE_OPERATING_LENGTH_PARAMETER_AUDIT.csv",
+      "sha256": "274717a81faa295369046f2592c9030c1ac7abd7a80a7423617c941adda507d9"
+    }
+  },
+  "held_out_scientific_access_count": 0,
+  "inherited_evidence_source_count": 8,
+  "new_external_evidence_used_to_redefine_s1": false,
+  "personalization_outcome_used": false
+}

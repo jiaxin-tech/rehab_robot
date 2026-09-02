@@ -1,0 +1,5 @@
+factor_index,factor_name,population_range,pilot_diagnostic_level,range_status,required_evidence_or_calibration,pilot_level_is_population_bound,reason_not_frozen
+1,biarticular normalized-curve lmax profile,NOT AVAILABLE,NOT FROZEN,RANGE_REQUIRES_EXTERNAL_EVIDENCE,model-specific calibration from measured fiber/tendon behavior to MuJoCo normalized lmax,False,S1_DEFINITION_INCOMPLETE
+2,rectus-vs-hamstring relative fpmax balance,NOT AVAILABLE,NOT FROZEN,RANGE_REQUIRES_EXTERNAL_EVIDENCE,muscle-family passive force-length calibration and mapping to fpmax,False,S1_DEFINITION_INCOMPLETE
+3,hip monoarticular antagonist relative F0,NOT AVAILABLE,NOT FROZEN,RANGE_REQUIRES_EXTERNAL_EVIDENCE,human architecture/PCSA or validated force-capacity distribution plus exact group definition,False,S1_DEFINITION_INCOMPLETE
+4,knee monoarticular antagonist relative F0,NOT AVAILABLE,NOT FROZEN,RANGE_REQUIRES_EXTERNAL_EVIDENCE,human architecture/PCSA or validated force-capacity distribution plus exact group definition,False,S1_DEFINITION_INCOMPLETE

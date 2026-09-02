@@ -1,0 +1,2 @@
+status,candidate_id,beta_flex,beta_extend,selection_basis,blocker,execution_authorized
+NOT_FROZEN,,,,geometry-only rule required after S1 completion; no J/oracle/rank used,S1_DEFINITION_INCOMPLETE,False

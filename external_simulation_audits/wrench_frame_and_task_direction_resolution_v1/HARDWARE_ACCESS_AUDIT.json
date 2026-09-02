@@ -1,0 +1,13 @@
+{
+  "calibration_call_count": 0,
+  "human_loading_count": 0,
+  "motion_command_count": 0,
+  "offline_source_and_math_audit_only": true,
+  "power_or_enable_count": 0,
+  "read_only_diagnostic_scripts_inspected_not_executed": [
+    "scripts/check_wrench_frame_rotation.py",
+    "scripts/check_wrench_pose_dependence.py"
+  ],
+  "robot_adapter_constructed": false,
+  "robot_connected": false
+}

@@ -1,0 +1,14 @@
+{
+  "alternative_view_promoted_to_objective": false,
+  "combined_j_ordering_evidence": false,
+  "component_aggregation_loss": false,
+  "limited_conjunction": false,
+  "material_rms_compression": false,
+  "normalization_ordering_loss": false,
+  "normalization_ordering_retained_for_both_joints": true,
+  "status": "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE",
+  "upstream_ordering_evidence_representation_count": 1,
+  "upstream_ordering_evidence_representations": [
+    "normalized_knee_peak"
+  ]
+}

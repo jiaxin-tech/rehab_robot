@@ -1,0 +1,192 @@
+{
+  "J_or_oracle_or_rank_used": false,
+  "all_factors_resolved": true,
+  "declared_dimensionality": 4,
+  "definition_id": "S1_STRUCTURAL_DEFINITION_AMENDED_V1",
+  "factors": [
+    {
+      "evidence_provenance": [
+        "MuJoCo official muscle semantics",
+        "compiled MyoLeg fields",
+        "401-state moment classification"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,5]",
+        "actuator_biasprm[:,5]"
+      ],
+      "exact_members": [
+        "bflh_r",
+        "grac_r",
+        "recfem_r",
+        "sart_r",
+        "semimem_r",
+        "semiten_r",
+        "tfl_r"
+      ],
+      "factor_id": "S1F1_BIARTICULAR_LMAX",
+      "inherited_name": "biarticular normalized-curve lmax profile",
+      "invariants": [
+        "gain/bias synchronized",
+        "lmin<lmax",
+        "range/lengthrange/geometry unchanged"
+      ],
+      "known_limitations": [
+        "physiological one-to-one mapping unavailable",
+        "population range unavailable"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "for each member i: lmax_i(z)=lmax_i0*exp(z); set gainprm[i,5]=biasprm[i,5]=lmax_i(z)",
+      "semantics": "changes MuJoCo built-in normalized lmax curve parameter; may affect active/passive curve evaluation; not optimal fiber length or tendon slack length",
+      "v1_relationship": "collectively replaces V1 common biarticular fpmax as primary structural role"
+    },
+    {
+      "evidence_provenance": [
+        "compiled transmission and 401-state torque signs",
+        "post-mechanical anatomical review"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,7]",
+        "actuator_biasprm[:,7]"
+      ],
+      "exact_members": {
+        "HAMSTRING_GROUP": [
+          "bflh_r",
+          "semimem_r",
+          "semiten_r"
+        ],
+        "RECTUS_GROUP": [
+          "recfem_r"
+        ],
+        "UNCHANGED": [
+          "grac_r",
+          "sart_r",
+          "tfl_r"
+        ]
+      },
+      "factor_id": "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+      "inherited_name": "rectus-vs-hamstring relative fpmax balance",
+      "invariants": [
+        "gain/bias synchronized",
+        "positive fpmax",
+        "family log-center balance",
+        "nonfamily unchanged"
+      ],
+      "known_limitations": [
+        "population range unavailable",
+        "fpmax is not measured tissue stiffness"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "rectus fpmax_i(z)=fpmax_i0*exp(z); hamstring fpmax_i(z)=fpmax_i0*exp(-z); synchronize gain/bias; other biarticular unchanged",
+      "semantics": "within-biarticular passive-force curve family balance; no global common scale",
+      "v1_relationship": "replaces V1 common biarticular fpmax primary role; V1 global factor removed"
+    },
+    {
+      "evidence_provenance": [
+        "compiled monoarticular transmission",
+        "401-state negative flexion-effect consistency"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,2]",
+        "actuator_biasprm[:,2]"
+      ],
+      "exact_members": [
+        "addmagDist_r",
+        "addmagIsch_r",
+        "addmagMid_r",
+        "glmax2_r",
+        "glmax3_r",
+        "glmed3_r",
+        "piri_r"
+      ],
+      "factor_id": "S1F3_HIP_MONO_ANTAGONIST_F0",
+      "inherited_name": "hip monoarticular antagonist relative F0",
+      "invariants": [
+        "gain/bias synchronized",
+        "positive F0",
+        "nonmembers unchanged"
+      ],
+      "known_limitations": [
+        "population range unavailable",
+        "glmed3_r and piri_r anatomical action is multi-action/ambiguous"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "for each included member i: F0_i(z)=F0_i0*exp(z); synchronize gain/bias; all nonmembers unchanged",
+      "semantics": "MuJoCo muscle force scale F0 multiplies the built-in muscle active-plus-passive force expression; not pure active strength",
+      "v1_relationship": "replaces V1 hip-only fpmax primary role; V1 factor secondary only"
+    },
+    {
+      "evidence_provenance": [
+        "compiled monoarticular transmission",
+        "401-state negative flexion-effect consistency"
+      ],
+      "exact_fields": [
+        "actuator_gainprm[:,2]",
+        "actuator_biasprm[:,2]"
+      ],
+      "exact_members": [
+        "vasint_r",
+        "vaslat_r",
+        "vasmed_r"
+      ],
+      "factor_id": "S1F4_KNEE_MONO_ANTAGONIST_F0",
+      "inherited_name": "knee monoarticular antagonist relative F0",
+      "invariants": [
+        "gain/bias synchronized",
+        "positive F0",
+        "nonmembers unchanged"
+      ],
+      "known_limitations": [
+        "population range unavailable"
+      ],
+      "nominal_identity": "z=0",
+      "operator": "for each included member i: F0_i(z)=F0_i0*exp(z); synchronize gain/bias; all nonmembers unchanged",
+      "semantics": "MuJoCo muscle force scale F0 multiplies the built-in muscle active-plus-passive force expression; not pure active strength",
+      "v1_relationship": "replaces V1 knee-only fpmax primary role; V1 factor secondary only"
+    }
+  ],
+  "membership_evidence": {
+    "effect_sign_definition": "unit positive muscle tension generalized effect = -projected actuator moment",
+    "moment_effect_finite": true,
+    "positive_activation_muscle_force_negative_at_states_0_200_400": true,
+    "reference_state_count": 401,
+    "thresholds": {
+      "effective_m": 1e-05,
+      "minimum_effective_fraction": 0.8,
+      "minimum_sign_fraction": 0.95,
+      "negligible_other_m": 1e-06
+    }
+  },
+  "membership_rule": {
+    "ambiguous_rule": "any threshold-borderline, sign-inconsistent, or non-negligible other-joint case is excluded and reported; no name-based override",
+    "antagonist_rule": "monoarticular rule plus negative target sign in >=0.95 of effective states",
+    "biarticular_rule": "hip and knee effective-state fractions each >=0.8",
+    "coordinate_source": "existing project-to-MyoLeg independent hip/knee mapping",
+    "effective_moment_arm_abs_m": 1e-05,
+    "mechanical_quantity": "actuator moment matrix projected through the independent-coordinate tangent; positive actuator force generalized effect in project q_hip/q_knee flexion coordinates",
+    "minimum_agonist_positive_sign_fraction": 0.95,
+    "minimum_antagonist_negative_sign_fraction": 0.95,
+    "minimum_target_effective_state_fraction": 0.8,
+    "model_source": "compiled frozen supine MyoLeg",
+    "monoarticular_rule": "target effective-state fraction >=0.8 and other-joint maximum absolute projected moment arm <=1e-6 m",
+    "near_zero_states": "excluded from sign denominator when abs(target moment arm) < 1e-5 m",
+    "negligible_other_joint_max_abs_m": 1e-06,
+    "prohibited_inputs": [
+      "mechanical J",
+      "oracle",
+      "candidate rank",
+      "personalization outcome",
+      "held-out scientific truth",
+      "muscle name as primary classifier"
+    ],
+    "state_source": "frozen V3 reference candidate MYOLEG_V3_K0312, beta=[0,0], 401 states"
+  },
+  "next_authoritative_use": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_V2",
+  "old_s1_identity": "S1_MINIMAL_STRUCTURAL",
+  "old_s1_overwritten": false,
+  "old_s1_sha256": "47ebf27c43ccca9621e315c1322946bb7b8687e098b243ee8d92f0f66d578394",
+  "operator_unit_checks_all_pass": true,
+  "pilot_diagnostic_levels_frozen": false,
+  "population_ranges_frozen": false,
+  "scientific_outcome_used": false,
+  "stage_id": "MYOLEG_S1_STRUCTURAL_FACTOR_DEFINITION_AMENDMENT_V1"
+}

@@ -1,0 +1,22 @@
+{
+  "implementation": {
+    "access_boundary": "external_simulation/myoleg_v2_truth_landscape_generation_v1/truth_access.py",
+    "query_replay_api": "external_simulation/myoleg_v2_truth_landscape_generation_v1/replay_api.py"
+  },
+  "landscape_role": "hidden post-freeze oracle artifact",
+  "oracle_access_allowed_for": [
+    "post_hoc_evaluation",
+    "oracle",
+    "regret",
+    "personalization_analysis"
+  ],
+  "policy_id": "TRUTH_ACCESS_POLICY_V1",
+  "prohibited": [
+    "PINN reads unqueried tau",
+    "BO reads unqueried J",
+    "candidate selection uses oracle rank",
+    "full landscape becomes a learner feature",
+    "held-out outcome changes cohort/domain/ranges"
+  ],
+  "query_access": "future algorithms reveal only replay_subject_candidate(subject_id,candidate_id) through query(subject_id,candidate_id)"
+}

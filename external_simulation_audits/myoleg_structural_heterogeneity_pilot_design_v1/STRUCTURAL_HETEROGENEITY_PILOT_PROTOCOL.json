@@ -1,0 +1,53 @@
+{
+  "authoritative_source": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/PROPOSED_STRUCTURAL_HETEROGENEITY_SCHEMES.json",
+  "authoritative_source_sha256": "47ebf27c43ccca9621e315c1322946bb7b8687e098b243ee8d92f0f66d578394",
+  "blocked_design_elements": [
+    "diagnostic perturbation levels",
+    "deterministic executable V3 subset",
+    "numeric non-proportionality gates",
+    "numeric gradient-rotation gates",
+    "numeric configuration-dependence gates",
+    "fallback levels",
+    "diagnostic model/replay count"
+  ],
+  "blocker": "S1_DEFINITION_INCOMPLETE",
+  "exact_reconstruction_gate": {
+    "affected_target_members_complete": false,
+    "factor_direction_update_rules_complete": false,
+    "factor_names_complete": true,
+    "fail_closed_action": "stop pilot design; do not guess targets, levels, or execution plan",
+    "model_fields_complete": true,
+    "status": "S1_DEFINITION_INCOMPLETE"
+  },
+  "formal_outcome": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_NOT_READY",
+  "frozen_before_any_structural_pilot_scientific_outcome": true,
+  "next_action": "create a new versioned S1 definition amendment that explicitly freezes every muscle member, positive/negative group, coherent scaling/normalization rule, and V1 replace/supplement relation; do not overwrite the frozen source",
+  "pilot_execution_authorized": false,
+  "population_range_vs_diagnostic_level": {
+    "diagnostic_levels_frozen": false,
+    "pilot_levels_must_never_be_labeled_population_or_patient_ranges": true,
+    "population_ranges_frozen": false,
+    "reason": "S1_DEFINITION_INCOMPLETE"
+  },
+  "preserved_results": [
+    "V3_PERSONALIZATION_NECESSITY_NOT_SUPPORTED",
+    "HETEROGENEITY_LIMITATION_DOMINANT",
+    "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE",
+    "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_LIMITED"
+  ],
+  "s1_declared_dimensionality": 4,
+  "s1_scheme_id": "S1_MINIMAL_STRUCTURAL",
+  "scientific_role": "PREREGISTRATION_PILOT_DESIGN_ONLY",
+  "scope_guards": {
+    "bo_run": false,
+    "cohort_v1_modified": false,
+    "cohort_v2_generated": false,
+    "five_parameter_or_ml_training": false,
+    "held_out_scientific_access": 0,
+    "new_landscape_generated": false,
+    "new_virtual_subjects": 0,
+    "pilot_scientific_outcome_executed": false,
+    "robot_or_hardware": false
+  },
+  "stage_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_V1"
+}

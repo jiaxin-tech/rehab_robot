@@ -1,0 +1,4 @@
+epsilon_j,maximum_subject_coverage,best_coverage_candidate_id,best_coverage_proposal_index,best_coverage_alpha_hip_deg,best_coverage_alpha_knee_deg,best_coverage_alpha_phase,candidate_count_coverage_24,candidate_count_coverage_at_least_22,candidate_count_coverage_at_least_18,universal_near_oracle_candidate_exists
+0.0001,24,MYOLEG_V2_P20850,20850,2.0,0.5,-0.03,2,2,2,True
+0.0005,24,MYOLEG_V2_P20125,20125,1.75,0.5,-0.03,13,14,14,True
+0.001,24,MYOLEG_V2_P18675,18675,1.25,0.5,-0.03,39,41,41,True

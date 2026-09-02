@@ -1,0 +1,7 @@
+{
+  "chunk_manifest_sha256": "e9b6cb0df6ace829389bcb0d197759e45136cc69e36aefe2d0d04f5fcfec96b2",
+  "freeze_id": "MYOLEG_V3_DEVELOPMENT_TRUTH_LANDSCAPE_DATA_FREEZE_V1",
+  "global_data_sha256": "5253ce42aa4b326138aab487b8a594d2eaf8a0719cfcb098ad8e4eb9317e4e9f",
+  "oracle_revealed": false,
+  "pair_count": 15000
+}

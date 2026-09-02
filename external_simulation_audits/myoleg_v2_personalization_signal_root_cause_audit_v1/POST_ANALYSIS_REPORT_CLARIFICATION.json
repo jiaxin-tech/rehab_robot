@@ -1,0 +1,10 @@
+{
+  "clarification_id": "Q4_LOCAL_DIRECTION_EXPLICIT_REPORTING_V1",
+  "source_artifact": "REFERENCE_FINITE_DIFFERENCE_AUDIT.csv",
+  "change": "The report now explicitly states the already-computed combined-J and joint-only local descent directions around the reference.",
+  "scientific_metric_changed": false,
+  "protocol_or_threshold_changed": false,
+  "hypothesis_decision_changed": false,
+  "overall_outcome_changed": false,
+  "held_out_scientific_truth_access_count": 0
+}

@@ -1,0 +1,20 @@
+{
+  "hip": {
+    "median_peak_timing_subject_spread_s": 0.0,
+    "rms_summary_interaction_rms": 0.00020173219266925367,
+    "sign_changing_difference_fraction": 1.0,
+    "time_common_candidate_effect_rms": 0.026165200915299603,
+    "time_interaction_to_common_effect_ratio": 0.014437156830411177,
+    "time_resolved_interaction_rms": 0.00037775110911339845,
+    "time_resolved_to_rms_heterogeneity_ratio": 1.8725375663404076
+  },
+  "knee": {
+    "median_peak_timing_subject_spread_s": 22.983999999999998,
+    "rms_summary_interaction_rms": 0.00021332201383326835,
+    "sign_changing_difference_fraction": 1.0,
+    "time_common_candidate_effect_rms": 0.04041258636878169,
+    "time_interaction_to_common_effect_ratio": 0.04824394739923611,
+    "time_resolved_interaction_rms": 0.0019496626910425903,
+    "time_resolved_to_rms_heterogeneity_ratio": 9.139528809091589
+  }
+}

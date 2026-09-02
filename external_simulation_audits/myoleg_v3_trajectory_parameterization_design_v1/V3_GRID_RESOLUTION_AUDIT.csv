@@ -1,0 +1,4 @@
+grid_name,beta_step,axis_count,candidate_count,max_adjacent_knee_trajectory_change_deg,max_adjacent_change_fraction_of_reference_knee_rom,local_resolution_gate,resolution_pass,count_gate,count_pass,grid_pass
+COARSE,0.01,7,49,1.5698411540892856,0.015515468254658644,0.005,False,1000,True,False
+MEDIUM,0.005,13,169,0.7855128798364126,0.007763588130544177,0.005,False,1000,True,False
+FINE,0.0025,25,625,0.39283393311203035,0.003882559966449795,0.005,True,1000,True,True

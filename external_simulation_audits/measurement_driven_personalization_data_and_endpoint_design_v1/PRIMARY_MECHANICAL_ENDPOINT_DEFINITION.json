@@ -1,0 +1,38 @@
+{
+  "bias_rule": null,
+  "bias_status": "BIAS_POLICY_REQUIRES_VALIDATION",
+  "blocking_dependencies": [
+    "WRENCH_FRAME_SEMANTICS_NOT_VERIFIED",
+    "TASK_DIRECTION_REQUIRES_EXPERIMENTAL_VALIDATION",
+    "FILTER_NOT_YET_FROZEN",
+    "BIAS_POLICY_REQUIRES_VALIDATION",
+    "TIMING_THRESHOLDS_NOT_YET_FROZEN"
+  ],
+  "decision_state": "PRIMARY_MECHANICAL_ENDPOINT_DEFINITION_INCOMPLETE",
+  "endpoint_id": "EPISODE_RMS_VALIDATED_TASK_DIRECTION_INTERACTION_FORCE",
+  "episode_boundary_candidate": "one complete 24 s commanded trial after independently approved start acknowledgement through confirmed completion",
+  "filter_rule": null,
+  "filter_status": "FILTER_NOT_YET_FROZEN",
+  "missing_data_rule": "never zero-fill or silently impute; missing remains null with reason; endpoint unavailable if future frozen gate fails",
+  "provisional_mathematical_definition": {
+    "force_projection": "F_task(t_i) = dot(F_interaction^R(t_i), d_task^R(t_i)); ||d_task^R||_2 = 1",
+    "sign": "signed F_task retained; RMS itself is sign-invariant; no arbitrary abs preprocessing",
+    "time_weighted_rms": "J_force = sqrt(sum_i w_i F_task(t_i)^2 / sum_i w_i) over valid mask M",
+    "unit": "N",
+    "weight_definition": "w_i is valid represented time on the frozen master grid; exact quadrature/interpolation rule pending timing validation"
+  },
+  "ready_for_physical_validation": false,
+  "safety_metrics_in_objective": false,
+  "secondary_diagnostics_not_weighted_into_primary": true,
+  "transient_exclusion": null,
+  "transient_status": "NOT_YET_FROZEN_NO_EXCLUSION_SELECTED",
+  "valid_sample_mask_requires": [
+    "episode gate PASS",
+    "finite synchronized state and force",
+    "validated force frame/sign/bias semantics",
+    "validated finite unit task direction",
+    "sample age/skew/gap rules PASS",
+    "not within an excluded interval if a transient policy is later frozen"
+  ],
+  "validated": false
+}

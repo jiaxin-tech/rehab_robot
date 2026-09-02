@@ -1,0 +1,204 @@
+{
+  "$id": "FUTURE_MEASUREMENT_DRIVEN_PERSONALIZATION_EPISODE_V1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "forbidden_oracle_fields": [
+    "future_episode_outcome",
+    "unexecuted_candidate_truth",
+    "MyoLeg_oracle",
+    "future_beta_selection",
+    "held_out_final_evaluation"
+  ],
+  "properties": {
+    "candidate": {
+      "properties": {
+        "beta_extend": {
+          "type": "number"
+        },
+        "beta_flex": {
+          "type": "number"
+        },
+        "candidate_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "beta_flex",
+        "beta_extend"
+      ],
+      "type": "object"
+    },
+    "derived": {
+      "properties": {
+        "endpoint_status": {
+          "type": "string"
+        },
+        "primary_endpoint_n": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "projected_force_n": {
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "secondary_diagnostics": {
+          "type": "object"
+        },
+        "task_direction_unit_vector": {
+          "type": [
+            "array",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "diagnostics": {
+      "properties": {
+        "abort_reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dropped_samples": {
+          "type": "object"
+        },
+        "operation_state": {
+          "type": "array"
+        },
+        "safety_events": {
+          "type": "array"
+        },
+        "tracking_error": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "frozen_contract": {
+      "properties": {
+        "active_reference_id": {
+          "const": "reference_measured_asymmetric_closed_slow"
+        },
+        "active_reference_sha256": {
+          "const": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+        },
+        "planned_duration_s": {
+          "const": 24.0
+        },
+        "rom_protocol": {
+          "const": "ROM_PROTOCOL_V2"
+        },
+        "theta_shank": {
+          "const": "q_hip - q_knee"
+        }
+      },
+      "type": "object"
+    },
+    "identity": {
+      "properties": {
+        "episode_id": {
+          "type": "string"
+        },
+        "episode_order": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "type": "string"
+        },
+        "subject_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "subject_id",
+        "session_id",
+        "episode_id"
+      ],
+      "type": "object"
+    },
+    "streams": {
+      "properties": {
+        "reference": {
+          "description": "q_ref, dq_ref, optional ddq_ref with master timestamps"
+        },
+        "robot_state": {
+          "description": "q, derived dq, TCP, source timestamps and validity"
+        },
+        "tactile": {
+          "description": "future nullable placeholder; raw matrix and calibration provenance"
+        },
+        "trajectory_command": {
+          "description": "command intent/publish timestamps and reference identity"
+        },
+        "wrench": {
+          "description": "raw force/torque, joint torque channels, raw frame, query bounds and validity"
+        }
+      },
+      "type": "object"
+    },
+    "timing": {
+      "properties": {
+        "ages_ms": {
+          "type": "array"
+        },
+        "master_timebase": {
+          "const": "HOST_MONOTONIC_PERF_COUNTER_NS"
+        },
+        "missing_intervals": {
+          "type": "array"
+        },
+        "skews_ms": {
+          "type": "array"
+        },
+        "validity_flags": {
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "validity": {
+      "properties": {
+        "gate_version": {
+          "const": "EPISODE_DATA_VALIDITY_GATE_V1"
+        },
+        "pass": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "gate_version",
+        "pass",
+        "reasons"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "identity",
+    "frozen_contract",
+    "candidate",
+    "streams",
+    "timing",
+    "diagnostics",
+    "validity",
+    "derived"
+  ],
+  "title": "Future 24 s measurement-driven personalization episode",
+  "type": "object"
+}

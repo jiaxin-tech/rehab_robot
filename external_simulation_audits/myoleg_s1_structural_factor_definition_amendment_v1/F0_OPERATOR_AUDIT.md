@@ -1,0 +1,47 @@
+# F0 Operator Audit
+
+```json
+{
+  "alternatives": [
+    {
+      "decision": "CHOSEN",
+      "id": "F1",
+      "reason": "positive, invertible, relative, exact nominal identity"
+    },
+    {
+      "decision": "REJECTED",
+      "id": "F2",
+      "reason": "linear scaling requires z>-1 and is less symmetric under inverse perturbation"
+    }
+  ],
+  "chosen_operator": "F1_LOG_GROUP_SCALE",
+  "factor_ids": [
+    "S1F3_HIP_MONO_ANTAGONIST_F0",
+    "S1F4_KNEE_MONO_ANTAGONIST_F0"
+  ],
+  "fields": [
+    "actuator_gainprm[:,2]",
+    "actuator_biasprm[:,2]"
+  ],
+  "hard_mathematical_domain": "all finite real z preserves positivity; no population or pilot bound",
+  "hip_members": [
+    "addmagDist_r",
+    "addmagIsch_r",
+    "addmagMid_r",
+    "glmax2_r",
+    "glmax3_r",
+    "glmed3_r",
+    "piri_r"
+  ],
+  "knee_members": [
+    "vasint_r",
+    "vaslat_r",
+    "vasmed_r"
+  ],
+  "member_weighting": "same relative scalar applied to each member's own nominal F0; no ad hoc muscle weights",
+  "nominal_identity": "z=0",
+  "operator": "for each included member i: F0_i(z)=F0_i0*exp(z); synchronize gain/bias; all nonmembers unchanged",
+  "selection_used_scientific_outcome": false,
+  "semantic": "MuJoCo muscle force scale F0 multiplies the built-in muscle active-plus-passive force expression; not pure active strength"
+}
+```

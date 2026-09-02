@@ -1,0 +1,73 @@
+{
+  "all_checks_required": true,
+  "checks": [
+    {
+      "check_id": "G01",
+      "current_pass": false,
+      "requirement": "required robot attachment, exit/free-span and setup points available"
+    },
+    {
+      "check_id": "G02",
+      "current_pass": false,
+      "requirement": "T_B_TCP and calibrated T_B_R available with versioned uncertainty"
+    },
+    {
+      "check_id": "G03",
+      "current_pass": false,
+      "requirement": "all points expressed in common robot base frame"
+    },
+    {
+      "check_id": "G04",
+      "current_pass": false,
+      "requirement": "identified strap/cuff/fixture and frozen placement procedure match"
+    },
+    {
+      "check_id": "G05",
+      "current_pass": false,
+      "requirement": "strap is taut and has one observable free-span line"
+    },
+    {
+      "check_id": "G06",
+      "current_pass": false,
+      "requirement": "no slip, extra routing contact, split path or ambiguous broad exit"
+    },
+    {
+      "check_id": "G07",
+      "current_pass": false,
+      "requirement": "endpoint separation exceeds prefrozen metrology threshold"
+    },
+    {
+      "check_id": "G08",
+      "current_pass": false,
+      "requirement": "direction is finite and unit-normalizable"
+    },
+    {
+      "check_id": "G09",
+      "current_pass": false,
+      "requirement": "ten setup repetitions completed without posthoc extension"
+    },
+    {
+      "check_id": "G10",
+      "current_pass": false,
+      "requirement": "repeatability and propagated uncertainty meet prefrozen thresholds"
+    },
+    {
+      "check_id": "G11",
+      "current_pass": false,
+      "requirement": "dynamic use additionally has synchronized valid endpoint/pose data"
+    }
+  ],
+  "current_status": "FAIL_CLOSED_NOT_EXECUTED",
+  "explicitly_prohibited_fallbacks": [
+    "TCP_TRAJECTORY_TANGENT",
+    "FIXED_BED_DIRECTION",
+    "MODEL_L2_DIRECTION",
+    "GUESSED_ATTACHMENT_POINT"
+  ],
+  "gate_id": "STRAP_PULL_GEOMETRY_VALIDITY_GATE_V1",
+  "on_any_failure": {
+    "d_task": null,
+    "fallback_direction_allowed": false,
+    "reason": "GEOMETRY_INVALID_OR_UNVALIDATED"
+  }
+}

@@ -1,0 +1,235 @@
+{
+  "allowed_operations": [
+    "read_and_hash_named_frozen_reports_and_decisions",
+    "compare_route_semantics_and evidence limitations",
+    "write_conceptual_architecture_and_project_decision"
+  ],
+  "audit_type": "SCIENTIFIC_FORMULATION_PROJECT_DECISION_AUDIT",
+  "comfort_semantics": {
+    "comfort_or_preference_claim_requires_direct_subject_feedback": true,
+    "mechanical_measurements_are_comfort_truth": false,
+    "tactile_pressure_role": "MEASURED_INTERACTION_FEATURE_OR_POSSIBLE_COMFORT_CORRELATE"
+  },
+  "core_question": "Is MyoLeg-generated parameter heterogeneity plus a mechanical torque objective scientifically justified as the primary source of subject-specific trajectory preference?",
+  "decision_rule": {
+    "continue_synthetic_only_if": [
+      "independent frozen evidence demonstrates material subject-by-trajectory ordering",
+      "heterogeneity ranges are independently defensible",
+      "continuation does not depend on outcome-driven factor/range redesign"
+    ],
+    "measurement_pivot_is_primary_if": [
+      "repeated independent synthetic audits do not support a personalized mechanical ordering",
+      "the original multi-round individual-improvement goal still requires subject-specific observations",
+      "a falsifiable measured-data formulation can keep physics as prior rather than preference truth"
+    ],
+    "universal_option_is_secondary_if": [
+      "a common mechanical ordering is supported",
+      "personalization necessity is not supported",
+      "claims remain offline/common and do not imply comfort or human benefit"
+    ]
+  },
+  "does_not_claim_frozen_before_historical_evidence": true,
+  "evidence_files": [
+    {
+      "evidence_id": "E01_MYOLEG_COHORT_V1",
+      "path": "external_simulation_audits/myoleg_virtual_patient_cohort_generation_v1/MYOLEG_VIRTUAL_PATIENT_COHORT_GENERATION_REPORT.md",
+      "required_markers": [
+        "MYOLEG_VIRTUAL_PATIENT_COHORT_V1_VALID_WITH_LIMITATIONS",
+        "Reference-response heterogeneity"
+      ],
+      "role": "independent simulator cohort has descriptive absolute mechanical heterogeneity, not patient preference truth",
+      "semantic_markers_pass": true,
+      "sha256": "d24d147a0b6d28dd0298097e900e6c3c5e6994e7ffbe243a283dca1a9031b8a3",
+      "source_checksums_path": "external_simulation_audits/myoleg_virtual_patient_cohort_generation_v1/checksums.sha256",
+      "source_checksums_sha256": "1fbbed9f6a22acffcf8c99f2062413d3fac1c06b1b381eabf4b16ff9e0436ddf"
+    },
+    {
+      "evidence_id": "E02_V2_NECESSITY",
+      "path": "external_simulation_audits/myoleg_v2_personalization_necessity_audit_v1/MYOLEG_V2_PERSONALIZATION_NECESSITY_AUDIT_REPORT.md",
+      "required_markers": [
+        "PERSONALIZATION_NECESSITY_NOT_SUPPORTED",
+        "Relative common regret"
+      ],
+      "role": "V2 development oracle upper-bound audit",
+      "semantic_markers_pass": true,
+      "sha256": "0258083bd255165bd5f9706c3d29f732c76ca28c283cba063c350a2d0557ce42",
+      "source_checksums_path": "external_simulation_audits/myoleg_v2_personalization_necessity_audit_v1/checksums.sha256",
+      "source_checksums_sha256": "0b4a449186b571b9c39207dc18cab1ec1366004821b8d9fd74e97792d87437d3"
+    },
+    {
+      "evidence_id": "E03_V2_ROOT_CAUSE",
+      "path": "external_simulation_audits/myoleg_v2_personalization_signal_root_cause_audit_v1/MYOLEG_V2_PERSONALIZATION_SIGNAL_ROOT_CAUSE_REPORT.md",
+      "required_markers": [
+        "PERSONALIZATION_SIGNAL_ROOT_CAUSE_IDENTIFIED",
+        "99.939077%",
+        "0.033114%"
+      ],
+      "role": "dominant common candidate effect and weak interaction diagnosis",
+      "semantic_markers_pass": true,
+      "sha256": "eb9fd33347c673118198cd7e09e0c16397f92f703b4acbf250b3978a8b8558db",
+      "source_checksums_path": "external_simulation_audits/myoleg_v2_personalization_signal_root_cause_audit_v1/checksums.sha256",
+      "source_checksums_sha256": "d30910fa6ea2b6ce2346212cfb1b1013a07ff0c4c90d4db99a19abf66b170c3f"
+    },
+    {
+      "evidence_id": "E04_V2_PARAMETERIZATION",
+      "path": "external_simulation_audits/myoleg_v2_trajectory_parameterization_boundary_audit_v1/MYOLEG_V2_TRAJECTORY_PARAMETERIZATION_BOUNDARY_AUDIT_REPORT.md",
+      "required_markers": [
+        "TRAJECTORY_PARAMETERIZATION_ROOT_CAUSE_SUPPORTED",
+        "0.997742",
+        "NOT_ADEQUATE_FOR_CURRENT_PERSONALIZATION_QUESTION"
+      ],
+      "role": "amplitude/ROM confounding and fixed-task design rationale",
+      "semantic_markers_pass": true,
+      "sha256": "a176f8273c9bc7fd4382d138c5cb5b0199992252c041a201fe9a60a35856b55e",
+      "source_checksums_path": "external_simulation_audits/myoleg_v2_trajectory_parameterization_boundary_audit_v1/checksums.sha256",
+      "source_checksums_sha256": "485e3f81659500e287fc9cc165472ab4971c2e4c30200a27c5024029fa9cc111"
+    },
+    {
+      "evidence_id": "E05_V3_PARAMETERIZATION",
+      "path": "external_simulation_audits/myoleg_v3_trajectory_parameterization_design_v1/MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_REPORT.md",
+      "required_markers": [
+        "beta_flex",
+        "beta_extend",
+        "625"
+      ],
+      "role": "validated fixed-ROM branch-aware V3 coordination family",
+      "semantic_markers_pass": true,
+      "sha256": "280302b2a8e00da8e32506427e7f63c398bdc6f756eb6b55de7850dd20cba2e9",
+      "source_checksums_path": "external_simulation_audits/myoleg_v3_trajectory_parameterization_design_v1/checksums.sha256",
+      "source_checksums_sha256": "b57f07633a06c808cc5945f9c46b62e32b899b4e10911594a2cb05d8b29c0714"
+    },
+    {
+      "evidence_id": "E06_V3_LANDSCAPE",
+      "path": "external_simulation_audits/myoleg_v3_development_truth_landscape_generation_v1/MYOLEG_V3_DEVELOPMENT_TRUTH_LANDSCAPE_GENERATION_REPORT.md",
+      "required_markers": [
+        "24",
+        "625",
+        "held-out"
+      ],
+      "role": "complete valid development landscape and sealed held-out boundary",
+      "semantic_markers_pass": true,
+      "sha256": "2b2b9c3d3af55d5b1590a82e569055a098b0e695f6fa3249c2f0e9238464656c",
+      "source_checksums_path": "external_simulation_audits/myoleg_v3_development_truth_landscape_generation_v1/checksums.sha256",
+      "source_checksums_sha256": "4ac1725326a0ec9c97d02e907f5aedf7d73183a4848f3c8b07009f5ef10ec6a9"
+    },
+    {
+      "evidence_id": "E07_V3_NECESSITY",
+      "path": "external_simulation_audits/myoleg_v3_personalization_necessity_audit_v1/MYOLEG_V3_PERSONALIZATION_NECESSITY_AUDIT_REPORT.md",
+      "required_markers": [
+        "V3_PERSONALIZATION_NECESSITY_NOT_SUPPORTED",
+        "0.135074%",
+        "24/24",
+        "0.03, -0.03"
+      ],
+      "role": "fixed-task mechanical personalization necessity upper bound",
+      "semantic_markers_pass": true,
+      "sha256": "a0465f4e64cfe3591d6620f9d5f09ea4ad69738348c954155693a3f781294cd0",
+      "source_checksums_path": "external_simulation_audits/myoleg_v3_personalization_necessity_audit_v1/checksums.sha256",
+      "source_checksums_sha256": "3f4e7928c06af705ce76f22439b4f65530e68cc5238f68ce31cd52963f94f340"
+    },
+    {
+      "evidence_id": "E08_OBJECTIVE_HETEROGENEITY",
+      "path": "external_simulation_audits/myoleg_objective_and_musculoskeletal_heterogeneity_decision_audit_v1/MYOLEG_OBJECTIVE_AND_HETEROGENEITY_DECISION_REPORT.md",
+      "required_markers": [
+        "HETEROGENEITY_LIMITATION_DOMINANT",
+        "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE"
+      ],
+      "role": "objective versus heterogeneity diagnosis",
+      "semantic_markers_pass": true,
+      "sha256": "0b0a2f1d3d528550d380a623cabb2b56a17cbf3ce57c54f4b697244e4d4d87fe",
+      "source_checksums_path": "external_simulation_audits/myoleg_objective_and_musculoskeletal_heterogeneity_decision_audit_v1/checksums.sha256",
+      "source_checksums_sha256": "0559a8850f79567a9da5b6c1788a45a9f31991d713e5c46a2bc61baff7868396"
+    },
+    {
+      "evidence_id": "E09_HETEROGENEITY_EXPANSION",
+      "path": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_REPORT.md",
+      "required_markers": [
+        "offline design/model-semantics/evidence audit",
+        "V3_PERSONALIZATION_NECESSITY_NOT_SUPPORTED"
+      ],
+      "role": "structural factor design and population-range evidence gaps",
+      "semantic_markers_pass": true,
+      "sha256": "3f113ef383d727a87e6ce456fda4e6dfee028ded22c4a9b5a34c5d5a1b6e9dc3",
+      "source_checksums_path": "external_simulation_audits/myoleg_musculoskeletal_heterogeneity_expansion_design_audit_v1/checksums.sha256",
+      "source_checksums_sha256": "4f1572d2a406ac8a7ae9c6419a8885c42bacac62339a449aad4a7260801190c4"
+    },
+    {
+      "evidence_id": "E10_AMENDED_S1",
+      "path": "external_simulation_audits/myoleg_s1_structural_factor_definition_amendment_v1/S1_STRUCTURAL_DEFINITION_AMENDED_V1.json",
+      "required_markers": [
+        "S1F1_BIARTICULAR_LMAX",
+        "S1F4_KNEE_MONO_ANTAGONIST_F0"
+      ],
+      "role": "authoritative structural factor semantics",
+      "semantic_markers_pass": true,
+      "sha256": "3faf531f127bce1a26dd13b01dae07bc332bb107ac9d562c314f296780921763",
+      "source_checksums_path": "external_simulation_audits/myoleg_s1_structural_factor_definition_amendment_v1/checksums.sha256",
+      "source_checksums_sha256": "348d5cb8427053f3a6d4d4bb0e486dd26917e722d28ba52155f8647b7ca1de9a"
+    },
+    {
+      "evidence_id": "E11_PILOT_DESIGN_V2",
+      "path": "external_simulation_audits/myoleg_structural_heterogeneity_pilot_design_v2/MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_V2_REPORT.md",
+      "required_markers": [
+        "READY_WITH_EVIDENCE_GAPS",
+        "DIAGNOSTIC_LEVEL_READY"
+      ],
+      "role": "preregistered structural pilot design and gates",
+      "semantic_markers_pass": true,
+      "sha256": "bcb5ba8c83f0c3fb1091b82770ad6d7aa5d589a9b01a85b21a020893287b3fb7",
+      "source_checksums_path": "external_simulation_audits/myoleg_structural_heterogeneity_pilot_design_v2/checksums.sha256",
+      "source_checksums_sha256": "ac2fad3b2f5b5180ac9d2a138db91235aef3a373a1c591bb391bc28e09795d44"
+    },
+    {
+      "evidence_id": "E12_STRUCTURAL_PILOT_REPORT",
+      "path": "external_simulation_audits/myoleg_structural_heterogeneity_pilot_v1/MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_REPORT.md",
+      "required_markers": [
+        "STRUCTURAL_HETEROGENEITY_PILOT_NOT_SUPPORTED",
+        "MAGNITUDE_ONLY",
+        "Fallback models used: **0**"
+      ],
+      "role": "latest structural mechanism result",
+      "semantic_markers_pass": true,
+      "sha256": "151eab7eee1ebdb8e7fa067c5fbf885ebd6abf776db7e1aaccdfe5c09c259f46",
+      "source_checksums_path": "external_simulation_audits/myoleg_structural_heterogeneity_pilot_v1/checksums.sha256",
+      "source_checksums_sha256": "8c9fca380f412aaeb1a102e7d2d781db8523a8a0f35a1870e8264873926d5ee2"
+    },
+    {
+      "evidence_id": "E13_STRUCTURAL_PILOT_DECISION",
+      "path": "external_simulation_audits/myoleg_structural_heterogeneity_pilot_v1/FINAL_PILOT_DECISION.json",
+      "required_markers": [
+        "STRUCTURAL_HETEROGENEITY_PILOT_NOT_SUPPORTED",
+        "\"MAGNITUDE_ONLY\": 4"
+      ],
+      "role": "machine-readable latest stop condition",
+      "semantic_markers_pass": true,
+      "sha256": "d3ce145254e8fa1906b5902bfa90734ec4f9e8402b0c6eb0a3f0c9d3f2d892e5",
+      "source_checksums_path": "external_simulation_audits/myoleg_structural_heterogeneity_pilot_v1/checksums.sha256",
+      "source_checksums_sha256": "8c9fca380f412aaeb1a102e7d2d781db8523a8a0f35a1870e8264873926d5ee2"
+    }
+  ],
+  "frozen_latest_conclusion": "STRUCTURAL_HETEROGENEITY_PILOT_NOT_SUPPORTED",
+  "prohibited": [
+    "increase_S1_z",
+    "design_outcome_driven_S2_or_S3",
+    "generate_Cohort_V2",
+    "modify_objective_to_induce_oracle_diversity",
+    "modify_V3_candidate_domain",
+    "train_five_parameter_or_NN_or_PINN",
+    "run_BO",
+    "read_held_out_scientific_truth",
+    "access_robot_or_hardware",
+    "start_next_stage"
+  ],
+  "protocol_frozen_before_route_assessment_artifacts_written": true,
+  "protocol_id": "STOP_OR_PIVOT_DECISION_PROTOCOL_V1",
+  "route_candidates": {
+    "OPTION_A_CONTINUE_SYNTHETIC_MYOLEG_PERSONALIZATION": [
+      "CONTINUE",
+      "LIMITED_CONTINUATION",
+      "STOP"
+    ],
+    "OPTION_B_UNIVERSAL_MECHANICAL_TRAJECTORY_OPTIMIZATION": "retain V3 and common mechanical objective without a strong personalization claim",
+    "OPTION_C_MEASUREMENT_DRIVEN_PERSONALIZATION": "obtain subject-specific signal from executed-trial measurements or explicit feedback"
+  },
+  "stage_id": "MYOLEG_PERSONALIZATION_FORMULATION_STOP_OR_PIVOT_AUDIT_V1"
+}

@@ -1,0 +1,13 @@
+factor,actual_fields,taxonomy,evidence_level,configuration_dependent_potential,geometry_consistency,truth_learner_parameterization_independence,range_status
+biarticular normalized-curve lmax profile,actuator_gainprm/biasprm[5],A,E3,yes,yes,no,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+anatomical-family relative F0 balance,actuator_gainprm/biasprm[2],A,E2/E3,yes,yes,no,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+rectus-vs-hamstring relative fpmax,actuator_gainprm/biasprm[7],A,E3,yes,yes,no,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+mass/inertia,body_mass/body_inertia,B,E1/E2,mostly magnitude,yes,no,EXISTING_V1_RANGE_ONLY
+COM location,body_ipos,B,E1/E2,yes,conditional,no,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+background activation,act/ctrl initial condition,C,E3,yes,yes,no,EPISODE_NOT_SUBJECT_RANGE
+joint damping,dof_damping,D,E4,yes,yes,overlaps Bhip/Bknee,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+tendon stiffness/damping,tendon_stiffness/tendon_damping,D,E4,potential,no calibration,no,RANGE_REQUIRES_EXTERNAL_EVIDENCE
+segment length,body/joint/site/geom coupled geometry,E,E1/E2,yes,requires rebuild,no,NOT_A_SCALAR_RANGE_PROBLEM
+single-site attachment move,site_pos,E,E4,yes,no,no,DO_NOT_PERTURB
+actuator lengthrange,actuator_lengthrange,E,implementation,yes,no physiological mapping,no,DO_NOT_PERTURB
+joint-limit curve,jnt_range/solref/solimp,E,E4,yes,simulator artifact,no,DO_NOT_PERTURB

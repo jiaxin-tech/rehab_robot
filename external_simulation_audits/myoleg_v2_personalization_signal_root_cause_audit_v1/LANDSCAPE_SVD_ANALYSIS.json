@@ -1,0 +1,23 @@
+{
+  "CANDIDATE_MAIN_REMOVED_J": {
+    "first_2_variance_explained": 0.9694769122828211,
+    "first_3_variance_explained": 0.9983284597070462,
+    "first_5_variance_explained": 0.9999547543461881,
+    "pc1_variance_explained": 0.6614063712987454,
+    "residual_after_5": 4.524565381192058e-05
+  },
+  "RAW_J": {
+    "first_2_variance_explained": 0.9999999894437306,
+    "first_3_variance_explained": 0.9999999987942264,
+    "first_5_variance_explained": 0.999999999985674,
+    "pc1_variance_explained": 0.999999975318079,
+    "residual_after_5": 1.4325984842855632e-11
+  },
+  "SUBJECT_ROW_CENTERED_J": {
+    "first_2_variance_explained": 0.9999417566608064,
+    "first_3_variance_explained": 0.9999990059842389,
+    "first_5_variance_explained": 0.9999999663936422,
+    "pc1_variance_explained": 0.9997536934254024,
+    "residual_after_5": 3.360635780769172e-08
+  }
+}

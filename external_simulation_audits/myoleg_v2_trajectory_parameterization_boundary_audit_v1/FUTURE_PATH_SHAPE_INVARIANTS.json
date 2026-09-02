@@ -1,0 +1,68 @@
+{
+  "MUST_PRESERVE": [
+    {
+      "quantity": "hip minimum and maximum",
+      "reason": "keeps prescribed hip ROM dosage fixed"
+    },
+    {
+      "quantity": "knee minimum and maximum",
+      "reason": "keeps prescribed knee ROM dosage fixed"
+    },
+    {
+      "quantity": "cycle duration",
+      "reason": "prevents speed/dose from replacing path-shape personalization"
+    },
+    {
+      "quantity": "flexion and extension branch endpoints",
+      "reason": "retains measured asymmetric task and explicit turning states"
+    },
+    {
+      "quantity": "cycle q/dq/ddq closure and C2 continuity",
+      "reason": "supports repeatable prescribed execution without boundary impulses"
+    },
+    {
+      "quantity": "finite native MyoLeg simulator validity",
+      "reason": "future truth evaluation must remain interpretable"
+    },
+    {
+      "quantity": "no pointwise clipping",
+      "reason": "clipping destroys reversible parameter semantics and derivative continuity"
+    }
+  ],
+  "OPTIONAL": [
+    {
+      "quantity": "relative hip-knee phase within each branch",
+      "reason": "a legitimate coordination variable when extrema and durations stay fixed"
+    },
+    {
+      "quantity": "interior q-space curvature or loop area",
+      "reason": "candidate subject-specific path-shape coordinates"
+    },
+    {
+      "quantity": "branch-specific coordination perturbations",
+      "reason": "may personalize measured asymmetry while retaining endpoints"
+    }
+  ],
+  "SHOULD_PRESERVE": [
+    {
+      "quantity": "flexion/extension branch durations",
+      "reason": "separates path shape from global branch timing unless timing is an explicitly distinct factor"
+    },
+    {
+      "quantity": "measured flexion/extension asymmetry",
+      "reason": "keeps the active reference's empirical structure"
+    },
+    {
+      "quantity": "bounded smooth dq/ddq envelopes",
+      "reason": "enables later deterministic pre-execution audit"
+    },
+    {
+      "quantity": "locality around the frozen reference",
+      "reason": "supports low-budget inference without changing the task class"
+    }
+  ],
+  "formal_ranges_frozen": false,
+  "invariant_set_id": "FUTURE_PATH_SHAPE_INVARIANTS_V1",
+  "research_question": "subject-specific path/coordination optimization at fixed prescribed rehabilitation task",
+  "theta_shank_definition": "q_hip - q_knee"
+}

@@ -1,0 +1,21 @@
+{
+  "attempts": [
+    {
+      "attempt_id": "ATTEMPT_1_SYSTEM_PYTHON_NO_MUJOCO",
+      "development_compact_matrix_read": true,
+      "failure_boundary": "before first replay_subject_candidate call completed",
+      "held_out_scientific_truth_access_count": 0,
+      "reason": "System Python 3.13 did not provide the frozen mujoco package.",
+      "scientific_metrics_or_thresholds_changed": false,
+      "status": "INCOMPLETE_RUNTIME_ATTEMPT",
+      "preserved_at": "attempt1_missing_mujoco_runtime/"
+    }
+  ],
+  "resolution": {
+    "analysis_environment": "system Python with SciPy and Matplotlib",
+    "frozen_replay_environment": "/Users/fengjiaxin/.virtualenvs/myosuite-v2/bin/python",
+    "integration": "The frozen environment generates the preregistered development-only replay cache through the existing on-demand replay API; the analysis verifies it against compact frozen RMS values.",
+    "protocol_changed": false,
+    "scientific_input_changed": false
+  }
+}

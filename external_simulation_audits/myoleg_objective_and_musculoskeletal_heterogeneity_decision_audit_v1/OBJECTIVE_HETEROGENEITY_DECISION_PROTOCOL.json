@@ -1,0 +1,192 @@
+{
+  "analysis_population": {
+    "candidate_count": 625,
+    "development_count": 24,
+    "development_subject_ids": [
+      "MYOLEG_VP_001", "MYOLEG_VP_002", "MYOLEG_VP_003", "MYOLEG_VP_005",
+      "MYOLEG_VP_006", "MYOLEG_VP_007", "MYOLEG_VP_009", "MYOLEG_VP_010",
+      "MYOLEG_VP_011", "MYOLEG_VP_013", "MYOLEG_VP_014", "MYOLEG_VP_015",
+      "MYOLEG_VP_017", "MYOLEG_VP_018", "MYOLEG_VP_019", "MYOLEG_VP_021",
+      "MYOLEG_VP_022", "MYOLEG_VP_023", "MYOLEG_VP_025", "MYOLEG_VP_026",
+      "MYOLEG_VP_027", "MYOLEG_VP_029", "MYOLEG_VP_030", "MYOLEG_VP_031"
+    ],
+    "held_out_count": 8,
+    "held_out_scientific_values_allowed": false,
+    "held_out_subject_ids": [
+      "MYOLEG_VP_004", "MYOLEG_VP_008", "MYOLEG_VP_012", "MYOLEG_VP_016",
+      "MYOLEG_VP_020", "MYOLEG_VP_024", "MYOLEG_VP_028", "MYOLEG_VP_032"
+    ]
+  },
+  "baseline": {
+    "formal_objective": "J_NORMALIZED_RMS=sqrt(0.5*((hip_rms/subject_reference_hip_rms)^2+(knee_rms/subject_reference_knee_rms)^2))",
+    "frozen_v3_common_regret": 0.0,
+    "frozen_v3_direction_reversal_count": 0,
+    "frozen_v3_interaction_fraction": 0.0013507371763654393,
+    "frozen_v3_kendall_median": 0.9952564102564103,
+    "frozen_v3_spearman_median": 0.9999533792086508,
+    "objective_role": "formal baseline only; every alternative view is diagnostic and cannot become a new objective in this stage"
+  },
+  "candidate_gradient_vectors": {
+    "global": "central/one-sided finite differences on the unchanged 25x25 beta grid; concatenate both gradient fields for cross-subject cosine",
+    "local": "central differences at beta=[0,0] using K0287/K0337 for beta_flex and K0311/K0313 for beta_extend",
+    "preference_evidence": "direction/sign differs, not merely gradient norm or proportional scale"
+  },
+  "decision_rules": {
+    "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_ADEQUATE": "at least two physically meaningful diagnostic representations satisfy REPRESENTATION_ORDERING_EVIDENCE, at least one is a force component, and at least one has direction_disagreement_fraction>=0.05",
+    "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_LIMITED": "the ADEQUATE conjunction is false after all preregistered diagnostics pass integrity checks",
+    "CURRENT_OBJECTIVE_INFORMATION_RETENTION_LIMITED": "at least two upstream raw/time/peak/component representations satisfy REPRESENTATION_ORDERING_EVIDENCE, combined J does not, and at least one preregistered normalization/RMS/component-aggregation loss condition is met",
+    "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE": "the LIMITED conjunction is false after all preregistered diagnostics pass integrity checks",
+    "final_matrix": {
+      "objective_adequate_and_heterogeneity_adequate": "INSUFFICIENT_EVIDENCE_TO_SEPARATE",
+      "objective_adequate_and_heterogeneity_limited": "HETEROGENEITY_LIMITATION_DOMINANT",
+      "objective_limited_and_heterogeneity_adequate": "OBJECTIVE_LIMITATION_DOMINANT",
+      "objective_limited_and_heterogeneity_limited": "BOTH_OBJECTIVE_AND_HETEROGENEITY_LIMITING",
+      "integrity_or_diagnostic_failure": "INSUFFICIENT_EVIDENCE_TO_SEPARATE"
+    },
+    "next_stage": {
+      "BOTH_OBJECTIVE_AND_HETEROGENEITY_LIMITING": "recommend the layer with stronger preregistered evidence first; do not execute",
+      "HETEROGENEITY_LIMITATION_DOMINANT": "MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_AUDIT_V1",
+      "INSUFFICIENT_EVIDENCE_TO_SEPARATE": "MYOLEG_OBJECTIVE_HETEROGENEITY_EVIDENCE_GAP_PROTOCOL_V1",
+      "OBJECTIVE_LIMITATION_DOMINANT": "MYOLEG_OBJECTIVE_FORMULATION_DESIGN_AUDIT_V1"
+    }
+  },
+  "diagnostic_representations": [
+    "raw hip RMS", "raw knee RMS", "normalized hip RMS ratio", "normalized knee RMS ratio",
+    "combined frozen J", "raw hip/knee peak", "reference-normalized hip/knee peak",
+    "time-resolved hip/knee torque", "six branch-phase window RMS views",
+    "mass component RMS", "bias/gravity component RMS", "passive component RMS",
+    "zero-control actuator component RMS", "constraint component RMS"
+  ],
+  "evidence_thresholds": {
+    "AFFINE_COMMON_SCALING": "median affine R2>=0.995 and median proportional NRMSE<=0.01",
+    "COMMON_RANKED": "median pairwise Spearman>=0.98 and direction_disagreement_fraction<=0.01 and median affine R2>=0.995",
+    "MATERIAL_RMS_COMPRESSION": "time-resolved/RMS-summary interaction RMS ratio>=2 for both joints and at least one preregistered time window satisfies REPRESENTATION_ORDERING_EVIDENCE",
+    "NORMALIZATION_ORDERING_RETAINED": "minimum within-subject raw-versus-normalized Spearman>=0.999999 and adjacent sign-change fraction=0 for both joints",
+    "NORMALIZATION_ORDERING_LOSS": "minimum within-subject raw-versus-normalized Spearman<0.99 or adjacent sign-change fraction>=0.01 for either joint",
+    "REPRESENTATION_ORDERING_EVIDENCE": "median pairwise Spearman<=0.95 OR direction_disagreement_fraction>=0.05 OR (interaction_fraction>=0.01 AND interaction_to_common_ratio>=0.10)",
+    "component_numerical_presence_rms_nm": 1e-06,
+    "finite_difference_equivalence_tolerance": 1e-12,
+    "parameter_association_descriptive": "absolute Spearman rho>=0.70 and BH q<=0.10; magnitude-only association is not preference evidence"
+  },
+  "force_components": {
+    "bias_gravity": {"array": "bias_term_nm", "required_drive_formula_sign": 1.0},
+    "constraint": {"array": "constraint_internal_nm", "required_drive_formula_sign": -1.0},
+    "mass_inertia": {"array": "mass_term_nm", "required_drive_formula_sign": 1.0},
+    "passive": {"array": "passive_internal_nm", "required_drive_formula_sign": -1.0},
+    "zero_control_actuator": {"array": "actuator_internal_nm", "required_drive_formula_sign": -1.0}
+  },
+  "frozen_before_new_development_diagnostics_reveal": true,
+  "hypotheses": [
+    "H_OBJ_NORMALIZATION_LOSS",
+    "H_OBJ_RMS_COMPRESSION",
+    "H_OBJ_COMPONENT_AGGREGATION",
+    "H_HET_MULTIPLICATIVE_SCALING",
+    "H_HET_INSUFFICIENT_STRUCTURAL_VARIATION"
+  ],
+  "input_sha256": {
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "v2_candidate_builder": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "v3_candidate_manifest": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "v3_candidate_table": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774",
+    "v3_necessity_checksums": "3f4e7928c06af705ce76f22439b4f65530e68cc5238f68ce31cd52963f94f340",
+    "v3_necessity_decision_metrics": "e8524bb86adddb5d0b4e28e708a2950cac91effddc1769145fb5cc64a67b4184",
+    "v3_necessity_metadata": "9282c0a1aa6da9818d4caa976fa3567db02fc2c5b22122ee59fd0f7f46496b25",
+    "v3_parameterization_source": "e830b5cadd6d970107e59eb9b346650af5ab254b42beecdfaf6b70a5985957ef",
+    "v3_replay_api": "5e25c9c8a96e9c778de320802352691c759e04a1d5ae2dcb29d444b9f37c4674",
+    "v3_replay_builder": "d60a9b1651b49307155b8b36bfdd881b595c604288f7c07a3237afe5f5feb32e",
+    "v3_truth_landscape_manifest": "c318700e161e857d3e059eadf2bc21364e21b74d8b39faf4124a26fc15d37c6e"
+  },
+  "normalization_attenuation": {
+    "absolute_interaction": "two-way interaction RMS in source units",
+    "dimensionless_interaction": "interaction RMS divided by absolute grand mean",
+    "interaction_fraction": "interaction sum of squares divided by total centered sum of squares",
+    "ordering_comparison": "within-subject raw versus positive-reference-normalized ranks and all adjacent transition signs"
+  },
+  "objective_weight_search": false,
+  "peak_diagnostic": {
+    "raw": "maximum absolute joint torque from the frozen 24x625 compact landscapes",
+    "reference_normalized": "raw candidate peak divided by the same subject and joint reference-candidate peak",
+    "role": "diagnostic only; no peak objective optimization"
+  },
+  "protocol_id": "OBJECTIVE_HETEROGENEITY_DECISION_PROTOCOL_V1",
+  "replay_subset": {
+    "candidate_rows": [
+      {"beta": [-0.03, -0.03], "candidate_id": "MYOLEG_V3_K0000", "role": "CORNER_FLEX_LOW_EXTEND_LOW"},
+      {"beta": [-0.03, 0.0], "candidate_id": "MYOLEG_V3_K0012", "role": "FLEX_AXIS_LOW"},
+      {"beta": [-0.03, 0.03], "candidate_id": "MYOLEG_V3_K0024", "role": "CORNER_FLEX_LOW_EXTEND_HIGH"},
+      {"beta": [-0.015, -0.015], "candidate_id": "MYOLEG_V3_K0156", "role": "INTERIOR_NEG_NEG"},
+      {"beta": [-0.015, 0.015], "candidate_id": "MYOLEG_V3_K0174", "role": "INTERIOR_NEG_POS"},
+      {"beta": [-0.0025, 0.0], "candidate_id": "MYOLEG_V3_K0287", "role": "LOCAL_FLEX_MINUS"},
+      {"beta": [0.0, -0.03], "candidate_id": "MYOLEG_V3_K0300", "role": "EXTEND_AXIS_LOW"},
+      {"beta": [0.0, -0.0025], "candidate_id": "MYOLEG_V3_K0311", "role": "LOCAL_EXTEND_MINUS"},
+      {"beta": [0.0, 0.0], "candidate_id": "MYOLEG_V3_K0312", "role": "REFERENCE"},
+      {"beta": [0.0, 0.0025], "candidate_id": "MYOLEG_V3_K0313", "role": "LOCAL_EXTEND_PLUS"},
+      {"beta": [0.0, 0.03], "candidate_id": "MYOLEG_V3_K0324", "role": "EXTEND_AXIS_HIGH"},
+      {"beta": [0.0025, 0.0], "candidate_id": "MYOLEG_V3_K0337", "role": "LOCAL_FLEX_PLUS"},
+      {"beta": [0.015, -0.015], "candidate_id": "MYOLEG_V3_K0456", "role": "INTERIOR_POS_NEG"},
+      {"beta": [0.015, 0.015], "candidate_id": "MYOLEG_V3_K0474", "role": "INTERIOR_POS_POS"},
+      {"beta": [0.03, -0.03], "candidate_id": "MYOLEG_V3_K0600", "role": "CORNER_FLEX_HIGH_EXTEND_LOW"},
+      {"beta": [0.03, 0.0], "candidate_id": "MYOLEG_V3_K0612", "role": "FLEX_AXIS_HIGH"},
+      {"beta": [0.03, 0.03], "candidate_id": "MYOLEG_V3_K0624", "role": "CORNER_FLEX_HIGH_EXTEND_HIGH"}
+    ],
+    "candidate_selection": "V3 beta geometry only: reference, four corners, four axis extrema, four central neighbors, four deterministic interior points",
+    "pair_count": 136,
+    "subject_rows": [
+      {"role": "CENTER_NEAREST", "subject_id": "MYOLEG_VP_031"},
+      {"role": "CENTER_FARTHEST", "subject_id": "MYOLEG_VP_011"},
+      {"role": "MAXIMIN_3", "subject_id": "MYOLEG_VP_009"},
+      {"role": "MAXIMIN_4", "subject_id": "MYOLEG_VP_015"},
+      {"role": "MAXIMIN_5", "subject_id": "MYOLEG_VP_023"},
+      {"role": "MAXIMIN_6", "subject_id": "MYOLEG_VP_001"},
+      {"role": "MAXIMIN_7", "subject_id": "MYOLEG_VP_021"},
+      {"role": "MAXIMIN_8", "subject_id": "MYOLEG_VP_022"}
+    ],
+    "subject_selection": "nearest/farthest parameter centroid followed by deterministic greedy maximin in frozen 6-D unit-cube geometry",
+    "uses_objective_or_candidate_performance": false
+  },
+  "scope_guards": {
+    "bo": false,
+    "candidate_domain_change": false,
+    "cohort_or_range_change": false,
+    "five_parameter": false,
+    "held_out_scientific_truth": false,
+    "learner_training": false,
+    "new_subject_factors": false,
+    "nn_or_pinn": false,
+    "normalization_change": false,
+    "objective_change": false,
+    "objective_weight_search": false,
+    "robot_or_hardware": false,
+    "v3_parameterization_change": false
+  },
+  "scientific_role": "development-only offline diagnosis separating objective information loss from limited musculoskeletal subject-by-trajectory structural heterogeneity",
+  "stage_id": "MYOLEG_OBJECTIVE_AND_MUSCULOSKELETAL_HETEROGENEITY_DECISION_AUDIT_V1",
+  "subject_parameter_associations": {
+    "factors": [
+      "FEMUR_MASS_INERTIA_SCALE", "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+      "FOOT_COMPLEX_MASS_INERTIA_SCALE", "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "KNEE_ONLY_PASSIVE_FP_MAX_SCALE", "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE"
+    ],
+    "method": "exploratory Spearman with raw p and Benjamini-Hochberg q within each declared compact/passive/mass-inertia family; no predictive learner",
+    "preference_rule": "association with gradient magnitude alone is recorded as PARAMETERS_MODULATE_RESPONSE_MAGNITUDE_NOT_PREFERENCE"
+  },
+  "time_resolved": {
+    "interaction_metric": "time-weighted RMS over t of sqrt(mean(subject-by-candidate interaction(t)^2))",
+    "rms_compression_ratio": "time-resolved interaction RMS divided by interaction RMS of the corresponding reference-normalized full-cycle RMS summary",
+    "signals": ["signed raw tau(t)", "signed tau(t) divided by same-subject reference RMS"],
+    "time_windows": [
+      {"branch": "flexion", "label": "FLEXION_EARLY", "segment_phase": [0.0, 0.3333333333333333]},
+      {"branch": "flexion", "label": "FLEXION_MID", "segment_phase": [0.3333333333333333, 0.6666666666666666]},
+      {"branch": "flexion", "label": "FLEXION_LATE", "segment_phase": [0.6666666666666666, 1.0]},
+      {"branch": "extension", "label": "EXTENSION_EARLY", "segment_phase": [0.0, 0.3333333333333333]},
+      {"branch": "extension", "label": "EXTENSION_MID", "segment_phase": [0.3333333333333333, 0.6666666666666666]},
+      {"branch": "extension", "label": "EXTENSION_LATE", "segment_phase": [0.6666666666666666, 1.0]}
+    ],
+    "window_boundary_rule": "left-closed/right-open except the final third is right-closed; branch labels and segment_phase come from the frozen reference"
+  },
+  "two_way_decomposition": {
+    "convention": "X_sc=grand+subject_main_s+candidate_main_c+interaction_sc with zero-sum main effects",
+    "interaction_to_common_ratio": "RMS(interaction)/RMS(candidate_main)",
+    "sum_of_squares": "SS_subject=C*sum(subject_main^2); SS_candidate=S*sum(candidate_main^2); SS_interaction=sum(interaction^2)"
+  }
+}

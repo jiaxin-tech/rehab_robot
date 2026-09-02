@@ -1,0 +1,77 @@
+{
+  "checks": [
+    {
+      "check_id": "FULL_DURATION_COMPLETED",
+      "current_pass": null,
+      "meaning": "confirmed complete 24 s trial and normal completion"
+    },
+    {
+      "check_id": "NO_SAFETY_ABORT",
+      "current_pass": null,
+      "meaning": "no safety abort/event requiring invalidation"
+    },
+    {
+      "check_id": "VALID_OPERATION_STATE",
+      "current_pass": null,
+      "meaning": "all required operation-state samples valid"
+    },
+    {
+      "check_id": "TIMING_VALID",
+      "current_pass": null,
+      "meaning": "timestamps monotonic and provenance complete"
+    },
+    {
+      "check_id": "MISSING_DATA_ACCEPTABLE",
+      "current_pass": null,
+      "meaning": "missing/dropped intervals below future frozen limit"
+    },
+    {
+      "check_id": "STATE_FRESHNESS_VALID",
+      "current_pass": null,
+      "meaning": "state age below future frozen limit"
+    },
+    {
+      "check_id": "WRENCH_FRESHNESS_VALID",
+      "current_pass": null,
+      "meaning": "wrench age/source validity below future frozen limit"
+    },
+    {
+      "check_id": "SYNCHRONIZATION_VALID",
+      "current_pass": null,
+      "meaning": "state-wrench-command skew/gap below future frozen limits"
+    },
+    {
+      "check_id": "WRENCH_SEMANTICS_VALIDATED",
+      "current_pass": false,
+      "meaning": "frame/sign/bias semantics valid for endpoint version"
+    },
+    {
+      "check_id": "TASK_DIRECTION_VALIDATED",
+      "current_pass": false,
+      "meaning": "finite unit direction in same validated frame"
+    },
+    {
+      "check_id": "TRACKING_WITHIN_REVIEWED_BOUNDS",
+      "current_pass": null,
+      "meaning": "tracking within independently reviewed constraint"
+    },
+    {
+      "check_id": "FINITE_REQUIRED_CHANNELS",
+      "current_pass": null,
+      "meaning": "all samples used by endpoint finite"
+    }
+  ],
+  "current_status": "DEFINITION_READY_THRESHOLDS_AND_PHYSICAL_SEMANTICS_PENDING",
+  "fail_closed": true,
+  "gate_id": "EPISODE_DATA_VALIDITY_GATE_V1",
+  "numeric_thresholds": {
+    "max_interpolation_gap_s": null,
+    "max_skew_s": null,
+    "max_state_age_s": null,
+    "max_wrench_age_s": null,
+    "missing_fraction": null,
+    "tracking_bounds": null
+  },
+  "on_failure": "do not compute/use a normal-looking primary endpoint; store null endpoint, gate failure and reasons; do not update gray-box or BO objective",
+  "safety_or_validity_values_are_objective_terms": false
+}

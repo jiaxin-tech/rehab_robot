@@ -1,0 +1,155 @@
+{
+  "all_inputs_present_and_semantically_verified": true,
+  "human_data_access_count": 0,
+  "input_count": 13,
+  "inputs": [
+    {
+      "input_id": "PARENT_STATIC_WRENCH_PROTOCOL",
+      "path": "external_simulation_audits/static_wrench_frame_sign_validation_protocol_v1/STATIC_WRENCH_VALIDATION_PROTOCOL.json",
+      "semantic_markers": [
+        "STATIC_WRENCH_FRAME_SIGN_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED",
+        "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION",
+        "this protocol changes no wrench flag"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1"
+    },
+    {
+      "input_id": "PARENT_TASK_DIRECTION_DEFINITION",
+      "path": "external_simulation_audits/wrench_frame_and_task_direction_resolution_v1/TASK_DIRECTION_FORMAL_DEFINITION.json",
+      "semantic_markers": [
+        "ACTUAL_STRAP_PULL_LINE_OF_ACTION",
+        "p_robot_attach_B(t)",
+        "p_limb_attach_B(t)",
+        "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "17e7e42a24393a3c1d0d4bb2f9ddfdfde6e0bbe664b01a7e242ba32ca2a37995"
+    },
+    {
+      "input_id": "PARENT_STRAP_GEOMETRY_AUDIT",
+      "path": "external_simulation_audits/wrench_frame_and_task_direction_resolution_v1/STRAP_PULL_GEOMETRY_AUDIT.md",
+      "semantic_markers": [
+        "physical eyelet/cuff connection",
+        "not an ankle",
+        "actual line of action remains unknown"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "d3e48f38d7102d5da2f01aeae4b86e0f95141610f586254af6a886e8ae23fc30"
+    },
+    {
+      "input_id": "PARENT_STATIC_GEOMETRY_PLAN",
+      "path": "external_simulation_audits/wrench_frame_and_task_direction_resolution_v1/FUTURE_STATIC_GEOMETRY_VALIDATION_PLAN.md",
+      "semantic_markers": [
+        "rigid rehabilitation fixture/phantom",
+        "robot-side strap eye/attachment center",
+        "task-direction angular uncertainty"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "b8cf4a3ff4818ca7531e231e619925451a4ad76f8f4c0dd885f99229f89ae9a9"
+    },
+    {
+      "input_id": "FORMAL_EXPERIMENT_MANIFEST",
+      "path": "config/formal_experiment_manifest.json",
+      "semantic_markers": [
+        "ROM_PROTOCOL_V2",
+        "q_hip - q_knee",
+        "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+    },
+    {
+      "input_id": "ACTIVE_REFERENCE",
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "semantic_markers": [
+        "reference_measured_asymmetric_closed_slow",
+        "theta_shank = q_hip - q_knee",
+        "knee_to_strap_equivalent_pull_point"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    },
+    {
+      "input_id": "REHAB_FRAME_CONFIG",
+      "path": "config/rehab_frame_config.json",
+      "semantic_markers": [
+        "\"rehab_x_axis_in_base\": null",
+        "\"rehab_z_axis_in_base\": null",
+        "\"reviewed\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "eeb4b28a359acc74ab9cf9dcdf5ebbf41bf8f40e4eae1020045011aecdd57606"
+    },
+    {
+      "input_id": "START_ANCHORED_TRAJECTORY",
+      "path": "control/start_anchored_relative_trajectory.py",
+      "semantic_markers": [
+        "L2_knee_to_equivalent_shank_strap_pull_point_m",
+        "\"hip_center_required\": False",
+        "\"observed_ankle_used_as_pull_point\": False"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f9a9ec92183fe490ea64e909dcd1a00a1819daf369e1ed4b05403d50f51ca8e6"
+    },
+    {
+      "input_id": "MODEL_CONFIG",
+      "path": "lower_limb_sim/config.py",
+      "semantic_markers": [
+        "L2 = 0.30",
+        "\u5b8c\u6574\u5c0f\u817f\u957f\u5ea6\u4e0d\u7b49\u4e8e L2",
+        "\u819d\u5173\u8282\u5230\u675f\u7f1a\u5e26\u7b49\u6548\u7275\u5f15\u70b9"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5f4da8438ad7776b374eee6870307a0b5cf81ef6bb21c29b2dc964c540a8d234"
+    },
+    {
+      "input_id": "MODEL_KINEMATICS",
+      "path": "lower_limb_sim/kinematics.py",
+      "semantic_markers": [
+        "shank_angle = q_hip_array - q_knee_array",
+        "x_pull",
+        "z_pull"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "cc18b3d62b491c009959f72601f15b838f9cb2dbafcaabd06df0906af6de0b94"
+    },
+    {
+      "input_id": "CURRENT_ARCHITECTURE",
+      "path": "CURRENT_ARCHITECTURE.md",
+      "semantic_markers": [
+        "equivalent strap pull point",
+        "q_hip - q_knee",
+        "L2"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "ea05150712f5422c71b0226e0e1e739364a2e36793766b79642430f7a2b61cfb"
+    },
+    {
+      "input_id": "REAL_ROBOT_EXPERIMENT_BOUNDARY",
+      "path": "REAL_ROBOT_EXPERIMENT.md",
+      "semantic_markers": [
+        "strap",
+        "dummy",
+        "subject"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "0404269be7a2428ab5c81873468cfdde7b281ef905dd97911de95a39a161514b"
+    },
+    {
+      "input_id": "PROJECT_README",
+      "path": "README.md",
+      "semantic_markers": [
+        "\u4ef0\u5367\u4f4d",
+        "\u7b49\u6548",
+        "\u675f\u5e26"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "3fcd4e2c546eef1dc5d2365971d9cc0233e14d7cad47e7861a87df6826e76417"
+    }
+  ],
+  "physical_geometry_result_files_read": [],
+  "robot_access_count": 0,
+  "scientific_endpoint_outcomes_read": [],
+  "stage_id": "STATIC_STRAP_PULL_GEOMETRY_VALIDATION_PROTOCOL_V1"
+}

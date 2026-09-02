@@ -1,0 +1,188 @@
+{
+  "active_channel_source_scan": {
+    "active_source_file_count": 40,
+    "active_source_inventory_sha256": "70327d598f10dbe42d4c8d83f2d20de59fd945f9bb73cb78b8613c35c6bf6653",
+    "direct_preference_acquisition_source_hits": [],
+    "direct_preference_implemented": false,
+    "tactile_acquisition_source_hits": [],
+    "tactile_implemented": false
+  },
+  "all_inputs_present_and_semantically_verified": true,
+  "held_out_scientific_access_count": 0,
+  "human_study_count": 0,
+  "input_count": 16,
+  "inputs": [
+    {
+      "input_id": "STOP_OR_PIVOT_DECISION",
+      "path": "external_simulation_audits/myoleg_personalization_formulation_stop_or_pivot_audit_v1/FINAL_PROJECT_DIRECTION_DECISION.json",
+      "semantic_markers": [
+        "PIVOT_TO_MEASUREMENT_DRIVEN_PERSONALIZATION",
+        "PERSONALIZED_REHABILITATION_RESEARCH_FORMULATION_V2"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "c8bdf65597bb8363defb7396d18598cf24cba6ee376cfec094e1617c5b630bce"
+    },
+    {
+      "input_id": "STOP_OR_PIVOT_REPORT",
+      "path": "external_simulation_audits/myoleg_personalization_formulation_stop_or_pivot_audit_v1/MYOLEG_PERSONALIZATION_FORMULATION_STOP_OR_PIVOT_REPORT.md",
+      "semantic_markers": [
+        "PINN_NOT_YET_JUSTIFIED",
+        "PERSONALIZED_BO_NOT_YET_JUSTIFIED_WITHOUT_SUBJECT_FEEDBACK"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f33822b3b6c71acad24cb28a30a65cbbc66a2ab667afdf3bb6b4c4cd33424144"
+    },
+    {
+      "input_id": "STOP_OR_PIVOT_PROTOCOL",
+      "path": "external_simulation_audits/myoleg_personalization_formulation_stop_or_pivot_audit_v1/STOP_OR_PIVOT_DECISION_PROTOCOL.json",
+      "semantic_markers": [
+        "SCIENTIFIC_FORMULATION_PROJECT_DECISION_AUDIT",
+        "generate_Cohort_V2"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "029ffe5bcc91ca4ffc8d9db3216b7df0c92c73f0aa253a26a2d2d9b24f173503"
+    },
+    {
+      "input_id": "V3_PARAMETERIZATION_SEMANTICS",
+      "path": "external_simulation_audits/myoleg_v3_trajectory_parameterization_design_v1/V3_PARAMETERIZATION_SEMANTICS.json",
+      "semantic_markers": [
+        "beta_flex",
+        "beta_extend",
+        "w_b(s; beta_b)=s+beta_b*64*s^3*(1-s)^3"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f7694a02ee579031df4695fc8ad8671da99ee5be671ea852e73a26f21c49e63a"
+    },
+    {
+      "input_id": "V3_CANDIDATE_MANIFEST",
+      "path": "external_simulation_audits/myoleg_v3_trajectory_parameterization_design_v1/MYOLEG_V3_KINEMATIC_CANDIDATE_DOMAIN_V1_MANIFEST.json",
+      "semantic_markers": [
+        "formal_parent_reference_sha256",
+        "beta_flex",
+        "beta_extend"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745"
+    },
+    {
+      "input_id": "V3_PARAMETERIZATION_SOURCE",
+      "path": "external_simulation/myoleg_v3_trajectory_parameterization_design_v1/parameterization.py",
+      "semantic_markers": [
+        "PARAMETER_ORDER = (\"beta_flex\", \"beta_extend\")",
+        "64.0"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "e830b5cadd6d970107e59eb9b346650af5ab254b42beecdfaf6b70a5985957ef"
+    },
+    {
+      "input_id": "FORMAL_EXPERIMENT_MANIFEST",
+      "path": "config/formal_experiment_manifest.json",
+      "semantic_markers": [
+        "ROM_PROTOCOL_V2",
+        "q_hip - q_knee",
+        "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+    },
+    {
+      "input_id": "ACTIVE_REFERENCE",
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "semantic_markers": [],
+      "semantic_markers_pass": true,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    },
+    {
+      "input_id": "ROBOT_STATE_SCHEMA",
+      "path": "collection/state.py",
+      "semantic_markers": [
+        "joint_position_rad",
+        "joint_velocity_radps",
+        "tcp_linear_acceleration_est_mps2",
+        "InternalWrenchFrame"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "d5c2b4c67baca13922e5d0e8fb80a5d10941e160d2e3990287299b8c3cef88fd"
+    },
+    {
+      "input_id": "SNAPSHOT_ALIGNMENT",
+      "path": "collection/snapshot.py",
+      "semantic_markers": [
+        "state_internal_skew_ms",
+        "base_wrench_rotation_requires_robot_validation",
+        "force_query_duration_ms"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "aa16cc4b340cb4462bf103b289f44bd02c42b6c559b9974d3c30afebd1cf892b"
+    },
+    {
+      "input_id": "REAL_ROBOT_ACQUISITION",
+      "path": "collection/real_robot_acquisition.py",
+      "semantic_markers": [
+        "Independent state, wrench, and alignment producers",
+        "read_internal_wrench",
+        "state_wrench_skew_s"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8412856e8b9eb32002055e7f4f839173a44e2746fb5c8abe57767eadfd9e0906"
+    },
+    {
+      "input_id": "ROKAE_ADAPTER",
+      "path": "hardware/rokae_adapter.py",
+      "semantic_markers": [
+        "Observation-only project adapter",
+        "read_joint_positions",
+        "read_internal_wrench"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "23cb0b5176fcbcb83cf79844619addbe16698347d8cae9e984a6e7c3fc4368a8"
+    },
+    {
+      "input_id": "XCORE_STATE_WRENCH_SOURCE",
+      "path": "hardware/windows/rokae_xcore.py",
+      "semantic_markers": [
+        "getEndTorque",
+        "joint_position_rad",
+        "joint_velocity_radps"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5d5908b0e504a729357b91ca8b31158f7ed6c8c8b8e5b8659bcef25ece22cca3"
+    },
+    {
+      "input_id": "HARDWARE_SETTINGS",
+      "path": "config/settings.py",
+      "semantic_markers": [
+        "BASE_WRENCH_ROTATION_VERIFIED  = False",
+        "ROBOT_FORCE_SOURCE",
+        "REQUIRE_WORKSPACE_LIMITS = True"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "4f8d0d9c054240c1914be83ecb9aa97ae8e8766ff38a32d05d08ea67fa863902"
+    },
+    {
+      "input_id": "EXPERIMENT_SAFETY_REVIEW",
+      "path": "config/experiment_safety.json",
+      "semantic_markers": [
+        "\"reviewed\": false",
+        "\"max_force_n\": null",
+        "\"workspace_min_base_m\": null"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "2f60266b6a16f7911a585aad85fe2bcb4191144672d337d3960fc113e5c36b66"
+    },
+    {
+      "input_id": "REAL_IDENTIFICATION_CONFIG",
+      "path": "config/real_identification_config.json",
+      "semantic_markers": [
+        "\"reviewed\": false",
+        "\"raw_wrench_frame\": null",
+        "\"assumed_wrench_delay_s\": null"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8979412db4d3c7ef4d0886eaebc6edeaa2474679ef33ac434c1c57d6c3cd2ba4"
+    }
+  ],
+  "robot_access_count": 0,
+  "simulator_experiment_count": 0,
+  "stage_id": "PERSONALIZED_REHABILITATION_RESEARCH_FORMULATION_V2"
+}

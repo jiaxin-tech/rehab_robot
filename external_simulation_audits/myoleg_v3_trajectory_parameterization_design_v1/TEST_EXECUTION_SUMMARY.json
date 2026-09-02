@@ -1,0 +1,10 @@
+{
+  "command": "python3 -m pytest -q",
+  "exit_code": 0,
+  "failed": 0,
+  "passed": 1561,
+  "pytest_reported_runtime_s": 365.91,
+  "runner_real_time_s": 774.21,
+  "skipped": 5,
+  "warnings_reported": 0
+}

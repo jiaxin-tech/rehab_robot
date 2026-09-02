@@ -1,0 +1,11 @@
+entity,entity_type,field,relationship,relative_to,reason
+FEMUR_MASS_INERTIA_SCALE,V1,body_mass/body_inertia,RETAIN_AS_BACKGROUND,amended S1,anthropometric background; no exact structural-field overlap
+TIBIA_PATELLA_MASS_INERTIA_SCALE,V1,body_mass/body_inertia,RETAIN_AS_BACKGROUND,amended S1,anthropometric background; no exact structural-field overlap
+FOOT_COMPLEX_MASS_INERTIA_SCALE,V1,body_mass/body_inertia,RETAIN_AS_BACKGROUND,amended S1,anthropometric background; no exact structural-field overlap
+HIP_ONLY_PASSIVE_FP_MAX_SCALE,V1,gainprm/biasprm[7] hip-only,SECONDARY_ONLY,S1F3 F0,different field but prior magnitude-dominant synthetic factor; not primary personalization signal
+KNEE_ONLY_PASSIVE_FP_MAX_SCALE,V1,gainprm/biasprm[7] knee-only,SECONDARY_ONLY,S1F4 F0,different field but prior magnitude-dominant synthetic factor; not primary personalization signal
+HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE,V1,gainprm/biasprm[7] all biarticular,REMOVE_FROM_PERSONALIZATION_FOCUSED_COHORT,S1F1/S1F2,avoid duplicated global fpmax magnitude with within-family balance; future global-plus-balance decomposition requires a new version
+S1F1_BIARTICULAR_LMAX,AMENDED_S1,gainprm/biasprm[5],REPLACED_BY_STRUCTURAL_FACTOR,V1 biarticular common fpmax role,future design relationship only; not physiological equivalence
+S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE,AMENDED_S1,gainprm/biasprm[7],REPLACED_BY_STRUCTURAL_FACTOR,V1 biarticular common fpmax,within-family balance replaces common magnitude as primary structural role
+S1F3_HIP_MONO_ANTAGONIST_F0,AMENDED_S1,gainprm/biasprm[2],REPLACED_BY_STRUCTURAL_FACTOR,V1 hip-only fpmax primary role,future design relationship only; distinct actual field semantics
+S1F4_KNEE_MONO_ANTAGONIST_F0,AMENDED_S1,gainprm/biasprm[2],REPLACED_BY_STRUCTURAL_FACTOR,V1 knee-only fpmax primary role,future design relationship only; distinct actual field semantics

@@ -1,0 +1,91 @@
+{
+  "P0_STATIC_VALIDATION_EXECUTABLE": false,
+  "P0_future_scope_after_blockers": "single-pose force frame/sign evidence without robot positioning; cannot establish pose invariance",
+  "P1_P2_requirements": [
+    "exact pose coordinates",
+    "motion/path and collision review",
+    "workspace/joint-limit review",
+    "separate positioning authorization",
+    "supervised abort/stop procedure"
+  ],
+  "POSE_DEPENDENCE_VALIDATION_BLOCKED": true,
+  "answer": false,
+  "audit_type": "EXECUTION_READINESS_SAFETY_EQUIPMENT_CONFIG_REVIEW",
+  "bo_run_count": 0,
+  "data_acquisition_status": "PRIMITIVES_EXIST_PROTOCOL_SPECIFIC_LOGGER_NOT_READY",
+  "decision": "STATIC_MEASUREMENT_VALIDATION_EXECUTION_NOT_READY",
+  "execution_authorized": false,
+  "geometry_equipment_status": "NOT_READY",
+  "geometry_protocol": {
+    "sha256": "4da84b5ffde2bb5c7dc7b3baccf81cb1dbd8a7a0cb8c3bdd8d457a4f3399e337",
+    "status": "STATIC_STRAP_PULL_GEOMETRY_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED"
+  },
+  "geometry_validation_executed": false,
+  "human_data_count": 0,
+  "load_level_status": "LOAD_LEVEL_BLOCKER",
+  "mandatory_checklist_fail_count": 22,
+  "minimum_blocking_items": [
+    {
+      "blocking_item": "Complete site-specific safety/config review and freeze exact P0 eligibility: robot identity, tool/TCP/payload, workspace/joint/collision limits, stationary state, E-stop/operator roles, dwell/abort/unload/cleanup. P1/P2 require separate motion approval.",
+      "id": "B1_SITE_SAFETY_AND_POSE"
+    },
+    {
+      "blocking_item": "Provide an identified, calibrated hands-free force gauge/load cell plus direction-controlled fixture, safe mounting/secondary retention, calibration certificate and uncertainty.",
+      "id": "B2_TRACEABLE_LOAD_SYSTEM"
+    },
+    {
+      "blocking_item": "Use independent baseline/calibration evidence and reviewed robot/fixture/instrument limits to freeze load magnitudes and all PASS thresholds before formal validation results; values remain null now.",
+      "id": "B3_LOAD_AND_THRESHOLD_FREEZE"
+    },
+    {
+      "blocking_item": "Provide and identify the rigid shank surrogate, production cuff/strap, robot eyelet, repeatable jig/fiducials and calibrated minimum-viable 3-D metrology; freeze exact configurations and T_B_R registration/uncertainty.",
+      "id": "B4_GEOMETRY_KIT_AND_FRAME"
+    },
+    {
+      "blocking_item": "Implement only the standalone protocol-specific labels/manifest layer over existing read-only acquisition, then pass an offline/no-load dry run for PRE/LOAD/POST, pose/direction/repeat/load IDs, tool/config/calibration metadata, invalid rows and immutable checksums.",
+      "id": "B5_STATIC_VALIDATION_LOGGER_DRY_RUN"
+    }
+  ],
+  "next_action": "RESOLVE_MINIMUM_BLOCKING_ITEMS",
+  "not_human_ready": true,
+  "not_robot_approved": true,
+  "physical_load_count": 0,
+  "pinn_run_count": 0,
+  "primary_endpoint_finalized": false,
+  "primary_endpoint_validated": false,
+  "question": "Are all prerequisites sufficiently defined to authorize the first non-human static physical validation?",
+  "readiness_counts": {
+    "checklist": {
+      "DEFINED_BUT_NOT_REVIEWED": 8,
+      "MISSING": 14,
+      "NOT_APPLICABLE": 0,
+      "REVIEWED_AND_READY": 6
+    },
+    "equipment_and_calibration": {
+      "DEFINED_BUT_NOT_REVIEWED": 1,
+      "MISSING": 15,
+      "NOT_APPLICABLE": 1,
+      "REVIEWED_AND_READY": 0
+    },
+    "safety_and_config": {
+      "DEFINED_BUT_NOT_REVIEWED": 8,
+      "MISSING": 8,
+      "NOT_APPLICABLE": 2,
+      "REVIEWED_AND_READY": 0
+    }
+  },
+  "rehabilitation_motion_count": 0,
+  "robot_connected": false,
+  "robot_motion_count": 0,
+  "robot_powered_or_enabled": false,
+  "session_recommendation": "SEPARATE_PHYSICAL_SESSIONS_PREFERRED; same bench day allowed only with separate authorization, run manifests, raw data, checksums and result pipelines",
+  "stage_id": "STATIC_MEASUREMENT_VALIDATION_EXECUTION_READINESS_AUDIT_V1",
+  "static_wrench_validation_executed": false,
+  "task_direction_status": "TASK_DIRECTION_REQUIRES_GEOMETRIC_VALIDATION",
+  "verified_wrench_frame": "NONE_PHYSICALLY_VERIFIED",
+  "wrench_force_sign_verified": false,
+  "wrench_protocol": {
+    "sha256": "c88799b838f6304765acb643a706b1a6f1bbe02b1ee4f6c07ed9c486eab2f5c1",
+    "status": "STATIC_WRENCH_FRAME_SIGN_VALIDATION_PROTOCOL_V1_READY_EXECUTION_NOT_AUTHORIZED"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "adequate_conjunction": false,
+  "cohort_or_range_modified": false,
+  "force_component_direction_evidence_count": 0,
+  "force_component_ordering_evidence_count": 0,
+  "ordering_evidence_representation_count": 1,
+  "parameters_modulate_response_magnitude_not_preference": true,
+  "physical_direction_evidence_count": 0,
+  "status": "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_LIMITED"
+}

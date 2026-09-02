@@ -1,0 +1,46 @@
+{
+  "V1_failure_record_preserved": {
+    "blocker": "S1_DEFINITION_INCOMPLETE",
+    "metadata_sha256": "e53d28c1f526615c7fb7976fce0e26c36bcf76ca7e529f23a6cf9f47bd213c23",
+    "outcome": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_NOT_READY",
+    "overwritten": false,
+    "report_sha256": "b2ddf4290d42f98089e3e6629123d2a1127c1862c38e8fa04ccc16157fa642dc"
+  },
+  "authoritative_definition_id": "S1_STRUCTURAL_DEFINITION_AMENDED_V1",
+  "authoritative_definition_sha256": "3faf531f127bce1a26dd13b01dae07bc332bb107ac9d562c314f296780921763",
+  "factor_sign_classification_then_factor_aggregation": true,
+  "formal_outcome": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_V2_READY_WITH_EVIDENCE_GAPS",
+  "frozen_before_any_scientific_structural_pilot_outcome": true,
+  "frozen_semantic_language": {
+    "F0": "MuJoCo muscle force scale; not pure active strength or a validated patient parameter",
+    "fpmax_balance": "relative model-family force balance; not measured tissue stiffness",
+    "glmed3_r_and_piri_r": "mechanically classified, anatomically multi-action/configuration-dependent",
+    "lmax": "MuJoCo normalized muscle-curve field; not optimal fiber length or tendon slack length"
+  },
+  "future_pilot_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1",
+  "future_pilot_must_be_separately_invoked": true,
+  "future_pilot_ready": true,
+  "geometry_selection_policy": "13 deterministic V3 points selected only from beta_flex/beta_extend geometry; exact match else nearest Euclidean beta-grid point with candidate-index tie break",
+  "level_selection_policy": "synthetic one-shot small finite log levels chosen from operator/domain/compile semantics only; no scientific response-based tuning",
+  "operator_source_policy": "read exact factors, members, fields, operators, nominal identities, and V1 relations directly from authoritative amended SHA; mismatch fails closed",
+  "population_range_policy": "all four remain NOT_AVAILABLE; pilot diagnostic levels are not human ranges, patient distributions, or Cohort V2 bounds",
+  "post_outcome_level_gate_or_representation_tuning_allowed": false,
+  "primary_future_question": "CONFIGURATION_DEPENDENT_NONPROPORTIONAL_MECHANICAL_RESPONSE",
+  "scientific_role": "OUTCOME_INDEPENDENT_EXECUTABLE_PILOT_PROTOCOL_DESIGN_ONLY",
+  "scope_guards": {
+    "J_or_oracle_or_rank_used_for_design": false,
+    "S1_operator_modified": false,
+    "V3_parameterization_or_domain_modified": false,
+    "cohort_v2_generated": false,
+    "five_parameter_or_NN_or_PINN_or_BO_run": false,
+    "held_out_scientific_access_count": 0,
+    "multi_trajectory_torque_response_read": false,
+    "new_truth_landscape_generated": false,
+    "new_virtual_subjects": 0,
+    "objective_or_normalization_modified": false,
+    "robot_or_hardware": false,
+    "scientific_trajectory_pilot_executed": false
+  },
+  "stage_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_DESIGN_V2",
+  "this_stage_scientific_pilot_execution_authorized": false
+}

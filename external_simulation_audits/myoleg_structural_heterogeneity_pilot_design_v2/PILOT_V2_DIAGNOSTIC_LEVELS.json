@@ -1,0 +1,174 @@
+{
+  "frozen_before_scientific_pilot_outcomes": true,
+  "levels": [
+    {
+      "factor_id": "S1F1_BIARTICULAR_LMAX",
+      "factor_name": "biarticular normalized-curve lmax profile",
+      "fallback_multipliers_exp_z": [
+        0.9950124791926823,
+        1.005012520859401
+      ],
+      "fallback_negative_z": -0.005,
+      "fallback_positive_z": 0.005,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9900498337491681,
+        1.010050167084168
+      ],
+      "primary_negative_z": -0.01,
+      "primary_positive_z": 0.01,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "1% reversible log displacement for an indirect normalized muscle-curve field; smaller than force-scale diagnostics and verified against lmin<lmax"
+    },
+    {
+      "factor_id": "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+      "factor_name": "rectus-vs-hamstring relative fpmax balance",
+      "fallback_multipliers_exp_z": [
+        0.9875778004938814,
+        1.0125784515406344
+      ],
+      "fallback_negative_z": -0.0125,
+      "fallback_positive_z": 0.0125,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9753099120283326,
+        1.0253151205244289
+      ],
+      "primary_negative_z": -0.025,
+      "primary_positive_z": 0.025,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "2.5% reversible log displacement for a positive MuJoCo force-scale/family-balance field; finite, symmetric, and intentionally conservative"
+    },
+    {
+      "factor_id": "S1F3_HIP_MONO_ANTAGONIST_F0",
+      "factor_name": "hip monoarticular antagonist relative F0",
+      "fallback_multipliers_exp_z": [
+        0.9875778004938814,
+        1.0125784515406344
+      ],
+      "fallback_negative_z": -0.0125,
+      "fallback_positive_z": 0.0125,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9753099120283326,
+        1.0253151205244289
+      ],
+      "primary_negative_z": -0.025,
+      "primary_positive_z": 0.025,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "2.5% reversible log displacement for a positive MuJoCo force-scale/family-balance field; finite, symmetric, and intentionally conservative"
+    },
+    {
+      "factor_id": "S1F4_KNEE_MONO_ANTAGONIST_F0",
+      "factor_name": "knee monoarticular antagonist relative F0",
+      "fallback_multipliers_exp_z": [
+        0.9875778004938814,
+        1.0125784515406344
+      ],
+      "fallback_negative_z": -0.0125,
+      "fallback_positive_z": 0.0125,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9753099120283326,
+        1.0253151205244289
+      ],
+      "primary_negative_z": -0.025,
+      "primary_positive_z": 0.025,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "2.5% reversible log displacement for a positive MuJoCo force-scale/family-balance field; finite, symmetric, and intentionally conservative"
+    }
+  ],
+  "one_round_only": true,
+  "pilot_diagnostic_level_is_population_range": false,
+  "population_range": "NOT_AVAILABLE_FOR_ALL_FOUR_FACTORS",
+  "post_outcome_level_tuning_allowed": false,
+  "status": "ALL_FACTORS_READY"
+}

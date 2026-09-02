@@ -1,0 +1,311 @@
+{
+  "analysis_population": {
+    "candidate_count": 625,
+    "development_count": 24,
+    "development_subject_ids": [
+      "MYOLEG_VP_001",
+      "MYOLEG_VP_002",
+      "MYOLEG_VP_003",
+      "MYOLEG_VP_005",
+      "MYOLEG_VP_006",
+      "MYOLEG_VP_007",
+      "MYOLEG_VP_009",
+      "MYOLEG_VP_010",
+      "MYOLEG_VP_011",
+      "MYOLEG_VP_013",
+      "MYOLEG_VP_014",
+      "MYOLEG_VP_015",
+      "MYOLEG_VP_017",
+      "MYOLEG_VP_018",
+      "MYOLEG_VP_019",
+      "MYOLEG_VP_021",
+      "MYOLEG_VP_022",
+      "MYOLEG_VP_023",
+      "MYOLEG_VP_025",
+      "MYOLEG_VP_026",
+      "MYOLEG_VP_027",
+      "MYOLEG_VP_029",
+      "MYOLEG_VP_030",
+      "MYOLEG_VP_031"
+    ],
+    "held_out_count": 8,
+    "held_out_scientific_values_allowed": false,
+    "held_out_subject_ids": [
+      "MYOLEG_VP_004",
+      "MYOLEG_VP_008",
+      "MYOLEG_VP_012",
+      "MYOLEG_VP_016",
+      "MYOLEG_VP_020",
+      "MYOLEG_VP_024",
+      "MYOLEG_VP_028",
+      "MYOLEG_VP_032"
+    ]
+  },
+  "bootstrap": {
+    "interval": "percentile 95% CI",
+    "resamples": 10000,
+    "seed": 20260830,
+    "statistics": [
+      "mean",
+      "median"
+    ]
+  },
+  "common_baselines": {
+    "primary": "V3_DEV_MEAN_OPTIMAL_COMMON: argmin candidate of mean development J",
+    "reference_candidate_id": "MYOLEG_V3_K0312",
+    "secondary": "V3_DEV_WORSTCASE_OPTIMAL_COMMON: argmin candidate of maximum development J",
+    "tie_break": "lowest candidate_index",
+    "tie_tolerance_j": 1e-12
+  },
+  "comparative_interpretation": {
+    "local_or_global_direction_equivalence_tolerance_j": 1e-12,
+    "material_interaction_increase": "V3 subject-by-candidate interaction fraction >= max(5 times V2 fraction, 0.0025 absolute fraction)",
+    "material_interaction_threshold_fraction": 0.0025,
+    "material_interaction_threshold_percent": 0.25,
+    "meaningful_off_diagonal_transfer_loss": "median relative transfer regret >= 0.001",
+    "rank_subject_dependence": "median Spearman <= 0.95 OR median Top-5% Jaccard <= 0.75",
+    "v2_candidate_main_fraction": 0.99939077,
+    "v2_interaction_fraction": 0.00033114,
+    "v2_interaction_to_common_ratio": 0.018203,
+    "v2_kendall_median": 0.989722,
+    "v2_spearman_median": 0.999834
+  },
+  "decision_logic": {
+    "not_supported_all_required": {
+      "median_relative_common_regret_below": 0.001,
+      "median_spearman_at_least": 0.98,
+      "p95_relative_common_regret_below": 0.005,
+      "unique_oracle_candidates_at_most": 2,
+      "universal_24_of_24_near_oracle_at_epsilon_0.001": true
+    },
+    "otherwise": "V3_PERSONALIZATION_NECESSITY_WEAK_OR_LIMITED",
+    "supported_all_required": {
+      "clearly_separated_oracle_pair_fraction_at_least": 0.5,
+      "material_interaction_increase_required": true,
+      "max_common_near_oracle_coverage_at_epsilon_0.001_below": 22,
+      "meaningful_median_relative_off_diagonal_transfer_regret_at_least": 0.001,
+      "median_relative_common_regret_at_least": 0.005,
+      "p75_relative_common_regret_at_least": 0.01,
+      "rank_or_topset_subject_dependence": "median Spearman <= 0.95 OR median Top-5% Jaccard <= 0.75",
+      "unique_oracle_candidates_at_least": 4
+    },
+    "threshold_status": "frozen before any V3 development scientific outcome was read",
+    "threshold_use": "operational offline research classification only; not clinical, comfort, or safety thresholds"
+  },
+  "engineering_effect_bands_relative_j": [
+    {
+      "label": "NEGLIGIBLE",
+      "lower_inclusive": 0.0,
+      "upper_exclusive": 0.001
+    },
+    {
+      "label": "VERY_SMALL",
+      "lower_inclusive": 0.001,
+      "upper_exclusive": 0.005
+    },
+    {
+      "label": "SMALL",
+      "lower_inclusive": 0.005,
+      "upper_exclusive": 0.01
+    },
+    {
+      "label": "MODERATE_ENGINEERING_SEPARATION",
+      "lower_inclusive": 0.01,
+      "upper_exclusive": 0.02
+    },
+    {
+      "label": "LARGER_ENGINEERING_SEPARATION",
+      "lower_inclusive": 0.02,
+      "upper_exclusive": null
+    }
+  ],
+  "effect_band_language": "descriptive normalized-objective engineering bands only; not clinical, comfort, preference, or safety thresholds",
+  "frozen_before_development_truth_reveal": true,
+  "global_directional_agreement": {
+    "adjacent_beta_extend_transition_count": 600,
+    "adjacent_beta_flex_transition_count": 600,
+    "delta_definition": "J(higher beta)-J(lower beta)",
+    "equivalence_tolerance_j": 1e-12,
+    "rank_inversion": "fraction of 276 subject pairs assigning opposite non-equivalent signs to one adjacent transition"
+  },
+  "input_sha256": {
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "v2_personalization_protocol": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f",
+    "v3_candidate_manifest": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "v3_candidate_table": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774",
+    "v3_truth_landscape_manifest": "c318700e161e857d3e059eadf2bc21364e21b74d8b39faf4124a26fc15d37c6e"
+  },
+  "landscape_contrast": {
+    "metrics": [
+      "oracle J",
+      "reference minus oracle J",
+      "minimum",
+      "median",
+      "maximum",
+      "dynamic range",
+      "Top-5%-boundary minus oracle J"
+    ]
+  },
+  "local_direction": {
+    "neighbors": [
+      {
+        "candidate_id": "MYOLEG_V3_K0287",
+        "direction": "beta_flex_negative",
+        "offset": [-0.0025, 0.0]
+      },
+      {
+        "candidate_id": "MYOLEG_V3_K0337",
+        "direction": "beta_flex_positive",
+        "offset": [0.0025, 0.0]
+      },
+      {
+        "candidate_id": "MYOLEG_V3_K0311",
+        "direction": "beta_extend_negative",
+        "offset": [0.0, -0.0025]
+      },
+      {
+        "candidate_id": "MYOLEG_V3_K0313",
+        "direction": "beta_extend_positive",
+        "offset": [0.0, 0.0025]
+      }
+    ],
+    "reference_candidate_id": "MYOLEG_V3_K0312",
+    "sign": "sign(J_neighbor-J_reference) with 1e-12 equivalence tolerance"
+  },
+  "multiplicative_similarity": {
+    "anchor_subject_id": "MYOLEG_VP_031",
+    "models": [
+      "affine y=a*x+b",
+      "pure proportional y=a*x"
+    ],
+    "metrics": [
+      "affine R2",
+      "affine NRMSE",
+      "proportional R2",
+      "proportional NRMSE"
+    ]
+  },
+  "near_oracle": {
+    "broad_plateau_rule": "median count at epsilon=0.001 >= ceil(10% of 625)=63",
+    "common_coverage_thresholds": [24, 22, 18],
+    "epsilons_j": [0.0001, 0.0005, 0.001],
+    "subject_metrics": [
+      "candidate count",
+      "candidate fraction",
+      "per-axis min/max/range",
+      "normalized bounding-box diagonal",
+      "bounding-box grid area/fraction"
+    ]
+  },
+  "oracle": {
+    "rule": "minimum float64 J; candidates within tie tolerance are equivalent; lowest candidate_index wins",
+    "tie_tolerance_j": 1e-12
+  },
+  "oracle_geometry": {
+    "beta_max": [0.03, 0.03],
+    "beta_min": [-0.03, -0.03],
+    "exact_same_oracle": "same candidate_id",
+    "grid_step": [0.0025, 0.0025],
+    "immediate_grid_neighbor": "not exact and maximum absolute integer grid-index difference <= 1",
+    "normalized_distance": "sqrt(mean(((beta_i-beta_j)/(beta_max-beta_min))^2))",
+    "parameter_order": ["beta_flex", "beta_extend"],
+    "separated": "neither exact nor immediate-grid-neighbor"
+  },
+  "parameter_associations": {
+    "frozen_parameter_count": 6,
+    "method": "exploratory Spearman; raw p and Benjamini-Hochberg q across 30 tests; no predictive learner",
+    "outcomes": [
+      "oracle beta_flex",
+      "oracle beta_extend",
+      "oracle J",
+      "common regret",
+      "subject interaction residual RMS"
+    ]
+  },
+  "personalization_gap": {
+    "absolute": "J_i(V3_DEV_MEAN_OPTIMAL_COMMON)-J_i(subject_oracle)",
+    "relative": "absolute/J_i(V3_DEV_MEAN_OPTIMAL_COMMON)"
+  },
+  "post_freeze_v2_comparison": {
+    "allowed_only_after": "V3_ANALYSIS_RESULT_FREEZE.json is written with hashes of all V3-only numeric artifacts",
+    "raw_near_oracle_counts_directly_compared": false,
+    "v2_frozen_reference_values": {
+      "boundary_oracle_fraction": 1.0,
+      "candidate_dimensions": 3,
+      "common_regret_mean": 0.0,
+      "distinct_oracle_count": 1,
+      "interaction_fraction_percent": 0.033114,
+      "interaction_to_common_ratio": 0.018203,
+      "kendall_median": 0.989722,
+      "rom_invariant": false,
+      "spearman_median": 0.999834,
+      "transfer_regret": 0.0,
+      "universal_near_oracle": true
+    }
+  },
+  "protocol_id": "MYOLEG_V3_PERSONALIZATION_NECESSITY_PROTOCOL_V1",
+  "representative_landscape_subjects": [
+    {"selection_role": "NEAREST_PARAMETER_CENTROID", "subject_id": "MYOLEG_VP_031"},
+    {"selection_role": "FARTHEST_PARAMETER_CENTROID", "subject_id": "MYOLEG_VP_011"},
+    {"selection_role": "MAXIMIN_3", "subject_id": "MYOLEG_VP_009"},
+    {"selection_role": "MAXIMIN_4", "subject_id": "MYOLEG_VP_015"}
+  ],
+  "scope_guards": {
+    "bo": false,
+    "candidate_domain_modification": false,
+    "cohort_modification": false,
+    "five_parameter_training": false,
+    "held_out_scientific_truth_access": false,
+    "human_or_clinical_claim": false,
+    "nn_or_pinn": false,
+    "normalization_modification": false,
+    "objective_modification": false,
+    "robot_or_hardware": false,
+    "v3_parameterization_modification": false
+  },
+  "scientific_role": "development-only offline oracle upper-bound audit of subject-specific mechanical coordination-path preference under the frozen normalized torque objective",
+  "stage_id": "MYOLEG_V3_PERSONALIZATION_NECESSITY_AUDIT_V1",
+  "top_sets": {
+    "counts": {"top_1_percent": 7, "top_5_percent": 32, "top_10_percent": 63},
+    "fractions": [0.01, 0.05, 0.1],
+    "metrics": ["Jaccard", "overlap coefficient"],
+    "rounding": "ceil(625*fraction)",
+    "selection": "exact K ordered by (J, candidate_index); no outcome-dependent K change"
+  },
+  "transfer": {
+    "definition": "TRANSFER[i,j]=development subject i truth J at development subject j oracle",
+    "equivalent_to_own_oracle": "absolute transfer regret <= 1e-12",
+    "relative_regret": "(TRANSFER[i,j]-own_oracle_J)/TRANSFER[i,j]"
+  },
+  "two_way_decomposition": {
+    "convention": "J_ic=grand+subject_main_i+candidate_main_c+interaction_ic; each main effect and interaction margins are zero-sum",
+    "interaction_to_common_ratio": "RMS(interaction)/RMS(candidate_main)",
+    "sum_of_squares": "SS_subject=C*sum(subject_main^2); SS_candidate=S*sum(candidate_main^2); SS_interaction=sum(interaction^2)"
+  },
+  "v2_protocol_exact_differences": [
+    {
+      "difference": "3-D alpha geometry becomes 2-D beta geometry",
+      "reason": "V3 has only beta_flex and beta_extend"
+    },
+    {
+      "difference": "candidate identity/tie break uses candidate_index rather than proposal_index",
+      "reason": "the frozen V3 table uses candidate_index"
+    },
+    {
+      "difference": "Top 1/5/10% exact counts are 7/32/63",
+      "reason": "same V2 ceiling rule applied to 625 candidates"
+    },
+    {
+      "difference": "broad-plateau count threshold is 63 rather than 1668",
+      "reason": "same 10% candidate-fraction rule applied to 625 candidates"
+    },
+    {
+      "difference": "association outcomes replace three alpha coordinates with two beta coordinates and add interaction residual RMS",
+      "reason": "retains 30 exploratory tests while directly testing the V3 subject-by-path mechanism"
+    },
+    {
+      "difference": "supported decision additionally requires preregistered material interaction increase and median relative transfer regret >=0.001",
+      "reason": "the V3 task explicitly requires increased subject-by-candidate interaction and nontrivial cross-subject transfer loss"
+    }
+  ]
+}

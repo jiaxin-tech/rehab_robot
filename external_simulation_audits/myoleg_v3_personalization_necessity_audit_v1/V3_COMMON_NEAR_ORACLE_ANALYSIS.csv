@@ -1,0 +1,4 @@
+epsilon_j,maximum_subject_coverage,best_coverage_candidate_id,best_coverage_candidate_index,best_coverage_beta_flex,best_coverage_beta_extend,candidate_count_coverage_24,candidate_count_coverage_at_least_22,candidate_count_coverage_at_least_18,universal_near_oracle_candidate_exists
+0.0001,24,MYOLEG_V3_K0600,600,0.03,-0.03,1,1,1,True
+0.0005,24,MYOLEG_V3_K0550,550,0.025,-0.03,5,5,5,True
+0.001,24,MYOLEG_V3_K0500,500,0.02,-0.03,13,13,14,True

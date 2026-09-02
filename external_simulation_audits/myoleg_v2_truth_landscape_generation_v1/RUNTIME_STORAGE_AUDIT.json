@@ -1,0 +1,18 @@
+{
+  "actual_generation_throughput_pairs_per_s": 34.094149034006726,
+  "aggregate_new_chunk_cpu_time_s": 56503.83199599991,
+  "aggregate_new_chunk_worker_wall_time_s": 56876.93712398276,
+  "bulk_full_replay_storage_estimate_gb_avoided": 386,
+  "bulk_full_time_series_generated": false,
+  "checksum_sidecar_bytes": 190816,
+  "compact_shard_bytes": 36738870,
+  "compact_shard_count": 2144,
+  "formal_worker_count": 4,
+  "generation_command_wall_time_s": 14225.314716499997,
+  "prior_eight_worker_estimate_hours": 4.2,
+  "prior_interrupted_generation_wall_time_lower_bound_s": 1619.8982429170285,
+  "serial_baseline_estimate_hours": 25.2,
+  "total_compact_data_and_sidecar_bytes": 36929686,
+  "total_observed_generation_wall_time_lower_bound_including_interrupted_attempts_s": 15845.212959417026,
+  "uncompressed_schema_bytes_per_row": 237
+}

@@ -1,0 +1,10 @@
+{
+  "benchmark_sha256": "9841886efc9924752023a1fa3ba22c4277d991b6f126316206e83059d508d51e",
+  "chunk_size": 250,
+  "frozen_before_landscape_outcomes": true,
+  "landscape_worker_count": 4,
+  "plan_id": "MYOLEG_V2_LANDSCAPE_EXECUTION_PLAN_V1",
+  "protocol_sha256": "2fe115d8c34685c70672bcc6a4d9752a88dfbb2cf12fb12d60df877755b7fdcc",
+  "resume_policy": "skip valid checksum-and-schema chunks; recompute and record only missing or checksum-invalid chunks",
+  "total_chunks": 2144
+}

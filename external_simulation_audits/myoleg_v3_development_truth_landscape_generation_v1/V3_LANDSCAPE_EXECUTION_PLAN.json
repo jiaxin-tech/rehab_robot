@@ -1,0 +1,10 @@
+{
+  "benchmark_sha256": "547bca72f6e9e79b3607261e0e8c56c8f131784232b792de9057954c3552336f",
+  "chunk_count": 24,
+  "chunk_size": 625,
+  "formal_worker_count": 4,
+  "frozen_before_formal_landscape_generation": true,
+  "plan_id": "MYOLEG_V3_DEVELOPMENT_LANDSCAPE_EXECUTION_PLAN_V1",
+  "protocol_sha256": "837f287f75d353af69bdd0e9ade5a417777c6de60a69cda693f6be9f094f133d",
+  "resume_policy": "skip checksum/schema/identity-valid shard; recompute only missing or invalid shard and record event"
+}

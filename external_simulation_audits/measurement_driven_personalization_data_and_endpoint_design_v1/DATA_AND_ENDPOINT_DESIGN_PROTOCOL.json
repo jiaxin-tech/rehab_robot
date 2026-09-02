@@ -1,0 +1,272 @@
+{
+  "allowed_decision_states": [
+    "PRIMARY_MECHANICAL_ENDPOINT_READY_FOR_VALIDATION",
+    "PRIMARY_MECHANICAL_ENDPOINT_DEFINITION_INCOMPLETE"
+  ],
+  "candidate_primary_endpoint": "EPISODE_RMS_VALIDATED_TASK_DIRECTION_INTERACTION_FORCE",
+  "candidate_primary_endpoint_finalized_before_stage": false,
+  "decision_rules": {
+    "either_primary_dependency_unproved": "PRIMARY_MECHANICAL_ENDPOINT_DEFINITION_INCOMPLETE",
+    "endpoint_may_never_be_labelled_validated_in_this_stage": true,
+    "task_direction_unproved": "TASK_DIRECTION_REQUIRES_EXPERIMENTAL_VALIDATION",
+    "wrench_semantics_unproved": "WRENCH_FRAME_SEMANTICS_NOT_VERIFIED"
+  },
+  "forbidden_operations": [
+    "construct_or_connect_robot_adapter",
+    "power_on_robot",
+    "enable_robot",
+    "send_motion",
+    "execute_trajectory",
+    "collect_human_data",
+    "calibrate_sensor",
+    "modify_hardware_control_collection_or_safety",
+    "train_model_or_PINN",
+    "run_BO",
+    "modify_V3",
+    "modify_MyoLeg",
+    "use_simulator_oracle",
+    "modify_frozen_artifacts",
+    "execute_next_stage"
+  ],
+  "inherited_direction": "MECHANICAL_MEASUREMENT_DRIVEN_PERSONALIZATION",
+  "inherited_status": "PERSONALIZED_REHABILITATION_RESEARCH_FORMULATION_V2_READY_WITH_LIMITATIONS",
+  "input_files": [
+    {
+      "input_id": "PARENT_PROTOCOL",
+      "path": "external_simulation_audits/personalized_rehabilitation_research_formulation_v2/RESEARCH_FORMULATION_V2_PROTOCOL.json",
+      "semantic_markers": [
+        "MECHANICAL_MEASUREMENT_DRIVEN_PERSONALIZATION",
+        "EPISODE_RMS_VALIDATED_TASK_DIRECTION_INTERACTION_FORCE"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "41da6efac092da267a0e8477ff8453fe4790b5adc0e2bfd23d1ab7671cc58a45"
+    },
+    {
+      "input_id": "PARENT_DECISION",
+      "path": "external_simulation_audits/personalized_rehabilitation_research_formulation_v2/FINAL_RESEARCH_FORMULATION_V2.json",
+      "semantic_markers": [
+        "PERSONALIZED_REHABILITATION_RESEARCH_FORMULATION_V2_READY_WITH_LIMITATIONS",
+        "\"PRIMARY_CANDIDATE_OUTCOME_FINALIZED\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5d0866ffb09a11c7cb81b6ff89b50e4e84e694ff06dd554d5444de1f67f480a8"
+    },
+    {
+      "input_id": "PARENT_CHANNEL_INVENTORY",
+      "path": "external_simulation_audits/personalized_rehabilitation_research_formulation_v2/MEASUREMENT_CHANNELS_AND_ROLES.csv",
+      "semantic_markers": [
+        "GETENDTORQUE_PATH_PRESENT_UNVALIDATED",
+        "HOST_DIFFERENCE_ESTIMATE_PATH_PRESENT"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "7a7b04f74a2d88390b7346d417e501cfc99a6b5824b32b9acaf8f80852b193ba"
+    },
+    {
+      "input_id": "PARENT_HARDWARE_BOUNDARY",
+      "path": "external_simulation_audits/personalized_rehabilitation_research_formulation_v2/HARDWARE_READINESS_BOUNDARY.json",
+      "semantic_markers": [
+        "\"base_wrench_rotation_verified\": false",
+        "\"robot_approved\": false"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "424c43f96443b65a6062ba6d298328bd406393432c8b49a2bd6388db9b3a70b1"
+    },
+    {
+      "input_id": "FORMAL_EXPERIMENT_MANIFEST",
+      "path": "config/formal_experiment_manifest.json",
+      "semantic_markers": [
+        "ROM_PROTOCOL_V2",
+        "q_hip - q_knee",
+        "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+    },
+    {
+      "input_id": "ACTIVE_REFERENCE",
+      "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "semantic_markers": [],
+      "semantic_markers_pass": true,
+      "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
+    },
+    {
+      "input_id": "LOCAL_XCORE_SDK_STUB",
+      "path": "hardware/windows/xcoresdk/xCoreSDK_python/__init__.pyi",
+      "semantic_markers": [
+        "def getEndTorque",
+        "FrameType::world",
+        "FrameType::flange",
+        "FrameType::tool",
+        "\u5355\u4f4dN"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "62b1d42a29a49658c26838792d89c00d7c57305ab785a9cff9556720f51e884d"
+    },
+    {
+      "input_id": "HARDWARE_SETTINGS",
+      "path": "config/settings.py",
+      "semantic_markers": [
+        "ROBOT_FORCE_RAW_FRAME          = \"world\"",
+        "BASE_WRENCH_ROTATION_VERIFIED  = False",
+        "BASE_WRENCH_TRANSFORM_KIND     = \"rotation_only\""
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "4f8d0d9c054240c1914be83ecb9aa97ae8e8766ff38a32d05d08ea67fa863902"
+    },
+    {
+      "input_id": "EXPERIMENT_SAFETY_REVIEW",
+      "path": "config/experiment_safety.json",
+      "semantic_markers": [
+        "\"reviewed\": false",
+        "\"max_force_n\": null",
+        "\"max_state_wrench_skew_s\": null"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "2f60266b6a16f7911a585aad85fe2bcb4191144672d337d3960fc113e5c36b66"
+    },
+    {
+      "input_id": "REAL_IDENTIFICATION_REVIEW",
+      "path": "config/real_identification_config.json",
+      "semantic_markers": [
+        "\"reviewed\": false",
+        "\"raw_wrench_frame\": null",
+        "\"assumed_wrench_delay_s\": null"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8979412db4d3c7ef4d0886eaebc6edeaa2474679ef33ac434c1c57d6c3cd2ba4"
+    },
+    {
+      "input_id": "TYPED_STATE_SCHEMA",
+      "path": "collection/state.py",
+      "semantic_markers": [
+        "InternalWrenchFrame",
+        "host_monotonic_time_s",
+        "transform_wrench",
+        "p\u00d7(R F_a)"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "d5c2b4c67baca13922e5d0e8fb80a5d10941e160d2e3990287299b8c3cef88fd"
+    },
+    {
+      "input_id": "SNAPSHOT_ALIGNMENT",
+      "path": "collection/snapshot.py",
+      "semantic_markers": [
+        "base_wrench_rotation_requires_robot_validation",
+        "force_query_duration_ms",
+        "state_internal_skew_ms"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "aa16cc4b340cb4462bf103b289f44bd02c42b6c559b9974d3c30afebd1cf892b"
+    },
+    {
+      "input_id": "REAL_ACQUISITION",
+      "path": "collection/real_robot_acquisition.py",
+      "semantic_markers": [
+        "Independent state, wrench, and alignment producers",
+        "getEndTorque",
+        "state_wrench_skew_s"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "8412856e8b9eb32002055e7f4f839173a44e2746fb5c8abe57767eadfd9e0906"
+    },
+    {
+      "input_id": "EPISODE_LOGGER",
+      "path": "collection/episode_logger.py",
+      "semantic_markers": [
+        "robot_state",
+        "robot_wrench",
+        "trajectory_command",
+        "aligned_snapshot"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "831d4326b247ed95ccc9b9e45690332711077d05f7397a6cbd74d808c910187a"
+    },
+    {
+      "input_id": "OBSERVATION_ADAPTER",
+      "path": "hardware/rokae_adapter.py",
+      "semantic_markers": [
+        "Observation-only project adapter",
+        "host_query_start_s",
+        "read_internal_wrench"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "23cb0b5176fcbcb83cf79844619addbe16698347d8cae9e984a6e7c3fc4368a8"
+    },
+    {
+      "input_id": "XCORE_WRENCH_CALL",
+      "path": "hardware/windows/rokae_xcore.py",
+      "semantic_markers": [
+        "getEndTorque",
+        "joint_measured",
+        "cart_torque",
+        "cart_force",
+        "time.perf_counter_ns"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "5d5908b0e504a729357b91ca8b31158f7ed6c8c8b8e5b8659bcef25ece22cca3"
+    },
+    {
+      "input_id": "WRENCH_QUERY_DIAGNOSTIC",
+      "path": "scripts/check_wrench_query_timing.py",
+      "semantic_markers": [
+        "without robot motion",
+        "perf_counter_ns",
+        "query_duration_ms"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "01c905104eeee051da2bc3982c4d4c527daba43317cddfc0c6465e620f46d6f3"
+    },
+    {
+      "input_id": "SNAPSHOT_ALIGNMENT_DIAGNOSTIC",
+      "path": "scripts/check_snapshot_alignment.py",
+      "semantic_markers": [
+        "perf_counter_ns",
+        "state_internal_skew_ms",
+        "force_query_duration_ms"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "cadb1bd044b6bbbc6cd6d56dbe7d145500ff6e84e6337bd8af762491284fd8fa"
+    },
+    {
+      "input_id": "WRENCH_FRAME_DIAGNOSTIC",
+      "path": "scripts/check_wrench_frame_rotation.py",
+      "semantic_markers": [
+        "perf_counter_ns",
+        "raw_force_frame",
+        "base_transform_kind"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "2439a7f29860111fd020cff6f8e33835b227d6552aea7478de830ef6e994be35"
+    },
+    {
+      "input_id": "WRENCH_POSE_DIAGNOSTIC",
+      "path": "scripts/check_wrench_pose_dependence.py",
+      "semantic_markers": [
+        "perf_counter_ns",
+        "pose_index",
+        "does not determine whether xCoreSDK performs gravity compensation"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "ca147024560c65096cbbf439b539b40cbea545377e8257d279610411dc1c5a28"
+    },
+    {
+      "input_id": "OFFLINE_FRAME_UNIT_TESTS",
+      "path": "tests/test_units_and_frames.py",
+      "semantic_markers": [
+        "transform_wrench",
+        "rotation_only_pending_robot_validation",
+        "base_wrench_rotation_requires_robot_validation"
+      ],
+      "semantic_markers_pass": true,
+      "sha256": "3c83dad6f2b60c3828239b94026e33537adc52c0160329d6a931307314a4b4a9"
+    }
+  ],
+  "master_timebase_candidate": "HOST_MONOTONIC_PERF_COUNTER_NS",
+  "numeric_measurement_thresholds_may_be_invented": false,
+  "parent_protocol_sha256": "41da6efac092da267a0e8477ff8453fe4790b5adc0e2bfd23d1ab7671cc58a45",
+  "protocol_frozen_before_endpoint_decision_outputs": true,
+  "protocol_id": "DATA_AND_ENDPOINT_DESIGN_PROTOCOL",
+  "real_personalization_causal_boundary": "beta_k uses valid episodes 1..k-1 only",
+  "safety_metrics_are_constraints_not_objective_terms": true,
+  "stage_id": "MEASUREMENT_DRIVEN_PERSONALIZATION_DATA_AND_ENDPOINT_DESIGN_V1"
+}

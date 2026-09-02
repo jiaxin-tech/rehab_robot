@@ -1,0 +1,9 @@
+{
+  "candidate_count": 17,
+  "hip_rms_max_abs_error_nm": 2.842170943040401e-14,
+  "integrity_tolerance_nm": 1e-09,
+  "knee_rms_max_abs_error_nm": 1.0658141036401503e-14,
+  "pair_count": 136,
+  "passed": true,
+  "subject_count": 8
+}

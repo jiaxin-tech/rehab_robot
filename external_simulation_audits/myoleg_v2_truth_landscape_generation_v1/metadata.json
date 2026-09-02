@@ -1,0 +1,11 @@
+{
+  "artifact_count_excluding_metadata_and_checksums": 16,
+  "data_directory": "external_simulation/data/myoleg_v2_truth_landscape_v1",
+  "data_global_sha256": "b7d38bd5cd1c86d2b2ccd8a0ded8ea40040dd07e161c5bc70a69b359f602c411",
+  "formal_manifest_sha256": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+  "not_human_ready": true,
+  "not_robot_approved": true,
+  "offline_only": true,
+  "outcome": "MYOLEG_V2_TRUTH_LANDSCAPE_VALID",
+  "stage_id": "MYOLEG_V2_TRUTH_LANDSCAPE_GENERATION_V1"
+}

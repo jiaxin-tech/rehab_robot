@@ -1,0 +1,22 @@
+{
+  "ROM_EXTREMA_EXPLAINED_COMMON_EFFECT": 0.9977422515561761,
+  "association_is_not_causality": true,
+  "audit_id": "ROM_EXTREMA_COMMON_EFFECT_AUDIT_V1",
+  "candidate_count": 16675,
+  "development_subject_count": 24,
+  "interpretation": "DOMINANT",
+  "primary_model": "ROM_EXTREMA_QUADRATIC",
+  "primary_model_features": [
+    "hip_ROM_z",
+    "knee_ROM_z",
+    "hip_ROM_z2",
+    "knee_ROM_z2",
+    "hip_ROM_x_knee_ROM"
+  ],
+  "production_learner_trained": false,
+  "secondary_model_results": {
+    "FIXED_KINEMATIC_DESCRIPTOR_LINEAR": 0.9999853461506182,
+    "ROM_EXTREMA_PLUS_PHASE_QUADRATIC": 0.9999849273217041,
+    "ROM_EXTREMA_QUADRATIC": 0.9977422515561761
+  }
+}

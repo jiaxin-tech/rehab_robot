@@ -1,0 +1,8 @@
+muscle,tendon,compiled_path_element_count,candidate_fields,configuration_dependent_mapping,consistency_class,synchronized_changes,single_site_move_allowed,primary_scheme
+bflh_r,bflh_r_tendon,3,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False
+grac_r,grac_r_tendon,4,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False
+recfem_r,recfem_r_tendon,6,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False
+sart_r,sart_r_tendon,5,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False
+semimem_r,semimem_r_tendon,3,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False
+semiten_r,semiten_r_tendon,4,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False
+tfl_r,tfl_r_tendon,4,site_pos; wrap geom_pos/geom_size,True,REQUIRES_REBUILD/CALIBRATION,neighbor sites|wrap objects|muscle normalized-length calibration|segment/joint geometry,False,False

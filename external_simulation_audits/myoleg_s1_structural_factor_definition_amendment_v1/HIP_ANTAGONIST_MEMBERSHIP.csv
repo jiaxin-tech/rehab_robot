@@ -1,0 +1,19 @@
+actuator_id,muscle,mechanically_included,target_effective_fraction,target_negative_fraction,other_joint_max_abs_m,anatomical_review,exclusion_reason
+0,addbrev_r,False,1,0.551122194514,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+1,addlong_r,False,1,0.516209476309,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+2,addmagDist_r,True,1,1,0,ANATOMICALLY_CONSISTENT_HIP_EXTENSOR_COMPONENT,
+3,addmagIsch_r,True,1,1,0,ANATOMICALLY_CONSISTENT_HIP_EXTENSOR_COMPONENT,
+4,addmagMid_r,True,1,1,0,ANATOMICALLY_CONSISTENT_HIP_EXTENSOR_COMPONENT,
+5,addmagProx_r,False,1,0.638403990025,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+14,glmax1_r,False,1,0.728179551122,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+15,glmax2_r,True,1,1,0,ANATOMICALLY_CONSISTENT_HIP_EXTENSOR,
+16,glmax3_r,True,1,1,0,ANATOMICALLY_CONSISTENT_HIP_EXTENSOR,
+17,glmed1_r,False,1,0.381546134663,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+18,glmed2_r,False,1,0.583541147132,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+19,glmed3_r,True,1,1,0,ANATOMICALLY_AMBIGUOUS_MULTI_ACTION_BUT_MODEL_MECHANICS_CLEAR,
+20,glmin1_r,False,1,0,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+21,glmin2_r,False,1,0.324189526185,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+22,glmin3_r,False,1,0.498753117207,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+24,iliacus_r,False,1,0,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold
+27,piri_r,True,1,1,0,ANATOMICALLY_AMBIGUOUS_CONFIGURATION_DEPENDENT_ACTION_BUT_MODEL_MECHANICS_CLEAR,
+28,psoas_r,False,1,0,0,NOT_APPLICABLE_OR_NOT_MECHANICALLY_INCLUDED,target sign consistency below frozen 0.95 antagonist threshold

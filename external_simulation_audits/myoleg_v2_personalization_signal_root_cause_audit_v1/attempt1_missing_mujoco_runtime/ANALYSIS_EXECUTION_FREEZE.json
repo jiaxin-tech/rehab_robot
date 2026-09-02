@@ -1,0 +1,14 @@
+{
+  "development_outcome_matrix_read_at_execution_freeze": false,
+  "freeze_id": "PERSONALIZATION_SIGNAL_ROOT_CAUSE_ANALYSIS_EXECUTION_FREEZE_V1",
+  "frozen_input_sha256": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "necessity_checksums": "0b4a449186b571b9c39207dc18cab1ec1366004821b8d9fd74e97792d87437d3",
+    "necessity_protocol": "f26663a71960c2f5cedb3d374cced98b0852fbfd718fe8235f0e1d9e6d102e6f",
+    "truth_landscape_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "truth_landscape_protocol": "2fe115d8c34685c70672bcc6a4d9752a88dfbb2cf12fb12d60df877755b7fdcc"
+  },
+  "held_out_scientific_truth_access_count": 0,
+  "protocol_sha256": "2beac2ffb512783bcbe6dfcf60e8d64d9b6be8a5fe2122b8c77da876e6202bbb"
+}

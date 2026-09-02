@@ -1,0 +1,8 @@
+{
+  "both_limiting_priority_rule": "heterogeneity first when BOTH because objective redesign needs a robust upstream subject-specific ordering signal",
+  "decision": "HETEROGENEITY_LIMITATION_DOMINANT",
+  "heterogeneity_status": "CURRENT_HETEROGENEITY_TRAJECTORY_INTERACTION_LIMITED",
+  "next_stage_executed": false,
+  "objective_status": "CURRENT_OBJECTIVE_INFORMATION_RETENTION_ADEQUATE",
+  "recommended_next_stage": "MYOLEG_MUSCULOSKELETAL_HETEROGENEITY_EXPANSION_DESIGN_AUDIT_V1"
+}

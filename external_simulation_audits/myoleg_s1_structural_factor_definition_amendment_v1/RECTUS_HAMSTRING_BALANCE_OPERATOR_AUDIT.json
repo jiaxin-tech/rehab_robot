@@ -1,0 +1,44 @@
+{
+  "alternatives": [
+    {
+      "decision": "REJECTED",
+      "id": "B1",
+      "reason": "positivity requires abs(delta)<1 and inverse symmetry is limited"
+    },
+    {
+      "decision": "CHOSEN",
+      "id": "B2",
+      "reason": "positive, invertible, zero-symmetric, and family-center interpretation is independent of group size"
+    },
+    {
+      "decision": "REJECTED",
+      "id": "B3",
+      "reason": "individual-count weighting makes family-center displacement asymmetric"
+    }
+  ],
+  "balance_invariant": "unweighted mean of the rectus-family and hamstring-family log-scale centers remains zero; family definition is group-size invariant",
+  "chosen_operator": "B2_LOG_SYMMETRIC_FAMILY_CENTERS",
+  "factor_id": "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+  "fields": [
+    "actuator_gainprm[:,7]",
+    "actuator_biasprm[:,7]"
+  ],
+  "global_scale_policy": "V1 common biarticular fpmax is removed from the future personalization-focused scheme; no duplicated global-plus-balance degree of freedom",
+  "hamstring_group": [
+    "bflh_r",
+    "semimem_r",
+    "semiten_r"
+  ],
+  "hard_mathematical_domain": "all finite real z preserves positivity; no population or pilot bound",
+  "nominal_identity": "z=0",
+  "operator": "rectus fpmax_i(z)=fpmax_i0*exp(z); hamstring fpmax_i(z)=fpmax_i0*exp(-z); synchronize gain/bias; other biarticular unchanged",
+  "rectus_group": [
+    "recfem_r"
+  ],
+  "selection_used_scientific_outcome": false,
+  "unchanged_biarticular": [
+    "grac_r",
+    "sart_r",
+    "tfl_r"
+  ]
+}

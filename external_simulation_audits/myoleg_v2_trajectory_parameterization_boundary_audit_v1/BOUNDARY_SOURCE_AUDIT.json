@@ -1,0 +1,55 @@
+{
+  "audit_id": "MYOLEG_V2_BOUNDARY_SOURCE_AUDIT_V1",
+  "dimensions": [
+    {
+      "classification": "A_ARBITRARY_ORIGINAL_PROPOSAL_RANGE",
+      "dimension": "hip amplitude upper",
+      "evidence": {
+        "oracle_hip_max_deg": 114.02543856570828,
+        "original_proposal_upper": 2.0,
+        "separation_from_trusted_upper_deg": 5.974842046491318,
+        "trusted_MyoLeg_hip_upper_deg": 120.0002806121996
+      },
+      "oracle_coordinate": 2.0,
+      "out_of_domain_optimum_claimed": false,
+      "prescribed_task_constraint": false
+    },
+    {
+      "classification": "B_MYOLEG_SIMULATOR_VALIDITY_LIMIT",
+      "dimension": "knee amplitude upper",
+      "evidence": {
+        "admitted_upper": 0.5,
+        "oracle_knee_max_deg": 119.99988553301156,
+        "original_proposal_upper": 2.0,
+        "proposals_excluded_by_knee_upper_trusted_bound": 4350,
+        "trusted_MyoLeg_knee_upper_deg": 120.0
+      },
+      "oracle_coordinate": 0.5,
+      "out_of_domain_optimum_claimed": false,
+      "prescribed_task_constraint": false
+    },
+    {
+      "classification": "A_ARBITRARY_ORIGINAL_PROPOSAL_RANGE",
+      "dimension": "knee phase lower",
+      "evidence": {
+        "all_25_phase_values_pass_frozen_warp_integrity": true,
+        "minimum_phase_warp_derivative_at_boundary": 0.8969656089543516,
+        "original_proposal_lower": -0.03
+      },
+      "oracle_coordinate": -0.03,
+      "out_of_domain_optimum_claimed": false,
+      "prescribed_task_constraint": false
+    }
+  ],
+  "frozen_common_oracle": {
+    "alpha": [
+      2.0,
+      0.5,
+      -0.03
+    ],
+    "candidate_id": "MYOLEG_V2_P20850"
+  },
+  "interpretation": "the three active boundaries do not have one common source; two are original proposal bounds and one is the frozen MyoLeg validity bound",
+  "task_constraint_boundary_count": 0,
+  "widen_current_bounds_as_primary_fix": false
+}

@@ -1,0 +1,78 @@
+{
+  "artifact_sha256": {
+    "HELD_OUT_ACCESS_AUDIT.json": "ab5436fc8f58edb16d12296cfd9d304f7f5d7e7db8a980312bfc79a557885fd3",
+    "MYOLEG_V3_KINEMATIC_CANDIDATE_DOMAIN_V1_MANIFEST.json": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_REPORT.md": "280302b2a8e00da8e32506427e7f63c398bdc6f756eb6b55de7850dd20cba2e9",
+    "REFERENCE_RECOVERY_AUDIT.json": "74c304d5acf1c2249034bc9f5810c92a2551e1a1b0423bd1a05354ea65a5f2fa",
+    "TEST_EXECUTION_SUMMARY.json": "69e0c6bbb73de77fb9dc0f3d3d2a2318fd0375a824ba6f441b15b6a96ff867c4",
+    "V3_BETA_RANGE_AUDIT.csv": "20ed54138d749cf4b97618dcaf4804f4d0c37e273f1eb183978d93138057323a",
+    "V3_C2_CLOSURE_AUDIT.csv": "8f4c6fc2817a9c154154ea6210b24b1fe8f754d2fbf90922fbcb0a14138971d2",
+    "V3_GRID_RESOLUTION_AUDIT.csv": "8760789a6bcdeb8a2cec052fc83afce35223567c70fcb0f90b384e4fa8f2b328",
+    "V3_KINEMATIC_CANDIDATE_TABLE.csv": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774",
+    "V3_NOMINAL_MYOLEG_SMOKE.csv": "dcc950ff70572b9ad2c32b39ced42cac2868e0f2d8a158280e89983b7306a47a",
+    "V3_NOMINAL_SMOKE_SELECTION.csv": "00073a27dd91f5e1ed291c30df8ee571d7f7c00045f53c0280c077fcb54f46bf",
+    "V3_P4_VS_P2_STRUCTURAL_COMPARISON.csv": "ec9fb2d4fda33e121e53f9e4a92b460c7fd6afcca1818dd1be5a67262102e012",
+    "V3_PARAMETERIZATION_DESIGN_PROTOCOL.json": "debe43f5a5c9e0766f79656646b2409706fdd47e205d1e8924650d477768d1f1",
+    "V3_PARAMETERIZATION_SEMANTICS.json": "f7694a02ee579031df4695fc8ad8671da99ee5be671ea852e73a26f21c49e63a",
+    "V3_TASK_INVARIANCE_AUDIT.csv": "b9ed407884f6f368d170ac0aac54a79852606743c8b17f7b00959cb5809562a6",
+    "figures/01_v3_joint_space_paths.png": "ea3be947e70d2f7e658571cc3a3f9c65cf98f96afb11f1ecd84604d82ef9e9cd",
+    "figures/02_branch_specific_time_profiles.png": "f761270e199891de508ce2e8abb6e91b1f5eeb54fad90b113bb4c80bbe9ac32e",
+    "figures/03_beta_range_audit.png": "28821ef1a478e6eef3e86c1ea53fff395b7f1cf851ddecea8f64faddaa996f3b",
+    "figures/04_grid_resolution_audit.png": "274d79d1cabe1c4d85b5c4b8d56c130ccce7f08167d5454ab6b538497bf341ee"
+  },
+  "beta_range": [
+    -0.03,
+    0.03
+  ],
+  "beta_step": 0.0025,
+  "candidate_count": 625,
+  "candidate_manifest_sha256": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+  "development_truth_access_count": 0,
+  "frozen_inputs_after": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "frozen_generator": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "prior_checksums": "485e3f81659500e287fc9cc165472ab4971c2e4c30200a27c5024029fa9cc111",
+    "prior_metadata": "8341cd876f594a9d8d26af22616c219367ed8c15b8cc681e7b71eed480e4929b",
+    "prior_recommendation": "504e1dac8219dc0dfe97fc27a36034eecfd05b23f62e20129db448f0f3cbe41b",
+    "truth_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "frozen_inputs_before": {
+    "candidate_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "cohort_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "frozen_generator": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "prior_checksums": "485e3f81659500e287fc9cc165472ab4971c2e4c30200a27c5024029fa9cc111",
+    "prior_metadata": "8341cd876f594a9d8d26af22616c219367ed8c15b8cc681e7b71eed480e4929b",
+    "prior_recommendation": "504e1dac8219dc0dfe97fc27a36034eecfd05b23f62e20129db448f0f3cbe41b",
+    "truth_manifest": "4ea893b479099ebd39906f4b9bb140b6ba07ee58d74baadbd58b78113129f515",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678"
+  },
+  "full_V3_landscape_generated": false,
+  "held_out_scientific_truth_access_count": 0,
+  "mechanical_objective_evaluated": false,
+  "next_stage_executed": false,
+  "nominal_smoke": {
+    "all_pass": true,
+    "max_absolute_joint_limit_knee_contribution_nm": 0.002620779103685974,
+    "max_algebraic_residual_nm": 1.0658141036401503e-14,
+    "max_relative_joint_limit_contribution": 0.00020007410077640202,
+    "max_solver_warning_count": 0,
+    "max_source_equality_residual": 2.6645352591003757e-15,
+    "row_count": 13
+  },
+  "outcome": "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_VALID_WITH_LIMITATIONS",
+  "protocol_sha256": "debe43f5a5c9e0766f79656646b2409706fdd47e205d1e8924650d477768d1f1",
+  "recommended_next_stage": "MYOLEG_V3_DEVELOPMENT_TRUTH_LANDSCAPE_GENERATION_V1",
+  "stage_id": "MYOLEG_V3_TRAJECTORY_PARAMETERIZATION_DESIGN_V1",
+  "status": [
+    "OFFLINE_ONLY",
+    "DEFAULT_OFF",
+    "NOT_HUMAN_READY",
+    "NOT_ROBOT_APPROVED"
+  ]
+}

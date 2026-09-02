@@ -1,0 +1,39 @@
+{
+  "effect_resolution_gate": {
+    "both_required": true,
+    "delta_response_RMS_min_Nm_inclusive": 1e-05,
+    "delta_response_RMS_over_nominal_RMS_min_inclusive": 0.0001,
+    "reason": "exclude algebraic/floating residuals and unresolved relative effects before shape classification"
+  },
+  "factor_pass_aggregation": "at least one required-torque response AND at least one factor-specific mechanistic component must each pass nonproportionality and configuration-dependence for the same sign",
+  "factor_sign_pass_rule": "effect resolution AND proportional_NRMSE>1e-4 AND affine_R2<0.9999 on the same predeclared response",
+  "fits": {
+    "affine": "OLS with intercept: y_perturbed=a*y_nominal+b",
+    "nrmse": "residual_RMS/max(nominal_response_RMS,1e-12 response units)",
+    "proportional": "OLS through origin: y_perturbed=a*y_nominal",
+    "r2": "1-SSE/sum((y_perturbed-mean(y_perturbed))^2); undefined denominator -> null and no support",
+    "residual_range_normalized": "(max(residual)-min(residual))/max(nominal_response_RMS,1e-12 response units)"
+  },
+  "frozen_before_scientific_pilot_outcomes": true,
+  "gate_id": "PILOT_V2_NONPROPORTIONALITY_GATE_V1",
+  "nonproportionality_thresholds": {
+    "affine_R2_strictly_below": 0.9999,
+    "both_required_on_same_predeclared_response": true,
+    "proportional_NRMSE_strictly_above": 0.0001,
+    "provenance": "retains the prior outcome-independent mechanistic thresholds and adds an explicit effect-resolution floor"
+  },
+  "required_outputs": [
+    "proportional_a",
+    "proportional_R2",
+    "proportional_NRMSE",
+    "proportional_residual_RMS",
+    "proportional_residual_range",
+    "affine_a",
+    "affine_b",
+    "affine_R2",
+    "affine_NRMSE",
+    "affine_residual_RMS",
+    "affine_residual_range"
+  ],
+  "threshold_tuning_after_outcome": false
+}

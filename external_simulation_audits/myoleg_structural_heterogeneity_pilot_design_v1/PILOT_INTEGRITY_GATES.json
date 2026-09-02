@@ -1,0 +1,20 @@
+{
+  "blocker": "S1_DEFINITION_INCOMPLETE",
+  "execution_authorized": false,
+  "failure_action": "INVALID_AND_STOP",
+  "fallback_level": null,
+  "maximum_fallback_attempts": 0,
+  "primary_level": null,
+  "required_gates": [
+    "compilation",
+    "finite state",
+    "no solver warning",
+    "no unexpected contact",
+    "no unintended joint-limit activation",
+    "equality residual",
+    "tendon/actuator finite",
+    "frozen V3 task invariants",
+    "exact truth decomposition consistency"
+  ],
+  "status": "CATEGORIES_FROZEN_NUMERIC_EXECUTION_BLOCKED"
+}

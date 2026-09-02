@@ -1,0 +1,55 @@
+{
+  "diagnostics": [
+    {
+      "id": "PEAK_ABS_TASK_FORCE",
+      "role": "secondary mechanics",
+      "status": "depends on validated task force",
+      "unit": "N"
+    },
+    {
+      "id": "SIGNED_TASK_FORCE_PROFILE",
+      "role": "assistive/resistive diagnostic",
+      "status": "depends on sign validation",
+      "unit": "N"
+    },
+    {
+      "id": "FULL_FORCE_NORM",
+      "role": "secondary mechanics",
+      "status": "depends on validated common frame/bias",
+      "unit": "N"
+    },
+    {
+      "id": "CARTESIAN_TORQUE_RMS",
+      "role": "secondary only",
+      "status": "reference-point semantics unresolved",
+      "unit": "N*m"
+    },
+    {
+      "id": "JOINT_MEASURED_EXTERNAL_TORQUE_RMS",
+      "role": "secondary only",
+      "status": "controller semantics require validation",
+      "unit": "N*m"
+    },
+    {
+      "id": "TRACKING_ERROR",
+      "role": "validity/safety diagnostic",
+      "status": "bounds and alignment pending",
+      "unit": "rad/m"
+    },
+    {
+      "id": "MECHANICAL_POWER_OR_WORK",
+      "role": "exploratory secondary",
+      "status": "sign and synchronized velocity required",
+      "unit": "W/J"
+    },
+    {
+      "id": "TACTILE_FEATURES",
+      "role": "future secondary",
+      "status": "not implemented/validated",
+      "unit": "sensor dependent"
+    }
+  ],
+  "policy": "SECONDARY_DIAGNOSTICS_NOT_AUTOMATIC_PRIMARY_OBJECTIVE_TERMS",
+  "safety_thresholds_are_constraints": true,
+  "weighted_composite_objective_created": false
+}

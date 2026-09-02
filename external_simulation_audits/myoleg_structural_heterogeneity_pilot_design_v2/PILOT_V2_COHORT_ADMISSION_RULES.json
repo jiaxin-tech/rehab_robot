@@ -1,0 +1,81 @@
+{
+  "automatic_admission": false,
+  "classification_if_first_three_pass_but_range_path_missing": "COHORT_V2_CANDIDATE_WITH_RANGE_EVIDENCE_GAP",
+  "cohort_v2_generated_in_this_stage": false,
+  "current_population_ranges": {
+    "S1F1_BIARTICULAR_LMAX": "NOT_AVAILABLE",
+    "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE": "NOT_AVAILABLE",
+    "S1F3_HIP_MONO_ANTAGONIST_F0": "NOT_AVAILABLE",
+    "S1F4_KNEE_MONO_ANTAGONIST_F0": "NOT_AVAILABLE"
+  },
+  "factor_aggregation": "both signs must be integrity-valid; at least one sign must meet the structural evidence rule; results for both signs are always reported",
+  "factor_outcome_classes": {
+    "INCONCLUSIVE": "effect is below resolution or evidence is insufficient under the frozen gates",
+    "INVALID": "primary and allowed fallback fail integrity, or a required response is not computable",
+    "MAGNITUDE_ONLY": "effect is resolved but response remains proportional/affine or configuration gate fails and gradient direction is essentially retained",
+    "STRUCTURALLY_INFORMATIVE": "integrity PASS and frozen nonproportionality-plus-configuration evidence passes; gradient rotation is reported as supporting evidence"
+  },
+  "future_stage": "MYOLEG_VIRTUAL_PATIENT_COHORT_V2_RANGE_AND_DESIGN",
+  "inherited_v1_background_relationships": [
+    {
+      "entity": "FEMUR_MASS_INERTIA_SCALE",
+      "entity_type": "V1",
+      "field": "body_mass/body_inertia",
+      "reason": "anthropometric background; no exact structural-field overlap",
+      "relationship": "RETAIN_AS_BACKGROUND",
+      "relative_to": "amended S1"
+    },
+    {
+      "entity": "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+      "entity_type": "V1",
+      "field": "body_mass/body_inertia",
+      "reason": "anthropometric background; no exact structural-field overlap",
+      "relationship": "RETAIN_AS_BACKGROUND",
+      "relative_to": "amended S1"
+    },
+    {
+      "entity": "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+      "entity_type": "V1",
+      "field": "body_mass/body_inertia",
+      "reason": "anthropometric background; no exact structural-field overlap",
+      "relationship": "RETAIN_AS_BACKGROUND",
+      "relative_to": "amended S1"
+    },
+    {
+      "entity": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+      "entity_type": "V1",
+      "field": "gainprm/biasprm[7] hip-only",
+      "reason": "different field but prior magnitude-dominant synthetic factor; not primary personalization signal",
+      "relationship": "SECONDARY_ONLY",
+      "relative_to": "S1F3 F0"
+    },
+    {
+      "entity": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+      "entity_type": "V1",
+      "field": "gainprm/biasprm[7] knee-only",
+      "reason": "different field but prior magnitude-dominant synthetic factor; not primary personalization signal",
+      "relationship": "SECONDARY_ONLY",
+      "relative_to": "S1F4 F0"
+    },
+    {
+      "entity": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+      "entity_type": "V1",
+      "field": "gainprm/biasprm[7] all biarticular",
+      "reason": "avoid duplicated global fpmax magnitude with within-family balance; future global-plus-balance decomposition requires a new version",
+      "relationship": "REMOVE_FROM_PERSONALIZATION_FOCUSED_COHORT",
+      "relative_to": "S1F1/S1F2"
+    }
+  ],
+  "new_versioned_split_required": true,
+  "old_v1_heldout_is_automatic_cohort_v2_confirmation": false,
+  "old_v1_heldout_scientific_access_count": 0,
+  "pilot_level_is_cohort_bound": false,
+  "produces_personalization_is_a_valid_pilot_conclusion": false,
+  "required_conjunction": [
+    "exact model semantics defensible",
+    "pilot integrity PASS",
+    "non-proportional configuration-dependent mechanical effect demonstrated under frozen gates",
+    "future population-range calibration pathway exists"
+  ],
+  "rule_id": "PILOT_V2_COHORT_FACTOR_ADMISSION_RULE_V1"
+}

@@ -1,0 +1,49 @@
+{
+  "current_execution_authorized": false,
+  "if_only_P0_available": {
+    "H1_H2_single_pose_may_be_assessed": true,
+    "H3_status": "POSE_DEPENDENCE_NOT_YET_VALIDATED",
+    "full_world_frame_decision_allowed": false
+  },
+  "plan_id": "STATIC_POSE_PLAN_V1",
+  "planned_pose_count": 3,
+  "pose_dependence_minimum_distinct_orientations": 2,
+  "pose_exclusion_principles": [
+    "not near joint limit",
+    "not near singularity",
+    "not near workspace boundary",
+    "fixture/load line unobstructed",
+    "stable operation state",
+    "approved tool/load configuration"
+  ],
+  "poses": [
+    {
+      "eligibility": "existing stationary pose only after independent identity/state/safety review",
+      "joint_position_rad": null,
+      "pose_id": "P0_CURRENT_SAFE_STATIONARY",
+      "positioning_authorized_by_protocol": false,
+      "required": true,
+      "role": "single-pose frame/sign/zero block",
+      "tcp_pose_base_m_rad": null
+    },
+    {
+      "eligibility": "exact pose and separate safe positioning procedure must be reviewed/frozen before result",
+      "joint_position_rad": null,
+      "pose_id": "P1_CONDITIONAL_ORIENTATION_A",
+      "positioning_authorized_by_protocol": false,
+      "required": false,
+      "role": "first different tool orientation for H3/H4",
+      "tcp_pose_base_m_rad": null
+    },
+    {
+      "eligibility": "exact pose and separate safe positioning procedure must be reviewed/frozen before result",
+      "joint_position_rad": null,
+      "pose_id": "P2_CONDITIONAL_ORIENTATION_B",
+      "positioning_authorized_by_protocol": false,
+      "required": false,
+      "role": "second non-degenerate orientation/pose replication",
+      "tcp_pose_base_m_rad": null
+    }
+  ],
+  "post_result_pose_selection_allowed": false
+}

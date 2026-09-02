@@ -1,0 +1,9 @@
+{
+  "held_out_arrays_loaded": 0,
+  "held_out_file_access_count": 0,
+  "held_out_outcomes_read": 0,
+  "held_out_scientific_access_count": 0,
+  "operation": "NO_HELD_OUT_ACCESS_REQUIRED_FOR_EVIDENCE_ONLY_FORMULATION_AUDIT",
+  "oracle_or_rank_or_regret_computed": false,
+  "stage_id": "MYOLEG_PERSONALIZATION_FORMULATION_STOP_OR_PIVOT_AUDIT_V1"
+}

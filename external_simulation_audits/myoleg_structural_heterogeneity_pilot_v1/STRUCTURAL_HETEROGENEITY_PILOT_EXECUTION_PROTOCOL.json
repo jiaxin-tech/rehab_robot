@@ -1,0 +1,920 @@
+{
+  "authoritative_definition_sha256": "3faf531f127bce1a26dd13b01dae07bc332bb107ac9d562c314f296780921763",
+  "candidate_subset": [
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.0",
+      "beta_flex": "0.0",
+      "candidate_id": "MYOLEG_V3_K0312",
+      "candidate_index": "312",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.0",
+      "requested_beta_flex": "0.0",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "0",
+      "selection_role": "REFERENCE",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "-0.03",
+      "beta_flex": "-0.03",
+      "candidate_id": "MYOLEG_V3_K0000",
+      "candidate_index": "0",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "-0.03",
+      "requested_beta_flex": "-0.03",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "1",
+      "selection_role": "CORNER_NEG_NEG",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.03",
+      "beta_flex": "-0.03",
+      "candidate_id": "MYOLEG_V3_K0024",
+      "candidate_index": "24",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.03",
+      "requested_beta_flex": "-0.03",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "2",
+      "selection_role": "CORNER_NEG_POS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "-0.03",
+      "beta_flex": "0.03",
+      "candidate_id": "MYOLEG_V3_K0600",
+      "candidate_index": "600",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "-0.03",
+      "requested_beta_flex": "0.03",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "3",
+      "selection_role": "CORNER_POS_NEG",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.03",
+      "beta_flex": "0.03",
+      "candidate_id": "MYOLEG_V3_K0624",
+      "candidate_index": "624",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.03",
+      "requested_beta_flex": "0.03",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "4",
+      "selection_role": "CORNER_POS_POS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.0",
+      "beta_flex": "-0.03",
+      "candidate_id": "MYOLEG_V3_K0012",
+      "candidate_index": "12",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.0",
+      "requested_beta_flex": "-0.03",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "5",
+      "selection_role": "FLEX_NEG_AXIS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.0",
+      "beta_flex": "0.03",
+      "candidate_id": "MYOLEG_V3_K0612",
+      "candidate_index": "612",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.0",
+      "requested_beta_flex": "0.03",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "6",
+      "selection_role": "FLEX_POS_AXIS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "-0.03",
+      "beta_flex": "0.0",
+      "candidate_id": "MYOLEG_V3_K0300",
+      "candidate_index": "300",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "-0.03",
+      "requested_beta_flex": "0.0",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "7",
+      "selection_role": "EXTEND_NEG_AXIS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.03",
+      "beta_flex": "0.0",
+      "candidate_id": "MYOLEG_V3_K0324",
+      "candidate_index": "324",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.03",
+      "requested_beta_flex": "0.0",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "8",
+      "selection_role": "EXTEND_POS_AXIS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "-0.015",
+      "beta_flex": "-0.015",
+      "candidate_id": "MYOLEG_V3_K0156",
+      "candidate_index": "156",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "-0.015",
+      "requested_beta_flex": "-0.015",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "9",
+      "selection_role": "INTERIOR_NEG_NEG",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.015",
+      "beta_flex": "-0.015",
+      "candidate_id": "MYOLEG_V3_K0168",
+      "candidate_index": "168",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.015",
+      "requested_beta_flex": "-0.015",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "10",
+      "selection_role": "INTERIOR_NEG_POS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "-0.015",
+      "beta_flex": "0.015",
+      "candidate_id": "MYOLEG_V3_K0456",
+      "candidate_index": "456",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "-0.015",
+      "requested_beta_flex": "0.015",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "11",
+      "selection_role": "INTERIOR_POS_NEG",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    },
+    {
+      "J_or_oracle_or_rank_used": "False",
+      "beta_extend": "0.015",
+      "beta_flex": "0.015",
+      "candidate_id": "MYOLEG_V3_K0468",
+      "candidate_index": "468",
+      "exact_coordinate_match": "True",
+      "nearest_grid_distance": "0.0",
+      "requested_beta_extend": "0.015",
+      "requested_beta_flex": "0.015",
+      "selection_basis": "BETA_SPACE_GEOMETRY_ONLY",
+      "selection_order": "12",
+      "selection_role": "INTERIOR_POS_POS",
+      "source_columns_read": "candidate_index|candidate_id|beta_flex|beta_extend|included|kinematic_gate_pass"
+    }
+  ],
+  "classification_logic": {
+    "INCONCLUSIVE": "integrity-valid but effects unresolved or evidence mixed without the frozen factor-sign conjunction",
+    "INVALID": "either sign remains integrity-invalid after the single allowed fallback",
+    "MAGNITUDE_ONLY": "integrity-valid, at least one resolved response, and no nonproportional-plus-configuration or gradient-direction evidence",
+    "STRUCTURALLY_INFORMATIVE": "both signs integrity-valid and at least one sign is factor_sign_structural",
+    "factor_sign_structural": "same sign has >=1 required-torque response AND >=1 factor-specific component, each passing frozen effect-resolution, nonproportionality, and configuration gates",
+    "gradient_rotation_is_supporting_not_mandatory": true,
+    "produces_personalization_prohibited": true
+  },
+  "cohort_admission_rules": {
+    "automatic_admission": false,
+    "classification_if_first_three_pass_but_range_path_missing": "COHORT_V2_CANDIDATE_WITH_RANGE_EVIDENCE_GAP",
+    "cohort_v2_generated_in_this_stage": false,
+    "current_population_ranges": {
+      "S1F1_BIARTICULAR_LMAX": "NOT_AVAILABLE",
+      "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE": "NOT_AVAILABLE",
+      "S1F3_HIP_MONO_ANTAGONIST_F0": "NOT_AVAILABLE",
+      "S1F4_KNEE_MONO_ANTAGONIST_F0": "NOT_AVAILABLE"
+    },
+    "factor_aggregation": "both signs must be integrity-valid; at least one sign must meet the structural evidence rule; results for both signs are always reported",
+    "factor_outcome_classes": {
+      "INCONCLUSIVE": "effect is below resolution or evidence is insufficient under the frozen gates",
+      "INVALID": "primary and allowed fallback fail integrity, or a required response is not computable",
+      "MAGNITUDE_ONLY": "effect is resolved but response remains proportional/affine or configuration gate fails and gradient direction is essentially retained",
+      "STRUCTURALLY_INFORMATIVE": "integrity PASS and frozen nonproportionality-plus-configuration evidence passes; gradient rotation is reported as supporting evidence"
+    },
+    "future_stage": "MYOLEG_VIRTUAL_PATIENT_COHORT_V2_RANGE_AND_DESIGN",
+    "inherited_v1_background_relationships": [
+      {
+        "entity": "FEMUR_MASS_INERTIA_SCALE",
+        "entity_type": "V1",
+        "field": "body_mass/body_inertia",
+        "reason": "anthropometric background; no exact structural-field overlap",
+        "relationship": "RETAIN_AS_BACKGROUND",
+        "relative_to": "amended S1"
+      },
+      {
+        "entity": "TIBIA_PATELLA_MASS_INERTIA_SCALE",
+        "entity_type": "V1",
+        "field": "body_mass/body_inertia",
+        "reason": "anthropometric background; no exact structural-field overlap",
+        "relationship": "RETAIN_AS_BACKGROUND",
+        "relative_to": "amended S1"
+      },
+      {
+        "entity": "FOOT_COMPLEX_MASS_INERTIA_SCALE",
+        "entity_type": "V1",
+        "field": "body_mass/body_inertia",
+        "reason": "anthropometric background; no exact structural-field overlap",
+        "relationship": "RETAIN_AS_BACKGROUND",
+        "relative_to": "amended S1"
+      },
+      {
+        "entity": "HIP_ONLY_PASSIVE_FP_MAX_SCALE",
+        "entity_type": "V1",
+        "field": "gainprm/biasprm[7] hip-only",
+        "reason": "different field but prior magnitude-dominant synthetic factor; not primary personalization signal",
+        "relationship": "SECONDARY_ONLY",
+        "relative_to": "S1F3 F0"
+      },
+      {
+        "entity": "KNEE_ONLY_PASSIVE_FP_MAX_SCALE",
+        "entity_type": "V1",
+        "field": "gainprm/biasprm[7] knee-only",
+        "reason": "different field but prior magnitude-dominant synthetic factor; not primary personalization signal",
+        "relationship": "SECONDARY_ONLY",
+        "relative_to": "S1F4 F0"
+      },
+      {
+        "entity": "HIP_KNEE_BIARTICULAR_PASSIVE_FP_MAX_SCALE",
+        "entity_type": "V1",
+        "field": "gainprm/biasprm[7] all biarticular",
+        "reason": "avoid duplicated global fpmax magnitude with within-family balance; future global-plus-balance decomposition requires a new version",
+        "relationship": "REMOVE_FROM_PERSONALIZATION_FOCUSED_COHORT",
+        "relative_to": "S1F1/S1F2"
+      }
+    ],
+    "new_versioned_split_required": true,
+    "old_v1_heldout_is_automatic_cohort_v2_confirmation": false,
+    "old_v1_heldout_scientific_access_count": 0,
+    "pilot_level_is_cohort_bound": false,
+    "produces_personalization_is_a_valid_pilot_conclusion": false,
+    "required_conjunction": [
+      "exact model semantics defensible",
+      "pilot integrity PASS",
+      "non-proportional configuration-dependent mechanical effect demonstrated under frozen gates",
+      "future population-range calibration pathway exists"
+    ],
+    "rule_id": "PILOT_V2_COHORT_FACTOR_ADMISSION_RULE_V1"
+  },
+  "configuration_dependence_gate": {
+    "beta_dependence_model": "fixed OLS design [1,beta_flex,beta_extend,beta_flex^2,beta_extend^2,beta_flex*beta_extend] over all 13 points",
+    "constant_change_rule": "zero/under-threshold spread or range is constant-like and fails",
+    "delta_definition": "delta_y(c)=y_perturbed(c)-y_nominal(c)",
+    "frozen_before_scientific_pilot_outcomes": true,
+    "gate_id": "PILOT_V2_CONFIGURATION_DEPENDENCE_GATE_V1",
+    "normalization": "max(nominal_response_RMS,1e-12 response units)",
+    "required_outputs": [
+      "delta_mean",
+      "delta_population_SD",
+      "delta_range",
+      "delta_RMS",
+      "normalized_spread",
+      "normalized_range",
+      "beta_polynomial_coefficients",
+      "beta_polynomial_R2"
+    ],
+    "scale_like_rule": "configuration dependence alone is insufficient; the separate nonproportionality gate must also pass",
+    "threshold_tuning_after_outcome": false,
+    "thresholds": {
+      "all_required_on_same_predeclared_response": true,
+      "beta_polynomial_R2_min_inclusive": 0.25,
+      "effect_resolution_gate_from_nonproportionality_required": true,
+      "normalized_range_min_inclusive": 0.0002,
+      "normalized_spread_min_inclusive": 0.0001
+    }
+  },
+  "factor_levels": [
+    {
+      "factor_id": "S1F1_BIARTICULAR_LMAX",
+      "factor_name": "biarticular normalized-curve lmax profile",
+      "fallback_multipliers_exp_z": [
+        0.9950124791926823,
+        1.005012520859401
+      ],
+      "fallback_negative_z": -0.005,
+      "fallback_positive_z": 0.005,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9900498337491681,
+        1.010050167084168
+      ],
+      "primary_negative_z": -0.01,
+      "primary_positive_z": 0.01,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "1% reversible log displacement for an indirect normalized muscle-curve field; smaller than force-scale diagnostics and verified against lmin<lmax"
+    },
+    {
+      "factor_id": "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+      "factor_name": "rectus-vs-hamstring relative fpmax balance",
+      "fallback_multipliers_exp_z": [
+        0.9875778004938814,
+        1.0125784515406344
+      ],
+      "fallback_negative_z": -0.0125,
+      "fallback_positive_z": 0.0125,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9753099120283326,
+        1.0253151205244289
+      ],
+      "primary_negative_z": -0.025,
+      "primary_positive_z": 0.025,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "2.5% reversible log displacement for a positive MuJoCo force-scale/family-balance field; finite, symmetric, and intentionally conservative"
+    },
+    {
+      "factor_id": "S1F3_HIP_MONO_ANTAGONIST_F0",
+      "factor_name": "hip monoarticular antagonist relative F0",
+      "fallback_multipliers_exp_z": [
+        0.9875778004938814,
+        1.0125784515406344
+      ],
+      "fallback_negative_z": -0.0125,
+      "fallback_positive_z": 0.0125,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9753099120283326,
+        1.0253151205244289
+      ],
+      "primary_negative_z": -0.025,
+      "primary_positive_z": 0.025,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "2.5% reversible log displacement for a positive MuJoCo force-scale/family-balance field; finite, symmetric, and intentionally conservative"
+    },
+    {
+      "factor_id": "S1F4_KNEE_MONO_ANTAGONIST_F0",
+      "factor_name": "knee monoarticular antagonist relative F0",
+      "fallback_multipliers_exp_z": [
+        0.9875778004938814,
+        1.0125784515406344
+      ],
+      "fallback_negative_z": -0.0125,
+      "fallback_positive_z": 0.0125,
+      "maximum_fallback_attempts_per_sign": 1,
+      "nominal_z": 0.0,
+      "not_cohort_v2_bound": true,
+      "not_patient_distribution": true,
+      "pilot_diagnostic_level_semantic": "SYNTHETIC_SMALL_FINITE_LOG_COORDINATE_NOT_A_HUMAN_POPULATION_RANGE",
+      "population_range": "NOT_AVAILABLE",
+      "population_range_status": "RANGE_REQUIRES_EXTERNAL_EVIDENCE",
+      "precheck_status": "DIAGNOSTIC_LEVEL_READY",
+      "primary_multipliers_exp_z": [
+        0.9753099120283326,
+        1.0253151205244289
+      ],
+      "primary_negative_z": -0.025,
+      "primary_positive_z": 0.025,
+      "selection_inputs": [
+        "exp(z) operator semantics",
+        "hard-domain arithmetic",
+        "positivity",
+        "lmin<lmax where applicable",
+        "compile and single-state finite-forward precheck"
+      ],
+      "selection_prohibited_inputs": [
+        "J",
+        "oracle",
+        "ranking",
+        "trajectory response",
+        "interaction result",
+        "gradient rotation result",
+        "held-out truth"
+      ],
+      "selection_rationale": "2.5% reversible log displacement for a positive MuJoCo force-scale/family-balance field; finite, symmetric, and intentionally conservative"
+    }
+  ],
+  "frozen_before_first_scientific_structural_replay": true,
+  "gradient_rotation_gate": {
+    "classification_role": "supporting directional-preference evidence; not mandatory if the primary nonproportionality-plus-configuration gate passes",
+    "direction_evidence": {
+      "any_one_direction_criterion_after_resolution": true,
+      "cosine_similarity_max_inclusive": 0.995,
+      "equivalent_minimum_angle_deg": 5.731967965197727,
+      "resolved_component_sign_change_is_sufficient_alternative": true,
+      "unit_direction_component_change_max_min_inclusive": 0.05
+    },
+    "frozen_before_scientific_pilot_outcomes": true,
+    "full_sign_reversal_required": false,
+    "gate_id": "PILOT_V2_GRADIENT_ROTATION_GATE_V1",
+    "gradient": "[d(response)/d beta_flex,d(response)/d beta_extend] from the frozen centered diagonal stencil",
+    "gradient_resolution": {
+      "both_nominal_and_perturbed_gradients_required": true,
+      "h": 0.015,
+      "minimum_norm_times_h_over_nominal_response_RMS_inclusive": 1e-05
+    },
+    "magnitude_only_gradient_change_is_direction_evidence": false,
+    "required_outputs": [
+      "nominal_gradient",
+      "perturbed_gradient",
+      "cosine_similarity",
+      "angle_difference_deg",
+      "resolved_sign_pattern",
+      "unit_direction_component_change_max",
+      "gradient_norm_ratio"
+    ],
+    "resolved_component_sign_rule": "a component sign is comparable only when abs(component)*h/nominal_response_RMS>=1e-5 for both models",
+    "stencil": "four symmetric interior points at beta=[+/-0.015,+/-0.015]",
+    "threshold_tuning_after_outcome": false
+  },
+  "input_sha256": {
+    "amended_s1": "3faf531f127bce1a26dd13b01dae07bc332bb107ac9d562c314f296780921763",
+    "candidate_builder": "e8d3741099e8c6ac7f2b63c8b9fbfaf8f72da001c2714bcfff453b6f55ffd92e",
+    "cohort_v1_manifest": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+    "design_builder": "4eefeb992dd65d7e4e45e3462fc43f975f0c1f31de7b7e989f3727b65565356e",
+    "design_checksums": "ac2fad3b2f5b5180ac9d2a138db91235aef3a373a1c591bb391bc28e09795d44",
+    "design_cohort_rules": "f866fa7668492fecf3890a40fd47e4d3f748edb6835ee4df8e41c1efa2518d07",
+    "design_configuration_gates": "7d7af49f951f7ae970d64a65f68094c921b6be16ddf2917f2aa30bcff328bd1c",
+    "design_execution_plan": "7afd5c99244bc64ffb1c4466b5c8e8834d4c8c172800c6a28f8246621941b494",
+    "design_gradient_gates": "f6508a405f59847f5105273df0a48e3e19470ca123819825a6eba8faf1394410",
+    "design_input_verification": "8a6af9380140e8b206b2fc0104f6100a8e5038a91f936f0db64b784ad9eb1bb4",
+    "design_integrity_rules": "d03acf452f34d5965b5d6bf8c2bb0c877ee63b6873c3a6155ff23721cf92a3e3",
+    "design_levels": "285d7cb108f0579774a4ce3b825de23cd6aba5987f0079315682b20ed176728d",
+    "design_metadata": "cbfc657917f67ed9885799312db717285ba95f1f5c227ee769d19e1a16376b4f",
+    "design_nonproportionality_gates": "0ce4968e1bd9d215fa008678f3c3a6e463c5575e77ea7582f7b6f9f744a09ebd",
+    "design_protocol": "b3d1f7acc427e5a592a8045ba3e0bab921df1834596d6291c5e4cb3368b69d00",
+    "design_report": "bcb5ba8c83f0c3fb1091b82770ad6d7aa5d589a9b01a85b21a020893287b3fb7",
+    "design_response_representations": "254ea17c2f05d3c2e771660f2eb49a363596a9f876a2313367735dfd159d62d3",
+    "design_subset": "d005ddc4590c4c58db81a4ee625609b0a29db02c681b67238b9790e044c658e4",
+    "formal_manifest": "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441",
+    "formal_reference": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+    "model": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "replay_builder": "d60a9b1651b49307155b8b36bfdd881b595c604288f7c07a3237afe5f5feb32e",
+    "truth_semantics": "750d94b59427cdf25cd026192b889a5ba4345e7cb9bdd674434c4a61771c0adc",
+    "v2_domain_manifest": "0daebd0dd418f06a92613d116fb484c6627325eb6e395c6c75124ddff0361ae7",
+    "v2_reference": "208a13cef47ff5407348db27dc0a8570e803f9191fbb29b85fabf3fb71012678",
+    "v3_design_builder": "5902c24970418d45671ca307d1f403592ed8d83544391caf26476a3bc6df3eae",
+    "v3_manifest": "6fc4259fe8b8c7d34c382f3d7840e97f58441ccb01098b1b3348ceedf8b7a745",
+    "v3_parameterization": "e830b5cadd6d970107e59eb9b346650af5ab254b42beecdfaf6b70a5985957ef",
+    "v3_table": "376fb3bc036b742714271f42fa457f61657ef31e931faf9f23a748a8985cf774"
+  },
+  "integrity_and_fallback_rules": {
+    "fallback_action": "replace only the failed factor-sign primary model with its pre-frozen half-magnitude fallback and rerun the full 13-point integrity/replay set once",
+    "fallback_failure_action": "factor=INVALID_FOR_PILOT; stop that factor; do not tune or add levels",
+    "fallback_trigger": "primary level integrity failure only; never effect size, J, oracle, rank, nonproportionality, configuration dependence, or gradient outcome",
+    "frozen_before_scientific_pilot_outcomes": true,
+    "future_replay_gates": {
+      "C2_and_branch_anchor_gates": "preserve all frozen V3 gates",
+      "V3_extrema_ROM_error_max_deg": 0.001,
+      "ddq_closure_error_max_rad_s2": 1e-09,
+      "dq_closure_error_max_rad_s": 1e-10,
+      "duration_s_exact": 24.0,
+      "finite_q_dq_ddq": true,
+      "finite_truth_torque_and_actuator_tendon_arrays": true,
+      "joint_limit_active_count_max": 1,
+      "joint_limit_contribution_max_abs_Nm": 0.005,
+      "joint_limit_contribution_max_relative": 0.0005,
+      "model_compile": "PASS",
+      "muscle_reconstruction_residual_max_abs_Nm": 1e-08,
+      "only_declared_model_fields_changed": true,
+      "q_closure_error_max_rad": 1e-10,
+      "sample_count_exact": 401,
+      "solver_warning_count_max": 0,
+      "source_equality_residual_max": 0.001,
+      "tendon_limit_active_count_max": 0,
+      "topology_fingerprint_unchanged": true,
+      "truth_decomposition_residual_max_abs_Nm": 1e-08,
+      "unexpected_contact_active_count_max": 0
+    },
+    "gate_id": "PILOT_V2_INTEGRITY_AND_FALLBACK_RULES_V1",
+    "maximum_fallback_attempts_per_factor_sign": 1,
+    "primary_and_fallback_levels_source": "PILOT_V2_DIAGNOSTIC_LEVELS.json",
+    "scientific_small_effect_action": "INCONCLUSIVE; fallback prohibited"
+  },
+  "model_plan": {
+    "label": "STRUCTURAL_DIAGNOSTIC_MODEL",
+    "maximum_fallback_models": 8,
+    "maximum_total_models": 17,
+    "maximum_total_replays": 221,
+    "nominal_count": 1,
+    "primary_model_count": 9,
+    "primary_perturbed_count": 8,
+    "primary_replay_count": 117,
+    "structure": "ONE_FACTOR_AT_A_TIME",
+    "trajectories_per_model": 13,
+    "virtual_patient_label_prohibited": true
+  },
+  "next_stage_auto_execution": false,
+  "nonproportionality_gate": {
+    "effect_resolution_gate": {
+      "both_required": true,
+      "delta_response_RMS_min_Nm_inclusive": 1e-05,
+      "delta_response_RMS_over_nominal_RMS_min_inclusive": 0.0001,
+      "reason": "exclude algebraic/floating residuals and unresolved relative effects before shape classification"
+    },
+    "factor_pass_aggregation": "at least one required-torque response AND at least one factor-specific mechanistic component must each pass nonproportionality and configuration-dependence for the same sign",
+    "factor_sign_pass_rule": "effect resolution AND proportional_NRMSE>1e-4 AND affine_R2<0.9999 on the same predeclared response",
+    "fits": {
+      "affine": "OLS with intercept: y_perturbed=a*y_nominal+b",
+      "nrmse": "residual_RMS/max(nominal_response_RMS,1e-12 response units)",
+      "proportional": "OLS through origin: y_perturbed=a*y_nominal",
+      "r2": "1-SSE/sum((y_perturbed-mean(y_perturbed))^2); undefined denominator -> null and no support",
+      "residual_range_normalized": "(max(residual)-min(residual))/max(nominal_response_RMS,1e-12 response units)"
+    },
+    "frozen_before_scientific_pilot_outcomes": true,
+    "gate_id": "PILOT_V2_NONPROPORTIONALITY_GATE_V1",
+    "nonproportionality_thresholds": {
+      "affine_R2_strictly_below": 0.9999,
+      "both_required_on_same_predeclared_response": true,
+      "proportional_NRMSE_strictly_above": 0.0001,
+      "provenance": "retains the prior outcome-independent mechanistic thresholds and adds an explicit effect-resolution floor"
+    },
+    "required_outputs": [
+      "proportional_a",
+      "proportional_R2",
+      "proportional_NRMSE",
+      "proportional_residual_RMS",
+      "proportional_residual_range",
+      "affine_a",
+      "affine_b",
+      "affine_R2",
+      "affine_NRMSE",
+      "affine_residual_RMS",
+      "affine_residual_range"
+    ],
+    "threshold_tuning_after_outcome": false
+  },
+  "pilot_design_protocol_sha256": "b3d1f7acc427e5a592a8045ba3e0bab921df1834596d6291c5e4cb3368b69d00",
+  "primary_decision_logic": {
+    "STRUCTURAL_HETEROGENEITY_PILOT_NOT_SUPPORTED": "neither condition above is met",
+    "STRUCTURAL_HETEROGENEITY_PILOT_PARTIALLY_SUPPORTED": "zero factors are STRUCTURALLY_INFORMATIVE but at least one predeclared response passes both nonproportionality and configuration gates",
+    "STRUCTURAL_HETEROGENEITY_PILOT_SUPPORTED": "one or more factors are STRUCTURALLY_INFORMATIVE"
+  },
+  "primary_question": "Do the four preregistered S1 structural factors produce configuration-dependent non-proportional mechanical response across the frozen V3 coordination trajectories rather than magnitude scaling?",
+  "protocol_id": "STRUCTURAL_HETEROGENEITY_PILOT_EXECUTION_PROTOCOL_V1",
+  "range_pathway_policy": {
+    "candidate_pathways": {
+      "S1F1_BIARTICULAR_LMAX": "independent model-specific mapping study from fiber/tendon measurements and passive mechanics to the normalized MuJoCo lmax field",
+      "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE": "independent multi-configuration passive-mechanics calibration separating rectus and hamstring-family fpmax contributions",
+      "S1F3_HIP_MONO_ANTAGONIST_F0": "independent architecture/force-capacity and multi-configuration mechanics calibration for the declared hip group",
+      "S1F4_KNEE_MONO_ANTAGONIST_F0": "independent architecture/force-capacity and multi-configuration mechanics calibration for the declared knee group"
+    },
+    "mechanism_supported_does_not_equal_population_variability_calibrated": true,
+    "pathways_defensible_for_admission_without_independent_evidence_audit": false,
+    "population_ranges": "NOT_AVAILABLE"
+  },
+  "response_representations": {
+    "derived_for_every_primary_scalar_representation": [
+      "perturbed-versus-nominal proportional fit",
+      "perturbed-versus-nominal affine fit",
+      "delta response configuration statistics",
+      "local beta-flex gradient",
+      "local beta-extend gradient"
+    ],
+    "gradient_stencil": {
+      "candidate_ids": [
+        "MYOLEG_V3_K0156",
+        "MYOLEG_V3_K0168",
+        "MYOLEG_V3_K0456",
+        "MYOLEG_V3_K0468"
+      ],
+      "d_beta_extend": "(mean(y(-h,+h),y(+h,+h))-mean(y(-h,-h),y(+h,-h)))/(2*h)",
+      "d_beta_flex": "(mean(y(+h,-h),y(+h,+h))-mean(y(-h,-h),y(-h,+h)))/(2*h)",
+      "h": 0.015
+    },
+    "personalization_or_oracle_is_endpoint": false,
+    "post_outcome_representation_addition_allowed": false,
+    "primary_endpoint": "CONFIGURATION_DEPENDENT_NONPROPORTIONAL_MECHANICAL_RESPONSE",
+    "representations": [
+      {
+        "applicable_factors": [
+          "S1F1_BIARTICULAR_LMAX",
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+          "S1F3_HIP_MONO_ANTAGONIST_F0",
+          "S1F4_KNEE_MONO_ANTAGONIST_F0"
+        ],
+        "definition": "time RMS of prescribed-trajectory project-coordinate hip required torque over 24 s",
+        "response_id": "HIP_REQUIRED_TORQUE_RMS",
+        "role": "PRIMARY_REQUIRED_TORQUE",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F1_BIARTICULAR_LMAX",
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+          "S1F3_HIP_MONO_ANTAGONIST_F0",
+          "S1F4_KNEE_MONO_ANTAGONIST_F0"
+        ],
+        "definition": "time RMS of prescribed-trajectory project-coordinate knee required torque over 24 s",
+        "response_id": "KNEE_REQUIRED_TORQUE_RMS",
+        "role": "PRIMARY_REQUIRED_TORQUE",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F1_BIARTICULAR_LMAX"
+        ],
+        "definition": "time RMS of the signed sum of frozen truth muscle_torque_contribution_nm over declared members, hip coordinate",
+        "members": [
+          "bflh_r",
+          "grac_r",
+          "recfem_r",
+          "sart_r",
+          "semimem_r",
+          "semiten_r",
+          "tfl_r"
+        ],
+        "response_id": "S1F1_AFFECTED_BIARTICULAR_HIP_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "semantic_limit": "zero-control affected-actuator contribution; not a measured passive tissue torque",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F1_BIARTICULAR_LMAX"
+        ],
+        "definition": "time RMS of the signed sum of frozen truth muscle_torque_contribution_nm over declared members, knee coordinate",
+        "members": [
+          "bflh_r",
+          "grac_r",
+          "recfem_r",
+          "sart_r",
+          "semimem_r",
+          "semiten_r",
+          "tfl_r"
+        ],
+        "response_id": "S1F1_AFFECTED_BIARTICULAR_KNEE_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "semantic_limit": "zero-control affected-actuator contribution; not a measured passive tissue torque",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+        ],
+        "definition": "hip-coordinate time RMS of signed declared rectus-group contributions",
+        "members": [
+          "recfem_r"
+        ],
+        "response_id": "S1F2_RECTUS_HIP_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+        ],
+        "definition": "knee-coordinate time RMS of signed declared rectus-group contributions",
+        "members": [
+          "recfem_r"
+        ],
+        "response_id": "S1F2_RECTUS_KNEE_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+        ],
+        "definition": "hip-coordinate time RMS of signed declared hamstring-family contributions",
+        "members": [
+          "bflh_r",
+          "semimem_r",
+          "semiten_r"
+        ],
+        "response_id": "S1F2_HAMSTRING_HIP_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+        ],
+        "definition": "knee-coordinate time RMS of signed declared hamstring-family contributions",
+        "members": [
+          "bflh_r",
+          "semimem_r",
+          "semiten_r"
+        ],
+        "response_id": "S1F2_HAMSTRING_KNEE_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+        ],
+        "definition": "hip-coordinate time RMS of the signed sum over both oppositely scaled declared families",
+        "members": {
+          "HAMSTRING_GROUP": [
+            "bflh_r",
+            "semimem_r",
+            "semiten_r"
+          ],
+          "RECTUS_GROUP": [
+            "recfem_r"
+          ]
+        },
+        "response_id": "S1F2_NET_DECLARED_BIARTICULAR_HIP_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE"
+        ],
+        "definition": "knee-coordinate time RMS of the signed sum over both oppositely scaled declared families",
+        "members": {
+          "HAMSTRING_GROUP": [
+            "bflh_r",
+            "semimem_r",
+            "semiten_r"
+          ],
+          "RECTUS_GROUP": [
+            "recfem_r"
+          ]
+        },
+        "response_id": "S1F2_NET_DECLARED_BIARTICULAR_KNEE_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F3_HIP_MONO_ANTAGONIST_F0"
+        ],
+        "definition": "time RMS of signed declared-group contribution in the hip coordinate",
+        "members": [
+          "addmagDist_r",
+          "addmagIsch_r",
+          "addmagMid_r",
+          "glmax2_r",
+          "glmax3_r",
+          "glmed3_r",
+          "piri_r"
+        ],
+        "response_id": "S1F3_DECLARED_HIP_ANTAGONIST_HIP_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "semantic_limit": "glmed3_r and piri_r remain mechanically classified and anatomically multi-action/configuration-dependent",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F4_KNEE_MONO_ANTAGONIST_F0"
+        ],
+        "definition": "time RMS of signed declared-group contribution in the knee coordinate",
+        "members": [
+          "vasint_r",
+          "vaslat_r",
+          "vasmed_r"
+        ],
+        "response_id": "S1F4_DECLARED_KNEE_ANTAGONIST_KNEE_CONTRIBUTION_RMS",
+        "role": "PRIMARY_MECHANISTIC_COMPONENT",
+        "units": "N*m"
+      },
+      {
+        "applicable_factors": [
+          "S1F1_BIARTICULAR_LMAX",
+          "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE",
+          "S1F3_HIP_MONO_ANTAGONIST_F0",
+          "S1F4_KNEE_MONO_ANTAGONIST_F0"
+        ],
+        "definition": "sqrt(0.5*((hip_tau_rms/model_own_reference_hip_rms)^2+(knee_tau_rms/model_own_reference_knee_rms)^2))",
+        "normalization_policy": "use each structural diagnostic model's own MYOLEG_V3_K0312 reference denominators exactly as the frozen subject-reference normalization; do not renormalize after result reveal",
+        "not_sole_endpoint": true,
+        "response_id": "FROZEN_COMBINED_J",
+        "role": "SECONDARY_DIAGNOSTIC_ONLY",
+        "units": "dimensionless"
+      }
+    ],
+    "status": "FROZEN_BEFORE_SCIENTIFIC_PILOT_OUTCOMES"
+  },
+  "scope_guards": {
+    "625_grid_scientific_search": false,
+    "BO": false,
+    "candidate_scientific_replay_count": 13,
+    "cohort_subject_models": false,
+    "cohort_v2_generation": false,
+    "five_parameter_or_NN_or_PINN_training": false,
+    "held_out_scientific_access": 0,
+    "new_virtual_subjects": 0,
+    "objective_or_normalization_change": false,
+    "oracle_or_rank_or_regret": false,
+    "robot_or_hardware": false
+  },
+  "sign_symmetry": {
+    "may_change_factor_semantics": false,
+    "metrics": [
+      "cosine(delta_positive,-delta_negative)",
+      "RMS(delta_positive+delta_negative)/max(RMS(delta_positive),RMS(delta_negative))"
+    ],
+    "role": "DESCRIPTIVE_ONLY_NO_PREREGISTERED_SYMMETRY_THRESHOLD"
+  },
+  "stage_id": "MYOLEG_STRUCTURAL_HETEROGENEITY_PILOT_V1",
+  "visualization_plan": {
+    "cross_factor_files": [
+      "delta_response_across_13_beta_locations.png",
+      "proportional_fit_residuals.png",
+      "gradient_vectors.png",
+      "factor_summary.png"
+    ],
+    "dramatic_factor_selection": false,
+    "factor_curve_files": [
+      "S1F1_BIARTICULAR_LMAX_nominal_vs_perturbed.png",
+      "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE_nominal_vs_perturbed.png",
+      "S1F3_HIP_MONO_ANTAGONIST_F0_nominal_vs_perturbed.png",
+      "S1F4_KNEE_MONO_ANTAGONIST_F0_nominal_vs_perturbed.png"
+    ],
+    "fixed_component_per_factor": {
+      "S1F1_BIARTICULAR_LMAX": "S1F1_AFFECTED_BIARTICULAR_HIP_CONTRIBUTION_RMS",
+      "S1F2_RECTUS_HAMSTRING_FPMAX_BALANCE": "S1F2_NET_DECLARED_BIARTICULAR_HIP_CONTRIBUTION_RMS",
+      "S1F3_HIP_MONO_ANTAGONIST_F0": "S1F3_DECLARED_HIP_ANTAGONIST_HIP_CONTRIBUTION_RMS",
+      "S1F4_KNEE_MONO_ANTAGONIST_F0": "S1F4_DECLARED_KNEE_ANTAGONIST_KNEE_CONTRIBUTION_RMS"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "enabled": false,
+  "notes": "Default-off sidecar label logging only. This config does not authorize robot connection, motion, loading, human data, or static validation execution.",
+  "record_schema": "scripts/static_validation_record_schema_v1.json",
+  "schema_version": 1
+}

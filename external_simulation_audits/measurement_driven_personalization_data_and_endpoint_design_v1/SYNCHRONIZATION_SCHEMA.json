@@ -1,0 +1,55 @@
+{
+  "alignment": {
+    "fixed_delay_assumption": null,
+    "offline_state_interpolation": "only between two valid bracketing state samples and only within a future frozen maximum gap",
+    "offline_wrench_interpolation": "not allowed beyond validated source interval/freshness; exact rule pending source-cadence validation",
+    "online": "latest causally available valid sample only; retain age and skew"
+  },
+  "compatibility_note": "settings.py contains generic software defaults, but unreviewed safety/identification JSON means they are not frozen scientific endpoint thresholds",
+  "limit_status": "NOT_YET_FROZEN_REQUIRES_MEASUREMENT_AND_REVIEW",
+  "limits": {
+    "maximum_interpolation_gap_s": null,
+    "maximum_missing_fraction": null,
+    "maximum_state_age_s": null,
+    "maximum_state_wrench_skew_s": null,
+    "maximum_wrench_age_s": null
+  },
+  "master_timebase": "HOST_MONOTONIC_PERF_COUNTER_NS",
+  "master_timebase_unit": "integer nanoseconds; derived seconds permitted without changing origin",
+  "missing_behavior": "null plus invalid_reason and mask; never zero-fill; gate episode when frozen limit is exceeded",
+  "robot_device_timestamp_available": false,
+  "schema_id": "FUTURE_SYNCHRONIZED_EPISODE_TIMEBASE_V1",
+  "streams": {
+    "robot_state": {
+      "current_device_time": null,
+      "timestamps": [
+        "host_receive_perf_counter_ns",
+        "robot_device_time_if_future_available"
+      ]
+    },
+    "tactile_placeholder": {
+      "implemented": false,
+      "timestamps": [
+        "host_receive_perf_counter_ns",
+        "device_time_if_available"
+      ]
+    },
+    "trajectory_command": {
+      "timestamps": [
+        "host_intent_perf_counter_ns",
+        "host_durable_publish_perf_counter_ns",
+        "trajectory_elapsed_s"
+      ]
+    },
+    "wrench": {
+      "current_device_time": null,
+      "timestamps": [
+        "host_query_start_perf_counter_ns",
+        "host_query_end_perf_counter_ns",
+        "host_query_midpoint_perf_counter_ns",
+        "host_publish_perf_counter_ns"
+      ]
+    }
+  },
+  "wall_clock_role": "metadata/display only; never sample alignment"
+}

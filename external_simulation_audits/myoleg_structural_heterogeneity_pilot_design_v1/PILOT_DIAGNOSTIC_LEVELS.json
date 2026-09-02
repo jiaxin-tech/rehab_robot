@@ -1,0 +1,9 @@
+{
+  "blocker": "S1_DEFINITION_INCOMPLETE",
+  "execution_authorized": false,
+  "finite_fallback_level": null,
+  "levels": [],
+  "pilot_level_is_population_range": false,
+  "population_ranges": [],
+  "status": "NOT_FROZEN"
+}

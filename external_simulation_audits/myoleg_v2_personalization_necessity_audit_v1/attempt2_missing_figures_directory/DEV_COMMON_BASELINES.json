@@ -1,0 +1,67 @@
+{
+  "DEV_MEAN_OPTIMAL_COMMON": {
+    "alpha": [
+      2.0,
+      0.5,
+      -0.03
+    ],
+    "candidate_id": "MYOLEG_V2_P20850",
+    "mean_j": 0.9944875655695699,
+    "median_j": 0.994457290341048,
+    "proposal_index": 20850,
+    "worst_j": 0.9948408707901545
+  },
+  "DEV_WORSTCASE_OPTIMAL_COMMON": {
+    "alpha": [
+      2.0,
+      0.5,
+      -0.03
+    ],
+    "candidate_id": "MYOLEG_V2_P20850",
+    "mean_j": 0.9944875655695699,
+    "median_j": 0.994457290341048,
+    "proposal_index": 20850,
+    "worst_j": 0.9948408707901545
+  },
+  "REFERENCE": {
+    "alpha": [
+      0.0,
+      0.0,
+      -0.0
+    ],
+    "candidate_id": "MYOLEG_V2_P15012",
+    "j_all_development": 1.0
+  },
+  "common_regret_summary": {
+    "max": 0.0,
+    "mean": 0.0,
+    "median": 0.0,
+    "min": 0.0,
+    "p5": 0.0,
+    "p75": 0.0,
+    "p90": 0.0,
+    "p95": 0.0
+  },
+  "relative_gap_bootstrap": {
+    "mean_95_percentile_ci": [
+      0.0,
+      0.0
+    ],
+    "median_95_percentile_ci": [
+      0.0,
+      0.0
+    ],
+    "resamples": 10000,
+    "seed": 20260830
+  },
+  "relative_gap_summary": {
+    "max": 0.0,
+    "mean": 0.0,
+    "median": 0.0,
+    "min": 0.0,
+    "p5": 0.0,
+    "p75": 0.0,
+    "p90": 0.0,
+    "p95": 0.0
+  }
+}
