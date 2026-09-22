@@ -1,0 +1,1033 @@
+{
+  "PINN_training_runs": 0,
+  "V1_core_reused_without_rewrite": true,
+  "all_candidate_domains_have_625_members": true,
+  "all_runs_completed": true,
+  "all_stage1_runs_started_at_subject_reference": true,
+  "all_subject_rom_invariants_pass": true,
+  "case_count": 4,
+  "cases": [
+    {
+      "candidate_domain_invariants": {
+        "all_kinematic_gates_pass": true,
+        "candidate_count": 625,
+        "duration_s": 24.0,
+        "maximum_closure_error": 0.0,
+        "maximum_extrema_error_rad": 2.272897114963257e-07,
+        "minimum_warp_derivative": 0.8969656089543516,
+        "pointwise_clipping_count": 0,
+        "rom_profile_fingerprint": "26faad7e62d4ab140245d0e3500a8b3f6172b31b1bdc4ca32b7c6d6fee0e6c8e",
+        "rom_profile_id": "ROM_SMALL_PROFILE_V1",
+        "v3_operator_version": "V3_PARAMETERIZATION_SEMANTICS_V1"
+      },
+      "case_id": "ROM_SMALL",
+      "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+      "methods": [
+        {
+          "best_observed_endpoint": 27.621554659883003,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312"
+          ],
+          "method": "Reference"
+        },
+        {
+          "best_observed_endpoint": 27.621554659883003,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600"
+          ],
+          "method": "Space Filling"
+        },
+        {
+          "best_observed_endpoint": 27.621554659883003,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0624",
+            "MYOLEG_V3_K0024"
+          ],
+          "method": "Standard BO"
+        },
+        {
+          "best_observed_endpoint": 27.621554659883003,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600",
+            "MYOLEG_V3_K0000"
+          ],
+          "method": "Physics-Informed BO"
+        }
+      ],
+      "profile": {
+        "boundary_evidence": [
+          {
+            "configuration_id": "ROM_SMALL_Q1",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS1"
+          },
+          {
+            "configuration_id": "ROM_SMALL_Q2",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS2"
+          },
+          {
+            "configuration_id": "ROM_SMALL_Q3",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS3"
+          },
+          {
+            "configuration_id": "ROM_SMALL_Q4",
+            "gate_reason": "SYNTHETIC_THRESHOLD_REACHED",
+            "gate_status": "STOP",
+            "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS4"
+          }
+        ],
+        "calibration_episode_ids": [
+          "ROM_SMALL_ROM_CALIBRATION_V1"
+        ],
+        "configuration_validity_mask": null,
+        "coupled_joint_constraint": null,
+        "fingerprint": "26faad7e62d4ab140245d0e3500a8b3f6172b31b1bdc4ca32b7c6d6fee0e6c8e",
+        "frozen": true,
+        "hip_max_rad": 1.4835298641951802,
+        "hip_min_rad": 0.6108652381980153,
+        "knee_max_rad": 1.3962634015954636,
+        "knee_min_rad": 0.4363323129985824,
+        "metadata": {
+          "classification": "OFFLINE_ALGORITHM_DEVELOPMENT_ONLY",
+          "development_case_id": "ROM_SMALL",
+          "first_safe_configuration_id": "ROM_SMALL_Q1",
+          "first_stop_configuration_id": "ROM_SMALL_Q4",
+          "last_safe_configuration_id": "ROM_SMALL_Q3",
+          "no_boundary_interpolation": true,
+          "not_a_human_safety_model": true,
+          "not_clinical_population_evidence": true,
+          "pressure_limit": "NOT_AVAILABLE",
+          "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+          "validated_force_threshold": "NOT_AVAILABLE"
+        },
+        "profile_id": "ROM_SMALL_PROFILE_V1",
+        "provenance": "ALGORITHM_DEVELOPMENT_ONLY",
+        "rom_status": "FROZEN_SUBJECT_ROM_PROFILE_V1",
+        "safety_margin_policy": null,
+        "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+        "threshold_policy_ids": [
+          "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1"
+        ],
+        "trajectory_specific_constraint": null,
+        "version": 1
+      },
+      "rom_calibration_gate_sequence": [
+        "SAFE",
+        "SAFE",
+        "SAFE",
+        "STOP"
+      ],
+      "rom_calibration_ledger": {
+        "budget_policy": "ROM_DETERMINATION_BUDGET_SEPARATE_FROM_PERSONALIZATION_ADAPTATION_BUDGET",
+        "entries": [
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_SMALL_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_SMALL_Q1",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 0.6108652381980153,
+              "knee_angle_rad": 0.4363323129985824,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.0
+              },
+              "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS1",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 1
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_SMALL_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_SMALL_Q2",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.090830782496456,
+              "knee_angle_rad": 0.964294411726867,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.55
+              },
+              "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS2",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 2
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_SMALL_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_SMALL_Q3",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.4835298641951802,
+              "knee_angle_rad": 1.3962634015954636,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.0
+              },
+              "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS3",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 3
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SYNTHETIC_THRESHOLD_REACHED",
+              "status": "STOP",
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_SMALL_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_SMALL_Q4",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.5707963267948968,
+              "knee_angle_rad": 1.4922565104551517,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.1
+              },
+              "observation_id": "ROM_SMALL_ROM_CALIBRATION_V1:OBS4",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_SMALL_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 4
+          }
+        ],
+        "ledger_type": "ROM_CALIBRATION_LEDGER"
+      },
+      "same_frozen_rom_for_all_baselines": true
+    },
+    {
+      "candidate_domain_invariants": {
+        "all_kinematic_gates_pass": true,
+        "candidate_count": 625,
+        "duration_s": 24.0,
+        "maximum_closure_error": 0.0,
+        "maximum_extrema_error_rad": 4.173865617573824e-07,
+        "minimum_warp_derivative": 0.8969656089543516,
+        "pointwise_clipping_count": 0,
+        "rom_profile_fingerprint": "102f9ce3f9368abe1a4a79aeb08a5de8cee9cfb637d1fbc0cc2248664054b487",
+        "rom_profile_id": "ROM_MEDIUM_PROFILE_V1",
+        "v3_operator_version": "V3_PARAMETERIZATION_SEMANTICS_V1"
+      },
+      "case_id": "ROM_MEDIUM",
+      "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+      "methods": [
+        {
+          "best_observed_endpoint": 26.121744464201356,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312"
+          ],
+          "method": "Reference"
+        },
+        {
+          "best_observed_endpoint": 26.095172729046727,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600"
+          ],
+          "method": "Space Filling"
+        },
+        {
+          "best_observed_endpoint": 26.095172729046727,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0624",
+            "MYOLEG_V3_K0024"
+          ],
+          "method": "Standard BO"
+        },
+        {
+          "best_observed_endpoint": 26.095172729046727,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0574"
+          ],
+          "method": "Physics-Informed BO"
+        }
+      ],
+      "profile": {
+        "boundary_evidence": [
+          {
+            "configuration_id": "ROM_MEDIUM_Q1",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS1"
+          },
+          {
+            "configuration_id": "ROM_MEDIUM_Q2",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS2"
+          },
+          {
+            "configuration_id": "ROM_MEDIUM_Q3",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS3"
+          },
+          {
+            "configuration_id": "ROM_MEDIUM_Q4",
+            "gate_reason": "SYNTHETIC_THRESHOLD_REACHED",
+            "gate_status": "STOP",
+            "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS4"
+          }
+        ],
+        "calibration_episode_ids": [
+          "ROM_MEDIUM_ROM_CALIBRATION_V1"
+        ],
+        "configuration_validity_mask": null,
+        "coupled_joint_constraint": null,
+        "fingerprint": "102f9ce3f9368abe1a4a79aeb08a5de8cee9cfb637d1fbc0cc2248664054b487",
+        "frozen": true,
+        "hip_max_rad": 1.9547687622336491,
+        "hip_min_rad": 0.5061454830783556,
+        "knee_max_rad": 2.0856684561332237,
+        "knee_min_rad": 0.32288591161895097,
+        "metadata": {
+          "classification": "OFFLINE_ALGORITHM_DEVELOPMENT_ONLY",
+          "development_case_id": "ROM_MEDIUM",
+          "first_safe_configuration_id": "ROM_MEDIUM_Q1",
+          "first_stop_configuration_id": "ROM_MEDIUM_Q4",
+          "last_safe_configuration_id": "ROM_MEDIUM_Q3",
+          "no_boundary_interpolation": true,
+          "not_a_human_safety_model": true,
+          "not_clinical_population_evidence": true,
+          "pressure_limit": "NOT_AVAILABLE",
+          "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+          "validated_force_threshold": "NOT_AVAILABLE"
+        },
+        "profile_id": "ROM_MEDIUM_PROFILE_V1",
+        "provenance": "ALGORITHM_DEVELOPMENT_ONLY",
+        "rom_status": "FROZEN_SUBJECT_ROM_PROFILE_V1",
+        "safety_margin_policy": null,
+        "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+        "threshold_policy_ids": [
+          "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1"
+        ],
+        "trajectory_specific_constraint": null,
+        "version": 1
+      },
+      "rom_calibration_gate_sequence": [
+        "SAFE",
+        "SAFE",
+        "SAFE",
+        "STOP"
+      ],
+      "rom_calibration_ledger": {
+        "budget_policy": "ROM_DETERMINATION_BUDGET_SEPARATE_FROM_PERSONALIZATION_ADAPTATION_BUDGET",
+        "entries": [
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_MEDIUM_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_MEDIUM_Q1",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 0.5061454830783556,
+              "knee_angle_rad": 0.32288591161895097,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.0
+              },
+              "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS1",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 1
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_MEDIUM_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_MEDIUM_Q2",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.3028882866137672,
+              "knee_angle_rad": 1.292416311101801,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.55
+              },
+              "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS2",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 2
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_MEDIUM_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_MEDIUM_Q3",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.9547687622336491,
+              "knee_angle_rad": 2.0856684561332237,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.0
+              },
+              "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS3",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 3
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SYNTHETIC_THRESHOLD_REACHED",
+              "status": "STOP",
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_MEDIUM_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_MEDIUM_Q4",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 2.0996310901491784,
+              "knee_angle_rad": 2.261946710584651,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.1
+              },
+              "observation_id": "ROM_MEDIUM_ROM_CALIBRATION_V1:OBS4",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_MEDIUM_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 4
+          }
+        ],
+        "ledger_type": "ROM_CALIBRATION_LEDGER"
+      },
+      "same_frozen_rom_for_all_baselines": true
+    },
+    {
+      "candidate_domain_invariants": {
+        "all_kinematic_gates_pass": true,
+        "candidate_count": 625,
+        "duration_s": 24.0,
+        "maximum_closure_error": 0.0,
+        "maximum_extrema_error_rad": 5.165675260876412e-07,
+        "minimum_warp_derivative": 0.8969656089543516,
+        "pointwise_clipping_count": 0,
+        "rom_profile_fingerprint": "3232a1e74409668584d771f202a97bc356e1264fa4a61a0ed7f9c58eb89bea6d",
+        "rom_profile_id": "ROM_LARGE_PROFILE_V1",
+        "v3_operator_version": "V3_PARAMETERIZATION_SEMANTICS_V1"
+      },
+      "case_id": "ROM_LARGE",
+      "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+      "methods": [
+        {
+          "best_observed_endpoint": 26.208510913408215,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312"
+          ],
+          "method": "Reference"
+        },
+        {
+          "best_observed_endpoint": 26.208510913408215,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600"
+          ],
+          "method": "Space Filling"
+        },
+        {
+          "best_observed_endpoint": 26.208510913408215,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0624",
+            "MYOLEG_V3_K0024"
+          ],
+          "method": "Standard BO"
+        },
+        {
+          "best_observed_endpoint": 26.208510913408215,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600",
+            "MYOLEG_V3_K0000"
+          ],
+          "method": "Physics-Informed BO"
+        }
+      ],
+      "profile": {
+        "boundary_evidence": [
+          {
+            "configuration_id": "ROM_LARGE_Q1",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS1"
+          },
+          {
+            "configuration_id": "ROM_LARGE_Q2",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS2"
+          },
+          {
+            "configuration_id": "ROM_LARGE_Q3",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS3"
+          },
+          {
+            "configuration_id": "ROM_LARGE_Q4",
+            "gate_reason": "SYNTHETIC_THRESHOLD_REACHED",
+            "gate_status": "STOP",
+            "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS4"
+          }
+        ],
+        "calibration_episode_ids": [
+          "ROM_LARGE_ROM_CALIBRATION_V1"
+        ],
+        "configuration_validity_mask": null,
+        "coupled_joint_constraint": null,
+        "fingerprint": "3232a1e74409668584d771f202a97bc356e1264fa4a61a0ed7f9c58eb89bea6d",
+        "frozen": true,
+        "hip_max_rad": 2.181661564992912,
+        "hip_min_rad": 0.3490658503988659,
+        "knee_max_rad": 2.356194490192345,
+        "knee_min_rad": 0.17453292519943295,
+        "metadata": {
+          "classification": "OFFLINE_ALGORITHM_DEVELOPMENT_ONLY",
+          "development_case_id": "ROM_LARGE",
+          "first_safe_configuration_id": "ROM_LARGE_Q1",
+          "first_stop_configuration_id": "ROM_LARGE_Q4",
+          "last_safe_configuration_id": "ROM_LARGE_Q3",
+          "no_boundary_interpolation": true,
+          "not_a_human_safety_model": true,
+          "not_clinical_population_evidence": true,
+          "pressure_limit": "NOT_AVAILABLE",
+          "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+          "validated_force_threshold": "NOT_AVAILABLE"
+        },
+        "profile_id": "ROM_LARGE_PROFILE_V1",
+        "provenance": "ALGORITHM_DEVELOPMENT_ONLY",
+        "rom_status": "FROZEN_SUBJECT_ROM_PROFILE_V1",
+        "safety_margin_policy": null,
+        "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+        "threshold_policy_ids": [
+          "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1"
+        ],
+        "trajectory_specific_constraint": null,
+        "version": 1
+      },
+      "rom_calibration_gate_sequence": [
+        "SAFE",
+        "SAFE",
+        "SAFE",
+        "STOP"
+      ],
+      "rom_calibration_ledger": {
+        "budget_policy": "ROM_DETERMINATION_BUDGET_SEPARATE_FROM_PERSONALIZATION_ADAPTATION_BUDGET",
+        "entries": [
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_LARGE_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_LARGE_Q1",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 0.3490658503988659,
+              "knee_angle_rad": 0.17453292519943295,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.0
+              },
+              "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS1",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 1
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_LARGE_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_LARGE_Q2",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.3569934934255914,
+              "knee_angle_rad": 1.3744467859455347,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.55
+              },
+              "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS2",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 2
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_LARGE_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_LARGE_Q3",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 2.181661564992912,
+              "knee_angle_rad": 2.356194490192345,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.0
+              },
+              "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS3",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 3
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SYNTHETIC_THRESHOLD_REACHED",
+              "status": "STOP",
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_LARGE_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_LARGE_Q4",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 2.364921136452317,
+              "knee_angle_rad": 2.5743606466916362,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.1
+              },
+              "observation_id": "ROM_LARGE_ROM_CALIBRATION_V1:OBS4",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_LARGE_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 4
+          }
+        ],
+        "ledger_type": "ROM_CALIBRATION_LEDGER"
+      },
+      "same_frozen_rom_for_all_baselines": true
+    },
+    {
+      "candidate_domain_invariants": {
+        "all_kinematic_gates_pass": true,
+        "candidate_count": 625,
+        "duration_s": 24.0,
+        "maximum_closure_error": 0.0,
+        "maximum_extrema_error_rad": 3.7192861901402807e-07,
+        "minimum_warp_derivative": 0.8969656089543516,
+        "pointwise_clipping_count": 0,
+        "rom_profile_fingerprint": "fde7e2191be336d4c5908c767bd2e8362651a044cdaec11bf9322485df8ba1b7",
+        "rom_profile_id": "ROM_ASYMMETRIC_PROFILE_V1",
+        "v3_operator_version": "V3_PARAMETERIZATION_SEMANTICS_V1"
+      },
+      "case_id": "ROM_ASYMMETRIC",
+      "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+      "methods": [
+        {
+          "best_observed_endpoint": 28.2163143327402,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0312"
+          ],
+          "method": "Reference"
+        },
+        {
+          "best_observed_endpoint": 28.213264153065353,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600"
+          ],
+          "method": "Space Filling"
+        },
+        {
+          "best_observed_endpoint": 28.213264153065353,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600"
+          ],
+          "method": "Standard BO"
+        },
+        {
+          "best_observed_endpoint": 28.213264153065353,
+          "executed_canonical_beta_ids": [
+            "MYOLEG_V3_K0312",
+            "MYOLEG_V3_K0000",
+            "MYOLEG_V3_K0024",
+            "MYOLEG_V3_K0600"
+          ],
+          "method": "Physics-Informed BO"
+        }
+      ],
+      "profile": {
+        "boundary_evidence": [
+          {
+            "configuration_id": "ROM_ASYMMETRIC_Q1",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS1"
+          },
+          {
+            "configuration_id": "ROM_ASYMMETRIC_Q2",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS2"
+          },
+          {
+            "configuration_id": "ROM_ASYMMETRIC_Q3",
+            "gate_reason": "SAFE",
+            "gate_status": "SAFE",
+            "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS3"
+          },
+          {
+            "configuration_id": "ROM_ASYMMETRIC_Q4",
+            "gate_reason": "SYNTHETIC_THRESHOLD_REACHED",
+            "gate_status": "STOP",
+            "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS4"
+          }
+        ],
+        "calibration_episode_ids": [
+          "ROM_ASYMMETRIC_ROM_CALIBRATION_V1"
+        ],
+        "configuration_validity_mask": null,
+        "coupled_joint_constraint": null,
+        "fingerprint": "fde7e2191be336d4c5908c767bd2e8362651a044cdaec11bf9322485df8ba1b7",
+        "frozen": true,
+        "hip_max_rad": 1.6580627893946132,
+        "hip_min_rad": 0.2617993877991494,
+        "knee_max_rad": 2.0943951023931953,
+        "knee_min_rad": 0.5235987755982988,
+        "metadata": {
+          "classification": "OFFLINE_ALGORITHM_DEVELOPMENT_ONLY",
+          "development_case_id": "ROM_ASYMMETRIC",
+          "first_safe_configuration_id": "ROM_ASYMMETRIC_Q1",
+          "first_stop_configuration_id": "ROM_ASYMMETRIC_Q4",
+          "last_safe_configuration_id": "ROM_ASYMMETRIC_Q3",
+          "no_boundary_interpolation": true,
+          "not_a_human_safety_model": true,
+          "not_clinical_population_evidence": true,
+          "pressure_limit": "NOT_AVAILABLE",
+          "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+          "validated_force_threshold": "NOT_AVAILABLE"
+        },
+        "profile_id": "ROM_ASYMMETRIC_PROFILE_V1",
+        "provenance": "ALGORITHM_DEVELOPMENT_ONLY",
+        "rom_status": "FROZEN_SUBJECT_ROM_PROFILE_V1",
+        "safety_margin_policy": null,
+        "semantic_scope": "CURRENT_TASK_SPECIFIC_ALLOWED_ROM",
+        "threshold_policy_ids": [
+          "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1"
+        ],
+        "trajectory_specific_constraint": null,
+        "version": 1
+      },
+      "rom_calibration_gate_sequence": [
+        "SAFE",
+        "SAFE",
+        "SAFE",
+        "STOP"
+      ],
+      "rom_calibration_ledger": {
+        "budget_policy": "ROM_DETERMINATION_BUDGET_SEPARATE_FROM_PERSONALIZATION_ADAPTATION_BUDGET",
+        "entries": [
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_ASYMMETRIC_Q1",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 0.2617993877991494,
+              "knee_angle_rad": 0.5235987755982988,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.0
+              },
+              "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS1",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 1
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_ASYMMETRIC_Q2",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.0297442586766545,
+              "knee_angle_rad": 1.387536755335492,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 0.55
+              },
+              "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS2",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 2
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SAFE",
+              "status": "SAFE",
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_ASYMMETRIC_Q3",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.6580627893946132,
+              "knee_angle_rad": 2.0943951023931953,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.0
+              },
+              "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS3",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 3
+          },
+          {
+            "gate_result": {
+              "classification": "OFFLINE_ALGORITHM_TEST_ONLY:NOT_A_HUMAN_SAFETY_MODEL",
+              "reason": "SYNTHETIC_THRESHOLD_REACHED",
+              "status": "STOP",
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1"
+            },
+            "observation": {
+              "calibration_episode_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1",
+              "configuration_id": "ROM_ASYMMETRIC_Q4",
+              "force_features": {},
+              "gate_status": null,
+              "hip_angle_rad": 1.7976891295541597,
+              "knee_angle_rad": 2.2514747350726854,
+              "measurement_quality": "SYNTHETIC_EXACT",
+              "metadata": {
+                "classification": "ALGORITHM_DEVELOPMENT_ONLY",
+                "safety_model_status": "NOT_A_HUMAN_SAFETY_MODEL",
+                "synthetic_boundary_proxy": 1.1
+              },
+              "observation_id": "ROM_ASYMMETRIC_ROM_CALIBRATION_V1:OBS4",
+              "pressure_features": {},
+              "stop_requested": false,
+              "threshold_policy_id": "SYNTHETIC_ROM_ASYMMETRIC_BOUNDARY_POLICY_V1",
+              "tracking_features": {},
+              "valid": true
+            },
+            "sequence_index": 4
+          }
+        ],
+        "ledger_type": "ROM_CALIBRATION_LEDGER"
+      },
+      "same_frozen_rom_for_all_baselines": true
+    }
+  ],
+  "classification": "OFFLINE_ALGORITHM_DEVELOPMENT_ONLY",
+  "frozen_V3_operator_reused_without_rewrite": true,
+  "human_actions": 0,
+  "human_readiness": "NOT_HUMAN_READY",
+  "implementation_status": "SUBJECT_SPECIFIC_ROM_GATED_SEQUENTIAL_PERSONALIZATION_V2_IMPLEMENTED_WITH_LIMITATIONS",
+  "interpretation": "Architecture compatibility smoke only; method values are not human, clinical, comfort, safety, or robot-effectiveness evidence.",
+  "method_count_per_case": 4,
+  "methods": [
+    "Reference",
+    "Space Filling",
+    "Standard BO",
+    "Physics-Informed BO"
+  ],
+  "pressure_limit": "NOT_AVAILABLE",
+  "robot_actions": 0,
+  "robot_approval": "NOT_ROBOT_APPROVED",
+  "run_count": 16,
+  "runs_csv": "ROM_GATED_V2_SMOKE_RUNS.csv",
+  "safety_margin_policy": null,
+  "stage_separation": {
+    "primary_personalization_K": 4,
+    "rom_determination_budget_is_personalization_budget": false,
+    "stage_0": "task-specific ROM determination",
+    "stage_1": "fixed-ROM beta_flex/beta_extend coordination personalization"
+  },
+  "validated_force_threshold": "NOT_AVAILABLE"
+}

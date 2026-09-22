@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any
 
 from .candidates import Candidate, V3CandidateDomain
@@ -14,6 +14,7 @@ from .models.residual_gp import PhysicsInformedResidualModel
 from .models.standard_gp import StandardGaussianProcess
 from .observations import EpisodeObservation, valid_observations
 from .selectors import (
+    ExpectedImprovementSelector,
     LowerConfidenceBoundSelector,
     ModelOnlyGreedySelector,
     RandomSelector,
@@ -29,6 +30,13 @@ METHODS = (
     "Model-Only Greedy",
     "Standard BO",
     "Physics-Informed BO",
+)
+
+# Historical METHODS stays unchanged: old benchmark runners retain their method set.
+EXPLICIT_METHODS = (
+    "PURE_BO_EI", "PURE_BO_LCB", "MODEL_INFORMED_BO_EI",
+    "MODEL_INFORMED_BO_LCB", "MODEL_ONLY_GREEDY",
+    "MODEL_INFORMED_BO_EI_TIMESERIES_ID",
 )
 
 
@@ -66,7 +74,26 @@ def _components(
     seed: int,
     physics_model: PhysicsSubjectModel | None,
     kappa: float,
+    xi: float = 0.0,
 ):
+    if method in EXPLICIT_METHODS:
+        if method == "MODEL_INFORMED_BO_EI_TIMESERIES_ID":
+            from .models.time_series_graybox import TimeSeriesFiveParameterGrayBoxAdapter
+            if physics_model is None or not isinstance(physics_model.adapter, TimeSeriesFiveParameterGrayBoxAdapter):
+                raise ValueError("TIMESERIES_ID_ADAPTER_REQUIRED")
+        if method == "MODEL_ONLY_GREEDY":
+            if physics_model is None:
+                raise ValueError("MODEL_ONLY_GREEDY requires physics_model")
+            return ModelOnlyGreedySelector(), physics_model
+        if method.startswith("PURE_BO"):
+            model = StandardGaussianProcess()
+        else:
+            if physics_model is None:
+                raise ValueError("Model-informed BO requires physics_model")
+            model = PhysicsInformedResidualModel(physics_model)
+        selector = (LowerConfidenceBoundSelector(name=method, kappa=kappa)
+                    if method.endswith("LCB") else ExpectedImprovementSelector(name=method, xi=xi))
+        return selector, model
     if method == "Reference":
         return ReferenceSelector(), None
     if method == "Random":
@@ -89,7 +116,7 @@ def _components(
             LowerConfidenceBoundSelector(name=method, kappa=kappa),
             PhysicsInformedResidualModel(physics_model),
         )
-    raise ValueError(f"unknown method {method!r}; expected one of {METHODS}")
+    raise ValueError(f"unknown method {method!r}; expected one of {METHODS + EXPLICIT_METHODS}")
 
 
 def _best_observed(
@@ -121,19 +148,22 @@ def run_sequential_personalization(
     seed: int = 0,
     physics_model: PhysicsSubjectModel | None = None,
     kappa: float = 1.5,
+    xi: float = 0.0,
 ) -> SequentialRunResult:
     """Run exactly K adaptation trials with no future-data or oracle access."""
 
     if budget < 1:
         raise ValueError("budget must be >= 1")
     selector, model = _components(
-        method, seed=seed, physics_model=physics_model, kappa=kappa
+        method, seed=seed, physics_model=physics_model, kappa=kappa, xi=xi
     )
     ledger = ExecutedCandidateLedger()
     current = domain.reference
     for trial_index in range(1, budget + 1):
         # Selection of current was completed before this observation exists.
         observation = environment.evaluate(current, trial_index)
+        if method.startswith("PURE_BO"):
+            observation = replace(observation, identification_payload=None)
         history = ledger.observations + [observation]
         if model is not None:
             model.fit(history)
@@ -149,19 +179,19 @@ def run_sequential_personalization(
             residual_summary = model.residual_gp.state_summary()
         elif model is not None:
             residual_summary = model.state_summary()
-        ledger.append(
-            LedgerEntry(
-                trial_index=trial_index,
-                candidate=current,
-                observation=observation,
-                physics_model_state_summary=physics_summary,
-                residual_model_state_summary=residual_summary,
-                selector=selector.name,
-                acquisition_value=(selection.acquisition_value if selection else None),
-                selected_next_candidate=(selection.candidate if selection else None),
-            ),
-            allow_reference_repeat=selector.allows_reference_repeat,
+        entry = LedgerEntry(
+            trial_index=trial_index,
+            candidate=current,
+            observation=observation,
+            physics_model_state_summary=physics_summary,
+            residual_model_state_summary=residual_summary,
+            selector=selector.name,
+            acquisition_value=(selection.acquisition_value if selection else None),
+            selected_next_candidate=(selection.candidate if selection else None),
         )
+        if selection is not None:
+            entry.next_selection_metadata = dict(selection.metadata)
+        ledger.append(entry, allow_reference_repeat=selector.allows_reference_repeat)
         if selection is not None:
             current = selection.candidate
 

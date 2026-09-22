@@ -1,0 +1,25 @@
+{
+  "classification": "OFFLINE_ALGORITHM_DEVELOPMENT_ONLY",
+  "fallback_dominant_threshold": 0.5,
+  "initial_trust_policy": {
+    "meaning": "algorithmic physics-prior weight before subject-specific evidence",
+    "trust_score": 1.0
+  },
+  "invalid_observation_policy": "CONSUMES_K_BUT_DOES_NOT_ADD_TRUST_EVIDENCE_OR_CHANGE_TRUST",
+  "prediction_disagreement": {
+    "calibration_score": "exp(-offset_removed_nrmse)",
+    "minimum_valid_evidence": 2,
+    "normalization_scale": "max(observed_range, physics_range, four_times_median_observation_uncertainty, 1e-6)",
+    "offset_estimator": "median(y_observed - y_physics_pre_observation)"
+  },
+  "primary_rule_id": "PRIMARY_CAUSAL_OFFSET_INVARIANT_RANKING_TRUST_V1",
+  "ranking_consistency": {
+    "comparable_pair": "abs(observed_difference) > 2*root_sum_squared_uncertainty and abs(physics_difference) > 1e-12",
+    "ranking_score": "(concordant_pair_count + 0.5) / (comparable_pair_count + 1.0); 1.0 when no comparable pair exists",
+    "tie_or_noncomparable_policy": "EXCLUDED_FROM_PAIR_COUNTS"
+  },
+  "scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT_NOT_BIOLOGICAL_PATIENT_OR_CLINICAL_CONFIDENCE",
+  "trust_formula": "clip(0.75*ranking_score + 0.25*calibration_score, 0, 1)",
+  "trust_update_timing": "observation_from_trial_k_updates_lambda_for_selection_of_trial_k_plus_1",
+  "version": 1
+}

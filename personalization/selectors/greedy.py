@@ -3,7 +3,7 @@ from __future__ import annotations
 from ..candidates import V3CandidateDomain
 from ..models.base import SequentialModel
 from ..observations import EpisodeObservation
-from .base import Selection, unexecuted_candidates
+from .base import Selection, valid_unexecuted_predictions, acquisition_metadata
 
 
 class ModelOnlyGreedySelector:
@@ -18,7 +18,7 @@ class ModelOnlyGreedySelector:
     ) -> Selection:
         if model is None:
             raise ValueError("model-only greedy requires a physics model")
-        available = unexecuted_candidates(history, domain)
-        scored = [(model.predict(item).mean, item.candidate_index, item) for item in available]
-        value, _, selected = min(scored)
-        return Selection(selected, float(value))
+        scored = valid_unexecuted_predictions(history, domain, model)
+        selected, prediction = min(scored, key=lambda row: (row[1].mean, row[0].candidate_index))
+        return Selection(selected, prediction.mean, acquisition_metadata(
+            history, selected, prediction, "MODEL_MEAN", prediction.mean))

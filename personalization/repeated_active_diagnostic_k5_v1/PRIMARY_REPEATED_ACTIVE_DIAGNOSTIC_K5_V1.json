@@ -1,0 +1,42 @@
+{
+  "arbitration": {
+    "cumulative_evidence": "delta_log_score_trial_2 + delta_log_score_trial_3 over valid diagnostic observations",
+    "evidence_margin": 2.302585092994046,
+    "inconclusive_policy": "PHYSICS_BO",
+    "physics_condition": "cumulative_evidence > evidence_margin",
+    "standard_condition": "cumulative_evidence < -evidence_margin"
+  },
+  "calibration": {
+    "definition": "median(y_i-physics_mean_before_i) over valid prior trials",
+    "mode": "CAUSAL_RUNNING_MEDIAN_PHYSICS_OFFSET",
+    "trial_2_inputs": "Trial 1 only",
+    "trial_3_inputs": "Trials 1 and 2 only"
+  },
+  "diagnostic_candidate": {
+    "score": "0.5*(KL(standard||physics)+KL(physics||standard))",
+    "score_id": "AVERAGE_SYMMETRIC_KL_GAUSSIAN",
+    "tie_break": "lowest_candidate_index",
+    "trial_2_history": "D1",
+    "trial_3_history": "D2"
+  },
+  "episode_structure": {
+    "trial_1": "REFERENCE",
+    "trial_2": "ACTIVE_PRIOR_DIAGNOSTIC_1",
+    "trial_3": "ACTIVE_PRIOR_DIAGNOSTIC_2",
+    "trials_4_and_5": "FIXED_SELECTED_EXPERT_OPTIMIZATION"
+  },
+  "experts": {
+    "physics": "FIXED_PHYSICS_INFORMED_BO",
+    "standard": "STANDARD_BO"
+  },
+  "invalid_diagnostic_policy": "CONSUME_BUDGET_NO_SCORE_NO_EVIDENCE_NO_RETRY",
+  "primary_budget": 5,
+  "primary_rule_id": "REPEATED_ACTIVE_DIAGNOSTIC_ARBITRATION_K5_V1",
+  "score": {
+    "arbitration_score": "GAUSSIAN_LOG_PREDICTIVE_DENSITY",
+    "observation_uncertainty_included": true,
+    "variance_floor_std": 0.05
+  },
+  "selected_expert_fixed_after_trial_3": true,
+  "version": 1
+}

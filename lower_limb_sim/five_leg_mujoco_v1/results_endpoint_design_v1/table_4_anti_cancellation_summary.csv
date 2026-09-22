@@ -1,0 +1,6 @@
+branch_tradeoff_count,branch_tradeoff_hidden_inside_E0_0_1_percent_count,extension_improves_flexion_worsens_count,flexion_improves_extension_worsens_count,hip_improves_knee_worsens_count,joint_tradeoff_count,joint_tradeoff_hidden_inside_E0_0_1_percent_count,knee_improves_hip_worsens_count,leg_id,maximum_branch_anti_cancellation_gap,maximum_joint_anti_cancellation_gap
+312,312,156,156,277,551,550,274,LEG_0_NOMINAL,0.016098538393294226,0.010501565877634844
+312,312,156,156,301,589,589,288,LEG_1_HEAVY_HIP_STIFF,0.014601046395051887,0.011613981957759645
+312,104,156,156,285,563,67,278,LEG_2_KNEE_DOMINANT,0.017666408027575575,0.016113054862982312
+312,144,156,156,305,606,138,301,LEG_3_NONLINEAR_COUPLED,0.013392818131269246,0.007715453744951195
+312,301,156,156,16,22,22,6,LEG_4_STRONG_STRUCTURAL_MISMATCH,0.01053423466941783,0.005683229470432316

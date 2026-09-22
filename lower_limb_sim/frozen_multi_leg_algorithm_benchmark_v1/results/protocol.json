@@ -1,0 +1,47 @@
+{
+  "primary_endpoint": "E2",
+  "secondary_endpoint": "E0",
+  "primary_method": "MODEL_INFORMED_BO_EI_TIMESERIES_ID",
+  "method_mapping": {
+    "ADAPTIVE_GREEDY": "MODEL_ONLY_GREEDY",
+    "PURE_BO_EI": "PURE_BO_EI",
+    "MODEL_INFORMED_BO_EI": "MODEL_INFORMED_BO_EI_TIMESERIES_ID",
+    "MODEL_INFORMED_BO_LCB": "MODEL_INFORMED_BO_LCB"
+  },
+  "random_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19
+  ],
+  "K_total": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "xi": 0.0,
+  "kappa": 1.5,
+  "low_headroom_relative_threshold": 0.01,
+  "reference_policy": "one evaluation, carried across budget display; not an equal-cost adaptive arm",
+  "deterministic_noise_semantics": "zero added noise; each evaluation replays requested full trajectory",
+  "normalization": "regret / (reference - oracle) only for positive headroom; otherwise missing",
+  "future_data_policy": "independent K_total runs; assert identical prefixes; no evaluator object passed to algorithms",
+  "classification": "OFFLINE_FROZEN_ALGORITHM_STRESS_TEST_NOT_PERSONALIZATION_NECESSITY_EVIDENCE"
+}

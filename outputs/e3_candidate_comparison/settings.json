@@ -1,0 +1,28 @@
+{
+  "endpoint": "E3 equal mean of four same-model original-reference RMS ratios",
+  "key_posture_ROM_offsets": [
+    -0.12,
+    -0.09,
+    -0.06,
+    -0.03,
+    0.0,
+    0.03,
+    0.06,
+    0.09,
+    0.12
+  ],
+  "time_share_shifts": [
+    -0.1,
+    -0.05,
+    0.0,
+    0.05,
+    0.1
+  ],
+  "relative_comparison_limits": {
+    "speed": 1.5,
+    "acceleration": 2.0,
+    "joint_peak_torque": 1.1
+  },
+  "limits_semantics": "illustrative offline comparison only; not robot or clinical limits",
+  "candidates_semantics": "grid optima; no equal-budget BO experiment"
+}

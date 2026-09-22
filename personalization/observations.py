@@ -6,6 +6,8 @@ import math
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
+from .identification import TimeSeriesIdentificationPayload
+
 
 @dataclass(frozen=True)
 class EpisodeObservation:
@@ -21,8 +23,13 @@ class EpisodeObservation:
     valid: bool
     invalid_reason: str | None = None
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    identification_payload: TimeSeriesIdentificationPayload | None = None
 
     def __post_init__(self) -> None:
+        if isinstance(self.identification_payload, dict):
+            object.__setattr__(self, "identification_payload", TimeSeriesIdentificationPayload(**self.identification_payload))
+        if self.identification_payload is not None and not isinstance(self.identification_payload, TimeSeriesIdentificationPayload):
+            raise TypeError("identification_payload must be TimeSeriesIdentificationPayload")
         if self.trial_index < 1:
             raise ValueError("trial_index must be >= 1")
         if not self.endpoint_name or self.endpoint_name.lower() == "comfort":
@@ -57,6 +64,8 @@ class EpisodeObservation:
             "valid": self.valid,
             "invalid_reason": self.invalid_reason,
             "metadata": dict(self.metadata),
+            **({"identification_payload": self.identification_payload.as_dict()}
+               if self.identification_payload is not None else {}),
         }
 
 

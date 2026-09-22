@@ -1,0 +1,37 @@
+comparison,prior_quality,noise_label,paired_run_count,wins,ties,losses,paired_delta_mean,paired_delta_median
+Predictive-Evidence Failover V1 vs Standard BO,P0,zero,20,20,0,0,-0.12492808049790287,-0.10305060544025024
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P0,zero,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P0,zero,20,10,10,0,-0.0010185321891032911,-0.00012734215598436682
+Predictive-Evidence Failover V1 vs Standard BO,P0,low,20,20,0,0,-0.10402999674479307,-0.09829861111111116
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P0,low,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P0,low,20,10,5,5,-0.0026198564171050183,-0.00012734215598436682
+Predictive-Evidence Failover V1 vs Standard BO,P0,moderate,20,16,0,4,-0.09072733866269264,-0.08437499999999998
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P0,moderate,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P0,moderate,20,4,12,4,0.0022122144696507112,0.0
+Predictive-Evidence Failover V1 vs Standard BO,P1,zero,20,20,0,0,-0.1240831594199107,-0.10136076328426588
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P1,zero,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P1,zero,20,0,10,10,0.00115989613564485,0.0005555555555555591
+Predictive-Evidence Failover V1 vs Standard BO,P1,low,20,20,0,0,-0.10440664642961406,-0.09527777777777782
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P1,low,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P1,low,20,7,6,7,-0.0004821150509558392,0.0
+Predictive-Evidence Failover V1 vs Standard BO,P1,moderate,20,17,0,3,-0.09215701712956038,-0.07940972222222221
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P1,moderate,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P1,moderate,20,10,6,4,-0.010635013314492075,-0.0033738344127857978
+Predictive-Evidence Failover V1 vs Standard BO,P2,zero,20,15,0,5,-0.09742695148682975,-0.07235390297365951
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P2,zero,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P2,zero,20,15,5,0,-0.012924561376173385,-0.004842178307902345
+Predictive-Evidence Failover V1 vs Standard BO,P2,low,20,15,0,5,-0.07271342606119748,-0.07166666666666668
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P2,low,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P2,low,20,5,12,3,-0.008153229430608335,0.0
+Predictive-Evidence Failover V1 vs Standard BO,P2,moderate,20,14,0,6,-0.0632885062933117,-0.04722222222222222
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P2,moderate,20,0,20,0,0.0,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P2,moderate,20,5,7,8,0.008080314943750203,0.0
+Predictive-Evidence Failover V1 vs Standard BO,P3,zero,20,5,0,15,0.09088182107069753,0.06492336436361729
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P3,zero,20,5,10,5,0.03932291666666667,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P3,zero,20,5,5,10,0.07381944444444447,0.06777777777777777
+Predictive-Evidence Failover V1 vs Standard BO,P3,low,20,6,1,13,0.09046673695969656,0.06929117317167904
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P3,low,20,7,8,5,0.01765972222222222,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P3,low,20,8,5,7,0.03480902777777779,0.0
+Predictive-Evidence Failover V1 vs Standard BO,P3,moderate,20,8,3,9,0.03653941039353405,0.0
+Predictive-Evidence Failover V1 vs Fixed Physics BO,P3,moderate,20,9,9,2,-0.05218165225299052,0.0
+Predictive-Evidence Failover V1 vs Adaptive-Trust Physics BO,P3,moderate,20,10,7,3,-0.05829623558632384,-0.02708333333333332

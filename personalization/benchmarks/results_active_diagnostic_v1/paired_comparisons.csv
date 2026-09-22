@@ -1,0 +1,49 @@
+comparison,prior_quality,noise_label,paired_run_count,wins,ties,losses,paired_delta_mean,paired_delta_median
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P0,zero,20,20,0,0,-0.12520585827568065,-0.10305060544025024
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P0,zero,20,5,15,0,-0.00027777777777777957,0.0
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P0,zero,20,15,5,0,-0.0012963099668810707,-0.000682897711539926
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P0,zero,20,5,15,0,-0.00027777777777777957,0.0
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P0,low,20,20,0,0,-0.10255207987781312,-0.09500000000000003
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P0,low,20,4,9,7,0.001477916866979935,0.0
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P0,low,20,10,2,8,-0.001141939550125083,-0.00012734215598436682
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P0,low,20,4,9,7,0.001477916866979935,0.0
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P0,moderate,20,16,0,4,-0.09220169227940711,-0.09131944444444444
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P0,moderate,20,9,2,9,-0.001474353616714491,-4.163336342344337e-17
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P0,moderate,20,8,1,11,0.0007378608529362201,0.001840277777777774
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P0,moderate,20,9,2,9,-0.001474353616714491,-4.163336342344337e-17
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P1,zero,20,20,0,0,-0.11092069545410106,-0.07920250201931325
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P1,zero,20,5,5,10,0.01316246396580964,0.004166666666666652
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P1,zero,20,5,5,10,0.01432236010145449,0.004722222222222211
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P1,zero,20,5,5,10,0.01316246396580964,0.004166666666666652
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P1,low,20,19,0,1,-0.09590574874186762,-0.08059139090820217
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P1,low,20,4,2,14,0.008500897687746438,0.0039285612264164105
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P1,low,20,5,2,13,0.008018782636790598,0.005520833333333308
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P1,low,20,4,2,14,0.008500897687746438,0.0039285612264164105
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P1,moderate,20,18,0,2,-0.08754897520749046,-0.07046713901697801
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P1,moderate,20,8,1,11,0.004608041922069923,0.00440972222222219
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P1,moderate,20,11,0,9,-0.006026971392422152,-0.0017361111111111188
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P1,moderate,20,8,1,11,0.004608041922069923,0.00440972222222219
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P2,zero,20,20,0,0,-0.11680555555555557,-0.09027777777777779
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P2,zero,20,10,0,10,-0.01937860406872581,-0.004861111111111108
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P2,zero,20,10,0,10,-0.032303165444899196,-0.007661886445353955
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P2,zero,20,10,0,10,-0.01937860406872581,-0.004861111111111108
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P2,low,20,19,0,1,-0.0972885908740585,-0.09250000000000005
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P2,low,20,13,1,6,-0.02457516481286103,-0.008888888888888918
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P2,low,20,14,1,5,-0.032728394243469364,-0.01305555555555557
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P2,low,20,13,1,6,-0.02457516481286103,-0.008888888888888918
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P2,moderate,20,16,0,4,-0.08326717097785884,-0.06302083333333329
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P2,moderate,20,14,1,5,-0.019978664684547166,-0.01816813141016685
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P2,moderate,20,12,1,7,-0.011898349740796964,-0.012326388888888887
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P2,moderate,20,14,1,5,-0.019978664684547166,-0.01816813141016685
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P3,zero,20,15,0,5,-0.0889905804979029,-0.06537699432913914
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P3,zero,20,15,5,0,-0.14054948490193375,-0.1241545253594231
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P3,zero,20,15,0,5,-0.106052957124156,-0.12302083333333332
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P3,zero,20,15,0,5,-0.17987240156860046,-0.21825174758164534
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P3,low,20,11,0,9,0.026532993628068942,-0.016181668685979922
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P3,low,20,14,2,4,-0.04627402110940541,-0.06770833333333334
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P3,low,20,14,0,6,-0.029124715553849843,-0.06770833333333334
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P3,low,20,12,0,8,-0.06393374333162763,-0.0457517327658611
+Active Prior Diagnostic Arbitration V1 vs Standard BO,P3,moderate,20,5,0,15,0.2746815355691684,0.08888888888888889
+Active Prior Diagnostic Arbitration V1 vs Fixed Physics BO,P3,moderate,20,9,4,7,0.18596047292264387,0.0
+Active Prior Diagnostic Arbitration V1 vs Adaptive-Trust Physics BO,P3,moderate,20,9,2,9,0.17984588958931053,0.0
+Active Prior Diagnostic Arbitration V1 vs Predictive-Evidence Failover V1,P3,moderate,20,6,4,10,0.23814212517563438,0.014236111111111116

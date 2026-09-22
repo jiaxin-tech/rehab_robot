@@ -1,0 +1,13 @@
+prior_quality,noise_label,episode_count,physics_selection_count,physics_selection_rate,standard_selection_count,standard_selection_rate,inconclusive_default_physics_count,correct_arbitration_count,incorrect_arbitration_count,false_rejection_of_useful_physics_count,failure_to_reject_misleading_physics_count
+P0,zero,20,20,1.0,0,0.0,0,20,0,0,
+P0,low,20,20,1.0,0,0.0,0,20,0,0,
+P0,moderate,20,20,1.0,0,0.0,0,20,0,0,
+P1,zero,20,20,1.0,0,0.0,0,20,0,0,
+P1,low,20,20,1.0,0,0.0,0,20,0,0,
+P1,moderate,20,20,1.0,0,0.0,0,20,0,0,
+P2,zero,20,20,1.0,0,0.0,0,20,0,0,
+P2,low,20,20,1.0,0,0.0,0,20,0,0,
+P2,moderate,20,20,1.0,0,0.0,0,20,0,0,
+P3,zero,20,5,0.25,15,0.75,5,15,5,,5
+P3,low,20,6,0.3,14,0.7,6,14,6,,6
+P3,moderate,20,8,0.4,12,0.6,8,12,8,,8

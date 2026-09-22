@@ -1,0 +1,47 @@
+{
+  "algorithm_inputs": [
+    "trial_1_reference_observation",
+    "standard_bo_predictions_from_D1",
+    "physics_bo_predictions_from_D1",
+    "trial_2_diagnostic_observation"
+  ],
+  "arbitration": {
+    "evidence_margin": 2.302585092994046,
+    "evidence_margin_interpretation": "10:1 single-trial predictive-density evidence",
+    "physics_condition": "physics_log_score-standard_log_score > evidence_margin",
+    "standard_condition": "physics_log_score-standard_log_score < -evidence_margin",
+    "otherwise": "INCONCLUSIVE"
+  },
+  "calibration": {
+    "definition": "trial_1_observed_y-trial_1_physics_mean_before",
+    "invalid_trial_1_offset": 0.0,
+    "mode": "CAUSAL_TRIAL_1_PHYSICS_OFFSET",
+    "standard_bo_offset_correction": false
+  },
+  "diagnostic_candidate": {
+    "objective": "argmax average symmetric KL divergence over unexecuted frozen-ROM candidates",
+    "score": "0.5*(KL(standard||physics)+KL(physics||standard))",
+    "score_id": "AVERAGE_SYMMETRIC_KL_GAUSSIAN",
+    "tie_break": "lowest_candidate_index"
+  },
+  "episode_structure": {
+    "trial_1": "REFERENCE",
+    "trial_2": "ACTIVE_PRIOR_DIAGNOSTIC",
+    "trials_3_and_4": "FIXED_SELECTED_EXPERT_OPTIMIZATION"
+  },
+  "experts": {
+    "physics": "FIXED_PHYSICS_INFORMED_BO",
+    "standard": "STANDARD_BO"
+  },
+  "inconclusive_policy": "PHYSICS_BO",
+  "invalid_trial_2_policy": "CONSUME_BUDGET_INCONCLUSIVE_USE_PHYSICS_BO_NO_RETRY",
+  "primary_budget": 4,
+  "primary_rule_id": "PRIMARY_ACTIVE_SYMMETRIC_KL_SINGLE_ARBITRATION_V1",
+  "score": {
+    "arbitration_score": "GAUSSIAN_LOG_PREDICTIVE_DENSITY",
+    "observation_uncertainty_included_in_arbitration": true,
+    "variance_floor_std": 0.05
+  },
+  "selected_expert_fixed_after_trial_2": true,
+  "version": 1
+}

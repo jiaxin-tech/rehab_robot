@@ -1,0 +1,364 @@
+{
+  "classification": "OFFLINE_ALGORITHM_TEST_ONLY",
+  "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+  "scenarios": {
+    "invalid_point": {
+      "definition_frozen_before_benchmark": true,
+      "final_trust": 1.0,
+      "trust_states": [
+        {
+          "evidence_count": 0,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": null,
+            "normalization_scale": null,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 0,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 0,
+            "ranking_score": 1.0
+          },
+          "trial_index": 1,
+          "trust_score": 1.0,
+          "update_reason": "INVALID_OBSERVATION_IGNORED:GENERIC_FROZEN_INVALID_CASE",
+          "valid": true
+        }
+      ]
+    },
+    "magnitude_bias_only": {
+      "definition_frozen_before_benchmark": true,
+      "final_trust": 0.90625,
+      "trust_states": [
+        {
+          "evidence_count": 1,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": -2.0,
+            "minimum_valid_evidence_met": false,
+            "normalization_scale": null,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 0,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 1.0
+          },
+          "trial_index": 1,
+          "trust_score": 1.0,
+          "update_reason": "VALID_EVIDENCE_NO_COMPARABLE_PAIR",
+          "valid": true
+        },
+        {
+          "evidence_count": 2,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": -2.0,
+            "minimum_valid_evidence_met": true,
+            "normalization_scale": 1.0,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 1,
+            "concordant_pair_count": 1,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 0.75
+          },
+          "trial_index": 2,
+          "trust_score": 0.8125,
+          "update_reason": "RANKING_AND_OFFSET_REMOVED_CALIBRATION_UPDATED",
+          "valid": true
+        },
+        {
+          "evidence_count": 3,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": -2.0,
+            "minimum_valid_evidence_met": true,
+            "normalization_scale": 2.0,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 0.8125,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 3,
+            "concordant_pair_count": 3,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 0.875
+          },
+          "trial_index": 3,
+          "trust_score": 0.90625,
+          "update_reason": "RANKING_AND_OFFSET_REMOVED_CALIBRATION_UPDATED",
+          "valid": true
+        }
+      ]
+    },
+    "one_noisy_point": {
+      "definition_frozen_before_benchmark": true,
+      "final_trust": 1.0,
+      "trust_states": [
+        {
+          "evidence_count": 1,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": 200.0,
+            "minimum_valid_evidence_met": false,
+            "normalization_scale": null,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 0,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 1.0
+          },
+          "trial_index": 1,
+          "trust_score": 1.0,
+          "update_reason": "VALID_EVIDENCE_NO_COMPARABLE_PAIR",
+          "valid": true
+        }
+      ]
+    },
+    "ranking_inversion": {
+      "definition_frozen_before_benchmark": true,
+      "final_trust": 0.20424434431016847,
+      "trust_states": [
+        {
+          "evidence_count": 1,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": 0.0,
+            "minimum_valid_evidence_met": false,
+            "normalization_scale": null,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 0,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 1.0
+          },
+          "trial_index": 1,
+          "trust_score": 1.0,
+          "update_reason": "VALID_EVIDENCE_NO_COMPARABLE_PAIR",
+          "valid": true
+        },
+        {
+          "evidence_count": 2,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 0.36787944117144233,
+            "estimated_constant_offset": 1.0,
+            "minimum_valid_evidence_met": true,
+            "normalization_scale": 1.0,
+            "offset_removed_nrmse": 1.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 1,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 1,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 0.25
+          },
+          "trial_index": 2,
+          "trust_score": 0.2794698602928606,
+          "update_reason": "RANKING_AND_OFFSET_REMOVED_CALIBRATION_UPDATED",
+          "valid": true
+        },
+        {
+          "evidence_count": 3,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 0.44197737724067393,
+            "estimated_constant_offset": 2.0,
+            "minimum_valid_evidence_met": true,
+            "normalization_scale": 2.0,
+            "offset_removed_nrmse": 0.816496580927726
+          },
+          "previous_trust_score": 0.2794698602928606,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 3,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 3,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 0.125
+          },
+          "trial_index": 3,
+          "trust_score": 0.20424434431016847,
+          "update_reason": "RANKING_AND_OFFSET_REMOVED_CALIBRATION_UPDATED",
+          "valid": true
+        }
+      ]
+    },
+    "scaling_bias": {
+      "definition_frozen_before_benchmark": true,
+      "final_trust": 0.8647663036637251,
+      "trust_states": [
+        {
+          "evidence_count": 1,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 1.0,
+            "estimated_constant_offset": 0.7,
+            "minimum_valid_evidence_met": false,
+            "normalization_scale": null,
+            "offset_removed_nrmse": 0.0
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 0,
+            "concordant_pair_count": 0,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 1.0
+          },
+          "trial_index": 1,
+          "trust_score": 1.0,
+          "update_reason": "VALID_EVIDENCE_NO_COMPARABLE_PAIR",
+          "valid": true
+        },
+        {
+          "evidence_count": 2,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 0.8007374029168081,
+            "estimated_constant_offset": 0.29999999999999993,
+            "minimum_valid_evidence_met": true,
+            "normalization_scale": 1.8,
+            "offset_removed_nrmse": 0.22222222222222224
+          },
+          "previous_trust_score": 1.0,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 1,
+            "concordant_pair_count": 1,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 0.75
+          },
+          "trial_index": 2,
+          "trust_score": 0.762684350729202,
+          "update_reason": "RANKING_AND_OFFSET_REMOVED_CALIBRATION_UPDATED",
+          "valid": true
+        },
+        {
+          "evidence_count": 3,
+          "metadata": {
+            "causal_policy": "NO_ORACLE_TRUST_UPDATE",
+            "not_biological_probability": true,
+            "not_patient_or_clinical_confidence": true,
+            "primary_rule_sha256": "326007fe40d752f52d411d04d2c732ed3a2a1ced543d618ac817af683813c67d",
+            "semantic_scope": "ALGORITHMIC_PHYSICS_PRIOR_TRUST_WEIGHT",
+            "version": 1
+          },
+          "prediction_error_metrics": {
+            "calibration_score": 0.8340652146549004,
+            "estimated_constant_offset": -0.10000000000000009,
+            "minimum_valid_evidence_met": true,
+            "normalization_scale": 3.5999999999999996,
+            "offset_removed_nrmse": 0.18144368465060579
+          },
+          "previous_trust_score": 0.762684350729202,
+          "ranking_consistency_metrics": {
+            "comparable_pair_count": 3,
+            "concordant_pair_count": 3,
+            "discordant_pair_count": 0,
+            "pair_uncertainty_deadband_multiplier": 2.0,
+            "ranking_score": 0.875
+          },
+          "trial_index": 3,
+          "trust_score": 0.8647663036637251,
+          "update_reason": "RANKING_AND_OFFSET_REMOVED_CALIBRATION_UPDATED",
+          "valid": true
+        }
+      ]
+    }
+  }
+}

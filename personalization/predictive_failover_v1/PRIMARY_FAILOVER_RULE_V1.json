@@ -1,0 +1,50 @@
+{
+  "algorithm_inputs": [
+    "executed_candidate",
+    "pretrial_standard_bo_prediction",
+    "pretrial_physics_bo_prediction",
+    "valid_observed_endpoint"
+  ],
+  "calibration": {
+    "definition": "median(y_i-physics_bo_mean_before_i) over valid i<k",
+    "empty_history_offset": 0.0,
+    "mode": "CAUSAL_RUNNING_MEDIAN_PHYSICS_OFFSET",
+    "standard_bo_offset_correction": false,
+    "uses_current_or_future_observation": false
+  },
+  "cumulative_evidence": {
+    "definition": "sum_from_i_2_to_k(physics_log_score_i-standard_log_score_i)",
+    "positive_semantics": "physics_expert_predicted_observed_data_better",
+    "negative_semantics": "standard_expert_predicted_observed_data_better"
+  },
+  "earliest_failover": "AFTER_TRIAL_2_OBSERVATION_BEFORE_TRIAL_3_SELECTION",
+  "experts": {
+    "physics": "FIXED_PHYSICS_INFORMED_BO",
+    "standard": "STANDARD_BO"
+  },
+  "failover": {
+    "comparison": "cumulative_evidence_strictly_less_than_threshold",
+    "one_way": true,
+    "post_failover_expert": "STANDARD_BO",
+    "threshold": -2.302585092994046,
+    "threshold_interpretation": "log predictive Bayes factor below log(0.1), i.e. at least 10:1 cumulative predictive evidence against the physics expert"
+  },
+  "initial_mode": "PHYSICS_BO",
+  "invalid_observation_policy": "CONSUME_BUDGET_NO_SCORE_NO_EVIDENCE_NO_FALSE_FAILOVER",
+  "primary_budget": 4,
+  "primary_rule_id": "PRIMARY_PREQUENTIAL_GAUSSIAN_LOG_SCORE_ONE_WAY_FAILOVER_V1",
+  "score": {
+    "formula": "-0.5*(log(2*pi*variance)+(observed-mean)^2/variance)",
+    "observation_uncertainty_included": true,
+    "proper_scoring_rule": "GAUSSIAN_LOG_PREDICTIVE_DENSITY",
+    "variance": "max(model_std^2+observation_std^2, variance_floor_std^2)",
+    "variance_floor_std": 0.05
+  },
+  "score_start_trial": 2,
+  "selection_semantics": {
+    "after_failover": "exact frozen Standard BO model and LCB selector from current causal history",
+    "before_failover": "exact frozen Fixed Physics-Informed BO model and LCB selector from current causal history",
+    "continuous_mixture_used": false
+  },
+  "version": 1
+}

@@ -50,6 +50,9 @@ class FullDynamicsGrayBoxEndpointAdapter:
     is an offline compatible mechanical endpoint only; it is not the future
     validated measured endpoint.  No observation is interpreted as comfort or
     as currently unvalidated wrench RMS.
+
+    Legacy/development scalar-regularized fitting. New time-series identification
+    is explicit in TimeSeriesFiveParameterGrayBoxAdapter; this behavior is retained.
     """
 
     endpoint_name = COMPATIBLE_OFFLINE_ENDPOINT
@@ -296,6 +299,14 @@ class PhysicsSubjectModel:
 
     def __init__(self, adapter: EndpointPredictionAdapter) -> None:
         self.adapter = adapter
+
+    @property
+    def endpoint_name(self) -> str | None:
+        return getattr(self.adapter, "endpoint_name", None)
+
+    @property
+    def endpoint_unit(self) -> str | None:
+        return getattr(self.adapter, "endpoint_unit", None)
 
     def fit(self, history: list[EpisodeObservation]) -> None:
         self.adapter.fit(list(history))

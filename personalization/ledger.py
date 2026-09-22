@@ -25,6 +25,7 @@ class LedgerEntry:
     selector: str
     acquisition_value: float | None
     selected_next_candidate: Candidate | None
+    next_selection_metadata: dict[str, Any] = field(default_factory=dict, init=False)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -41,6 +42,8 @@ class LedgerEntry:
                 if self.selected_next_candidate is not None
                 else None
             ),
+            **({"next_selection_metadata": self.next_selection_metadata}
+               if self.next_selection_metadata else {}),
         }
 
 

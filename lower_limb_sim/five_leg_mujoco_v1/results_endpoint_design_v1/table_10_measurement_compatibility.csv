@@ -1,0 +1,12 @@
+current_source,current_status,future_measurement_path,quantity,real_world_validated
+frozen MuJoCo inverse-dynamics joint torque,MODEL_DERIVED,calibrated wrench-to-joint mapping or validated gray-box estimate,hip/knee flexion/extension RMS,False
+frozen MuJoCo inverse-dynamics joint torque,MODEL_DERIVED,calibrated wrench-to-joint mapping or validated gray-box estimate,hip/knee flexion/extension peak,False
+frozen MuJoCo inverse-dynamics joint torque,MODEL_DERIVED,calibrated wrench-to-joint mapping or validated gray-box estimate,full hip/knee RMS and peak,False
+scalarization of frozen simulated joint-load features,MODEL_DERIVED,same formula after physical signal/frame validation,E0,False
+scalarization of frozen simulated joint-load features,MODEL_DERIVED,same formula after physical signal/frame validation,E1,False
+scalarization of frozen simulated joint-load features,MODEL_DERIVED,same formula after physical signal/frame validation,E2,False
+scalarization of frozen simulated joint-load features,MODEL_DERIVED,same formula after physical signal/frame validation,E3,False
+scalarization of frozen simulated joint-load features,MODEL_DERIVED,same formula after physical signal/frame validation,E4,False
+future calibrated robot wrench stream,DIRECTLY_MEASURABLE,"requires reference-point, frame, timing, and task-direction physical validation",robot wrench in a verified task direction,False
+model estimate from measured inputs,MODEL_DERIVED,validate against independent physical load evidence,gray-box-estimated joint load,False
+unavailable in current benchmark,FUTURE_SENSOR_REQUIRED,future tactile or pressure sensing,contact pressure or distributed interface load,False
