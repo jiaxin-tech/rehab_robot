@@ -1,6 +1,26 @@
 # ROKAE 仰卧位髋膝康复实验代码
 
-当前仓库已收口为论文对应的真实实验版本：仰卧位、被动髋膝屈伸运动，机器人 TCP 等效作用于小腿束带牵引点。当前任务不是力反馈控制，也不包含在线学习或个体化控制。
+本项目研究仰卧位被动髋膝康复：机器人 TCP 等效作用于小腿束带牵引点，结合下肢力学模型、测量数据和低试验预算搜索，研究固定活动范围内的轨迹协调是否值得个体化。仓库包含离线研究算法、仿真与结果，以及独立的真实 ROKAE 诊断、采集和轨迹执行代码。真实执行目前仍是默认关闭的参考轨迹前馈路径，尚未接入在线个体化或力反馈控制。
+
+## 当前研究范围与入口
+
+| 研究部分 | 当前状态 | 入口与说明 |
+|---|---|---|
+| 固定 ROM 的 V3 与 E2 | 冻结的二维 `beta_flex/beta_extend` 域，共 25×25=625 点；E2 为四个关节/分支 RMS 相对同腿参考比值的最大值 | [FINAL_PERSONALIZATION_RESEARCH_MAINLINE_V1.md](FINAL_PERSONALIZATION_RESEARCH_MAINLINE_V1.md)、`personalization/rom_gated_v2/`、`lower_limb_sim/five_leg_mujoco_v1/` |
+| 时序灰箱与 BO 集成 | 已实现过去完整时序的五参数辨识、E0/E2 预测、残差 GP、当前二维 V3 的 EI；保留 LCB、Greedy 和 Pure BO | [MODEL_INFORMED_BO_ARCHITECTURE_V2.md](MODEL_INFORMED_BO_ARCHITECTURE_V2.md)、`personalization/integrated_v2.py:run_offline_configuration` |
+| E3 三参数探索 | 独立的候选族与低预算回放实验，比较 β＋时间分配和关键姿态点样条＋时间分配 | [候选族报告](outputs/e3_candidate_comparison/REPORT.md)、[低预算报告](outputs/e3_low_budget/REPORT.md)、`lower_limb_sim/e3_candidate_comparison/`、`lower_limb_sim/e3_low_budget/` |
+| 真实测量分析 | 已有静态有效性、同条件重复性、轨迹敏感性分析；真实数据到当前个性化环境的适配仍未贯通 | [REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md](REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md)、`measurement_validation/analysis.py`、`scripts/run_real_measurement_validation_analysis.py` |
+| 机器人诊断与执行 | 已有 Windows 真机只读诊断；采集可靠性仍有阻塞问题，运动未放行 | 本页下方真机诊断、配置与命令；`hardware/`、`collection/`、`control/`、`safety/` |
+
+冻结的五腿 V3/E2 结果仍是 `SIMULATED_MECHANICAL_PERSONALIZATION_NECESSITY = NOT_SUPPORTED`：四条腿的最优点为共同参考，共同参考相对个体最优的队列平均相对 regret 仅为 `0.014137%`（以个体最优值为分母）。这一结论只适用于该仿真模型、候选域和机械指标，不能推出真实患者不需要个体化。ROM 个体化与固定 ROM 内的协调个体化是两个层次；后者需要真实测量的有效性、重复性、轨迹敏感性及跨主体决策差异证据。
+
+后续 E3 探索单独使用四项参考归一化 RMS 的等权均值，并保留 E2 观察最坏分量取舍；它没有替换冻结的 E2/V3。其三维输入为两项协调/姿态参数及 `time_share_shift`，不能当作原二维 625 点实验。最新低预算实验覆盖 6 个模型×2 个轨迹族×3 档约束，在参考＋3 次追加的预算下，Model-Informed BO EI 与 Adaptive Greedy 的最终已执行合格最佳 E3 在 **36/36** 个组合相同；当前结果未显示 BO 探索相对该 Greedy 基线的最终收益优势，也不表示两种算法完全相同。候选网格中更低的 E3、边界最优或模型间差异均不直接构成真实患者个体化收益证据。
+
+V2 集成已经接通 `EpisodeObservation + TimeSeriesIdentificationPayload → 五参数时序辨识 → E0/E2 → 残差 GP → EI`，默认总预算 4 包含参考试验。五参数是有效灰箱参数，E0/E2 仍为模型派生指标。`personalization/environment.py:RealRobotEnvironment` 与真实 ROM 测定接口仍关闭；机器人 episode 的离线辨识入口也不会自动运行 BO。
+
+[ALGORITHM_ARCHITECTURE_REVIEW_V1.md](ALGORITHM_ARCHITECTURE_REVIEW_V1.md) 是 2026-09-18 的阶段审查，其中“当前 V3 未接 EI、E2 adapter 与时序辨识”的缺口已由上述 V2 集成补齐。历史标量拟合、旧 LCB 方法、alpha/EI、P2 和信任/诊断分支仍保留各自作用域；阅读旧报告时应结合 V2 集成文档及后续 E3 报告，不将历史状态当作整个仓库的最新结论。
+
+## 冻结机器人参考与模型约定
 
 模型约定不可更改：
 
@@ -19,17 +39,25 @@ periodic cubic B-spline 修正达到 C2 周期闭合：
 legacy/software comparison，`active_reference=false`；它们的反向屈曲构造不再
 进入正式机器人 reference。
 
-仓库仍保留 Stage 1–6 离线研究代码与结果作为论文证据，但默认入口已经切换到真实 ROKAE 的观察型诊断、锚点、预览、采集和严格门控执行。
+Stage 1–6 离线建模与结果仍是研究基础。下文介绍独立的 ROKAE 观察型诊断、锚点、预览、采集和门控执行入口；这些入口不会调用上面的个体化搜索。
 
 正式协议的唯一可编辑来源是 `config/formal_experiment_manifest.json`；
-workspace、IK、reference、candidate、identification、preview/preflight 均读取
-这一协议。迁移前 5–130° 数据只作 legacy provenance，不是默认 active 输入。
+机器人参考链的 workspace、IK、reference、candidate、identification、preview/preflight 读取
+这一协议；个体化研究的 subject-specific ROM 与 V3 域另外由冻结的 `SubjectROMProfile` 约束，不能与机器人参考白名单混用。迁移前 5–130° 数据只作 legacy provenance，不是默认 active 输入。
 
 tracked release bundle 位于 `reference_release/`；默认 active loader 只接受其中的 slow CSV，并同时校验 release/source SHA、source skeleton SHA、ROM、闭合、C2、asymmetry 和 duration。SHA-256 为：`f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881`；等效牵引点几何固定为 `L1=0.42 m`、`L2=0.30 m`。文件内容或几何参数变化都会 fail closed。
 
-> 当前软件收口已完成，但真机运动状态仍为 **NO-GO**。macOS 环境只能完成离线/fake 回归；xCoreSDK 运动 API 已由本地 `.pyi` 和厂商 examples 静态确认，尚未完成 Windows 空载/真机验证。任何软件 stop 都不能替代急停、安全控制器和现场实验人员。
+> 真机运动状态仍为 **NO-GO**。2026-08-13 至 08-14 已完成多项 Windows ROKAE 只读诊断，发现 SDK 原生阻塞和并发采集故障；这些记录不是空载运动验证。xCoreSDK 运动 API 的本地 `.pyi` 与厂商 examples 只提供静态接口证据。
 
-## 当前数据与执行链
+## 已有真机诊断与当前工程断点
+
+- [2026-08-13 wrench 长测](diagnostics/wrench_hardware_validation_20260813T110502Z.md)：20 Hz 请求测试中出现 49 次 SDK 263 错误及约 10 s 的原生阻塞，同进程 RT 和主循环也受影响；报告明确判定线程隔离不足。
+- [进程隔离验证](diagnostics/wrench_process_isolation_validation_20260813T113755Z.md)：独立 RT/wrench 会话能够让 supervisor 和 RT 在 wrench 阻塞期间继续推进，但整体结论为 `PARTIAL`，未形成运动放行依据。
+- [2026-08-14 最新 A/B 对照](diagnostics/state_wrench_timing_comparison_20260814T093551709145Z.md)：仅 RT 的 Test A 完成约 900 s；并发 wrench 的 Test B 在 **169.610/900 s** 因 `RuntimeError:RT worker hung` 终止，出现 3 次 SDK 263 错误，最大当前状态年龄 724.138 ms，`READY_FOR_FIRST_MOTION_TEST=false`。
+
+生产路径 `collection/real_robot_acquisition.py` 仍使用 state/wrench/alignment 线程；进程隔离实现在 `scripts/wrench_process_isolation.py` 等诊断脚本中，尚未接入生产 `acquire/execute`。因此“Python 线程分开”不能作为原生调用不阻塞调度与监测的保证。下一步工程工作需要先解决 RT/wrench 长时间并发采集与进程隔离整合，再推进物理坐标/符号/同步、重复性及轨迹敏感性验证。任何软件 stop 都不能替代急停、安全控制器和现场实验人员。
+
+## 机器人参考数据与执行链
 
 ```text
 measured flexion + measured extension natural cycle
@@ -63,17 +91,44 @@ python3 -B -m lower_limb_sim.run_reference_measured_asymmetric
 
 它在 `lower_limb_sim/data/reference_candidates/` 保存完整候选 closure 表、未改动的
 `reference_measured_raw`、新 slow/nominal、manifest、metadata 和六幅审计图。
-`lower_limb_sim/data/` 当前被 Git 忽略，因此 pinned SHA 能发现文件漂移，却不能
-让普通 commit 自动保存这些产物；正式归档前必须显式保存 source CSV 与输出文件。
+`lower_limb_sim/data/` 的新增文件默认被 Git 忽略，但其中已有部分参考产物受 Git 跟踪；
+已有文件的修改仍会进入 diff。pinned SHA 能发现文件漂移，新生成的 source CSV 与输出文件
+仍需核对跟踪状态并显式归档。
 
 ## 安装与离线回归
 
-```bash
-python3 -m pip install -r requirements.txt
-python3 -B -m pytest -q
+推荐 CPython 3.12 x64，与仓内 xCoreSDK 的 `cp312-win_amd64` 扩展一致。本机已在项目内配置 Python 3.12.14 和 `.venv`；可直接使用 `.venv\Scripts\python.exe`，无需激活环境或修改系统 PATH。`.tools/`、`.venv/`、`.cache/` 均为忽略的本地产物。
+
+Windows 上使用已有 `uv` 重建同一环境（从仓库根目录运行）：
+
+```powershell
+$uvExe = (Get-Command uv -ErrorAction SilentlyContinue).Source
+if (-not $uvExe) { $uvExe = Join-Path $env:USERPROFILE '.local\bin\uv.exe' }
+& $uvExe python install 3.12.14 --install-dir .tools/python --no-bin --no-registry --cache-dir .cache/uv
+& $uvExe venv .venv --python .tools/python/cpython-3.12.14-windows-x86_64-none/python.exe --cache-dir .cache/uv
+& $uvExe pip install --python .venv/Scripts/python.exe -r requirements-win-py312.lock.txt pip --cache-dir .cache/uv
 ```
 
-final reference freeze 后的完整离线结果为 `667 passed, 5 skipped in 100.64 s`。跳过项是 Windows 原生 SDK 和显式真机 opt-in 测试；该结果不是实机证据。
+若已自行安装 Python 3.12，可用 `py -3.12 -m venv .venv`，再用 `.venv\Scripts\python.exe -m pip install -r requirements-win-py312.lock.txt`。`requirements.txt` 声明通用依赖范围，`requirements-win-py312.lock.txt` 固定本次 Windows/Python 3.12 的直接及间接依赖；其中 MuJoCo 3.6.0 与既有仿真记录一致。NumPy 下界为 2.0，因为当前端点计算使用 `np.trapezoid`；`imageio-ffmpeg` 提供视频编码所需程序。
+
+当前核心回归使用显式文件集合，避免将真机连接或历史大规模实验混入默认命令：
+
+```powershell
+$env:PYTHONUTF8 = '1'
+$env:MPLCONFIGDIR = Join-Path (Get-Location) '.cache/matplotlib'
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q --junitxml=.cache/core-regression.xml
+```
+
+[pytest-core.ini](pytest-core.ini) 覆盖 V3/ROM、E0/E2 时序辨识与 EI、E3、测量分析、日志、轨迹预检/执行器 fake、离线进程诊断及 Windows SDK 加载/fake 测试；不包含 `test_rokae_hardware_integration.py`。从仓库根目录运行，因为 E3 测试读取已跟踪的相对路径 CSV/NPZ。完整历史套件另用 `python -m pytest`，不能把核心回归结果称为全仓通过。
+
+2026-09-23 本机验证：Windows x64、CPython 3.12.14，使用上述锁定依赖，`pip check` 通过；核心集合的 **37 个文件、333 项测试全部通过，耗时 62.70 s**，无失败或跳过。JUnit 记录位于本地 `.cache/core-regression.xml`。该结果验证离线算法与 fake/诊断代码，不代表真机运动验证或历史全仓回归。
+
+冻结产物按原始字节校验 SHA。[.gitattributes](.gitattributes) 对核心依赖的冻结文件分别保留原始 LF 或 CRLF，避免 Windows `core.autocrlf` 改写字节后触发校验失败；此次仅还原原始换行，未修改冻结校验值或重生成实验结果。
+
+核心回归不需要安装 MyoSuite。完整 MyoLeg 渲染/回放另依赖其模型资产，现有 XML 中包含原机器的绝对路径，需另行配置；不属于本次环境验证。Windows 不提供 `resource` 时，回放模块的可选峰值内存统计返回 `null`，不会阻断 E3 导入或伪造内存值。这个兼容修复改变了历史 replay builder 的源码，原阶段针对源码校验值的测试需结合对应历史版本复现；本次不重写其冻结记录。
+
+旧文档中的 `667 passed, 5 skipped` 是 reference freeze 阶段的 macOS 历史记录，不代表当前代码或 Windows 环境的回归结果。
 
 平台边界：
 
@@ -81,7 +136,7 @@ final reference freeze 后的完整离线结果为 `667 passed, 5 skipped in 100
 - Windows + Python 3.12 x64、无机器人：可运行 SDK import/fake 测试。
 - Windows + SDK + 机器人：只有设置 `ROKAE_HARDWARE_TEST=1` 和 `ROKAE_TEST_IP` 后，才运行观察型 connection integration test；厂商 session 副作用仍需人工监督。
 
-`xCoreSDK_python` 不是 pip 依赖。仓库实际运行副本在 `hardware/windows/xcoresdk/`，要求 Windows x64 + CPython 3.12；普通开发机只会在实际创建硬件会话时尝试加载它。
+`xCoreSDK_python` 不是 pip 依赖。仓库实际运行副本在 `hardware/windows/xcoresdk/`，要求 Windows x64 + CPython 3.12；普通离线研究入口不会创建硬件会话。核心集合中的 SDK 测试只加载扩展并使用 fake robot，不连接真实机器人。
 
 ## 真机前配置
 
@@ -162,7 +217,7 @@ EPISODE_DIR/
   metadata.json
 ```
 
-state、wrench、alignment 各自运行；wrench 阻塞不会直接占用命令目标更新路径。CSV 对不可用值留空并保存 `valid/invalid_reason`，不会伪造零。execute 的 `metadata.json` 固化完整 safety snapshot、frame/anchor/config 路径、轨迹生成审计、reference SHA、`L1/L2`、live preflight 与 execution result；结束时再记录 host 观察到的各流平均发布率。125 Hz state 和 50 Hz wrench 仍只是目标，能否稳定达到必须由 Windows 真机 episode 证明。
+state、wrench、alignment 在当前生产实现中各自使用线程；命令目标更新不直接调用 wrench 查询，但已有真机记录证明 SDK 原生阻塞仍可能冻结同进程 Python 执行，进程隔离诊断原型尚未接入此路径。CSV 对不可用值留空并保存 `valid/invalid_reason`，不会伪造零。execute 的 `metadata.json` 固化完整 safety snapshot、frame/anchor/config 路径、轨迹生成审计、reference SHA、`L1/L2`、live preflight 与 execution result；结束时再记录 host 观察到的各流平均发布率。125 Hz state 和 50 Hz wrench 是配置目标；现有并发长测失败，不能将这些目标写成已达到的持续采集性能。
 
 ## 真实执行：默认关闭
 
@@ -213,11 +268,15 @@ identified_parameters.json
 prediction_metrics.csv
 ```
 
-该入口复用现有 approved-ROM IK、离线导数、`StateHistoryBuffer` 时间匹配和五参数 `least_squares` estimator，并在 JSON/metrics 中记录源 episode 与本次辨识的 Git commit。
+该入口复用现有 approved-ROM IK、离线导数、`StateHistoryBuffer` 时间匹配和五参数 `least_squares` estimator，并在 JSON/metrics 中记录源 episode 与本次辨识的 Git commit。它与当前 V2 离线个体化共用估计器，但不会自动生成 V3 试验、验证真实 E2 指标或启动 BO；真实 recorded-data 到当前 observation/payload 的转换仍是独立待完成工作。
 
 ## 文档与证据边界
 
 - [PROJECT_AUDIT.md](PROJECT_AUDIT.md)：清理前仓库、数据和 SDK 审计。
-- [CURRENT_ARCHITECTURE.md](CURRENT_ARCHITECTURE.md)：当前模块和线程/数据结构。
+- [CURRENT_ARCHITECTURE.md](CURRENT_ARCHITECTURE.md)：2026-08 的机器人栈模块和线程/数据结构；其中尚无 Windows 验证的描述需结合本页列出的后续真机诊断阅读。
+- [FINAL_PERSONALIZATION_RESEARCH_MAINLINE_V1.md](FINAL_PERSONALIZATION_RESEARCH_MAINLINE_V1.md)：冻结 V3/E2 结论与真实测量主线的研究作用域。
+- [MODEL_INFORMED_BO_ARCHITECTURE_V2.md](MODEL_INFORMED_BO_ARCHITECTURE_V2.md)：当前时序辨识、E0/E2、残差 GP 和 EI 的离线集成，替代旧审查中对应的未实现状态。
+- [E3 候选族报告](outputs/e3_candidate_comparison/REPORT.md)与[E3 低预算报告](outputs/e3_low_budget/REPORT.md)：后续独立三参数探索及 BO/Greedy 结果，不覆盖冻结 V3/E2 结果。
+- [REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md](REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md)：已有真实测量离线分析接口与结论边界。
 - [REAL_ROBOT_EXPERIMENT.md](REAL_ROBOT_EXPERIMENT.md)：首次真机分阶段 checklist 与 release gate。
 - [CODE_CLEANUP_REPORT.md](CODE_CLEANUP_REPORT.md)：删除、保留、测试与未动用户数据。

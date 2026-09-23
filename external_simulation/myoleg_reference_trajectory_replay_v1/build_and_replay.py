@@ -17,10 +17,14 @@ import json
 import math
 from pathlib import Path
 import platform
-import resource
 import sys
 import time
 from typing import Any, Iterable
+
+try:
+    import resource
+except ImportError:  # The standard-library resource module is unavailable on Windows.
+    resource = None
 
 import mujoco
 import numpy as np
@@ -1369,7 +1373,10 @@ def generate_figures(
     return paths
 
 
-def memory_peak_mib() -> float:
+def memory_peak_mib() -> float | None:
+    """Return measured peak RSS, or None when the platform cannot provide it."""
+    if resource is None:
+        return None
     value = float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     if sys.platform == "darwin":
         return value / (1024.0**2)
