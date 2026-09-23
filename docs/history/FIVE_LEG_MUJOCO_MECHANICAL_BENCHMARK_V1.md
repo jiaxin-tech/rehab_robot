@@ -140,15 +140,15 @@ directionally misleading under the specified Spearman `< 0` definition.
 
 ### Figure 1. Five V3 truth landscapes
 
-![Five V3 truth landscapes](lower_limb_sim/five_leg_mujoco_v1/results/figure_1_truth_landscapes.png)
+![Five V3 truth landscapes](../../lower_limb_sim/five_leg_mujoco_v1/results/figure_1_truth_landscapes.png)
 
 ### Figure 2. Truth versus gray-box prediction
 
-![Truth versus gray-box](lower_limb_sim/five_leg_mujoco_v1/results/figure_2_truth_vs_gray_box.png)
+![Truth versus gray-box](../../lower_limb_sim/five_leg_mujoco_v1/results/figure_2_truth_vs_gray_box.png)
 
 ### Figure 3. Oracle and near-oracle candidates
 
-![Oracle and near-oracle candidates](lower_limb_sim/five_leg_mujoco_v1/results/figure_3_oracle_near_oracle.png)
+![Oracle and near-oracle candidates](../../lower_limb_sim/five_leg_mujoco_v1/results/figure_3_oracle_near_oracle.png)
 
 ## Answers to the ten required questions
 
