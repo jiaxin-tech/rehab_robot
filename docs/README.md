@@ -20,6 +20,7 @@
 5. [真实测量分析接口](research/REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md)：静态有效性、同轨迹重复性和轨迹敏感性的输入与输出。
 6. [E3 候选族比较](../outputs/e3_candidate_comparison/REPORT.md)与[E3 低预算实验](../outputs/e3_low_budget/REPORT.md)：后续独立三参数探索，报告保留在生成器原输出目录。
 7. [MyoLeg 开发实测报告](../outputs/myoleg_benchmark_v1/development_20260923_r2/REPORT.md)与[研究及论文计划](research/MYOLEG_RESEARCH_AND_PAPER_PLAN.md)：已完成native＋24 development、七算法比较与native噪声；关键姿态族三种物理方法在K=4并列，E3改善约2.97%，后续仍须检验公共轨迹、全队列噪声与独立确认。运行入口见 [MyoLeg 配置与运行](GETTING_STARTED.md#myoleg-独立开发实验)及 [新 benchmark 代码](../lower_limb_sim/myoleg_benchmark/)。
+8. [当前个性化执行计划 V2](research/MYOLEG_PERSONALIZATION_EXECUTION_PLAN_V2.md)：后续全域审计已确认 V1 两个候选族各自为 24/24 主体共享最优；[K=1/2/4/8 灰箱验证](../outputs/myoleg_graybox_cv_development_v1/REPORT.md)完成 576 个 causal-prefix 拟合，全部命中质量参数上界，绝对负荷预测仍失配。V1 的 30-seed 扩展暂停；后续推进证据门控 SAST/EG-CPI-BO、独立 controlled synthetic 验证和原生 MyoLeg null 验证，目标在 10 月 31 日锁定实验、11 月开始论文。
 
 这些文档是有先后关系的研究记录，不是同时生效的多份“最终方案”。旧架构审查中未实现的 V3 EI、E2 adapter 与时序辨识已由 V2 补齐；V2 文档写作时未运行的算法比较随后已有独立冻结报告。后续 E3 探索没有覆盖冻结 V3/E2 的必要性结论。
 
@@ -48,4 +49,3 @@
 | 早期仓库和协议迁移 | [清理前审查](history/PROJECT_AUDIT.md)、[清理记录](history/CODE_CLEANUP_REPORT.md)、[ROM 迁移](history/ROM_MIGRATION_AUDIT.md) |
 
 原报告正文及结果保留。正文中反引号包裹的代码/数据路径以仓库根目录为基准；可点击的相对链接按文档当前位置解析。历史实验的本地绝对路径、当时测试计数或环境说明保留原意，不作为当前环境配置说明。
-Current MyoLeg execution plan: [personalization execution plan V2](research/MYOLEG_PERSONALIZATION_EXECUTION_PLAN_V2.md).

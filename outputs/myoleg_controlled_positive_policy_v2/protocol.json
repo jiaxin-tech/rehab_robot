@@ -1,0 +1,70 @@
+{
+  "experiment_id": "CONTROLLED_POSITIVE_POLICY_V2",
+  "truth_scope": "analytical policy stress test; not native MyoLeg or physiological validation",
+  "split": "DEVELOPMENT",
+  "budget": 8,
+  "profile_ids": [
+    "CTRL_COMMON_DEV_00",
+    "CTRL_COMMON_DEV_01",
+    "CTRL_COMMON_DEV_02",
+    "CTRL_COMMON_DEV_03",
+    "CTRL_DIVERGENT_A_DEV_00",
+    "CTRL_DIVERGENT_A_DEV_01",
+    "CTRL_DIVERGENT_A_DEV_02",
+    "CTRL_DIVERGENT_A_DEV_03",
+    "CTRL_DIVERGENT_B_DEV_00",
+    "CTRL_DIVERGENT_B_DEV_01",
+    "CTRL_DIVERGENT_B_DEV_02",
+    "CTRL_DIVERGENT_B_DEV_03"
+  ],
+  "cohort_manifest_sha256": "ef42c8039d465fd54747210170a7b359c29322ef77814cdf37b589297671a2a1",
+  "unique_response_fields": 3,
+  "replication_limit": "IDs repeat the same common/A/B fields; no independent n=12 claim",
+  "confirmatory_access": false,
+  "common_policy": "fixed analytical-surface reference",
+  "common_curvature": 0.002,
+  "probe_features": [
+    [
+      2.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      2.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "candidate_grid": 405,
+  "noise_std": 0.0,
+  "config": {
+    "interaction_threshold": 0.0025,
+    "posterior_threshold": 0.95,
+    "min_valid_observations": 3,
+    "prior_interaction_std": 0.01,
+    "exploration_weight": 1.0,
+    "safety_probability": 0.95,
+    "e2_limit": 1.01,
+    "peak_ratio_limit": 1.1,
+    "trust_radius": 2.0,
+    "length_scale": 0.7,
+    "residual_signal_std": 0.6,
+    "constraint_signal_std": 0.1,
+    "constraint_noise_floor": 0.005,
+    "jitter": 1e-09
+  },
+  "gate_interpretation": "heuristic residual evidence score, not a calibrated interaction posterior",
+  "constraint_scope": "known analytical constraints; not native safety validation",
+  "final_recommendation": "best actually observed feasible candidate when gate active; common otherwise",
+  "oracle_access": "evaluator-only after policy run",
+  "code_sha256": {
+    "controlled_positive_experiment.py": "1f65fda584599d9b95f50ecd3336481fa839fee3d2659344b7258c40eeeefc19",
+    "personalized_v2.py": "42e054054634c418ed0551ca2d2ba06e219d5afc13d7dd48f7cd4ad0ea1d30fd",
+    "controlled_positive_cohort.py": "99b711a63611b5493f0e464815a158823f1adb466f546a13008e320a57f5f8ac"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "experiment_id": "MYOLEG_GRAYBOX_HELDOUT_CV_V1",
+  "created_utc": "2026-09-23T07:09:42.879662+00:00",
+  "executed_results": "D:\\rehab_robot\\outputs\\myoleg_benchmark_v1\\development_20260923_r2",
+  "subjects": [
+    "MYOLEG_VP_001"
+  ],
+  "families": [
+    "BETA_TIMING"
+  ],
+  "methods": [
+    "RANDOM"
+  ],
+  "seeds": [
+    0
+  ],
+  "budgets": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "noise_levels": [
+    0.0
+  ],
+  "causal_rule": "fit uses candidate IDs with trial <= budget; held-out candidates are never used for fitting",
+  "sealed_access": "disabled; native and frozen development IDs only",
+  "model": "mass_scale, k_hip, k_knee, b_hip, b_knee; existing parameter_estimator bounds",
+  "constraints": {
+    "E2_max": 1.01,
+    "peak_ratio_max": 1.1
+  },
+  "rows": {
+    "summary": 4,
+    "predictions": 1281,
+    "skipped": 0
+  }
+}

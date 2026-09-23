@@ -1,0 +1,64 @@
+{
+  "experiment_id": "MYOLEG_GRAYBOX_HELDOUT_CV_V1",
+  "created_utc": "2026-09-23T07:24:48.361483+00:00",
+  "executed_results": "D:\\rehab_robot\\outputs\\myoleg_benchmark_v1\\development_20260923_r2",
+  "subjects": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003",
+    "MYOLEG_VP_005",
+    "MYOLEG_VP_006",
+    "MYOLEG_VP_007",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_010",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_013",
+    "MYOLEG_VP_014",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_017",
+    "MYOLEG_VP_018",
+    "MYOLEG_VP_019",
+    "MYOLEG_VP_021",
+    "MYOLEG_VP_022",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_025",
+    "MYOLEG_VP_026",
+    "MYOLEG_VP_027",
+    "MYOLEG_VP_029",
+    "MYOLEG_VP_030",
+    "MYOLEG_VP_031"
+  ],
+  "families": [
+    "BETA_TIMING",
+    "KEY_POSTURE_TIMING"
+  ],
+  "methods": [
+    "MODEL_INFORMED_BO_EI",
+    "PHYSICS_GREEDY",
+    "RESIDUAL_GP_GREEDY"
+  ],
+  "seeds": [
+    0
+  ],
+  "budgets": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "noise_levels": [
+    0.0
+  ],
+  "causal_rule": "fit uses candidate IDs with trial <= budget; held-out candidates are never used for fitting",
+  "sealed_access": "disabled; native and frozen development IDs only",
+  "model": "mass_scale, k_hip, k_knee, b_hip, b_knee; existing parameter_estimator bounds",
+  "constraints": {
+    "E2_max": 1.01,
+    "peak_ratio_max": 1.1
+  },
+  "rows": {
+    "summary": 576,
+    "predictions": 202608,
+    "skipped": 0
+  }
+}

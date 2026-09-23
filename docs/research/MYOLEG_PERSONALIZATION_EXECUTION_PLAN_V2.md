@@ -1,142 +1,100 @@
 # MyoLeg 个性化实验执行计划 V2
 
-**版本：** 2026-09-23
-**实验截止：** 2026-10-31
-**论文写作起点：** 2026-11-01
-**主线定位：** simulation algorithm / evidence-gated personalization
+更新：2026-09-23。实验锁定截止：2026-10-31。论文写作起点：2026-11-01。
 
-## 当前执行结果（Stage 2 已完成）
+本计划的主线是“证据门控、测量驱动的约束个性化优化”。当前已经完成 V1 全域审计和 K=1/2/4/8 灰箱预测验证；V1 的 30-seed 扩展暂停。新方法及 controlled cohort 使用独立模块和输出目录，不覆盖 V1。
 
-24 个 development 主体的两个候选族已经完成 evaluator-only 全域重放：`BETA_TIMING` 为 324 点/主体，`KEY_POSTURE_TIMING` 为 387 点/主体，共 17,064 条 landscape 记录。两个候选族各自只有一个可行 oracle：BETA `:288` 和 KEY `:383`，均为 24/24 主体共享；对应公共候选的 common regret 对所有主体均为 0。K=4 时 `PHYSICS_GREEDY`、`RESIDUAL_GP_GREEDY` 和 `MODEL_INFORMED_BO_EI` 在两个候选族均捕获 full oracle。结果位于 `outputs/myoleg_personalization_audit_v1`，`completion.json` 为 `complete=true`，`scope_audit.json` 记录 sealed 访问为 0。
+## 1. 已完成的证据与判断
 
-这意味着当前 V1 的“没有决策相关个体最优差异”已经不是执行池漏采样造成的；它仍可能有负荷幅度和可行域差异，但不能用来证明当前 coordination personalization 有收益。下一阶段转向灰箱跨轨迹验证和受控正向差异实验。
+### V1 全域审计：任务本身缺少决策相关个体差异
 
-## 1. 先回答“个性化到底是谁的问题”
+[全域报告](../../outputs/myoleg_personalization_audit_v1/REPORT.md)覆盖 24 个 development 主体、两个候选族。`BETA_TIMING` 每主体 324 点，`KEY_POSTURE_TIMING` 每主体 387 点，共 17,064 条响应。BETA 的可行 oracle 为 `:288`，KEY 为 `:383`；各族均由 24/24 主体共享，对应 common regret 全部为 0。该次审计没有包含 native 主体，也没有访问 sealed 主体。
 
-当前结果不能归结为 BO 选择器失败。证据指向两个更早的问题：
+因此 V1 没有个体最优差异，不能归因于 BO 漏采样。V1 仍具有负荷幅度与部分可行性差异，但只能作为当前轨迹任务的 null-control，不能证明个性化优于公共策略。
 
-1. **V1 任务异质性不足。** 24 个 development 主体在完整候选域中的最优轨迹高度一致，subject×trajectory interaction 很小，因此当前任务没有给个性化选择提供足够强的目标。
-2. **五参数灰箱模型失配。** MyoLeg 真值包含质量/惯量和六维肌肉因素，而适配器只有五个参数；`mass_scale` 反复撞到上界，参考轨迹 torque RMSE 仍约 3–5 Nm。这不能通过放宽上界来伪造个体差异。
+### 灰箱 K=1/2/4/8 验证：排序可用不等于负荷预测可信
 
-因此研究问题改成：
+[验证报告](../../outputs/myoleg_graybox_cv_development_v1/REPORT.md)、[逐前缀汇总](../../outputs/myoleg_graybox_cv_development_v1/summary.csv)与 [protocol](../../outputs/myoleg_graybox_cv_development_v1/protocol.json)来自已冻结 V1 的执行记录：24 个 development 主体 × 两个候选族 × 三种物理方法（`PHYSICS_GREEDY`、`RESIDUAL_GP_GREEDY`、`MODEL_INFORMED_BO_EI`）× 四个预算。只使用 seed 0、无测量噪声；不包含 native、其他方法、额外种子或确认集。
 
-> 在没有足够个体化证据时，算法能否安全回退公共轨迹；在观测到可重复、决策相关的个体差异时，算法能否在相同预算下降低个体 regret 和约束违反？
+每组只用当时 `trial <= K` 的已执行轨迹拟合五参数模型，随后在其余候选上评分。共完成 576 个拟合、202,608 条未见候选预测，0 个跳过前缀。这里 held-out 指“当前主体尚未用于拟合的轨迹”，并非未见主体或 sealed cohort。
 
-V1 是 **null-control**，用于测 gate 的假阳性；新建的 controlled stress cohort 是 **positive-control**，用于测 gate 的检出率和个体化收益。两者都不能被表述为患者生理真值。
+每个 K 的 144 条“主体 × 候选族 × 方法”记录的中位数如下；torque RMSE 和 endpoint MAE 先在各记录的未见候选内汇总。这些记录存在同主体重复，不能当作 144 名独立主体计算置信区间。
 
-## 2. 冻结规则（先写入 manifest，再运行）
+| K | 未见轨迹 torque RMSE (Nm) | E3 MAE | E2 MAE | peak-ratio MAE | E3 Spearman | top regret 中位数 |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 3.698 | 0.1601 | 0.0477 | 0.0304 | 0.8502 | 0 |
+| 2 | 3.704 | 0.1675 | 0.0504 | 0.0304 | 0.9631 | 0 |
+| 4 | 3.711 | 0.1704 | 0.0513 | 0.0304 | 0.9678 | 0 |
+| 8 | 3.713 | 0.1709 | 0.0513 | 0.0304 | 0.9637 | 0 |
 
-- 不扩展当前 V1 的 `mass_scale` 上界，不调整 V1 候选域来制造不同 oracle。
-- 不读取 sealed subject；development 只用于开发和方法选择，确认集必须另行冻结。
-- learner 每轮只能看到自己的已执行 payload、torque trace/endpoint 和观测噪声；不能读取完整候选表、缓存目录或评估器生成的 oracle。
-- 所有主比较使用相同 subject、相同候选预算、相同噪声 seed 的成对结果。
-- full-domain oracle 只属于离线 evaluator，用于计算上界、regret 和识别性，不得传给 selector。
-- 首次两次试验固定为 `REFERENCE` 和预先声明的 diagnostic probe；probe 参数、顺序、seed 在 truth reveal 前冻结。
-- 主效应量为每个主体的
-  `Delta_i = loss(COMMON_POLICY)_i - loss(SAST_BO)_i`。
-  预注册实用阈值为 `0.5%`，主体等权 bootstrap 95% CI，不能只报告平均值。
+576/576 次优化报告成功，但全部命中 `mass_scale` 上界；其中 102 次还命中髋阻尼边界。汇总中的标记全部为 `BOUNDARY_LIMITED`。所有预测 top-1 在本次无噪声 truth 下可行；top regret 的全表最大值约为 0.000603，其余预算最大值为 0。
 
-## 3. 分阶段执行
+增加观测到 K=8 没有消除约 3–5 Nm 的 torque 失配，也没有改善绝对 endpoint 校准。原计划 E3 MAE ≤ 0.005 的决策门槛明显未满足。因此保持五参数边界，灰箱仅保留为可被观测修正的均值先验；不能直接以其 E2/peak 均值作安全证明，更不能通过放宽上界制造个体差异。R²/VAF、约束 precision/recall、top-5 overlap 尚未由这批产物报告，不能写成已验证。
 
-### Stage 0 — baseline freeze（9 月 23–24 日）
+## 2. 三层实验作用域
 
-冻结当前结果目录 `outputs/myoleg_benchmark_v1/development_20260923_r2`，记录 git commit、依赖锁、候选域大小、subject 清单和 cache identity。暂停 30-seed 扩展；已有 V1 结果作为不可变基线。
+| 实验层 | 数据和目的 | 可以支持的结论 | 不能支持的结论 |
+|---|---|---|---|
+| 原生 MyoLeg V1 | native/development 的 prescribed-state 逆动力学；V1 全域审计和灰箱验证 | 当前任务的共同最优、模型失配、无个体化信号时的回退表现 | 患者个体差异、舒适度、疗效、真实硬件安全 |
+| Controlled synthetic | 在 native 响应外加预声明的候选空间响应场；`COMMON_OPTIMUM` 与 `DIVERGENT_OPTIMA` | 门控、观测隔离、回退、regret 改善的软件机制验证 | 该响应场等价于肌肉/患者生理差异 |
+| 后续 MyoLeg 物理验证与真实测量 | 独立声明的物理扰动/任务条件；真实测量另有采集与放行流程 | 只有通过验证的对应层结论 | 用 synthetic 成功替代原生动力学或实测证据 |
 
-新增真正的公共策略基线 `COMMON_POLICY`：只用 development 训练主体的预注册规则（reference 或 population mean 的 physics-greedy），冻结后在每个评估主体执行。`REFERENCE` 作为诊断基线保留，但不能代替 common-policy 主比较。
+Controlled cohort 的 [manifest](../../external_simulation_audits/myoleg_controlled_positive_cohort_v1/MYOLEG_CONTROLLED_POSITIVE_COHORT_V1_MANIFEST.json)已单独定义 profile、seed、split 和响应规则，不改 MuJoCo XML 或 V1 虚拟主体 delta。24 个 execution ID 实际复用三个确定性响应场（common、A、B）；`CONFIRMATORY` 是冻结协议下的保留重复执行集，不是独立主体或新 landscape 泛化集。`DIVERGENT_OPTIMA` 的 policy-level 结果已保存于 [controlled policy output](../../outputs/myoleg_controlled_positive_policy_v2/REPORT.md)：null 门控 0%，A/B 门控 100%，平均 regret 从 0.256912 降至 0.069061（73.1%）。这些数字只证明合成分析压力测试中的机制行为，不是 native MyoLeg 生理证据；native null 与后续物理验证仍须单独执行。
 
-交付物：`baseline_manifest.json`、common-policy candidate、同预算比较表。
+## 3. 已生效的执行约束
 
-### Stage 1 — gray-box cross-validation（9 月 24–27 日）
+- 冻结 `outputs/myoleg_benchmark_v1/development_20260923_r2`；暂停原计划 V1 30-seed 扩展。已有 V1 结果继续作为基线，不因新算法而重写。
+- 不扩大 V1 `mass_scale` 边界、不修改 V1 候选域来追求不同 oracle。
+- learner 仅接收候选几何与当前主体已执行观测，不读取 profile 真值、缓存目录、完整 landscape 或 oracle。
+- 公共均值模型和 COMMON_POLICY 必须在评估前冻结，并且不能用待评估主体的完整候选真值训练；其来源和选择规则写入 protocol。
+- 所有方法使用相同最大候选预算和成对噪声 seed；回退提前停止时报告实际使用预算，不把未执行试验算作观测。
+- `CONFIRMATORY` 保持封存。先冻结算法、门槛、候选域、分析和判据，再执行一次确认；现有 V1 sealed 主体不随开发运行自动解封。
+- 已知 development 结果可以指导开发，但不能把开发后选出的门槛追溯称为预注册。确认实验的冻结时间和源代码哈希须先于确认集访问。
 
-沿已有执行前缀 `K=1,2,4,8`，只用当时已观测数据拟合五参数适配器，并在未执行候选上评估：
+## 4. 算法实现与验证顺序
 
-- torque RMSE/MAE、R²/VAF；
-- held-out E3 MAE/RMSE；
-- E3 排名 Spearman/Kendall；
-- 预测 top-1 的真实 regret、top-5 overlap；
-- E2/peak 约束 precision/recall；
-- 参数边界命中、Jacobian condition、finite coverage。
+新方法使用 `SAST-BO`，`EG-CPI-BO` 作为描述性别名；入口为 [personalized_v2.py](../../lower_limb_sim/myoleg_benchmark/personalized_v2.py)。当前实现仍是研究原型，完整实验与置信度校准决定能否作为论文最终方法。
 
-预注册“可用于决策”的门槛：held-out E3 MAE ≤ 0.005、主体中位 Spearman ≥ 0.90 且 95% CI 下界 ≥ 0.80、预测选择真实 regret ≤ 0.005、至少 80% 主体有限且可行。若边界命中且 held-out MAE > 0.01，写入 `MODEL_MISMATCH`，转 residual-only，不扩大先验范围。
+每主体执行顺序为 reference → 预先固定的校准 probe → 主体 residual model → 门控决策。比较对象是冻结公共响应后的主体残差，避免把所有主体共有的轨迹效应当作个性化证据。证据不足时记录 `PERSONALIZATION_INACTIVE` 并使用 COMMON_POLICY；证据足够时使用 residual GP 和 constrained acquisition。无符合预测约束的候选时记录 `SAFETY_LOCK`，回退已观测且可行的公共/参考候选。
 
-### Stage 2 — full-domain identifiability audit（已完成，9 月 23 日）
+优先完成以下验证，再扩大样本：
 
-对 24 development + native，在不改 V1 代码和候选域的条件下，独立 evaluator 运行 no-noise full landscape。当前三维域实际点数、运动学 rejection 数必须写入结果，不能直接套用旧 V3 的 625 点数字。
+1. Causal prefix、未来观测/真值隔离、参考优先、probe 固定顺序，以及无噪声与带噪声回退行为。
+2. null cohort 的门控假阳性率与 positive cohort 的检出率；名为 posterior/probability 的量必须说明统计模型及校准情况，不能直接把内部评分解释为经验证的 95% 保证。
+3. 在同预算下比较 COMMON_POLICY、无门控 residual BO、SAST-BO、Random/SpaceFill；物理方法仅在可比较的原生 MyoLeg 接口下追加。
+4. 约束模型使用 E2/peak 观测与不确定性，报告预测覆盖率、实际违反率和回退次数；灰箱边界命中不能被“优化成功”掩盖。
+5. 在原生 MyoLeg V1 重新运行新策略的 null 验证，确认 synthetic 适配过程没有将共同轨迹效应误识别为个体交互。该新策略运行写入新目录，不扩展或改写旧 V1。
 
-输出：
+## 5. 到 10 月 31 日的交付里程碑
 
-- 每主体 oracle、tie set、boundary、near-oracle coverage；
-- common、LOSO-common、personalized oracle 及 relative common regret；
-- pairwise oracle distance、transfer regret、rank correlation/top-set overlap；
-- 已执行候选池 vs 完整域的 pool capture、exploration regret、recommendation regret；
-- `scope_audit.json`：sealed access count 必须为 0，记录 source hash 和 evaluator 版本。
+| 截止日期 | 工作与交付物 | 进入下一阶段的条件 |
+|---|---|---|
+| 9 月 23–25 日 | 保存灰箱结果、完成原型单元回归和 controlled development smoke；记录首版源代码与 manifest 哈希 | 无未来观测/真值泄漏；失败、预算与回退均可追溯 |
+| 9 月 26–30 日 | Controlled null/positive 全域审计；共同策略基线冻结；K=4/8 的成对 pilot，保存逐轮 gate、约束和推荐日志 | positive 确有可识别 oracle 差异；无差异则如实记录，另立新版本方案而不回填旧结果 |
+| 10 月 1–7 日 | 门控阈值与不确定性校准；原生 MyoLeg V1 新策略 null 验证；确定主预算和可复现实验命令 | null 假阳性和约束违反有完整报告；不能以低 regret 隐藏不可信负荷预测 |
+| 10 月 8–14 日 | 锁定主算法与 development 结果；消融门控、公共先验、约束模型及校准探针 | 主方法与等预算基线的 subject-level 配对差异、CI 和失败案例齐全 |
+| 10 月 15–20 日 | 冻结确认实验 protocol、代码、门槛和图表脚本；条件允许时完成独立 MyoLeg 物理扰动验证 | 任何物理验证均有单独完整性和作用域记录；未完成则论文限定 synthetic/原生 null 的证据范围 |
+| 10 月 21–27 日 | 执行冻结后的新确认集一次评估；输出完整性、truth-isolation 和配对统计报告 | 不在查看确认结果后改算法；必要修订另开实验版本 |
+| 10 月 28–31 日 | 仅做复现核对、主表/图/局限整理；冻结论文实验包和环境锁 | 新环境可运行核心命令；所有主张可对应到版本化产物 |
+| 11 月 1 日起 | 开始完整论文初稿：方法、实验、结果、局限与相关工作 | 优先选择与实际证据匹配的知名机器人/康复工程期刊或会议；投稿档期另行核实 |
 
-支持“V1 存在决策相关个体化信号”的 conjunction 仍记录为后续版本的候选判断：interaction ≥ 0.25%，unique oracle ≥ 4，median common regret ≥ 0.5%，p75 common regret ≥ 1%，median transfer regret ≥ 0.1%，并且 ranking/top-set 依赖性达到预设阈值。本次 V1 不满足这些条件，因此只作为 null-control，不得声称算法错过了个体最优。
+10 月 14 日设置研究 go/no-go：以 `Delta_i = loss(COMMON_POLICY)_i - loss(SAST_BO)_i` 为正向收益，报告主体等权 mean/median 和按主体重采样的 95% CI；若目标为中位收益 ≥ 0.5%、CI 不跨 0、约束违反率不增加，须在确认前冻结这一判据。不能把种子或同一主体的重复记录当成独立主体。
 
-### Stage 3 — SAST-BO（10 月 1–10 日）
+若 positive-control 没有收益，先检查共同策略、gate 功效、可识别性和预算消耗；不宣称个性化成功，不把 30-seed V1 作为补救。若 synthetic 成功而原生物理验证未完成，论文主张限于受控算法验证，研究计划保留后续真实测量验证。
 
-新算法正式名：**Subject-Adaptive Safe Trust-Region BO (SAST-BO)**，中文为“主体自适应安全信赖域贝叶斯优化”。它保留证据门控，个性化对象是观测历史和主体响应，不是 subject ID。
+## 6. 复现实验入口
 
-每个主体的流程：
-
-1. 执行 reference；
-2. 执行固定、正交、风险受限的 calibration probes（髋/膝方向或关键相位偏移）；
-3. 由 torque trace、branch features、E2、peak 和重复噪声拟合主体 residual latent 及局部二次 surrogate；
-4. 计算 `P(subject×trajectory interaction > δ | D_i)` 和跨主体 rank disagreement；
-5. 若证据不足，输出 `PERSONALIZATION_INACTIVE`，使用 COMMON_POLICY/reference；
-6. 若证据足够，启用 residual GP + constrained EI，只在安全信赖域内选点；
-7. 约束使用预测 E2、peak 的上置信界，要求 `P(E2 <= 1+δ_e2, peak <= 1.1) >= 0.95`；若没有安全候选，触发 `SAFETY_LOCK` 并回退 reference。
-
-建议初始实现：K=4 做可行性 pilot，K=8 做主结果；trust radius 在 `MODEL_MISMATCH` 或高不确定性时收缩。算法日志必须包括 gate 状态、probe、posterior uncertainty、safety lock 和最终推荐，不能只保存最终 candidate。
-
-等预算对照：`COMMON_POLICY`、current `PHYSICS_GREEDY`、raw GP-EI、calibration-only local quadratic、Random/SpaceFill。所有对照使用同一预算和成对 seed。
-
-### Stage 4 — controlled stress test（10 月 11–20 日）
-
-先做 4–8 个 development profile 的小试，再扩到 16 个；参数在 manifest 冻结后才运行。优先使用可解释且不依赖肌肉结构的受控差异：个体负荷/峰值约束、ROM/速度边界、预声明的姿态相关阻力形状。只有通过结构完整性和文献依据后，才考虑肌肉结构因素。
-
-每个 scenario 同时包含：
-
-- `COMMON_OPTIMUM` null：不应触发 gate；
-- `DIVERGENT_OPTIMA` positive control：应检出 interaction 并改善 regret；
-- 明确的 profile、seed、候选域、噪声、split 和 truth-isolation 记录。
-
-正向结果的主要判据：SAST-BO 相对 COMMON_POLICY 的主体等权 `Delta_i` 中位数 ≥ 0.5%，bootstrap 95% CI 不跨 0；约束违反率不增加；gate 在 null cohort 的假阳性率和 positive cohort 的检出率均报告。
-
-### Stage 5 — development / held-out confirmation（10 月 21–31 日）
-
-锁定算法、超参数、候选域和 evaluator 后，才生成新的 confirmatory development/held-out split。development 只用于冻结参数；held-out 只做一次盲评。完成主表、消融、失败案例、scope audit、复现实验命令和图表清单。
-
-## 4. 必须报告的主结果
-
-1. `COMMON_POLICY` vs `SAST-BO` 的 paired subject-level `Delta_i`、median、mean、95% CI；
-2. 最终真实 E3、E2、peak、可行率和约束违反率；
-3. common regret、personalized regret、oracle regret（oracle 只在 evaluator）；
-4. gate trigger rate、null false-positive rate、positive detection power；
-5. 灰箱 held-out 预测误差和 `MODEL_MISMATCH` 比例；
-6. pool-vs-full decomposition，区分探索空间不足、模型失配和任务本身没有个体差异；
-7. 失败/回退/安全锁定次数，以及每个主体的最终 policy 状态。
-
-禁止把以下内容写成结论：MyoLeg V1 证明患者需要不同轨迹；虚拟 subject ID 代表患者差异；模拟 torque 等同 cuff force、舒适度、安全性或疗效；SAST-BO 在没有 positive-control 的情况下已经证明个性化有效。
-
-## 5. 立即执行命令
-
-先完成审计，不启动 30-seed：
+以下重跑使用新的输出目录，避免覆盖已经完成的结果：
 
 ```powershell
 $env:PYTHONUTF8 = "1"
-.venv\Scripts\python.exe -m lower_limb_sim.myoleg_benchmark.personalization_audit `
+.venv\Scripts\python.exe -m lower_limb_sim.myoleg_benchmark.graybox_cv `
   --subjects development `
   --families BETA_TIMING KEY_POSTURE_TIMING `
+  --methods PHYSICS_GREEDY RESIDUAL_GP_GREEDY MODEL_INFORMED_BO_EI `
+  --seeds 0 --noise-levels 0 --budgets 1 2 4 8 `
   --executed-results outputs\myoleg_benchmark_v1\development_20260923_r2 `
-  --cache-dir .cache\myoleg-benchmark-v1 `
-  --output-dir outputs\myoleg_personalization_audit_v1
+  --output-dir outputs\myoleg_graybox_cv_development_reproduction
 ```
 
-完成 Stage 1–2 后再实现 SAST-BO；不要在 full-domain truth 生成前修改 gate 阈值。所有结果写入版本化目录，V1 输出目录不覆盖。
-
-## 6. 论文进度
-
-10 月 10 日前应得到灰箱诊断和 V1 null-control；10 月 20 日前完成 null/positive stress test；10 月 31 日前锁定 confirmatory 结果、图表和 limitations。11 月 1 日开始写方法、实验和结果，论文定位为“evidence-gated, mechanics-constrained simulation personalization”；真实测量个性化作为后续验证依赖，不在本轮冒充已完成证据。
-
-Latest rerun: `outputs/myoleg_personalization_audit_v1/REPORT.md`; the prior first run is preserved under `.cache/myoleg_personalization_audit_v1_initial`.
+全域审计入口为 [personalization_audit.py](../../lower_limb_sim/myoleg_benchmark/personalization_audit.py)，controlled cohort 的语义与封存规则见 [cohort README](../../external_simulation_audits/myoleg_controlled_positive_cohort_v1/README.md)。先检查已有产物与完整性，再决定是否重跑；本计划不要求重复已有 17,064 条无噪声 landscape。
