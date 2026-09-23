@@ -1,0 +1,55 @@
+{
+  "audit_id": "MYOLEG_PERSONALIZATION_IDENTIFIABILITY_AUDIT_V1",
+  "created_utc": "2026-09-23T06:32:23.170550+00:00",
+  "subjects": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003",
+    "MYOLEG_VP_005",
+    "MYOLEG_VP_006",
+    "MYOLEG_VP_007",
+    "MYOLEG_VP_009",
+    "MYOLEG_VP_010",
+    "MYOLEG_VP_011",
+    "MYOLEG_VP_013",
+    "MYOLEG_VP_014",
+    "MYOLEG_VP_015",
+    "MYOLEG_VP_017",
+    "MYOLEG_VP_018",
+    "MYOLEG_VP_019",
+    "MYOLEG_VP_021",
+    "MYOLEG_VP_022",
+    "MYOLEG_VP_023",
+    "MYOLEG_VP_025",
+    "MYOLEG_VP_026",
+    "MYOLEG_VP_027",
+    "MYOLEG_VP_029",
+    "MYOLEG_VP_030",
+    "MYOLEG_VP_031"
+  ],
+  "families": [
+    "BETA_TIMING",
+    "KEY_POSTURE_TIMING"
+  ],
+  "tier": 0.01,
+  "noise_std": 0.0,
+  "candidate_domain_source": "Domain(native_domain(), family), kinematic constraints only",
+  "oracle_rule": "minimum feasible float64 E3, candidate_index tie break; no-feasible pool uses max(1,E3) penalty",
+  "tie_tolerance": 1e-12,
+  "near_oracle_epsilons": [
+    0.0001,
+    0.0005,
+    0.001
+  ],
+  "executed_results": "D:\\rehab_robot\\outputs\\myoleg_benchmark_v1\\development_20260923_r2",
+  "scope": "native diagnostic plus 24 frozen development subjects; sealed subject IDs rejected before model access",
+  "sealed_scientific_access_count": 0,
+  "code_change_scope": "independent evaluator; learner and benchmark source unchanged",
+  "python": "3.12.14",
+  "git_commit": "13d1cee37170ecf87d8e5f9d69a56974872234e2",
+  "source_sha256": {
+    "personalization_audit.py": "b0398e7f683e70e228b52e966dd657254605fb5f099e1cb7c5fd5b508e27c2ec",
+    "experiment.py": "2cd97493c9ff726693452c99d3d8dd06169a4118217ea21a4f5d6e2905da023e",
+    "simulation.py": "9c3a2fdcefb02d3e2ab8c0bd846396d10d874d2da568b2ace9d8a4325ea148df"
+  }
+}

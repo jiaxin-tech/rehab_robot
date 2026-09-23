@@ -1,0 +1,13 @@
+{
+  "complete": true,
+  "subjects": 24,
+  "families": 2,
+  "jobs": 48,
+  "landscape_rows": 17064,
+  "oracle_rows": 48,
+  "pool_rows": 2112,
+  "pairwise_rows": 552,
+  "sealed_scientific_access_count": 0,
+  "scope_audit": "D:\\rehab_robot\\outputs\\myoleg_personalization_audit_v1\\scope_audit.json",
+  "output": "D:\\rehab_robot\\outputs\\myoleg_personalization_audit_v1"
+}

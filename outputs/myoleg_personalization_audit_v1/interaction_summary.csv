@@ -1,0 +1,3 @@
+scope,family,subject_count,candidate_count,unique_oracle_count,interaction_fraction,pair_count,median_spearman_rank,median_transfer_regret_pct,p75_transfer_regret_pct,oracle_same_fraction
+DEVELOPMENT,BETA_TIMING,24,324,1,0.0015468763426599401,276,0.9998001287784573,0.0,0.0,1.0
+DEVELOPMENT,KEY_POSTURE_TIMING,24,387,1,0.0012507242764189224,276,0.9998734994362339,0.0,0.0,1.0

@@ -48,3 +48,4 @@
 | 早期仓库和协议迁移 | [清理前审查](history/PROJECT_AUDIT.md)、[清理记录](history/CODE_CLEANUP_REPORT.md)、[ROM 迁移](history/ROM_MIGRATION_AUDIT.md) |
 
 原报告正文及结果保留。正文中反引号包裹的代码/数据路径以仓库根目录为基准；可点击的相对链接按文档当前位置解析。历史实验的本地绝对路径、当时测试计数或环境说明保留原意，不作为当前环境配置说明。
+Current MyoLeg execution plan: [personalization execution plan V2](research/MYOLEG_PERSONALIZATION_EXECUTION_PLAN_V2.md).

@@ -1,0 +1,3 @@
+scope,family,development_subject_count,common_candidate_id,common_mean_selection_score,worst_case_candidate_id,worst_case_selection_score,common_all_subjects_feasible,common_feasible_intersection_count,selection_rule
+DEVELOPMENT,BETA_TIMING,24,BETA_TIMING:288,0.9762713513572571,BETA_TIMING:288,0.9773486098887598,True,131,mean benchmark selection score over development subjects; evaluator-only
+DEVELOPMENT,KEY_POSTURE_TIMING,24,KEY_POSTURE_TIMING:383,0.9702758866618767,KEY_POSTURE_TIMING:383,0.9714601613515296,True,130,mean benchmark selection score over development subjects; evaluator-only
