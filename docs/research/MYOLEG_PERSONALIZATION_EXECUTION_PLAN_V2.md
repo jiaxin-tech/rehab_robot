@@ -12,6 +12,12 @@
 
 因此 V1 没有个体最优差异，不能归因于 BO 漏采样。V1 仍具有负荷幅度与部分可行性差异，但只能作为当前轨迹任务的 null-control，不能证明个性化优于公共策略。
 
+### 候选空间诊断：数量足够，但有效主体差异不足
+
+[候选空间诊断](../../outputs/myoleg_candidate_space_diagnostic_v1/REPORT.md)直接读取冻结的 V1 全域 landscape，并从原生 `Domain` 重建运动轨迹。BETA 有 324 条候选、81 条运动学拒绝；KEY 有 387 条候选、18 条拒绝。两个候选族的三参数网格均为满秩，但轨迹变化的 95% 方差分别只需要 8 个和 3 个主成分。更关键的是，跨主体 E3 排序 Spearman 中位数分别为 0.999800 和 0.999873，两个候选族的唯一 oracle 都是 1/24，top-10 集合也完全一致。固定候选的跨主体 E3 标准差只约为主体内候选标准差的 2.8–2.9%。
+
+因此当前证据不支持“单纯候选数量太少”这一解释。V1 的候选参数有几何覆盖，但有效响应空间主要表现为共享排序；下一版应预先声明能改变主体—轨迹耦合的因素（例如辅助时机、速度/持续时间或髋膝协同），再比较是否产生不同 oracle。不得为了制造异质性事后扩大 V1 边界。
+
 ### 灰箱 K=1/2/4/8 验证：排序可用不等于负荷预测可信
 
 [验证报告](../../outputs/myoleg_graybox_cv_development_v1/REPORT.md)、[逐前缀汇总](../../outputs/myoleg_graybox_cv_development_v1/summary.csv)与 [protocol](../../outputs/myoleg_graybox_cv_development_v1/protocol.json)来自已冻结 V1 的执行记录：24 个 development 主体 × 两个候选族 × 三种物理方法（`PHYSICS_GREEDY`、`RESIDUAL_GP_GREEDY`、`MODEL_INFORMED_BO_EI`）× 四个预算。只使用 seed 0、无测量噪声；不包含 native、其他方法、额外种子或确认集。
