@@ -42,3 +42,9 @@
 /external_simulation_audits/myoleg_v3_trajectory_parameterization_design_v1/V3_NOMINAL_SMOKE_SELECTION.csv -text
 /external_simulation_audits/myoleg_v3_trajectory_parameterization_design_v1/V3_TASK_INVARIANCE_AUDIT.csv -text
 /personalization/benchmarks/results_v2_rom_gated/ROM_GATED_V2_SMOKE_RUNS.csv -text
+
+# New MyoLeg protocols bind source and result bytes across checkout platforms.
+/lower_limb_sim/myoleg_benchmark/*.py text eol=lf
+/outputs/myoleg_benchmark_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Full identification traces stay available as JSON without overwhelming code diffs.
+/outputs/myoleg_benchmark_v1/**/identification_diagnostics.json -diff

@@ -4,12 +4,13 @@
 
 本页按研究问题和运行链定位代码。当前离线集成入口是 `personalization/integrated_v2.py`；`lower_limb_sim/` 同时包含共享力学、机器人参考轨迹、历史算法和后续 E3 实验，不能仅按目录名判断代码新旧。环境和测试见[上手指南](GETTING_STARTED.md)，真机操作条件见[机器人指南](ROBOT_OPERATIONS.md)。
 
-## 先区分三条工作线
+## 先区分四条工作线
 
 | 工作线 | 主要入口 | 范围与边界 |
 |---|---|---|
 | V2 集成：冻结 ROM → 二维 V3 → E0/E2 → 低预算个体化 | [integrated_v2.py](../personalization/integrated_v2.py) 的 `OfflineBOConfiguration`、`run_offline_configuration` | 当前可复用离线 API；25×25 个 `beta_flex/beta_extend` 候选；默认总预算 4，包含参考试验 |
 | E3 三维候选与低预算探索 | [e3_candidate_comparison/run.py](../lower_limb_sim/e3_candidate_comparison/run.py)、[e3_low_budget/run.py](../lower_limb_sim/e3_low_budget/run.py) | 独立实验；协调/关键姿态参数加时间分配；不直接接入二维 V3 集成入口 |
+| 新 MyoLeg 开发比较 | [myoleg_benchmark/run.py](../lower_limb_sim/myoleg_benchmark/run.py)、[experiment.py](../lower_limb_sim/myoleg_benchmark/experiment.py) | 按请求运行 MyoLeg 动力学，比较七算法、两候选族与预算/噪声；仅 native 和原 development 主体，输出与旧 E3 回放分开 |
 | ROKAE 参考执行与真实测量 | [scripts/](../scripts/)、[control/](../control/)、[collection/](../collection/) | 参考轨迹前馈执行、日志和离线辨识；尚未贯通真实测量驱动的在线个体化，运动默认关闭 |
 
 V3 是轨迹参数化版本，V2 是 ROM 门控及算法集成版本，E0/E2/E3 是不同端点，三个编号体系不能相互替代。E2 使用四项同腿参考归一化分支 RMS 的最大值；E3 使用其等权均值。读取结果时须同时核对候选域、端点、模型和预算。
@@ -53,11 +54,14 @@ V3 是轨迹参数化版本，V2 是 ROM 门控及算法集成版本，E0/E2/E3 
 | 轨迹敏感性 | [trajectory_sensitivity/study.py](../lower_limb_sim/trajectory_sensitivity/study.py)、[report.py](../lower_limb_sim/trajectory_sensitivity/report.py) | [outputs/trajectory_sensitivity/](../outputs/trajectory_sensitivity/) |
 | E3 候选族比较 | [e3_candidate_comparison/run.py](../lower_limb_sim/e3_candidate_comparison/run.py)、[report.py](../lower_limb_sim/e3_candidate_comparison/report.py) | [outputs/e3_candidate_comparison/](../outputs/e3_candidate_comparison/) |
 | E3 低预算回放 | [e3_low_budget/run.py](../lower_limb_sim/e3_low_budget/run.py)、[report.py](../lower_limb_sim/e3_low_budget/report.py) | [outputs/e3_low_budget/](../outputs/e3_low_budget/) |
+| 新 MyoLeg 实际仿真比较 | [myoleg_benchmark/run.py](../lower_limb_sim/myoleg_benchmark/run.py)、[experiment.py](../lower_limb_sim/myoleg_benchmark/experiment.py)、[simulation.py](../lower_limb_sim/myoleg_benchmark/simulation.py)、[report.py](../lower_limb_sim/myoleg_benchmark/report.py) | `outputs/myoleg_benchmark_v1/<运行时间>/`；协议、推荐结果、试验历史、辨识诊断与独立报告 |
 | 视频与 MyoLeg 负载分析 | [visualization/](../lower_limb_sim/visualization/)、[render_mujoco_rehab_video.py](../scripts/render_mujoco_rehab_video.py)、[render_myoleg_robot_video.py](../scripts/render_myoleg_robot_video.py)、[evaluate_myoleg_trajectory_loads.py](../scripts/evaluate_myoleg_trajectory_loads.py) | 具体输出目录由各脚本指定；视频属于展示及分析产物 |
 
 E3 的局部 `GP3D` 明确采用第三个输入坐标，不能直接替换成二维 V3 GP。E3 低预算回放的最终指标是“实际执行且合格的最佳已观察值”；无效试验也消耗预算。其结果应与冻结 V3/E2 结论分开陈述。
 
-完整 MyoLeg 回放/渲染使用额外模型资产，部分 XML 含原机器的绝对路径。核心测试能运行不代表这些资产已经完成本机配置。
+新 benchmark 的 [prepare_assets.py](../lower_limb_sim/myoleg_benchmark/prepare_assets.py) 只下载并提取官方 MyoSuite 2.12.2 所需资产；[portable_model.py](../lower_limb_sim/myoleg_benchmark/portable_model.py) 在内存中重定位冻结 XML 的资产路径，不安装整套 MyoSuite、不改模型机械参数。`simulation.py` 检查原 XML/delta 内容；跨平台 compiled fingerprint 不同会保留差异，并要求公开参考轨迹的物理分量数值复现。主体参数、缓存和未执行候选响应不提供给算法。
+
+旧 [myoleg_robot_scene.py](../lower_limb_sim/visualization/myoleg_robot_scene.py) renderer 及部分旧回放脚本仍直接加载含原机器绝对路径的 XML，未自动接入新加载器。新 benchmark 可运行不代表旧视频入口已移植；资产配置命令见[上手指南](GETTING_STARTED.md#myoleg-独立开发实验)。
 
 ## 真实机器人与测量分析
 

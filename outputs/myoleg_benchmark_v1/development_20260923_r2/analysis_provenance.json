@@ -1,0 +1,10 @@
+{
+  "report_sha256": "95bb42c3d2d01669f925702384a6c83ab52c7e71ee2cf6864bdf94392684911a",
+  "protocol_report_sha256": "95bb42c3d2d01669f925702384a6c83ab52c7e71ee2cf6864bdf94392684911a",
+  "protocol_sha256": "db0bb9d272199bfe59ef206eac6df2e042da6f3f62f12fdab41583f5a8baa7cc",
+  "completion_sha256": "c838e7dc5b65246c82bdee4bb40c0d8fc9fa154d7dd8aef7d890e4adab380ea9",
+  "results_sha256": "806e0428db7a3214f66452f71db82a5fe89319a400300d43db11465570129926",
+  "trial_history_sha256": "1376e2a500e8c4e1d919fef4e53a977bff1ac06696c1c253b14da49b174f05d6",
+  "numerical_tolerance": 1e-12,
+  "change_scope": "Report-only correction: 1e-12 numerical tie tolerance, completed-run and exact schedule coverage validation, and primary/secondary budget labels. No simulation, recommendation, protocol, or result records are changed. The tolerance is numerical, not a minimum meaningful effect threshold."
+}

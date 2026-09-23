@@ -16,6 +16,7 @@
 | [external_simulation](../external_simulation/) | MyoLeg 模型、参考回放、虚拟受试者、候选域及真值生成代码 | 保留模型和冻结输入；研究脚本与结果目录分别管理 |
 | [external_simulation_audits](../external_simulation_audits/) | MyoLeg 各阶段设计、协议、manifest、候选表、真值结果和决策记录 | 保留结果及相互引用，不因与代码目录同名而删除 |
 | [outputs](../outputs/) | 轨迹敏感性、MyoLeg 载荷、E3 候选比较和低预算实验 | 当前是可被下游直接读取的实验数据，不是通用临时目录 |
+| `outputs/myoleg_benchmark_v1/` | 新 MyoLeg 开发实验：每次运行独立协议、逐试验数据、来源、报告和图表 | 仅 `completion.json` 中 `completed=true` 且协议覆盖检查通过的运行用于完整排名；失败运行保留故障说明，不覆盖为成功 |
 | [diagnostics](../diagnostics/) | 真实机器人状态与 wrench 采集、进程隔离、时序比较及离线诊断 | 按一次运行的 CSV、JSON、Markdown、PNG 组合保留 |
 
 关键入口：
@@ -51,6 +52,8 @@
 四个小型前置输入仍须随仓库保存：`reference_full_angles.csv`、`detected_cycles.csv`、对应的 `metadata.json`，以及 `reference_local_active_asymmetric/state_domain_bounds.json`。它们在 `.gitignore` 中有明确例外，不是大数据缓存。
 
 `outputs/e3_candidate_comparison/candidates_with_limits.csv` 和 torque NPZ 被 [E3 低预算实验入口](../lower_limb_sim/e3_low_budget/run.py)及[相关测试](../tests/test_e3_low_budget.py)读取；`outputs/trajectory_sensitivity/` 的 torque NPZ 也属于其输入。不要为了缩减输出目录而删除这些文件。
+
+新 MyoLeg 的 `.cache/myosuite-assets/` 是经固定 wheel 校验和验证的模型资产，`.cache/myoleg-benchmark-v1/` 是按源码、模型和轨迹身份生成的力矩缓存。两者可以由准备命令和实验重建，均不进入 Git；运行中的缓存不可清理。`outputs/myoleg_benchmark_v1/` 下的协议、原始记录、诊断、报告与来源清单应保存，其内容不等同于缓存；该目录保留原始换行以保证 SHA 能跨平台核对。
 
 ## SDK 与用户配置
 

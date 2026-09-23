@@ -19,8 +19,11 @@
 4. [冻结五腿算法比较](research/FROZEN_MULTI_LEG_ALGORITHM_BENCHMARK_V1.md)：V2 集成之后的实际低预算实验；E2 为该比较主指标，E0/LCB 为敏感性分析。
 5. [真实测量分析接口](research/REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md)：静态有效性、同轨迹重复性和轨迹敏感性的输入与输出。
 6. [E3 候选族比较](../outputs/e3_candidate_comparison/REPORT.md)与[E3 低预算实验](../outputs/e3_low_budget/REPORT.md)：后续独立三参数探索，报告保留在生成器原输出目录。
+7. [MyoLeg 开发实测报告](../outputs/myoleg_benchmark_v1/development_20260923_r2/REPORT.md)与[研究及论文计划](research/MYOLEG_RESEARCH_AND_PAPER_PLAN.md)：已完成native＋24 development、七算法比较与native噪声；关键姿态族三种物理方法在K=4并列，E3改善约2.97%，后续仍须检验公共轨迹、全队列噪声与独立确认。运行入口见 [MyoLeg 配置与运行](GETTING_STARTED.md#myoleg-独立开发实验)及 [新 benchmark 代码](../lower_limb_sim/myoleg_benchmark/)。
 
 这些文档是有先后关系的研究记录，不是同时生效的多份“最终方案”。旧架构审查中未实现的 V3 EI、E2 adapter 与时序辨识已由 V2 补齐；V2 文档写作时未运行的算法比较随后已有独立冻结报告。后续 E3 探索没有覆盖冻结 V3/E2 的必要性结论。
+
+新 MyoLeg benchmark 的输出单独写入 `outputs/myoleg_benchmark_v1/<运行时间>/`，完成状态由各次运行的 `completion.json` 标记，报告由该次数据生成。它不覆写上述冻结结果；资产准备和内存路径重定位也不修改冻结 XML。旧 MyoLeg renderer 的绝对路径限制仍保留。
 
 指标名称必须结合研究阶段阅读：[旧 endpoint 设计](history/DESIGN_MECHANICALLY_INTERPRETABLE_ENDPOINT_V1.md)中的 **E3 是关节峰值比的最大值**；`outputs/e3_*` 中的 **E3 是四个关节/分支 RMS 比的均值**。两者不可互换。
 

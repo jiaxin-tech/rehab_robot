@@ -1,0 +1,17 @@
+{
+  "completed": true,
+  "jobs": 290,
+  "failed_jobs": 0,
+  "result_rows": 3320,
+  "trial_rows": 6010,
+  "protocol_sha256": "db0bb9d272199bfe59ef206eac6df2e042da6f3f62f12fdab41583f5a8baa7cc",
+  "source_sha256": {
+    "lower_limb_sim\\myoleg_benchmark\\__init__.py": "5c793866a76137b84fa2ab751ab51018412ca567611cd95b02d1a21d960160e1",
+    "lower_limb_sim\\myoleg_benchmark\\experiment.py": "2cd97493c9ff726693452c99d3d8dd06169a4118217ea21a4f5d6e2905da023e",
+    "lower_limb_sim\\myoleg_benchmark\\portable_model.py": "f21ae3cf35c1237dbb3347924b0699945acd4ecd8134d323cc5ea0489f65269d",
+    "lower_limb_sim\\myoleg_benchmark\\prepare_assets.py": "1c13059b5211f97496b9b9296bbb39489b9f2703218b01d20bdc16877c0392f9",
+    "lower_limb_sim\\myoleg_benchmark\\report.py": "95bb42c3d2d01669f925702384a6c83ab52c7e71ee2cf6864bdf94392684911a",
+    "lower_limb_sim\\myoleg_benchmark\\run.py": "8fdbf82cc133c417e931b876b025523763e54691e0d7a3580a3366c2048c8aba",
+    "lower_limb_sim\\myoleg_benchmark\\simulation.py": "9c3a2fdcefb02d3e2ab8c0bd846396d10d874d2da568b2ace9d8a4325ea148df"
+  }
+}
