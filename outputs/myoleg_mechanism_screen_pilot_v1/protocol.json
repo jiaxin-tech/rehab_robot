@@ -1,0 +1,25 @@
+{
+  "experiment_id": "MYOLEG_MECHANISM_SCREEN_V1",
+  "subject_scope": "frozen development subjects only; no sealed access",
+  "candidate_family": "DURATION_COORDINATION_V2",
+  "candidate_design": "duration_scale x smooth knee coordination lag x coordination amplitude",
+  "candidate_count": 27,
+  "reference": "DURATION_COORDINATION_V2:0 = (1.0, 0.0, 0.0)",
+  "cache_dir": "D:\\rehab_robot\\.cache\\myoleg-benchmark-v1",
+  "learner_access": "none; evaluator-only diagnostic",
+  "evaluation_scope": "native prescribed-state mechanism screen; no adaptive policy or personalization performance evaluation",
+  "oracle_scope": "evaluator-only after all candidates; not available to a learner and not a personalized recommendation",
+  "screen_decision_rule": "provisional_signal iff oracle_unique_count > 1 and cross_subject_E3_rank_spearman_median < 0.99; exploratory screen only, not a confirmatory personalization criterion",
+  "assistance_force": "not represented by native prescribed-state interface",
+  "metrics": {
+    "subject_count": 3,
+    "candidate_count": 27,
+    "oracle_unique_count": 2,
+    "oracle_unique_fraction": 0.6666666666666666,
+    "rank_spearman_median": 0.9852941176470587,
+    "rank_spearman_min": 0.9852941176470587,
+    "reference_regret_median": 0.00038093275541906113,
+    "reference_regret_max": 0.0003831617033260848,
+    "feasible_fraction_median": 1.0
+  }
+}

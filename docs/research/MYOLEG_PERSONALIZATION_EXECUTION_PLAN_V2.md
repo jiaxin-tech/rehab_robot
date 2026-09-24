@@ -18,6 +18,14 @@
 
 因此当前证据不支持“单纯候选数量太少”这一解释。V1 的候选参数有几何覆盖，但有效响应空间主要表现为共享排序；下一版应预先声明能改变主体—轨迹耦合的因素（例如辅助时机、速度/持续时间或髋膝协同），再比较是否产生不同 oracle。不得为了制造异质性事后扩大 V1 边界。
 
+### V2 机制筛查：速度与协调变化有信号，但仍不足以作为主实验
+
+已建立独立的 `DURATION_COORDINATION_V2` 机制域，包含 27 条候选：总周期缩放 `0.8/1.0/1.2`、平滑膝协调扰动时机 `-0.12/0/0.12`、协调幅度 `-0.04/0/0.04`。它不改 V1 域，所有候选均通过预先声明的速度、加速度和 ROM 限制。
+
+在 24 个 development 主体上的 [native screen](../../outputs/myoleg_mechanism_screen_development_v1/REPORT.md) 中，27 条候选全部有效；约束 oracle 只有 2/24 个，跨主体 E3 排序 Spearman 中位数为 1.000000、最低为 0.985294，参考方案相对 regret 中位数为 0.000390。相对于 V1 的 1/24 oracle，这说明速度/持续时间与协调候选在原生 prescribed-state torque 响应中产生了少量额外排序变化，但主体差异仍很弱；该 oracle 只用于完整 landscape 之后的诊断，不能当作个性化推荐或收益证据，也不能直接进入最终个性化主实验。
+
+原生 prescribed-state MyoLeg 接口没有辅助力输入，也没有把负荷分配作为可控制变量。因此“辅助时机”和“负荷分配”必须在新的明确 actuation/interaction 模型中定义，或仅在 controlled synthetic positive cohort 中做机制压力测试；不能把它们写成当前 native torque 仿真已经验证的因素。
+
 ### 灰箱 K=1/2/4/8 验证：排序可用不等于负荷预测可信
 
 [验证报告](../../outputs/myoleg_graybox_cv_development_v1/REPORT.md)、[逐前缀汇总](../../outputs/myoleg_graybox_cv_development_v1/summary.csv)与 [protocol](../../outputs/myoleg_graybox_cv_development_v1/protocol.json)来自已冻结 V1 的执行记录：24 个 development 主体 × 两个候选族 × 三种物理方法（`PHYSICS_GREEDY`、`RESIDUAL_GP_GREEDY`、`MODEL_INFORMED_BO_EI`）× 四个预算。只使用 seed 0、无测量噪声；不包含 native、其他方法、额外种子或确认集。
