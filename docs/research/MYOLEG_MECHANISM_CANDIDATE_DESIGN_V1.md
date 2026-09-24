@@ -52,7 +52,7 @@ held fixed during the first comparison:
 
 | factor | frozen pilot values | interpretation |
 |---|---|---|
-| assistance timing | early, middle, late stance (`0.25, 0.50, 0.75` phase) | when the assistance pulse is applied |
+| assistance timing | early, middle, late within each flexion/extension branch (`0.25, 0.50, 0.75` phase) | when the assistance pulse is applied; this is not gait stance |
 | hip/knee load share | hip-heavy, balanced, knee-heavy (`0.75, 0.50, 0.25` hip share) | which joint receives the assist torque |
 | trajectory duration | short, reference, long (`0.9, 1.0, 1.1`) | interaction between speed and assistance |
 
@@ -101,3 +101,13 @@ generalized torque in the frozen MyoLeg model. The actuation pilot supports
 claims about the evidence-gated algorithm under a declared interaction model.
 Neither supports claims about patient comfort, treatment efficacy, or hardware
 safety without a separate physical validation protocol.
+
+## Implemented V3 pilot protocol
+
+The [CONTROLLED_ACTUATION_V3 protocol](MYOLEG_CONTROLLED_ACTUATION_V3.md)
+specifies the fixed 2 Nm peak budget, public movement-aligned pulse direction,
+unassisted reference normalization, and development-only pilot. Before its
+first run, it supplements the exploratory reference-regret criterion above
+with the gap to the best shared feasible assisted candidate. This is needed
+because assistance that helps all subjects equally does not establish a
+personalization benefit. Pilot eligibility never opens the confirmatory split.

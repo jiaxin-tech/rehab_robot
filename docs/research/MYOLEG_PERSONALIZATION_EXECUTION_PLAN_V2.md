@@ -1,6 +1,6 @@
 # MyoLeg 个性化实验执行计划 V2
 
-更新：2026-09-23。实验锁定截止：2026-10-31。论文写作起点：2026-11-01。
+更新：2026-09-24。实验锁定截止：2026-10-31。论文写作起点：2026-11-01。
 
 本计划的主线是“证据门控、测量驱动的约束个性化优化”。当前已经完成 V1 全域审计和 K=1/2/4/8 灰箱预测验证；V1 的 30-seed 扩展暂停。新方法及 controlled cohort 使用独立模块和输出目录，不覆盖 V1。
 
@@ -25,6 +25,14 @@
 在 24 个 development 主体上的 [native screen](../../outputs/myoleg_mechanism_screen_development_v1/REPORT.md) 中，27 条候选全部有效；约束 oracle 只有 2/24 个，跨主体 E3 排序 Spearman 中位数为 1.000000、最低为 0.985294，参考方案相对 regret 中位数为 0.000390。相对于 V1 的 1/24 oracle，这说明速度/持续时间与协调候选在原生 prescribed-state torque 响应中产生了少量额外排序变化，但主体差异仍很弱；该 oracle 只用于完整 landscape 之后的诊断，不能当作个性化推荐或收益证据，也不能直接进入最终个性化主实验。
 
 原生 prescribed-state MyoLeg 接口没有辅助力输入，也没有把负荷分配作为可控制变量。因此“辅助时机”和“负荷分配”必须在新的明确 actuation/interaction 模型中定义，或仅在 controlled synthetic positive cohort 中做机制压力测试；不能把它们写成当前 native torque 仿真已经验证的因素。
+
+### CONTROLLED_ACTUATION_V3：排序出现变化，但实际个性化空间仍小
+
+[受控辅助协议与复现入口](MYOLEG_CONTROLLED_ACTUATION_V3.md)已实现固定 2 Nm 总 L1 峰值，改变辅助时机、髋膝比例和持续时间的 27 个候选。[三主体 pilot](../../outputs/myoleg_controlled_actuation_pilot_v3/REPORT.md)得到 81 条有效响应，主体分别有 7/9/8 个可行点；57 条违反 E2，peak 无违反。出现两个可行 oracle，全候选排序 Spearman 中位数降至 0.981685。
+
+但最佳公共可行辅助方案相对个体 oracle 的 regret 中位数为零，最大仅 0.003589%，远低于首次运行前规定的 0.5% 门槛。允许双方选择无辅助参考后仍相同。因此本版本状态为 `HOLD_NO_PRACTICAL_PERSONALIZATION_SIGNAL`；停止此版本扩大 development，不进入确认实验。该决定只覆盖这三个主体和该受控机制，不是对全部个性化任务的否定。
+
+这里辅助是在 native prescribed-state torque 上减去公开、跨主体相同的波形，没有前向辅助控制或肌肉响应模型；没有运行 SAST/EG-CPI-BO，不能把本轮结果写成算法比较。若继续设计交互，下一版本须先说明辅助作用与主体差异的物理依据。V1 的 30-seed 扩展保持暂停。
 
 ### 灰箱 K=1/2/4/8 验证：排序可用不等于负荷预测可信
 

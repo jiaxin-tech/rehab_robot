@@ -1,0 +1,65 @@
+{
+  "experiment_id": "CONTROLLED_ACTUATION_V3_DEVELOPMENT_PILOT",
+  "created_utc": "2026-09-24T02:40:48.517536+00:00",
+  "scope": "CONTROLLED_ACTUATION; algebraic net=native-assistance; not forward simulation",
+  "subject_ids": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003"
+  ],
+  "default_subject_selection": "first three sorted frozen development IDs, without outcome selection",
+  "candidate_family": "CONTROLLED_ACTUATION_V3",
+  "candidate_count": 27,
+  "candidate_factors": {
+    "duration_scale": [
+      0.9,
+      1.0,
+      1.1
+    ],
+    "assistance_timing": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "hip_share": [
+      0.25,
+      0.5,
+      0.75
+    ]
+  },
+  "config": {
+    "assist_peak_nm": 2.0,
+    "pulse_half_width_phase": 0.2,
+    "normalization": "fixed sampled peak of abs(tau_hip) + abs(tau_knee), separately in each branch",
+    "pulse": "C2 compact polynomial (1 - u^2)^3 for abs(u) < 1; sampled peak normalized to one",
+    "timing_scope": "relative elapsed time within each flexion/extension branch; not gait stance",
+    "direction": "sign of public reference end-minus-start joint angle within each branch",
+    "response_equation": "tau_net = tau_native - tau_assistance",
+    "scope": "CONTROLLED_ACTUATION; algebraic prescribed-state load-sharing proxy",
+    "fixed_budget_exclusions": "impulse, work, and squared torque energy are not fixed"
+  },
+  "normalization": "same-subject unassisted duration=1 reference for every candidate",
+  "constraints": {
+    "E2_max": 1.01,
+    "peak_ratio_max": 1.1
+  },
+  "noise_std": 0.0,
+  "oracle_tie_tolerance": 1e-10,
+  "common_rule": "evaluator-only mean E3 minimum over pilot-universally feasible assisted candidates",
+  "exploratory_rule": ">=2 subjects; every subject has a feasible oracle; >1 oracle; median Spearman<0.99 OR >=20% reference gaps >=0.005",
+  "v3_practical_rule": "exploratory rule AND a shared feasible assisted candidate exists AND >=20% subjects have relative common-policy regret >=0.005 including no-assistance fallback for both common and oracle; not a significance test",
+  "fallback_rule": "common: best mean E3 shared feasible assisted candidate or no assistance; oracle: best feasible assisted candidate or no assistance; prefer no assistance when E3>=1",
+  "confirmation_rule": "never automatic from pilot; requires policy/null/positive validation and separately frozen independent protocol",
+  "learner_access": "none; evaluator-only screen",
+  "confirmatory_access": false,
+  "v1_expansion": "PAUSED",
+  "cache_dir": "D:\\rehab_robot\\.cache\\myoleg-benchmark-v1",
+  "cohort_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+  "code_sha256": {
+    "actuation_screen.py": "0683574afe82092573e807aa8c39c9f72b0cd0be7a8ad6ac93985904121e581a",
+    "controlled_actuation.py": "d1829747110906b339b9b8848d9d41fadc4630e9963bd0d94cb3eae8452c10e2",
+    "mechanism_candidates.py": "caa0e6052eb33ccb333b0f060474aebf8dd9a5155e5cfba946061ecb972c8e26",
+    "experiment.py": "2cd97493c9ff726693452c99d3d8dd06169a4118217ea21a4f5d6e2905da023e",
+    "simulation.py": "9c3a2fdcefb02d3e2ab8c0bd846396d10d874d2da568b2ace9d8a4325ea148df"
+  }
+}
