@@ -25,6 +25,8 @@
 9. [CONTROLLED_ACTUATION_V3 受控辅助 pilot](research/MYOLEG_CONTROLLED_ACTUATION_V3.md)：固定 2 Nm 总峰值的 27 个候选已完成 3 个 development 主体、81 条响应；两种 oracle 的差异很小，最佳公共方案的最大相对 regret 仅 0.003589%。状态为 `HOLD_NO_PRACTICAL_PERSONALIZATION_SIGNAL`，不扩展到 24 主体或确认实验；该结果是受控力矩模型诊断，不是个性化算法或生理验证。
 10. [研究执行计划 V3](research/MYOLEG_RESEARCH_EXECUTION_PLAN_V3.md)：在 V3 native/代数辅助均显示决策差异很弱后，保留角度起始、速度敏感性和髋膝阻力分配的 controlled analytical stress field。当前代码已修正 development/confirmatory profile 隔离、固定 common、Residual Greedy/Pure EI 消融、真实约束结果和 observation logs，并完成五方法 development 比较；该层仍是软件压力测试，确认集和患者生理主张均未开始。
 
+11. [MyoLeg 附加弹簧—阻尼开发试验](research/MYOLEG_PHYSICAL_INTERACTION_PILOT_V1.md)：固定主体机械参数，辅助参数只改变辅助，沿用 V3 的 27 候选并逐分量保存力矩及等效力；区别于解析软件压力测试，不承担患者或临床验证主张。
+
 这些文档是有先后关系的研究记录，不是同时生效的多份“最终方案”。旧架构审查中未实现的 V3 EI、E2 adapter 与时序辨识已由 V2 补齐；V2 文档写作时未运行的算法比较随后已有独立冻结报告。后续 E3 探索没有覆盖冻结 V3/E2 的必要性结论。
 
 新 MyoLeg benchmark 的输出单独写入 `outputs/myoleg_benchmark_v1/<运行时间>/`，完成状态由各次运行的 `completion.json` 标记，报告由该次数据生成。它不覆写上述冻结结果；资产准备和内存路径重定位也不修改冻结 XML。旧 MyoLeg renderer 的绝对路径限制仍保留。

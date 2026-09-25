@@ -1,0 +1,347 @@
+{
+  "experiment_id": "PHYSICAL_INTERACTION_DEVELOPMENT_PILOT_V1",
+  "created_utc": "2026-09-25T09:29:04.136782+00:00",
+  "formula_version": "EXTERNAL_LINEAR_SPRING_DAMPER_V2",
+  "formula": "interaction=-scale*(K*(q-q0)+B*dq); net=native-interaction-assistance",
+  "parameter_source": "exploratory external attachment values declared in code before responses; not identified physiology",
+  "candidate_dependence": "interaction uses q,dq only; assistance uses timing/share; duration applied once by trajectory generator",
+  "native_passive_accounting": "already included in native required-drive torque; never subtracted again",
+  "native_subject_ids": [
+    "MYOLEG_VP_001",
+    "MYOLEG_VP_002",
+    "MYOLEG_VP_003"
+  ],
+  "selection": "first three sorted development IDs unless explicitly supplied",
+  "profiles": [
+    {
+      "profile_id": "ZERO_INTERACTION",
+      "stiffness_nm_per_rad": [
+        0.0,
+        0.0
+      ],
+      "damping_nm_s_per_rad": [
+        0.0,
+        0.0
+      ],
+      "reference_q_rad": [
+        0.5061580913269217,
+        0.3203519370158654
+      ],
+      "resistance_scale": 1.0
+    },
+    {
+      "profile_id": "HIP_SPRING",
+      "stiffness_nm_per_rad": [
+        6.0,
+        2.0
+      ],
+      "damping_nm_s_per_rad": [
+        0.3,
+        0.3
+      ],
+      "reference_q_rad": [
+        0.5061580913269217,
+        0.3203519370158654
+      ],
+      "resistance_scale": 1.0
+    },
+    {
+      "profile_id": "KNEE_SPRING",
+      "stiffness_nm_per_rad": [
+        2.0,
+        6.0
+      ],
+      "damping_nm_s_per_rad": [
+        0.3,
+        0.3
+      ],
+      "reference_q_rad": [
+        0.5061580913269217,
+        0.3203519370158654
+      ],
+      "resistance_scale": 1.0
+    },
+    {
+      "profile_id": "DAMPING",
+      "stiffness_nm_per_rad": [
+        2.0,
+        2.0
+      ],
+      "damping_nm_s_per_rad": [
+        1.0,
+        1.0
+      ],
+      "reference_q_rad": [
+        0.5061580913269217,
+        0.3203519370158654
+      ],
+      "resistance_scale": 1.0
+    }
+  ],
+  "interaction_config": {
+    "max_resistance_torque_nm": 20.0
+  },
+  "assistance_config": {
+    "assist_peak_nm": 2.0,
+    "pulse_half_width_phase": 0.2,
+    "normalization": "fixed sampled peak of abs(tau_hip) + abs(tau_knee), separately in each branch",
+    "pulse": "C2 compact polynomial (1 - u^2)^3 for abs(u) < 1; sampled peak normalized to one",
+    "timing_scope": "relative elapsed time within each flexion/extension branch; not gait stance",
+    "direction": "sign of public reference end-minus-start joint angle within each branch",
+    "response_equation": "tau_net = tau_native - tau_assistance",
+    "scope": "CONTROLLED_ACTUATION; algebraic prescribed-state load-sharing proxy",
+    "fixed_budget_exclusions": "impulse, work, and squared torque energy are not fixed"
+  },
+  "geometry_proxy": {
+    "L1_m": 0.42,
+    "L2_m": 0.3,
+    "force_limit_n": 500.0
+  },
+  "candidate_family": "CONTROLLED_ACTUATION_V3",
+  "candidates": [
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:0",
+      "features": [
+        1.0,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:1",
+      "features": [
+        0.9,
+        0.25,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:2",
+      "features": [
+        0.9,
+        0.25,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:3",
+      "features": [
+        0.9,
+        0.25,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:4",
+      "features": [
+        0.9,
+        0.5,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:5",
+      "features": [
+        0.9,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:6",
+      "features": [
+        0.9,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:7",
+      "features": [
+        0.9,
+        0.75,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:8",
+      "features": [
+        0.9,
+        0.75,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:9",
+      "features": [
+        0.9,
+        0.75,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:10",
+      "features": [
+        1.0,
+        0.25,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:11",
+      "features": [
+        1.0,
+        0.25,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:12",
+      "features": [
+        1.0,
+        0.25,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:13",
+      "features": [
+        1.0,
+        0.5,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:14",
+      "features": [
+        1.0,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:15",
+      "features": [
+        1.0,
+        0.75,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:16",
+      "features": [
+        1.0,
+        0.75,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:17",
+      "features": [
+        1.0,
+        0.75,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:18",
+      "features": [
+        1.1,
+        0.25,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:19",
+      "features": [
+        1.1,
+        0.25,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:20",
+      "features": [
+        1.1,
+        0.25,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:21",
+      "features": [
+        1.1,
+        0.5,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:22",
+      "features": [
+        1.1,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:23",
+      "features": [
+        1.1,
+        0.5,
+        0.75
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:24",
+      "features": [
+        1.1,
+        0.75,
+        0.25
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:25",
+      "features": [
+        1.1,
+        0.75,
+        0.5
+      ]
+    },
+    {
+      "candidate_id": "CONTROLLED_ACTUATION_V3:26",
+      "features": [
+        1.1,
+        0.75,
+        0.75
+      ]
+    }
+  ],
+  "normalization": "same native base and attachment, unassisted duration=1 reference",
+  "constraints": {
+    "E2_max": 1.01,
+    "peak_ratio_max": 1.1,
+    "scope": "mechanical comparison ratios, not clinical safety"
+  },
+  "screen_rule": "actuation_screen.summarize: common relative regret >=0.005 in >=20% configurations, shared feasible candidate, distinct oracles; allow no-assistance fallback; all planar mappings valid",
+  "statistical_unit": "native-base x fixed mechanical attachment; crossed sensitivity design, no independent patient inference",
+  "noise_std": 0.0,
+  "learner_access": "none; evaluator-only full-domain screen",
+  "common_policy": "evaluator-only mean E3 minimum over universally feasible candidates; not held-out-fitted common policy",
+  "confirmatory_access": false,
+  "v1_expansion": "PAUSED",
+  "robot_motion": "NO-GO",
+  "cohort_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+  "code_sha256": {
+    "lower_limb_sim/myoleg_benchmark/physical_interaction_screen.py": "158a646a0591fb2828be4eeddc9b3f38002af3d09d568eca1612f7d34c73afc0",
+    "lower_limb_sim/myoleg_benchmark/physical_interaction.py": "c90e4c2dfe0bf32cfcec09ef26ccdad500e532b56fedab0e0e5977d3b57e8b53",
+    "lower_limb_sim/myoleg_benchmark/physical_interaction_backend.py": "e7bb735aa957007bd998b37a0349e7c43a3e0e9aaa09b893b8d2b6a390307394",
+    "lower_limb_sim/myoleg_benchmark/controlled_actuation.py": "d1829747110906b339b9b8848d9d41fadc4630e9963bd0d94cb3eae8452c10e2",
+    "lower_limb_sim/myoleg_benchmark/actuation_screen.py": "0683574afe82092573e807aa8c39c9f72b0cd0be7a8ad6ac93985904121e581a",
+    "lower_limb_sim/myoleg_benchmark/mechanism_candidates.py": "caa0e6052eb33ccb333b0f060474aebf8dd9a5155e5cfba946061ecb972c8e26",
+    "lower_limb_sim/myoleg_benchmark/simulation.py": "9c3a2fdcefb02d3e2ab8c0bd846396d10d874d2da568b2ace9d8a4325ea148df",
+    "lower_limb_sim/myoleg_benchmark/experiment.py": "2cd97493c9ff726693452c99d3d8dd06169a4118217ea21a4f5d6e2905da023e",
+    "lower_limb_sim/force_mapping.py": "7130401b28ab145f4d9c96303ad4ff83e31688a973d61917e4d37430022b03cf",
+    "lower_limb_sim/jacobian.py": "efd4240885c8d65a965a5cc053dad9995125678e3bb170322a4da4fac6761a25",
+    "lower_limb_sim/mechanical_endpoints.py": "473696d369e88faf3451d92d76c79b65d64e82792273760c8840e8c1f20bc71e"
+  }
+}

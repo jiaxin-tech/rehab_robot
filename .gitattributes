@@ -48,3 +48,5 @@
 /outputs/myoleg_benchmark_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 # Full identification traces stay available as JSON without overwhelming code diffs.
 /outputs/myoleg_benchmark_v1/**/identification_diagnostics.json -diff
+# Preserve the exact bytes bound by this mechanical pilot's artifact hashes.
+/outputs/myoleg_physical_interaction_pilot_v1/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

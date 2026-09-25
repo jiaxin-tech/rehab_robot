@@ -1,0 +1,714 @@
+{
+  "native_bases": [
+    {
+      "native": {
+        "selection": "official_wheel_cache",
+        "myosuite_version": "2.12.2",
+        "source_url": "https://files.pythonhosted.org/packages/b7/35/755f9ba4a593a91f5453473cde0eea256a0092adf1e2eff57a01d8675517/myosuite-2.12.2-py3-none-any.whl",
+        "model_path": "D:\\rehab_robot\\external_simulation\\myoleg_supine_rehab_v1\\myoleg_supine_right_v1.xml",
+        "asset_root": "D:\\rehab_robot\\.cache\\myosuite-assets\\2.12.2\\myosuite\\simhive\\myo_sim",
+        "relocated_asset_count": 22,
+        "asset_files": [
+          "scene/myosuite_scene.png",
+          "scene/floor0.png",
+          "scene/myosuite_logo.png",
+          "scene/myosuite_scene_noFloor_noPedestal.msh",
+          "scene/myosuite_logo.msh",
+          "meshes/torso_lowpoly-v1.stl",
+          "meshes/r_pelvis.stl",
+          "meshes/l_pelvis.stl",
+          "meshes/r_femur.stl",
+          "meshes/r_tibia.stl",
+          "meshes/r_fibula.stl",
+          "meshes/r_talus.stl",
+          "meshes/r_foot.stl",
+          "meshes/r_bofoot.stl",
+          "meshes/r_patella.stl",
+          "meshes/l_femur.stl",
+          "meshes/l_tibia.stl",
+          "meshes/l_fibula.stl",
+          "meshes/l_talus.stl",
+          "meshes/l_foot.stl",
+          "meshes/l_bofoot.stl",
+          "meshes/l_patella.stl"
+        ],
+        "mujoco_version": "3.6.0",
+        "delta_path": "external_simulation\\cohorts\\myoleg_virtual_patient_cohort_v1\\subjects\\MYOLEG_VP_001\\model_delta.json",
+        "delta_sha256": "ae6a12ebedcb01cd178510cfcd2300541c007cd9574b64bdbe044471b6868a92",
+        "delta_source_identity": {
+          "expected_sha256": "286f07e0d23aae4c6afadb975b17312497465709aac6632accf8877fb00e6b5f",
+          "raw_sha256": "ae6a12ebedcb01cd178510cfcd2300541c007cd9574b64bdbe044471b6868a92",
+          "lf_sha256": "286f07e0d23aae4c6afadb975b17312497465709aac6632accf8877fb00e6b5f",
+          "match": "newline_equivalent"
+        },
+        "reference_numerical_equivalence": {
+          "reference_path": "external_simulation\\cohorts\\myoleg_virtual_patient_cohort_v1\\subjects\\MYOLEG_VP_001\\reference_replay_truth.npz",
+          "source_identity": {
+            "expected_sha256": "c4dae1e75a6df7853a4ae686199bdf287fb681cbbfdb27818a3e8c26e156048d",
+            "raw_sha256": "c4dae1e75a6df7853a4ae686199bdf287fb681cbbfdb27818a3e8c26e156048d",
+            "lf_sha256": "c4dae1e75a6df7853a4ae686199bdf287fb681cbbfdb27818a3e8c26e156048d",
+            "match": "exact"
+          },
+          "sample_count": 401,
+          "atol": 1e-10,
+          "rtol": 1e-12,
+          "max_absolute_errors": {
+            "tau_truth_nm": 3.197442310920451e-13,
+            "tau_inverse_net_nm": 2.1316282072803006e-14,
+            "mass_term_nm": 3.3306690738754696e-16,
+            "bias_term_nm": 2.1316282072803006e-14,
+            "passive_internal_nm": 1.1102230246251565e-16,
+            "actuator_internal_nm": 3.197442310920451e-13,
+            "constraint_internal_nm": 3.088051732727526e-15,
+            "constraint_equality_internal_nm": 3.532145839652224e-15,
+            "constraint_joint_limit_internal_nm": 4.9981720151581754e-17,
+            "constraint_tendon_limit_internal_nm": 0.0,
+            "constraint_friction_internal_nm": 0.0,
+            "constraint_contact_internal_nm": 0.0,
+            "actuator_force_n": 4.879652237832488e-12,
+            "actuator_length_m": 1.50712775592865e-14,
+            "tendon_length_m": 1.50712775592865e-14,
+            "actuator_activation": 0.0,
+            "muscle_moment_independent_m": 6.245004513516506e-16,
+            "muscle_torque_contribution_nm": 3.194666753358888e-13,
+            "key_biarticular_torque_contribution_nm": 4.884981308350689e-14
+          },
+          "interpretation": "public reference numerical equivalence; not bit-identical compiled model"
+        },
+        "model_xml_identity": {
+          "expected_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+          "raw_sha256": "960cdb3dca5eeda281a69c99e899bbd1571377e8f12d8c729286948ce9792e59",
+          "lf_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+          "match": "newline_equivalent"
+        },
+        "frozen_compiled_fingerprint": "8e5b52a32bdb8ee8899280f08498481e76b539b4267509e9d5cf4fb3c0171030",
+        "compiled_fingerprint_match": false,
+        "compiled_model_validation": "source_verified_reference_numerical_equivalence",
+        "delta_before_max_absolute_differences": {
+          "patella_r.body_inertia": 2.541098841762901e-21,
+          "talus_r.body_mass": 3.469446951953614e-18,
+          "talus_r.body_inertia": 8.470329472543003e-22,
+          "toes_r.body_inertia": 1.3552527156068805e-20
+        },
+        "delta_before_rtol": 1e-13,
+        "subject_id": "MYOLEG_VP_001",
+        "cohort_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+        "runtime_compiled_fingerprint": "cb6df12395df88aa62dcb688622d690bb58b778cd92c92a77c15982e8d6e2ec0",
+        "truth_source_sha256": "8a5c536d30d0031e0e49adaddd98a496c574e95bb1f75f2b3eddc07791e51472",
+        "truth_semantics": "prescribed-state inverse dynamics; generalized required-drive torque, not measured cuff force or forward tracking"
+      },
+      "fresh_simulations": 0,
+      "disk_hits": 27
+    },
+    {
+      "native": {
+        "selection": "official_wheel_cache",
+        "myosuite_version": "2.12.2",
+        "source_url": "https://files.pythonhosted.org/packages/b7/35/755f9ba4a593a91f5453473cde0eea256a0092adf1e2eff57a01d8675517/myosuite-2.12.2-py3-none-any.whl",
+        "model_path": "D:\\rehab_robot\\external_simulation\\myoleg_supine_rehab_v1\\myoleg_supine_right_v1.xml",
+        "asset_root": "D:\\rehab_robot\\.cache\\myosuite-assets\\2.12.2\\myosuite\\simhive\\myo_sim",
+        "relocated_asset_count": 22,
+        "asset_files": [
+          "scene/myosuite_scene.png",
+          "scene/floor0.png",
+          "scene/myosuite_logo.png",
+          "scene/myosuite_scene_noFloor_noPedestal.msh",
+          "scene/myosuite_logo.msh",
+          "meshes/torso_lowpoly-v1.stl",
+          "meshes/r_pelvis.stl",
+          "meshes/l_pelvis.stl",
+          "meshes/r_femur.stl",
+          "meshes/r_tibia.stl",
+          "meshes/r_fibula.stl",
+          "meshes/r_talus.stl",
+          "meshes/r_foot.stl",
+          "meshes/r_bofoot.stl",
+          "meshes/r_patella.stl",
+          "meshes/l_femur.stl",
+          "meshes/l_tibia.stl",
+          "meshes/l_fibula.stl",
+          "meshes/l_talus.stl",
+          "meshes/l_foot.stl",
+          "meshes/l_bofoot.stl",
+          "meshes/l_patella.stl"
+        ],
+        "mujoco_version": "3.6.0",
+        "delta_path": "external_simulation\\cohorts\\myoleg_virtual_patient_cohort_v1\\subjects\\MYOLEG_VP_002\\model_delta.json",
+        "delta_sha256": "87d2db066baefd5b379512581a40582ec7186f30176753613ac0221fd6c9af2b",
+        "delta_source_identity": {
+          "expected_sha256": "b2e2f0b3e2fb300f5876139e8b63b118d34774ca72aa73e42d5adc8f8cb8578b",
+          "raw_sha256": "87d2db066baefd5b379512581a40582ec7186f30176753613ac0221fd6c9af2b",
+          "lf_sha256": "b2e2f0b3e2fb300f5876139e8b63b118d34774ca72aa73e42d5adc8f8cb8578b",
+          "match": "newline_equivalent"
+        },
+        "reference_numerical_equivalence": {
+          "reference_path": "external_simulation\\cohorts\\myoleg_virtual_patient_cohort_v1\\subjects\\MYOLEG_VP_002\\reference_replay_truth.npz",
+          "source_identity": {
+            "expected_sha256": "627e1edbb39ba411a7579e04f13973259d2bd1eb3b77c985690e398bc23ea501",
+            "raw_sha256": "627e1edbb39ba411a7579e04f13973259d2bd1eb3b77c985690e398bc23ea501",
+            "lf_sha256": "627e1edbb39ba411a7579e04f13973259d2bd1eb3b77c985690e398bc23ea501",
+            "match": "exact"
+          },
+          "sample_count": 401,
+          "atol": 1e-10,
+          "rtol": 1e-12,
+          "max_absolute_errors": {
+            "tau_truth_nm": 3.055333763768431e-13,
+            "tau_inverse_net_nm": 2.4868995751603507e-14,
+            "mass_term_nm": 2.7755575615628914e-16,
+            "bias_term_nm": 2.4868995751603507e-14,
+            "passive_internal_nm": 1.1102230246251565e-16,
+            "actuator_internal_nm": 3.0375701953744283e-13,
+            "constraint_internal_nm": 3.088051732727526e-15,
+            "constraint_equality_internal_nm": 3.532145839652224e-15,
+            "constraint_joint_limit_internal_nm": 4.9981720151581754e-17,
+            "constraint_tendon_limit_internal_nm": 0.0,
+            "constraint_friction_internal_nm": 0.0,
+            "constraint_contact_internal_nm": 0.0,
+            "actuator_force_n": 4.662048525005957e-12,
+            "actuator_length_m": 1.50712775592865e-14,
+            "tendon_length_m": 1.50712775592865e-14,
+            "actuator_activation": 0.0,
+            "muscle_moment_independent_m": 6.245004513516506e-16,
+            "muscle_torque_contribution_nm": 3.0520030946945553e-13,
+            "key_biarticular_torque_contribution_nm": 4.263256414560601e-14
+          },
+          "interpretation": "public reference numerical equivalence; not bit-identical compiled model"
+        },
+        "model_xml_identity": {
+          "expected_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+          "raw_sha256": "960cdb3dca5eeda281a69c99e899bbd1571377e8f12d8c729286948ce9792e59",
+          "lf_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+          "match": "newline_equivalent"
+        },
+        "frozen_compiled_fingerprint": "6da523a6eaa5b91b4ebdbf8953792cc295248a0ec9c25e4a3796460d63e6fcb5",
+        "compiled_fingerprint_match": false,
+        "compiled_model_validation": "source_verified_reference_numerical_equivalence",
+        "delta_before_max_absolute_differences": {
+          "patella_r.body_inertia": 2.541098841762901e-21,
+          "talus_r.body_mass": 3.469446951953614e-18,
+          "talus_r.body_inertia": 8.470329472543003e-22,
+          "toes_r.body_inertia": 1.3552527156068805e-20
+        },
+        "delta_before_rtol": 1e-13,
+        "subject_id": "MYOLEG_VP_002",
+        "cohort_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+        "runtime_compiled_fingerprint": "536acd0dadb7fbaf61677bb59233ae9047af4a2f6cb69f9471066b7e18e09873",
+        "truth_source_sha256": "8a5c536d30d0031e0e49adaddd98a496c574e95bb1f75f2b3eddc07791e51472",
+        "truth_semantics": "prescribed-state inverse dynamics; generalized required-drive torque, not measured cuff force or forward tracking"
+      },
+      "fresh_simulations": 0,
+      "disk_hits": 27
+    },
+    {
+      "native": {
+        "selection": "official_wheel_cache",
+        "myosuite_version": "2.12.2",
+        "source_url": "https://files.pythonhosted.org/packages/b7/35/755f9ba4a593a91f5453473cde0eea256a0092adf1e2eff57a01d8675517/myosuite-2.12.2-py3-none-any.whl",
+        "model_path": "D:\\rehab_robot\\external_simulation\\myoleg_supine_rehab_v1\\myoleg_supine_right_v1.xml",
+        "asset_root": "D:\\rehab_robot\\.cache\\myosuite-assets\\2.12.2\\myosuite\\simhive\\myo_sim",
+        "relocated_asset_count": 22,
+        "asset_files": [
+          "scene/myosuite_scene.png",
+          "scene/floor0.png",
+          "scene/myosuite_logo.png",
+          "scene/myosuite_scene_noFloor_noPedestal.msh",
+          "scene/myosuite_logo.msh",
+          "meshes/torso_lowpoly-v1.stl",
+          "meshes/r_pelvis.stl",
+          "meshes/l_pelvis.stl",
+          "meshes/r_femur.stl",
+          "meshes/r_tibia.stl",
+          "meshes/r_fibula.stl",
+          "meshes/r_talus.stl",
+          "meshes/r_foot.stl",
+          "meshes/r_bofoot.stl",
+          "meshes/r_patella.stl",
+          "meshes/l_femur.stl",
+          "meshes/l_tibia.stl",
+          "meshes/l_fibula.stl",
+          "meshes/l_talus.stl",
+          "meshes/l_foot.stl",
+          "meshes/l_bofoot.stl",
+          "meshes/l_patella.stl"
+        ],
+        "mujoco_version": "3.6.0",
+        "delta_path": "external_simulation\\cohorts\\myoleg_virtual_patient_cohort_v1\\subjects\\MYOLEG_VP_003\\model_delta.json",
+        "delta_sha256": "b95fd8d65b8feb7c2ff44bc2b41266ce8b68de943a8d554afc412b13615f9a15",
+        "delta_source_identity": {
+          "expected_sha256": "85a6d6beb8dfcf8a47a33a1770a507ed065e2ceb81c0313d68fe5c3771e18de9",
+          "raw_sha256": "b95fd8d65b8feb7c2ff44bc2b41266ce8b68de943a8d554afc412b13615f9a15",
+          "lf_sha256": "85a6d6beb8dfcf8a47a33a1770a507ed065e2ceb81c0313d68fe5c3771e18de9",
+          "match": "newline_equivalent"
+        },
+        "reference_numerical_equivalence": {
+          "reference_path": "external_simulation\\cohorts\\myoleg_virtual_patient_cohort_v1\\subjects\\MYOLEG_VP_003\\reference_replay_truth.npz",
+          "source_identity": {
+            "expected_sha256": "79532455da4aa0fd28afb9d06dc7d7bb1b062e4300bc973c47d49511baa09b77",
+            "raw_sha256": "79532455da4aa0fd28afb9d06dc7d7bb1b062e4300bc973c47d49511baa09b77",
+            "lf_sha256": "79532455da4aa0fd28afb9d06dc7d7bb1b062e4300bc973c47d49511baa09b77",
+            "match": "exact"
+          },
+          "sample_count": 401,
+          "atol": 1e-10,
+          "rtol": 1e-12,
+          "max_absolute_errors": {
+            "tau_truth_nm": 2.984279490192421e-13,
+            "tau_inverse_net_nm": 2.1316282072803006e-14,
+            "mass_term_nm": 3.3306690738754696e-16,
+            "bias_term_nm": 2.1316282072803006e-14,
+            "passive_internal_nm": 1.1102230246251565e-16,
+            "actuator_internal_nm": 2.9665159217984183e-13,
+            "constraint_internal_nm": 3.088051732727526e-15,
+            "constraint_equality_internal_nm": 3.532145839652224e-15,
+            "constraint_joint_limit_internal_nm": 4.9981720151581754e-17,
+            "constraint_tendon_limit_internal_nm": 0.0,
+            "constraint_friction_internal_nm": 0.0,
+            "constraint_contact_internal_nm": 0.0,
+            "actuator_force_n": 4.544808973605541e-12,
+            "actuator_length_m": 1.50712775592865e-14,
+            "tendon_length_m": 1.50712775592865e-14,
+            "actuator_activation": 0.0,
+            "muscle_moment_independent_m": 6.245004513516506e-16,
+            "muscle_torque_contribution_nm": 2.9753977059954195e-13,
+            "key_biarticular_torque_contribution_nm": 4.1300296516055823e-14
+          },
+          "interpretation": "public reference numerical equivalence; not bit-identical compiled model"
+        },
+        "model_xml_identity": {
+          "expected_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+          "raw_sha256": "960cdb3dca5eeda281a69c99e899bbd1571377e8f12d8c729286948ce9792e59",
+          "lf_sha256": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+          "match": "newline_equivalent"
+        },
+        "frozen_compiled_fingerprint": "1bcf09f388233b4348fd7b77a38f4defad9c8225420a305af63f9a0891ddc70d",
+        "compiled_fingerprint_match": false,
+        "compiled_model_validation": "source_verified_reference_numerical_equivalence",
+        "delta_before_max_absolute_differences": {
+          "patella_r.body_inertia": 2.541098841762901e-21,
+          "talus_r.body_mass": 3.469446951953614e-18,
+          "talus_r.body_inertia": 8.470329472543003e-22,
+          "toes_r.body_inertia": 1.3552527156068805e-20
+        },
+        "delta_before_rtol": 1e-13,
+        "subject_id": "MYOLEG_VP_003",
+        "cohort_manifest_sha256": "31fbdfcf26dad04d13d4fbf62fb69b1ae6a0c14fc3d3acbeb7272dd1cc6a7057",
+        "runtime_compiled_fingerprint": "85985a590a49f20181ea17454e55bc00f30d88d5c6f654f7a5f93f534d1cbfd3",
+        "truth_source_sha256": "8a5c536d30d0031e0e49adaddd98a496c574e95bb1f75f2b3eddc07791e51472",
+        "truth_semantics": "prescribed-state inverse dynamics; generalized required-drive torque, not measured cuff force or forward tracking"
+      },
+      "fresh_simulations": 0,
+      "disk_hits": 27
+    }
+  ],
+  "configurations": [
+    {
+      "configuration_id": "MYOLEG_VP_001::ZERO_INTERACTION",
+      "native_subject_id": "MYOLEG_VP_001",
+      "profile": {
+        "profile_id": "ZERO_INTERACTION",
+        "stiffness_nm_per_rad": [
+          0.0,
+          0.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.0,
+          0.0
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        32.87745213385689,
+        37.72019947803967,
+        9.883143499422886,
+        10.675059904668554
+      ],
+      "unassisted_reference_peaks_nm": [
+        51.06565373794856,
+        16.47304853531143
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_001_ZERO_INTERACTION.npz",
+      "trace_sha256": "d4f9d3ec7d548f19ff965b4d0841edb5fd1e9db77777dc08b0705d8b503799df"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_001::HIP_SPRING",
+      "native_subject_id": "MYOLEG_VP_001",
+      "profile": {
+        "profile_id": "HIP_SPRING",
+        "stiffness_nm_per_rad": [
+          6.0,
+          2.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.3,
+          0.3
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        35.93156212251655,
+        39.80828436258193,
+        8.704984563522487,
+        10.008825519571655
+      ],
+      "unassisted_reference_peaks_nm": [
+        51.61338555569952,
+        16.475582219434575
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_001_HIP_SPRING.npz",
+      "trace_sha256": "721dff63803c338c7e8c94908074a0f43bbc1c577a755f7050ffb096482e291c"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_001::KNEE_SPRING",
+      "native_subject_id": "MYOLEG_VP_001",
+      "profile": {
+        "profile_id": "KNEE_SPRING",
+        "stiffness_nm_per_rad": [
+          2.0,
+          6.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.3,
+          0.3
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        33.824932095869656,
+        38.320452092428035,
+        8.546649658997197,
+        10.235217877863416
+      ],
+      "unassisted_reference_peaks_nm": [
+        51.14778401733757,
+        16.47592349524583
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_001_KNEE_SPRING.npz",
+      "trace_sha256": "e8bbaaefcf70b047e7e7c99ef5da8189cc424536edd5371e4401c07ccbf1f80d"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_001::DAMPING",
+      "native_subject_id": "MYOLEG_VP_001",
+      "profile": {
+        "profile_id": "DAMPING",
+        "stiffness_nm_per_rad": [
+          2.0,
+          2.0
+        ],
+        "damping_nm_s_per_rad": [
+          1.0,
+          1.0
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        33.90504170755832,
+        38.22999677727451,
+        8.616215948267229,
+        10.114761059022243
+      ],
+      "unassisted_reference_peaks_nm": [
+        51.228129812836826,
+        16.48360866694486
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_001_DAMPING.npz",
+      "trace_sha256": "b867ceb92c4b5b25225ff07bfeb56ce8c9d8d124686a3e3d548f4b5a5188aa3d"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_002::ZERO_INTERACTION",
+      "native_subject_id": "MYOLEG_VP_002",
+      "profile": {
+        "profile_id": "ZERO_INTERACTION",
+        "stiffness_nm_per_rad": [
+          0.0,
+          0.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.0,
+          0.0
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        35.3936907858652,
+        40.63856989904761,
+        11.851579847493335,
+        12.518756787084547
+      ],
+      "unassisted_reference_peaks_nm": [
+        55.13807531468015,
+        18.247580185147143
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_002_ZERO_INTERACTION.npz",
+      "trace_sha256": "1ef3bf1fb62c2fd173004b2ac2681f4b9ed0cfa0ceb8d7373903eec0a9027f2a"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_002::HIP_SPRING",
+      "native_subject_id": "MYOLEG_VP_002",
+      "profile": {
+        "profile_id": "HIP_SPRING",
+        "stiffness_nm_per_rad": [
+          6.0,
+          2.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.3,
+          0.3
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        38.455883196535794,
+        42.732666105368494,
+        10.371668792924632,
+        11.561571186668179
+      ],
+      "unassisted_reference_peaks_nm": [
+        55.49571499208445,
+        18.25041896780395
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_002_HIP_SPRING.npz",
+      "trace_sha256": "b5a99ff8074cdba3001986ad756f6f2c285cec1a6c86e68bce87aa5034f76e40"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_002::KNEE_SPRING",
+      "native_subject_id": "MYOLEG_VP_002",
+      "profile": {
+        "profile_id": "KNEE_SPRING",
+        "stiffness_nm_per_rad": [
+          2.0,
+          6.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.3,
+          0.3
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        36.35042226322386,
+        41.24594696295889,
+        9.12137527342114,
+        10.921499220587418
+      ],
+      "unassisted_reference_peaks_nm": [
+        55.220205594069164,
+        18.25013286362211
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_002_KNEE_SPRING.npz",
+      "trace_sha256": "0453735508fb5ee4c4fd19e8f1d65596e4d331609305a2238b9b6ab5e279abe8"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_002::DAMPING",
+      "native_subject_id": "MYOLEG_VP_002",
+      "profile": {
+        "profile_id": "DAMPING",
+        "stiffness_nm_per_rad": [
+          2.0,
+          2.0
+        ],
+        "damping_nm_s_per_rad": [
+          1.0,
+          1.0
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        36.43027410396464,
+        41.155857960499624,
+        10.278178932102326,
+        11.675195654489798
+      ],
+      "unassisted_reference_peaks_nm": [
+        55.257677576592016,
+        18.260441553539277
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_002_DAMPING.npz",
+      "trace_sha256": "304eabd1c14830c703ffa490d0b6dbf340db42641d94b4a375b95ecca8c649ca"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_003::ZERO_INTERACTION",
+      "native_subject_id": "MYOLEG_VP_003",
+      "profile": {
+        "profile_id": "ZERO_INTERACTION",
+        "stiffness_nm_per_rad": [
+          0.0,
+          0.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.0,
+          0.0
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        33.46014637370249,
+        38.46078932689913,
+        10.227017104901401,
+        10.935350789884328
+      ],
+      "unassisted_reference_peaks_nm": [
+        52.17257734778898,
+        16.428679887773196
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_003_ZERO_INTERACTION.npz",
+      "trace_sha256": "ca2d56f5c59f790a6e7cdf81ccc0822d49cdc8a9c2d51aaddef7257ef243dd19"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_003::HIP_SPRING",
+      "native_subject_id": "MYOLEG_VP_003",
+      "profile": {
+        "profile_id": "HIP_SPRING",
+        "stiffness_nm_per_rad": [
+          6.0,
+          2.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.3,
+          0.3
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        36.47948088359158,
+        40.52274743382404,
+        8.907878681266107,
+        10.134378711262995
+      ],
+      "unassisted_reference_peaks_nm": [
+        52.64201609385989,
+        16.431518670430002
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_003_HIP_SPRING.npz",
+      "trace_sha256": "c9f20dc2ef2639cb2a2516f2759c296da129c3062b771ba1145a181f7c625c3a"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_003::KNEE_SPRING",
+      "native_subject_id": "MYOLEG_VP_003",
+      "profile": {
+        "profile_id": "KNEE_SPRING",
+        "stiffness_nm_per_rad": [
+          2.0,
+          6.0
+        ],
+        "damping_nm_s_per_rad": [
+          0.3,
+          0.3
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        34.396851734428814,
+        39.05343797025218,
+        8.366562059032036,
+        10.050473849900058
+      ],
+      "unassisted_reference_peaks_nm": [
+        52.25470762717799,
+        16.431232566248163
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_003_KNEE_SPRING.npz",
+      "trace_sha256": "0e6c2cecc596ec388491ec3d0310a1ae417db6ed7415c38a6fd3aabff059b3b6"
+    },
+    {
+      "configuration_id": "MYOLEG_VP_003::DAMPING",
+      "native_subject_id": "MYOLEG_VP_003",
+      "profile": {
+        "profile_id": "DAMPING",
+        "stiffness_nm_per_rad": [
+          2.0,
+          2.0
+        ],
+        "damping_nm_s_per_rad": [
+          1.0,
+          1.0
+        ],
+        "reference_q_rad": [
+          0.5061580913269217,
+          0.3203519370158654
+        ],
+        "resistance_scale": 1.0
+      },
+      "unassisted_reference_components_nm": [
+        34.476777762956836,
+        38.963346129326595,
+        8.816905020991884,
+        10.24384568238758
+      ],
+      "unassisted_reference_peaks_nm": [
+        52.29324935273156,
+        16.440707663618035
+      ],
+      "unassisted_reference_force_mapping_valid": true,
+      "unassisted_reference_force_invalid_reasons": [],
+      "trace_file": "traces_MYOLEG_VP_003_DAMPING.npz",
+      "trace_sha256": "8c56e6dc4445a7b82d0512b4aa61799b257f75464f5e59f39886a09387e50473"
+    }
+  ]
+}

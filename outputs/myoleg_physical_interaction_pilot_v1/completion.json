@@ -1,0 +1,27 @@
+{
+  "complete": true,
+  "protocol_sha256": "20a017cdba7609746752a36f99b84a31df6df7efde1d76fc75892b37c2a8e8aa",
+  "responses": 324,
+  "confirmatory_access": false,
+  "artifact_sha256": {
+    "landscape.csv": "17c3bc338a6abd81473182bf0dc034b91557a4f975d93cc054de3443a386c07d",
+    "oracle_summary.csv": "d8e83daec5aa2f0d2cf0b689a7ef86099dc7b660c6574d6a2703bf3ade530986",
+    "protocol.json": "20a017cdba7609746752a36f99b84a31df6df7efde1d76fc75892b37c2a8e8aa",
+    "provenance.json": "2b9960d56aeaad06b76169c9aa053ff99bef7de9bba67e20adc5179770929387",
+    "REPORT.md": "306c8e7cc18ebcd471cd324e3ae750ef2cd7efe9cf0861de73cdf33b1439bb2d",
+    "summary.json": "abbf818500d8f58a46deb5bef235db4cbf2dd908c75c3a58afe24abdaca666d3",
+    "traces_MYOLEG_VP_001_DAMPING.npz": "b867ceb92c4b5b25225ff07bfeb56ce8c9d8d124686a3e3d548f4b5a5188aa3d",
+    "traces_MYOLEG_VP_001_HIP_SPRING.npz": "721dff63803c338c7e8c94908074a0f43bbc1c577a755f7050ffb096482e291c",
+    "traces_MYOLEG_VP_001_KNEE_SPRING.npz": "e8bbaaefcf70b047e7e7c99ef5da8189cc424536edd5371e4401c07ccbf1f80d",
+    "traces_MYOLEG_VP_001_ZERO_INTERACTION.npz": "d4f9d3ec7d548f19ff965b4d0841edb5fd1e9db77777dc08b0705d8b503799df",
+    "traces_MYOLEG_VP_002_DAMPING.npz": "304eabd1c14830c703ffa490d0b6dbf340db42641d94b4a375b95ecca8c649ca",
+    "traces_MYOLEG_VP_002_HIP_SPRING.npz": "b5a99ff8074cdba3001986ad756f6f2c285cec1a6c86e68bce87aa5034f76e40",
+    "traces_MYOLEG_VP_002_KNEE_SPRING.npz": "0453735508fb5ee4c4fd19e8f1d65596e4d331609305a2238b9b6ab5e279abe8",
+    "traces_MYOLEG_VP_002_ZERO_INTERACTION.npz": "1ef3bf1fb62c2fd173004b2ac2681f4b9ed0cfa0ceb8d7373903eec0a9027f2a",
+    "traces_MYOLEG_VP_003_DAMPING.npz": "8c56e6dc4445a7b82d0512b4aa61799b257f75464f5e59f39886a09387e50473",
+    "traces_MYOLEG_VP_003_HIP_SPRING.npz": "c9f20dc2ef2639cb2a2516f2759c296da129c3062b771ba1145a181f7c625c3a",
+    "traces_MYOLEG_VP_003_KNEE_SPRING.npz": "0e6c2cecc596ec388491ec3d0310a1ae417db6ed7415c38a6fd3aabff059b3b6",
+    "traces_MYOLEG_VP_003_ZERO_INTERACTION.npz": "ca2d56f5c59f790a6e7cdf81ccc0822d49cdc8a9c2d51aaddef7257ef243dd19",
+    "within_profile_summary.json": "efd497b1a3a906bfb5691137820604edfc3b0eb25001cb59cd034cce8bb97be7"
+  }
+}

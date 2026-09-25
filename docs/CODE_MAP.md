@@ -13,6 +13,7 @@
 | 新 MyoLeg 开发比较 | [myoleg_benchmark/run.py](../lower_limb_sim/myoleg_benchmark/run.py)、[experiment.py](../lower_limb_sim/myoleg_benchmark/experiment.py) | 按请求运行 MyoLeg 动力学，比较七算法、两候选族与预算/噪声；仅 native 和原 development 主体，输出与旧 E3 回放分开 |
 | Controlled interaction development | [controlled_resistance_cohort.py](../lower_limb_sim/myoleg_benchmark/controlled_resistance_cohort.py)、[controlled_resistance_experiment.py](../lower_limb_sim/myoleg_benchmark/controlled_resistance_experiment.py)、[controlled_resistance_algorithm_comparison.py](../lower_limb_sim/myoleg_benchmark/controlled_resistance_algorithm_comparison.py) | 预声明角度起始、速度敏感性和髋膝阻力分配的 controlled synthetic profile；null/positive gate 与五方法比较（common、Random、Residual Greedy、Pure EI、SAST）；不改 native、V1 或 sealed cohort |
 | ROKAE 参考执行与真实测量 | [scripts/](../scripts/)、[control/](../control/)、[collection/](../collection/) | 参考轨迹前馈执行、日志和离线辨识；尚未贯通真实测量驱动的在线个体化，运动默认关闭 |
+| MyoLeg 附加机械元件开发筛查 | [physical_interaction.py](../lower_limb_sim/myoleg_benchmark/physical_interaction.py)、[physical_interaction_backend.py](../lower_limb_sim/myoleg_benchmark/physical_interaction_backend.py)、[physical_interaction_screen.py](../lower_limb_sim/myoleg_benchmark/physical_interaction_screen.py) | 固定弹簧—阻尼参数 + 既有 V3 辅助；保存 native/interaction/assistance/net 分量；evaluator-only，非患者模型或前向控制 |
 
 V3 是轨迹参数化版本，V2 是 ROM 门控及算法集成版本，E0/E2/E3 是不同端点，三个编号体系不能相互替代。E2 使用四项同腿参考归一化分支 RMS 的最大值；E3 使用其等权均值。读取结果时须同时核对候选域、端点、模型和预算。
 

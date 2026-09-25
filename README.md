@@ -30,6 +30,8 @@
 
 指标定义、报告先后和限制见[研究主线](docs/RESEARCH.md)。软件测试通过不代表真机运动放行。
 
+最新进展：已把候选无关的弹簧—阻尼接入 MyoLeg，完成 3 个开发主体 × 4 个固定机械配置 × 27 候选。出现 6 种 oracle，但相对最佳公共方案的最大额外收益为 **0.466442%**，未达到预设 0.5% 门槛，保持 HOLD。[物理交互报告](outputs/myoleg_physical_interaction_pilot_v1/REPORT.md)与[机制、范围和下一步](docs/research/MYOLEG_PHYSICAL_INTERACTION_PILOT_V1.md)。这仍是附加机械元件的敏感性试验，尚未验证患者个体化。
+
 ## 快速验证
 
 本机已配置 `.venv`（Python 3.12.14 x64）。尚未安装时先按[上手指南](docs/GETTING_STARTED.md)创建环境。
@@ -41,7 +43,7 @@ $env:MPLCONFIGDIR = Join-Path (Get-Location) '.cache/matplotlib'
 .\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q
 ```
 
-当前核心回归为 **462 passed**（2026-09-25，101.50 s），包含新增 MyoLeg benchmark、controlled interaction 协议和物理交互单元检查。它覆盖当前离线研究、采集、fake SDK 和诊断代码；不连接机器人，也不是历史全仓套件。环境版本与实际验证记录见[上手指南](docs/GETTING_STARTED.md)。
+当前核心回归为 **491 passed**（2026-09-25，126.74 s），包含 MyoLeg benchmark、controlled interaction 协议、弹簧—阻尼能量/单位检查和完整 pilot 产物重建检查。它覆盖当前离线研究、采集、fake SDK 和诊断代码；不连接机器人，也不是历史全仓套件。环境版本、测试缓存警告和实际验证记录见[上手指南](docs/GETTING_STARTED.md)。
 
 新 MyoLeg 实验通过 `python -m lower_limb_sim.myoleg_benchmark.prepare_assets` 准备官方 MyoSuite 2.12.2 资产，再由可移植加载器在内存中定位资产；冻结 XML 和既有实验结果保持原样。旧视频 renderer 仍使用 XML 中的原机器绝对路径，不能据此认为旧渲染入口也已完成移植。
 
