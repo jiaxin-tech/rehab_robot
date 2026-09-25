@@ -1,0 +1,896 @@
+[
+  {
+    "profile_id": "RESIST_COMMON_DEVE_00",
+    "scenario": "COMMON_RESISTANCE",
+    "arm": "COMMON",
+    "budget": 8,
+    "gate_status": "PERSONALIZATION_INACTIVE",
+    "gate_interaction_score": 0.0,
+    "gate_posterior_score": 0.28807506196906585,
+    "recommendation_id": "resist:13",
+    "recommendation_value": 1.0,
+    "common_id": "resist:13",
+    "common_value": 1.0,
+    "oracle_id": "resist:13",
+    "oracle_value": 1.0,
+    "common_regret": 0.0,
+    "policy_regret": 0.0,
+    "policy_improvement_over_common": 0.0,
+    "gate_active": false,
+    "executed_trials": 5,
+    "termination": "RECOMMENDATION_ALREADY_OBSERVED",
+    "observations": [
+      {
+        "candidate_id": "resist:13",
+        "features": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "value": 1.0,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.0
+        },
+        "trial_index": 1,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:04",
+        "features": [
+          0.9,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 2,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:22",
+        "features": [
+          1.1,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 3,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:10",
+        "features": [
+          1.0,
+          0.25,
+          0.5
+        ],
+        "value": 1.001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 4,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:14",
+        "features": [
+          1.0,
+          0.5,
+          0.75
+        ],
+        "value": 1.001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 5,
+        "valid": true,
+        "invalid_reason": null
+      }
+    ]
+  },
+  {
+    "profile_id": "RESIST_COMMON_DEVE_01",
+    "scenario": "COMMON_RESISTANCE",
+    "arm": "COMMON",
+    "budget": 8,
+    "gate_status": "PERSONALIZATION_INACTIVE",
+    "gate_interaction_score": 0.0,
+    "gate_posterior_score": 0.28807506196906585,
+    "recommendation_id": "resist:13",
+    "recommendation_value": 1.0,
+    "common_id": "resist:13",
+    "common_value": 1.0,
+    "oracle_id": "resist:13",
+    "oracle_value": 1.0,
+    "common_regret": 0.0,
+    "policy_regret": 0.0,
+    "policy_improvement_over_common": 0.0,
+    "gate_active": false,
+    "executed_trials": 5,
+    "termination": "RECOMMENDATION_ALREADY_OBSERVED",
+    "observations": [
+      {
+        "candidate_id": "resist:13",
+        "features": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "value": 1.0,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.0
+        },
+        "trial_index": 1,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:04",
+        "features": [
+          0.9,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 2,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:22",
+        "features": [
+          1.1,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 3,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:10",
+        "features": [
+          1.0,
+          0.25,
+          0.5
+        ],
+        "value": 1.001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 4,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:14",
+        "features": [
+          1.0,
+          0.5,
+          0.75
+        ],
+        "value": 1.001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 5,
+        "valid": true,
+        "invalid_reason": null
+      }
+    ]
+  },
+  {
+    "profile_id": "RESIST_EARLY_DEVE",
+    "scenario": "DIVERGENT_RESISTANCE",
+    "arm": "EARLY",
+    "budget": 8,
+    "gate_status": "PERSONALIZATION_ACTIVE",
+    "gate_interaction_score": 0.027012571357530556,
+    "gate_posterior_score": 0.9999999788747909,
+    "recommendation_id": "resist:10",
+    "recommendation_value": 0.9809999999999999,
+    "common_id": "resist:13",
+    "common_value": 1.0,
+    "oracle_id": "resist:10",
+    "oracle_value": 0.9809999999999999,
+    "common_regret": 0.019000000000000128,
+    "policy_regret": 0.0,
+    "policy_improvement_over_common": 0.019000000000000128,
+    "gate_active": true,
+    "executed_trials": 8,
+    "termination": "BUDGET_EXHAUSTED",
+    "observations": [
+      {
+        "candidate_id": "resist:13",
+        "features": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "value": 1.0,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.0
+        },
+        "trial_index": 1,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:04",
+        "features": [
+          0.9,
+          0.5,
+          0.5
+        ],
+        "value": 1.0197777777777777,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 2,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:22",
+        "features": [
+          1.1,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 3,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:10",
+        "features": [
+          1.0,
+          0.25,
+          0.5
+        ],
+        "value": 0.9809999999999999,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 4,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:14",
+        "features": [
+          1.0,
+          0.5,
+          0.75
+        ],
+        "value": 1.061,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 5,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:21",
+        "features": [
+          1.1,
+          0.5,
+          0.25
+        ],
+        "value": 0.9830000000000001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 6,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:03",
+        "features": [
+          0.9,
+          0.5,
+          0.25
+        ],
+        "value": 1.0007777777777775,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 7,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:25",
+        "features": [
+          1.1,
+          0.75,
+          0.5
+        ],
+        "value": 1.0630000000000002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 8,
+        "valid": true,
+        "invalid_reason": null
+      }
+    ]
+  },
+  {
+    "profile_id": "RESIST_LATE_DEVE",
+    "scenario": "DIVERGENT_RESISTANCE",
+    "arm": "LATE",
+    "budget": 8,
+    "gate_status": "PERSONALIZATION_ACTIVE",
+    "gate_interaction_score": 0.027012571357530553,
+    "gate_posterior_score": 0.9999999788747909,
+    "recommendation_id": "resist:14",
+    "recommendation_value": 0.9809999999999999,
+    "common_id": "resist:13",
+    "common_value": 1.0,
+    "oracle_id": "resist:14",
+    "oracle_value": 0.9809999999999999,
+    "common_regret": 0.019000000000000128,
+    "policy_regret": 0.0,
+    "policy_improvement_over_common": 0.019000000000000128,
+    "gate_active": true,
+    "executed_trials": 8,
+    "termination": "BUDGET_EXHAUSTED",
+    "observations": [
+      {
+        "candidate_id": "resist:13",
+        "features": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "value": 1.0,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.0
+        },
+        "trial_index": 1,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:04",
+        "features": [
+          0.9,
+          0.5,
+          0.5
+        ],
+        "value": 1.0197777777777777,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 2,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:22",
+        "features": [
+          1.1,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 3,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:10",
+        "features": [
+          1.0,
+          0.25,
+          0.5
+        ],
+        "value": 1.061,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 4,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:14",
+        "features": [
+          1.0,
+          0.5,
+          0.75
+        ],
+        "value": 0.9809999999999999,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 5,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:25",
+        "features": [
+          1.1,
+          0.75,
+          0.5
+        ],
+        "value": 0.9830000000000001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 6,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:07",
+        "features": [
+          0.9,
+          0.75,
+          0.5
+        ],
+        "value": 1.0007777777777775,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 7,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:21",
+        "features": [
+          1.1,
+          0.5,
+          0.25
+        ],
+        "value": 1.0630000000000002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 8,
+        "valid": true,
+        "invalid_reason": null
+      }
+    ]
+  },
+  {
+    "profile_id": "RESIST_FAST_DEVE",
+    "scenario": "DIVERGENT_RESISTANCE",
+    "arm": "FAST",
+    "budget": 8,
+    "gate_status": "PERSONALIZATION_ACTIVE",
+    "gate_interaction_score": 0.011155466975633261,
+    "gate_posterior_score": 0.9735306877515552,
+    "recommendation_id": "resist:13",
+    "recommendation_value": 1.0,
+    "common_id": "resist:13",
+    "common_value": 1.0,
+    "oracle_id": "resist:13",
+    "oracle_value": 1.0,
+    "common_regret": 0.0,
+    "policy_regret": 0.0,
+    "policy_improvement_over_common": 0.0,
+    "gate_active": true,
+    "executed_trials": 8,
+    "termination": "BUDGET_EXHAUSTED",
+    "observations": [
+      {
+        "candidate_id": "resist:13",
+        "features": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "value": 1.0,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.0
+        },
+        "trial_index": 1,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:04",
+        "features": [
+          0.9,
+          0.5,
+          0.5
+        ],
+        "value": 1.0286666666666666,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 2,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:22",
+        "features": [
+          1.1,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 3,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:10",
+        "features": [
+          1.0,
+          0.25,
+          0.5
+        ],
+        "value": 1.021,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 4,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:14",
+        "features": [
+          1.0,
+          0.5,
+          0.75
+        ],
+        "value": 1.021,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 5,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:21",
+        "features": [
+          1.1,
+          0.5,
+          0.25
+        ],
+        "value": 1.0230000000000001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 6,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:25",
+        "features": [
+          1.1,
+          0.75,
+          0.5
+        ],
+        "value": 1.0230000000000001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 7,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:03",
+        "features": [
+          0.9,
+          0.5,
+          0.25
+        ],
+        "value": 1.0496666666666665,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 8,
+        "valid": true,
+        "invalid_reason": null
+      }
+    ]
+  },
+  {
+    "profile_id": "RESIST_HIP_DEVE",
+    "scenario": "DIVERGENT_RESISTANCE",
+    "arm": "HIP",
+    "budget": 8,
+    "gate_status": "PERSONALIZATION_ACTIVE",
+    "gate_interaction_score": 0.013139329294474754,
+    "gate_posterior_score": 0.9913207822673384,
+    "recommendation_id": "resist:14",
+    "recommendation_value": 0.9809999999999999,
+    "common_id": "resist:13",
+    "common_value": 1.0,
+    "oracle_id": "resist:14",
+    "oracle_value": 0.9809999999999999,
+    "common_regret": 0.019000000000000128,
+    "policy_regret": 0.0,
+    "policy_improvement_over_common": 0.019000000000000128,
+    "gate_active": true,
+    "executed_trials": 8,
+    "termination": "BUDGET_EXHAUSTED",
+    "observations": [
+      {
+        "candidate_id": "resist:13",
+        "features": [
+          1.0,
+          0.5,
+          0.5
+        ],
+        "value": 1.0,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.0
+        },
+        "trial_index": 1,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:04",
+        "features": [
+          0.9,
+          0.5,
+          0.5
+        ],
+        "value": 1.010888888888889,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 2,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:22",
+        "features": [
+          1.1,
+          0.5,
+          0.5
+        ],
+        "value": 1.002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 0.99,
+          "peak_ratio": 1.008
+        },
+        "trial_index": 3,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:10",
+        "features": [
+          1.0,
+          0.25,
+          0.5
+        ],
+        "value": 1.021,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 4,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:14",
+        "features": [
+          1.0,
+          0.5,
+          0.75
+        ],
+        "value": 0.9809999999999999,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.004
+        },
+        "trial_index": 5,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:25",
+        "features": [
+          1.1,
+          0.75,
+          0.5
+        ],
+        "value": 1.0230000000000001,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 6,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:07",
+        "features": [
+          0.9,
+          0.75,
+          0.5
+        ],
+        "value": 1.0318888888888889,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 7,
+        "valid": true,
+        "invalid_reason": null
+      },
+      {
+        "candidate_id": "resist:21",
+        "features": [
+          1.1,
+          0.5,
+          0.25
+        ],
+        "value": 1.0630000000000002,
+        "uncertainty": 0.0,
+        "feasible": true,
+        "constraint_values": {
+          "E2": 1.002,
+          "peak_ratio": 1.012
+        },
+        "trial_index": 8,
+        "valid": true,
+        "invalid_reason": null
+      }
+    ]
+  }
+]

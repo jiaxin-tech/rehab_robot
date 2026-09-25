@@ -26,7 +26,7 @@
 | 新 MyoLeg 开发实验 | 已完成 native＋24 development、两轨迹族、七算法比较。主 K=4 下关键姿态族的 Physics Greedy、残差 Greedy、MI-EI 均改善 E3 约 2.97%；工程默认选较简单的 Physics Greedy，尚未证明个体化必要性。[实际报告](outputs/myoleg_benchmark_v1/development_20260923_r2/REPORT.md) |
 | 真实测量与机器人 | 离线分析接口已有；生产采集仍用线程，原生并发阻塞尚未解决。真机运动保持 **NO-GO**，在线个体化未接入。 |
 | CONTROLLED_ACTUATION_V3 | 固定辅助峰值的 27 候选 × 3 development 主体已完成。出现两种 oracle，但最佳公共辅助方案最大相对 regret 仅 0.003589%，暂不扩展或确认；V1 30-seed 仍暂停。[协议、结果与复现](docs/research/MYOLEG_CONTROLLED_ACTUATION_V3.md) |
-| Resistance interaction V1 | 6 个 controlled development profile 已完成 null/positive pilot；null gate 0%，4 个 divergent profile 中 3 个有实用 regret，随后完成 4 方法固定预算比较。仅支持软件机制证据，尚未进入确认集或真实患者建模。[执行计划与边界](docs/research/MYOLEG_RESEARCH_EXECUTION_PLAN_V3.md) |
+| Resistance interaction | 当前仅作为带公式版本的 controlled analytical stress field；已修正独立 confirmatory profile、固定 common 基线、Residual Greedy/Pure EI 命名、真实约束结果和 observation logs。修订版 development 输出见 [pilot v6](outputs/myoleg_controlled_resistance_pilot_v6/REPORT.md) 与 [algorithm v2](outputs/myoleg_controlled_resistance_algorithm_v2/REPORT.md)；旧 pilot/算法排名保留为 debug 历史，不能当作确认或生理证据。[执行计划与边界](docs/research/MYOLEG_RESEARCH_EXECUTION_PLAN_V3.md) |
 
 指标定义、报告先后和限制见[研究主线](docs/RESEARCH.md)。软件测试通过不代表真机运动放行。
 
@@ -41,7 +41,7 @@ $env:MPLCONFIGDIR = Join-Path (Get-Location) '.cache/matplotlib'
 .\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q
 ```
 
-当前核心回归为 **404 passed**，包含新增 MyoLeg benchmark、报告完整性与并发缓存检查。它覆盖当前离线研究、采集、fake SDK 和诊断代码；不连接机器人，也不是历史全仓套件。环境版本与实际验证记录见[上手指南](docs/GETTING_STARTED.md)。
+当前核心回归为 **462 passed**（2026-09-25，101.50 s），包含新增 MyoLeg benchmark、controlled interaction 协议和物理交互单元检查。它覆盖当前离线研究、采集、fake SDK 和诊断代码；不连接机器人，也不是历史全仓套件。环境版本与实际验证记录见[上手指南](docs/GETTING_STARTED.md)。
 
 新 MyoLeg 实验通过 `python -m lower_limb_sim.myoleg_benchmark.prepare_assets` 准备官方 MyoSuite 2.12.2 资产，再由可移植加载器在内存中定位资产；冻结 XML 和既有实验结果保持原样。旧视频 renderer 仍使用 XML 中的原机器绝对路径，不能据此认为旧渲染入口也已完成移植。
 

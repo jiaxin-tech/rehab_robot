@@ -11,9 +11,10 @@ conditions:
     condition used to measure false personalization.
 
 ``DIVERGENT_OPTIMA``
-    Profiles in two predeclared arms apply opposite, smooth candidate-space
-    response fields.  The field is a software stress test, not a claim about
-    patient physiology or a MyoLeg parameter identified from data.
+    Profiles in two predeclared arms apply distinct, smooth candidate-space
+    response fields.  Development and confirmatory centers are different. The
+    field is a software stress test, not a claim about patient physiology or a
+    MyoLeg parameter identified from data.
 
 The wrapper exposes only ``requested(point)`` and therefore can be passed to
 the existing benchmark ``Environment``/``run_sequence`` code.  It never
@@ -35,10 +36,11 @@ ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_MANIFEST = (
     ROOT
     / "external_simulation_audits"
-    / "myoleg_controlled_positive_cohort_v1"
-    / "MYOLEG_CONTROLLED_POSITIVE_COHORT_V1_MANIFEST.json"
+    / "myoleg_controlled_positive_cohort_v2"
+    / "MYOLEG_CONTROLLED_POSITIVE_COHORT_V2_MANIFEST.json"
 )
-COHORT_ID = "MYOLEG_CONTROLLED_POSITIVE_COHORT_V1"
+COHORT_ID = "MYOLEG_CONTROLLED_POSITIVE_COHORT_V2"
+SCHEMA_VERSION = 2
 SCENARIOS = ("COMMON_OPTIMUM", "DIVERGENT_OPTIMA")
 SPLITS = ("DEVELOPMENT", "CONFIRMATORY")
 COMMON_OPTIMUM = "COMMON_OPTIMUM"
@@ -151,14 +153,24 @@ def build_profiles(root_seed: int = DEFAULT_ROOT_SEED) -> tuple[ControlledProfil
     if not isinstance(root_seed, int) or root_seed < 0:
         raise ValueError("root_seed must be a non-negative integer")
     profiles: list[ControlledProfile] = []
+    arm_centers = {
+        "DEVELOPMENT": {
+            "A": ((-4.0, 4.0, -2.0), (-3.0, 3.0, -1.5), (-2.0, 2.0, -1.0), (-1.0, 1.0, -0.5)),
+            "B": ((4.0, -4.0, 2.0), (3.0, -3.0, 1.5), (2.0, -2.0, 1.0), (1.0, -1.0, 0.5)),
+        },
+        "CONFIRMATORY": {
+            "A": ((-3.5, 3.5, -1.75), (-2.5, 2.5, -1.25), (-1.5, 1.5, -0.75), (-0.5, 0.5, -0.25)),
+            "B": ((3.5, -3.5, 1.75), (2.5, -2.5, 1.25), (1.5, -1.5, 0.75), (0.5, -0.5, 0.25)),
+        },
+    }
     for split, split_tag, offset in (("DEVELOPMENT", "DEV", 0), ("CONFIRMATORY", "CONF", 100)):
         for index in range(4):
             profiles.append(_profile(
                 f"CTRL_COMMON_{split_tag}_{index:02d}", "COMMON_OPTIMUM", split,
                 "COMMON", root_seed + offset + index, (0.0, 0.0, 0.0), 0.0,
             ))
-        for arm, center in (("A", (-4.0, 4.0, -2.0)), ("B", (4.0, -4.0, 2.0))):
-            for index in range(4):
+        for arm in ("A", "B"):
+            for index, center in enumerate(arm_centers[split][arm]):
                 profiles.append(_profile(
                     f"CTRL_DIVERGENT_{arm}_{split_tag}_{index:02d}",
                     "DIVERGENT_OPTIMA", split, arm, root_seed + offset + 20 + (4 if arm == "B" else 0) + index,
@@ -169,25 +181,23 @@ def build_profiles(root_seed: int = DEFAULT_ROOT_SEED) -> tuple[ControlledProfil
 
 
 def validate_profile(profile: ControlledProfile) -> None:
-    """Validate one profile without requiring a complete cohort."""
-    for profile in (profile,):
-        if not np.isclose(profile.gain(REFERENCE_FEATURES), 1.0, atol=0.0, rtol=0.0):
-            raise ValueError(f"reference gain is not one for {profile.profile_id}")
-        probe = np.asarray([[a, b, c] for a, b, c in (
-            (FEATURE_BOUNDS[0][0], FEATURE_BOUNDS[1][0], FEATURE_BOUNDS[2][0]),
-            (FEATURE_BOUNDS[0][1], FEATURE_BOUNDS[1][1], FEATURE_BOUNDS[2][1]),
-            (0.0, 0.0, 0.0),
-        )])
-        gains = np.asarray([profile.gain(x) for x in probe])
-        if not np.isfinite(gains).all() or np.any(gains <= 0.0):
-            raise ValueError(f"invalid controlled gains for {profile.profile_id}")
-        if profile.scenario == "COMMON_OPTIMUM" and profile.field_strength != 0.0:
-            raise ValueError("COMMON_OPTIMUM profiles must have zero field strength")
-        if profile.scenario == "DIVERGENT_OPTIMA" and profile.field_strength <= 0.0:
-            raise ValueError("DIVERGENT_OPTIMA profiles require a positive field strength")
+    if not np.isclose(profile.gain(REFERENCE_FEATURES), 1.0, atol=0.0, rtol=0.0):
+        raise ValueError(f"reference gain is not one for {profile.profile_id}")
+    probe = np.asarray([
+        [FEATURE_BOUNDS[0][0], FEATURE_BOUNDS[1][0], FEATURE_BOUNDS[2][0]],
+        [FEATURE_BOUNDS[0][1], FEATURE_BOUNDS[1][1], FEATURE_BOUNDS[2][1]],
+        [0.0, 0.0, 0.0],
+    ])
+    gains = np.asarray([profile.gain(x) for x in probe])
+    if not np.isfinite(gains).all() or np.any(gains <= 0.0):
+        raise ValueError(f"invalid controlled gains for {profile.profile_id}")
 
 
-def validate_profiles(profiles: tuple[ControlledProfile, ...] | list[ControlledProfile]) -> None:
+def validate_profiles(
+    profiles: tuple[ControlledProfile, ...] | list[ControlledProfile],
+    *,
+    require_complete_splits: bool = True,
+) -> None:
     """Check the complete cohort design before any simulator is run."""
     profiles = tuple(profiles)
     if not profiles:
@@ -202,7 +212,8 @@ def validate_profiles(profiles: tuple[ControlledProfile, ...] | list[ControlledP
         if not rows:
             raise ValueError(f"missing scenario {scenario}")
         if set(p.split for p in rows) != set(SPLITS):
-            raise ValueError(f"scenario {scenario} must contain both splits")
+            if require_complete_splits:
+                raise ValueError(f"scenario {scenario} must contain both splits")
     positive = [p for p in profiles if p.scenario == "DIVERGENT_OPTIMA"]
     if {p.arm for p in positive} != {"A", "B"}:
         raise ValueError("positive cohort must contain both divergent arms")
@@ -214,7 +225,7 @@ def validate_profiles(profiles: tuple[ControlledProfile, ...] | list[ControlledP
 def _manifest_payload(profiles: tuple[ControlledProfile, ...], root_seed: int) -> dict[str, Any]:
     return {
         "cohort_id": COHORT_ID,
-        "schema_version": 1,
+        "schema_version": SCHEMA_VERSION,
         "root_seed": root_seed,
         "task_scope": "controlled synthetic stress test; no physiological interpretation",
         "base_truth": {
@@ -243,6 +254,7 @@ def _manifest_payload(profiles: tuple[ControlledProfile, ...], root_seed: int) -
                 "interpretation": "software stress test only; not a patient or muscle truth claim",
             },
         },
+        "response_formula_version": "multiplicative_log_gain_relative_to_reference_v2",
         "splits": {
             "DEVELOPMENT": "may be used to freeze algorithm and gate parameters",
             "CONFIRMATORY": "sealed until the algorithm and all thresholds are frozen",
@@ -287,12 +299,16 @@ def load_profiles(
     canonical = json.dumps(unsigned, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
     if expected != hashlib.sha256(canonical).hexdigest():
         raise ValueError("CONTROLLED_COHORT_MANIFEST_FINGERPRINT_MISMATCH")
+    if document.get("schema_version") != SCHEMA_VERSION:
+        raise ValueError("CONTROLLED_COHORT_SCHEMA_VERSION_MISMATCH")
+    records = document["profiles"]
+    selected_records = records if split is None else [record for record in records if record.get("split") == split]
     profiles = tuple(
         ControlledProfile(**{**record, "center_features": tuple(record["center_features"])})
-        for record in document["profiles"]
+        for record in selected_records
     )
-    validate_profiles(profiles)
-    return tuple(p for p in profiles if split is None or p.split == split)
+    validate_profiles(profiles, require_complete_splits=split is None)
+    return profiles
 
 
 class ControlledCohortBackend:
@@ -353,5 +369,5 @@ if __name__ == "__main__":
 __all__ = [
     "COHORT_ID", "COMMON_OPTIMUM", "ControlledCohortBackend", "ControlledProfile", "DEFAULT_MANIFEST",
     "DIVERGENT_OPTIMA", "SCENARIOS", "SPLITS", "build_profiles", "load_profiles",
-    "manifest", "validate_profiles", "write_manifest",
+    "manifest", "validate_profile", "validate_profiles", "write_manifest",
 ]

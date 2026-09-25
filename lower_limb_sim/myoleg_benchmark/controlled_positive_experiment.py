@@ -3,9 +3,10 @@
 This runner intentionally uses a fixed analytical response surface. It is a
 software stress test of the gate and recommendation contract, not a native
 MyoLeg physiological or safety validation. The learner receives only queried
-observations; oracle scoring happens after the policy run. Profile IDs repeat
-three deterministic response fields (common, arm A, arm B), so they are not
-independent subject replicates.
+observations; oracle scoring happens after the policy run. Development and
+confirmatory profiles have distinct predeclared response centers; repeated
+null profiles remain a deliberate false-positive control rather than an
+independent patient sample.
 """
 
 from __future__ import annotations
@@ -147,7 +148,7 @@ def run_benchmark(*, output_dir: Path = DEFAULT_OUTPUT, budget: int = 8, split: 
         "split": split, "budget": budget, "profile_ids": [p.profile_id for p in profiles],
         "cohort_manifest_sha256": manifest["manifest_fingerprint_sha256"],
         "unique_response_fields": len({(p.field_strength, p.center_features) for p in profiles}),
-        "replication_limit": "IDs repeat the same common/A/B fields; no independent n=12 claim",
+        "replication_limit": "null profiles are repeated false-positive controls; profile IDs are not patient samples",
         "confirmatory_access": False, "common_policy": "fixed analytical-surface reference",
         "common_curvature": COMMON_CURVATURE, "probe_features": PROBE_FEATURES,
         "candidate_grid": len(build_grid()), "noise_std": 0.0,
@@ -167,8 +168,8 @@ def run_benchmark(*, output_dir: Path = DEFAULT_OUTPUT, budget: int = 8, split: 
     (output_dir / "decision_logs.json").write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
     lines = ["# Controlled positive policy validation", "",
              "Synthetic analytical stress test, not native MyoLeg physiology or patient evidence.", "",
-             f"Budget ceiling: {budget}; profiles: {len(profiles)}; unique response fields: 3.",
-             "IDs repeat identical deterministic fields; do not treat them as independent subjects.",
+             f"Budget ceiling: {budget}; profiles: {len(profiles)}; unique response fields: {len({(p.field_strength, p.center_features) for p in profiles})}.",
+             "Null profiles are repeated false-positive controls; development/confirmatory positive centers are distinct.",
              "No confirmatory responses were evaluated. No stochastic confidence interval is claimed.",
              "Final personalized recommendations were observed within the budget.", "",
              "| Response field | Gate active | Executed trials | Common regret | SAST regret | Reduction |",

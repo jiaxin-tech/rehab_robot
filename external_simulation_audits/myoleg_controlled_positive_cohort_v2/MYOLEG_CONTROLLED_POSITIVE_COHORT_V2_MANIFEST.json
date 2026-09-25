@@ -1,0 +1,421 @@
+{
+  "cohort_id": "MYOLEG_CONTROLLED_POSITIVE_COHORT_V2",
+  "schema_version": 2,
+  "root_seed": 20260923,
+  "task_scope": "controlled synthetic stress test; no physiological interpretation",
+  "base_truth": {
+    "backend": "native MyoLeg V1 prescribed-state simulator",
+    "base_subject_id": "MYOLEG_NATIVE_P0",
+    "v1_cohort_unchanged": true,
+    "learner_oracle_access": false,
+    "candidate_landscape_access": false,
+    "truth_isolation": "wrapper releases only requested(point) response"
+  },
+  "candidate_feature_definition": {
+    "coordinates": [
+      "beta_flex/0.03",
+      "beta_extend/0.03",
+      "share_shift/0.05"
+    ],
+    "bounds": [
+      [
+        -4.0,
+        4.0
+      ],
+      [
+        -4.0,
+        4.0
+      ],
+      [
+        -2.0,
+        2.0
+      ]
+    ],
+    "reference_features": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "scenarios": {
+    "COMMON_OPTIMUM": {
+      "role": "null control for false-positive personalization",
+      "field_strength": 0.0,
+      "expected_behavior": "all profiles share the native response landscape"
+    },
+    "DIVERGENT_OPTIMA": {
+      "role": "positive control for detectable subject-by-trajectory interaction",
+      "field_strength": 0.01,
+      "expected_behavior": "arm A and arm B receive opposite predeclared smooth fields",
+      "interpretation": "software stress test only; not a patient or muscle truth claim"
+    }
+  },
+  "response_formula_version": "multiplicative_log_gain_relative_to_reference_v2",
+  "splits": {
+    "DEVELOPMENT": "may be used to freeze algorithm and gate parameters",
+    "CONFIRMATORY": "sealed until the algorithm and all thresholds are frozen"
+  },
+  "profiles": [
+    {
+      "profile_id": "CTRL_COMMON_DEV_00",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "DEVELOPMENT",
+      "arm": "COMMON",
+      "seed": 20260923,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_DEV_01",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "DEVELOPMENT",
+      "arm": "COMMON",
+      "seed": 20260924,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_DEV_02",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "DEVELOPMENT",
+      "arm": "COMMON",
+      "seed": 20260925,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_DEV_03",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "DEVELOPMENT",
+      "arm": "COMMON",
+      "seed": 20260926,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_DEV_00",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "A",
+      "seed": 20260943,
+      "center_features": [
+        -4.0,
+        4.0,
+        -2.0
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_DEV_01",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "A",
+      "seed": 20260944,
+      "center_features": [
+        -3.0,
+        3.0,
+        -1.5
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_DEV_02",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "A",
+      "seed": 20260945,
+      "center_features": [
+        -2.0,
+        2.0,
+        -1.0
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_DEV_03",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "A",
+      "seed": 20260946,
+      "center_features": [
+        -1.0,
+        1.0,
+        -0.5
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_DEV_00",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "B",
+      "seed": 20260947,
+      "center_features": [
+        4.0,
+        -4.0,
+        2.0
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_DEV_01",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "B",
+      "seed": 20260948,
+      "center_features": [
+        3.0,
+        -3.0,
+        1.5
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_DEV_02",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "B",
+      "seed": 20260949,
+      "center_features": [
+        2.0,
+        -2.0,
+        1.0
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_DEV_03",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "DEVELOPMENT",
+      "arm": "B",
+      "seed": 20260950,
+      "center_features": [
+        1.0,
+        -1.0,
+        0.5
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_CONF_00",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "CONFIRMATORY",
+      "arm": "COMMON",
+      "seed": 20261023,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_CONF_01",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "CONFIRMATORY",
+      "arm": "COMMON",
+      "seed": 20261024,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_CONF_02",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "CONFIRMATORY",
+      "arm": "COMMON",
+      "seed": 20261025,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_COMMON_CONF_03",
+      "scenario": "COMMON_OPTIMUM",
+      "split": "CONFIRMATORY",
+      "arm": "COMMON",
+      "seed": 20261026,
+      "center_features": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "field_strength": 0.0,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_CONF_00",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "A",
+      "seed": 20261043,
+      "center_features": [
+        -3.5,
+        3.5,
+        -1.75
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_CONF_01",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "A",
+      "seed": 20261044,
+      "center_features": [
+        -2.5,
+        2.5,
+        -1.25
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_CONF_02",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "A",
+      "seed": 20261045,
+      "center_features": [
+        -1.5,
+        1.5,
+        -0.75
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_A_CONF_03",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "A",
+      "seed": 20261046,
+      "center_features": [
+        -0.5,
+        0.5,
+        -0.25
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_CONF_00",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "B",
+      "seed": 20261047,
+      "center_features": [
+        3.5,
+        -3.5,
+        1.75
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_CONF_01",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "B",
+      "seed": 20261048,
+      "center_features": [
+        2.5,
+        -2.5,
+        1.25
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_CONF_02",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "B",
+      "seed": 20261049,
+      "center_features": [
+        1.5,
+        -1.5,
+        0.75
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    },
+    {
+      "profile_id": "CTRL_DIVERGENT_B_CONF_03",
+      "scenario": "DIVERGENT_OPTIMA",
+      "split": "CONFIRMATORY",
+      "arm": "B",
+      "seed": 20261050,
+      "center_features": [
+        0.5,
+        -0.5,
+        0.25
+      ],
+      "field_strength": 0.01,
+      "response_model": "multiplicative_log_gain_relative_to_reference",
+      "truth_scope": "CONTROLLED_SYNTHETIC_STRESS_TEST"
+    }
+  ],
+  "manifest_fingerprint_sha256": "8a18344e08c95f46fe54fb397745e042ac6e06c2a0f6b6324117a80868f4c5cf"
+}

@@ -17,34 +17,62 @@ import numpy as np
 import pandas as pd
 
 from .controlled_resistance_cohort import (
-    DEFAULT_MANIFEST, ResistanceProfile, build_profiles, load_profiles,
+    DEFAULT_MANIFEST, FORMULA_COEFFICIENTS, ResistanceProfile, build_profiles, load_profiles,
 )
 from .personalized_v2 import CandidateView, GateConfig, ObservationRecord, SASTBO, run_sequence
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_OUTPUT = ROOT / "outputs/myoleg_controlled_resistance_pilot_v1"
+DEFAULT_OUTPUT = ROOT / "outputs/myoleg_controlled_resistance_pilot_v6"
 GRID = tuple((d, t, h) for d in (0.9, 1.0, 1.1) for t in (0.25, 0.5, 0.75) for h in (0.25, 0.5, 0.75))
 PROBES = ((0.9, 0.5, 0.5), (1.1, 0.5, 0.5), (1.0, 0.25, 0.5), (1.0, 0.5, 0.75))
-GATE_CONFIG = GateConfig(interaction_threshold=0.0025, posterior_threshold=0.95)
+GATE_CONFIG = GateConfig(interaction_threshold=0.0025, posterior_threshold=0.95, length_scale=1.0)
 PRACTICAL_GAP = 0.005
+FEATURE_REFERENCE = np.asarray((1.0, 0.5, 0.5), dtype=float)
+FEATURE_SCALE = np.asarray((0.1, 0.25, 0.25), dtype=float)
+
+
+def _scaled_features(features):
+    values = np.asarray(features, dtype=float)
+    if values.shape != FEATURE_REFERENCE.shape or not np.isfinite(values).all():
+        raise ValueError("INVALID_RESISTANCE_FEATURES")
+    return (values - FEATURE_REFERENCE) / FEATURE_SCALE
 
 
 def common_value(features: tuple[float, ...]) -> float:
     d, t, h = map(float, features)
-    return float(1.0 + 0.002 * ((d - 1.0) / 0.1) ** 2 +
-                 0.001 * ((t - 0.5) / 0.25) ** 2 +
-                 0.001 * ((h - 0.5) / 0.25) ** 2)
+    return float(1.0 + FORMULA_COEFFICIENTS["duration_common_cost"] * ((d - 1.0) / 0.1) ** 2 +
+                 FORMULA_COEFFICIENTS["timing_common_cost"] * ((t - 0.5) / 0.25) ** 2 +
+                 FORMULA_COEFFICIENTS["hip_share_common_cost"] * ((h - 0.5) / 0.25) ** 2)
+
+
+def constraint_values_for(features: tuple[float, ...]) -> dict[str, float]:
+    """Return the declared synthetic constraint outcome for one candidate.
+
+    This is still an analytical stress-field constraint, not a native or
+    clinical safety limit.  Unlike the original pilot, the field contains
+    genuinely infeasible corners and the evaluator returns the outcome
+    separately from the candidate's conservative prior prediction.
+    """
+
+    duration, timing, hip_share = map(float, features)
+    timing_offset = (timing - 0.5) / 0.25
+    share_offset = (hip_share - 0.5) / 0.25
+    duration_offset = (duration - 1.0) / 0.1
+    e2 = 0.99 + 0.012 * (timing_offset**2 + share_offset**2)
+    peak_ratio = 1.00 + 0.008 * duration_offset**2 + 0.004 * abs(timing_offset - share_offset)
+    return {"E2": float(e2), "peak_ratio": float(peak_ratio)}
 
 
 def build_candidates() -> tuple[CandidateView, ...]:
     rows = []
     for index, features in enumerate(GRID):
-        # Known analytic constraints are intentionally conservative and common
-        # to all profiles; they are not claimed to be native safety limits.
-        e2 = 0.98 + 0.001 * (abs(features[1] - 0.5) / 0.25 + abs(features[2] - 0.5) / 0.25)
+        # Candidate-side values are only a conservative prior.  The evaluator
+        # returns the actual declared stress-field outcome after execution.
+        truth = constraint_values_for(features)
         rows.append(CandidateView(f"resist:{index:02d}", features,
-                                  {"E2": (e2, 0.0), "peak_ratio": (0.98, 0.0)}))
+                                  {"E2": (min(truth["E2"], 1.01), 0.004),
+                                   "peak_ratio": (min(truth["peak_ratio"], 1.05), 0.005)}))
     return tuple(rows)
 
 
@@ -61,21 +89,31 @@ def run_profile(profile: ResistanceProfile, *, budget: int = 8) -> dict:
         common_policy_id=reference.candidate_id,
         common_predictor=lambda candidate: common_value(candidate.features),
         preapproved_candidate_ids=(reference.candidate_id, *(p.candidate_id for p in probes)),
+        feature_transform=lambda c: _scaled_features(c.features),
         config=GATE_CONFIG,
     )
 
     def evaluator(candidate: CandidateView, trial: int) -> ObservationRecord:
+        constraints = constraint_values_for(candidate.features)
+        feasible = constraints["E2"] <= 1.01 and constraints["peak_ratio"] <= 1.10
         return ObservationRecord(
             candidate_id=candidate.candidate_id, features=candidate.features,
-            value=profile.value(candidate.features), uncertainty=0.0, feasible=True,
-            constraint_values={name: pair[0] for name, pair in candidate.constraint_predictions.items()},
+            value=profile.value(candidate.features), uncertainty=0.0, feasible=feasible,
+            constraint_values=constraints,
             trial_index=trial,
         )
 
     sequence = run_sequence(controller, evaluator, budget=budget)
     recommendation_id = controller.recommend()
     truth = {c.candidate_id: profile.value(c.features) for c in candidates}
-    oracle_id = min(truth, key=lambda cid: (truth[cid], cid))
+    feasible_ids = [
+        c.candidate_id for c in candidates
+        if constraint_values_for(c.features)["E2"] <= 1.01
+        and constraint_values_for(c.features)["peak_ratio"] <= 1.10
+    ]
+    if not feasible_ids:
+        raise RuntimeError("RESISTANCE_STRESS_FIELD_HAS_NO_FEASIBLE_CANDIDATE")
+    oracle_id = min(feasible_ids, key=lambda cid: (truth[cid], cid))
     common_id = reference.candidate_id
     rec_value = None if recommendation_id is None else truth[recommendation_id]
     oracle_value, common_at = truth[oracle_id], truth[common_id]
@@ -105,11 +143,12 @@ def run_benchmark(*, output_dir: Path = DEFAULT_OUTPUT, budget: int = 8) -> Path
     output_dir.mkdir(parents=True, exist_ok=False)
     manifest = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
     protocol = {
-        "experiment_id": "CONTROLLED_RESISTANCE_INTERACTION_V1_DEVELOPMENT",
+        "experiment_id": "CONTROLLED_RESISTANCE_INTERACTION_V2_DEVELOPMENT",
         "truth_scope": "controlled synthetic resistance mechanism; not native or physiological evidence",
         "profile_ids": [p.profile_id for p in profiles], "budget": budget,
         "candidate_count": len(build_candidates()), "probe_features": PROBES,
         "gate_config": asdict(GATE_CONFIG), "confirmatory_access": False,
+        "feature_scaling": {"reference": FEATURE_REFERENCE.tolist(), "scale": FEATURE_SCALE.tolist()},
         "cohort_manifest_sha256": manifest["manifest_fingerprint_sha256"],
         "oracle_access": "evaluator-only after run",
         "code_sha256": {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in (

@@ -268,6 +268,7 @@ class LocalResidualModel:
 
 ConstraintPredictor = Callable[[Any, Sequence[ObservationRecord]], Mapping[str, tuple[float, float]]]
 CommonPredictor = Callable[[Any], float]
+FeatureTransform = Callable[[Any], ArrayLike]
 
 
 class SASTBO:
@@ -290,6 +291,7 @@ class SASTBO:
         common_predictor: CommonPredictor | None = None,
         constraint_predictor: ConstraintPredictor | None = None,
         preapproved_candidate_ids: Sequence[str] = (),
+        feature_transform: FeatureTransform | None = None,
         config: GateConfig | None = None,
     ) -> None:
         self.candidates = tuple(candidates)
@@ -306,6 +308,11 @@ class SASTBO:
         self.common_predictor = common_predictor or self._default_common_predictor
         self.has_common_model = common_predictor is not None
         self.constraint_predictor = constraint_predictor
+        # Keep the observation contract in the candidate's native feature
+        # coordinates, while allowing model distances to use a frozen,
+        # physically meaningful scaling.  This is deliberately a caller
+        # supplied transform; it cannot expose simulator truth to the learner.
+        self.feature_transform = feature_transform or _features
         self.config = config or GateConfig()
         self.preapproved_candidate_ids = frozenset(preapproved_candidate_ids)
         allowed_preapproved = set(self.plan.frozen_order) | {self.common_policy_id}
@@ -323,6 +330,12 @@ class SASTBO:
         self.constraint_models: dict[str, LocalResidualModel] = {}
         self.constraint_offsets: dict[str, float] = {}
         self.last_gate = GateResult(False, "PERSONALIZATION_INACTIVE", 0.0, 0.0, 0, "NO_OBSERVATIONS")
+
+    def _model_features(self, candidate: Any) -> np.ndarray:
+        values = np.asarray(self.feature_transform(candidate), dtype=float).reshape(-1)
+        if not len(values) or not np.isfinite(values).all():
+            raise ValueError("transformed candidate features must be finite and non-empty")
+        return values
 
     def _default_common_predictor(self, candidate: Any) -> float:
         # A caller that has a declared mechanics prior can inject it through
@@ -408,7 +421,7 @@ class SASTBO:
             self.constraint_models = {}
             self.constraint_offsets = {}
             return
-        x = [_features(self.lookup[item.candidate_id]) for item in valid]
+        x = [self._model_features(self.lookup[item.candidate_id]) for item in valid]
         noise = [max(float(item.uncertainty), 1e-6) for item in valid]
         if self.has_common_model:
             try:
@@ -438,7 +451,7 @@ class SASTBO:
                 jitter=self.config.jitter,
             )
             model.fit(
-                [_features(self.lookup[item.candidate_id]) for item in rows],
+                [self._model_features(self.lookup[item.candidate_id]) for item in rows],
                 values - offset,
                 [max(float(item.uncertainty), self.config.constraint_noise_floor) for item in rows],
             )
@@ -453,7 +466,7 @@ class SASTBO:
         predictions = {str(k): (float(v[0]), float(v[1])) for k, v in dict(raw).items()}
         for name, model in self.constraint_models.items():
             if name not in predictions:
-                residual, std = model.predict(_features(candidate))
+                residual, std = model.predict(self._model_features(candidate))
                 predictions[name] = self.constraint_offsets[name] + residual, std
         return predictions
 
@@ -500,8 +513,8 @@ class SASTBO:
         valid = [item for item in self.history if self._observed_safe(item)]
         if not valid:
             return True
-        observed = np.asarray([_features(self.lookup[item.candidate_id]) for item in valid])
-        distances = np.linalg.norm(observed - _features(candidate), axis=1)
+        observed = np.asarray([self._model_features(self.lookup[item.candidate_id]) for item in valid])
+        distances = np.linalg.norm(observed - self._model_features(candidate), axis=1)
         return bool(np.min(distances) <= self.config.trust_radius)
 
     def select_next(self) -> Decision:
@@ -535,7 +548,7 @@ class SASTBO:
         incumbent = min(float(item.value) for item in self.history if self._observed_safe(item))
         scored: list[tuple[float, Any, float, float]] = []
         for candidate in safe:
-            residual_mean, residual_std = self.residual_model.predict(_features(candidate))
+            residual_mean, residual_std = self.residual_model.predict(self._model_features(candidate))
             mean = self.common_predictor(candidate) + residual_mean
             acquisition = -expected_improvement(mean, residual_std, incumbent)
             scored.append((acquisition, candidate, residual_mean, residual_std))

@@ -13,15 +13,15 @@ V1 的两个原生候选族在 24 个 development 主体上共享最优，不能
 | 层 | 任务 | 可支持的主张 | 当前状态 |
 |---|---|---|---|
 | A 原生 MyoLeg null | V1/V2/V3 native 或受控力矩屏幕 | 当前模拟任务的共同最优、约束行为和无个体化基线 | 已完成；V1/V3 暂停扩展 |
-| B 机制压力测试 | 预声明的角度位置、速度敏感性、髋膝阻力分配交互域 | 该算法在明确的主体—轨迹交互下是否能识别差异 | 下一步实现；仍不是患者生理证据 |
-| C 算法比较 | common policy、Random、残差 BO、SAST/EG-CPI-BO | 在相同预算和安全约束下的 regret、门控假阳性、约束覆盖 | 仅已有旧 synthetic field；待 B 冻结后重跑 |
+| B 机制压力测试 | 预声明的角度位置、速度敏感性、髋膝阻力分配交互域 | 该算法在明确的主体—轨迹交互下是否能识别差异 | 已完成 6-profile development pilot；仍不是患者生理证据 |
+| C 算法比较 | 固定 common policy、Random、Residual Greedy、Pure EI、SAST/EG-CPI-BO | 在相同预算和安全约束下的 regret、门控假阳性、约束覆盖 | 已完成 controlled resistance development-only 比较；仍不包含 native 或患者证据 |
 | D 独立确认 | 冻结协议后访问 held-out 或真实测量 | 预先声明范围内的确认结果 | 未授权、未开始 |
 
 B 层必须和 A 层分开报告。不能用 B 层合成成功替代 A 层动力学，也不能用 A 层缺少差异证明算法无效。
 
 ## 下一段代码与实验
 
-实现 `CONTROLLED_RESISTANCE_INTERACTION_V1`，候选坐标继续使用 V3 的 `(duration_scale, assistance_timing, hip_share)`，但响应机制改为可解释的受控阻力场：
+实现 `CONTROLLED_RESISTANCE_INTERACTION_V2`，候选坐标继续使用 V3 的 `(duration_scale, assistance_timing, hip_share)`，但响应机制改为可解释的受控阻力场：
 
 - `angle_onset_phase`：被动阻力开始显著增加的分支相位；
 - `velocity_sensitivity`：速度增加时阻力的增幅；
@@ -29,7 +29,7 @@ B 层必须和 A 层分开报告。不能用 B 层合成成功替代 A 层动力
 
 阻力场只在 controlled synthetic wrapper 中作用于请求的候选响应，输出仅包含当前请求的标量/约束观测；完整 landscape、主体参数和 oracle 对 learner 不可见。配置、profile 列表、split、seed 和 manifest hash 在运行前冻结。`COMMON_RESISTANCE` 用于 false-positive gate，`DIVERGENT_RESISTANCE` 用于 positive control；两者都明确标记为软件压力测试。
 
-第一轮只做 6 个 development profile：2 个 common null、4 个 divergent profiles（两种阻力起始位置 × 两种速度/分配组合），每个 profile 运行固定预算 8，比较 common policy、无门控 residual BO、SAST/EG-CPI-BO 和 Random。不得读取 confirmatory profiles。
+第一轮只做 6 个 development profile：2 个 common null、4 个 divergent profiles（两种阻力起始位置 × 两种速度/分配组合），每个 profile 运行固定预算 8，比较固定 common policy、Random、Residual Greedy、Pure EI 和 SAST/EG-CPI-BO。不得读取 confirmatory profiles；confirmatory profile 参数必须与 development 不同。
 
 ### 进入下一阶段的硬门槛
 
@@ -45,9 +45,9 @@ B 层必须和 A 层分开报告。不能用 B 层合成成功替代 A 层动力
 
 ## 当前 development 机制结果
 
-`CONTROLLED_RESISTANCE_INTERACTION_V1` 已完成 6 个 development profile 的固定预算 pilot（[pilot 输出](../../outputs/myoleg_controlled_resistance_pilot_v5/REPORT.md)）。common null 的 gate active rate 为 0%；4 个 divergent profile 中 3 个同时满足实用 common regret 和实用 policy improvement（阈值 0.5%），FAST profile 则展示了“门控检测到速度交互，但公共参考仍为最优”的边界情况。因此机制层允许进入算法比较，但不进入确认实验。
+旧的 `CONTROLLED_RESISTANCE_INTERACTION_V1` 输出是开发期调参后的解析压力测试，保留用于 provenance，但不能作为独立或预注册结果。当前 `CONTROLLED_RESISTANCE_INTERACTION_V2` 代码将其明确标为 analytical stress field，并将公式版本、系数、代码哈希和真实约束结果写入 manifest/协议；它仍不构成 MyoLeg、生理或患者证据。
 
-在相同 8 次预算下，[controlled algorithm comparison](../../outputs/myoleg_controlled_resistance_algorithm_v1/REPORT.md) 的开发汇总为：common null 四种方法均为零 regret；divergent profiles 的平均 policy regret 为 `COMMON_POLICY=0.00950`、`RANDOM=0.00855`、`RESIDUAL_BO=0.00000`、`SAST_BO=0.00100`。这些是 4 个预声明压力 profile 的软件结果，没有独立患者样本、置信区间或 native 生理解释。下一阶段应先复核 residual BO 与 SAST 的差异、加入预定噪声与约束失败条件，再决定是否建立真实测量驱动的 interaction adapter。
+旧的 [controlled algorithm comparison](../../outputs/myoleg_controlled_resistance_algorithm_v1/REPORT.md) 不能继续按原排名引用：其中 common policy 实际挑选了 reference+probe 中的最好观测，Residual BO 也没有使用 EI。修订后的运行器区分固定 common、Random、Residual Greedy、Pure EI 和 SAST_BO，保存完整 observation/decision sequence，并把候选约束结果与 evaluator truth 分开；修订版结果见 [pilot v6](../../outputs/myoleg_controlled_resistance_pilot_v6/REPORT.md) 与 [algorithm comparison v2](../../outputs/myoleg_controlled_resistance_algorithm_v2/REPORT.md)。这些结果仍只是软件机制证据，不替代独立 held-out 或真实测量。
 
 首次 resistance pilot 使用的 probes 没有覆盖持续时间轴，导致 FAST profile 的门控证据不足；该错误已作为开发诊断保留在旧输出，修正版 protocol 使用短/长周期、早时机和髋分配四个 probes，并以新输出目录重新运行。正式论文只引用修正版结果，不把旧 pilot 当作主结果。
 
@@ -55,14 +55,14 @@ B 层必须和 A 层分开报告。不能用 B 层合成成功替代 A 层动力
 
 每个主体固定执行：reference → 校准 probe → residual model → evidence gate → constrained acquisition。证据不足时使用冻结 `COMMON_POLICY`；证据充分时才启用 residual GP 和安全 acquisition；无安全候选时记录 `SAFETY_LOCK` 并回退已观测可行候选。
 
-主比较保持四个方法：`COMMON_POLICY`、Random、无门控 residual BO、SAST/EG-CPI-BO。每个方法使用相同候选域、预算、噪声实现和约束；不把 evaluator oracle 暴露给 learner。主指标是主体级 final selection loss、相对 common regret、gate false-positive/true-positive、实际约束违反率和 fallback 次数。
+主比较固定为五个方法：`COMMON_POLICY`、Random、`RESIDUAL_GREEDY`、`PURE_EI`、SAST/EG-CPI-BO。每个方法使用相同候选域、校准 probe、最大预算、噪声实现和先验安全约束；不把 evaluator oracle 暴露给 learner。K=4 使用 reference+2 probes，K=8 使用 reference+4 probes。固定 common 或门控未激活时可以在已观测 reference 已足够作为推荐后提前停止，但必须报告实际试验次数，不能把最大预算写成已执行观测数。主指标是主体级 final selection loss、相对 common regret、gate false-positive/true-positive、实际约束违反率、覆盖率和 fallback 次数。
 
 ## 论文交付
 
 | 时间 | 交付 |
 |---|---|
-| 09-25—09-30 | 完成 resistance interaction wrapper、manifest、6-profile development pilot 和单元/隔离测试 |
-| 10-01—10-07 | 完成 common/null/positive 算法比较，计算主体级 regret、门控和安全覆盖；作 go/no-go |
+| 09-25—09-30 | 已完成：resistance interaction wrapper、manifest、6-profile development pilot 和单元/隔离测试 |
+| 10-01—10-07 | 已完成：common/null/positive 算法比较、主体级 regret、门控与安全覆盖；go/no-go 为机制比较可进入、确认实验保持关闭 |
 | 10-08—10-14 | 若通过，冻结方法、阈值、候选域与分析脚本；若不通过，冻结 null/negative result，不再加新机制 |
 | 10-15—10-21 | 在独立授权前提下运行一次确认集；没有授权就只写 development 证据和局限 |
 | 10-22—10-31 | 复核表图、源码 hash、样本数和指标定义，关闭实验范围 |

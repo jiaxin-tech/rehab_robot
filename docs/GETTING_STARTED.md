@@ -31,7 +31,7 @@ $env:MPLCONFIGDIR = Join-Path (Get-Location) '.cache/matplotlib'
 
 [pytest-core.ini](../pytest-core.ini) 覆盖 V3/ROM、E0/E2 时序辨识与 EI、E3、新 MyoLeg benchmark、测量分析、日志、轨迹预检/执行器 fake、离线进程诊断及 Windows SDK 加载/fake 测试；不包含 `test_rokae_hardware_integration.py`。从仓库根目录运行，因为 E3 测试读取已跟踪的相对路径 CSV/NPZ。完整历史套件另用 `python -m pytest`，不能把核心回归结果称为全仓通过。
 
-2026-09-23 本机环境验证：Windows x64、CPython 3.12.14，使用上述锁定依赖，`pip check` 通过。环境配置后的原核心回归为 `333 passed in 62.70 s`，文档整理后复跑为 333 项通过、耗时 64.30 s。本轮新增 MyoLeg 实验、报告与缓存检查后，完整当前核心回归为 **404 passed in 99.72 s**，无跳过。新 JUnit 记录位于本地 `.cache/myoleg-core-regression.xml`，原记录在 `.cache/core-regression.xml`。核心结果验证离线算法与 fake/诊断代码，不代表真机运动验证或历史全仓回归。
+2026-09-25 本机环境验证：Windows x64、CPython 3.12.14，使用上述锁定依赖，`pip check` 通过。环境配置后的原核心回归为 `333 passed in 62.70 s`，文档整理后复跑为 333 项通过、耗时 64.30 s；后续中间版本曾为 404 项通过。当前完整核心回归为 **462 passed in 101.50 s**，无跳过。最新 JUnit 记录位于本地 `.cache/core-regression-20260925-final.xml`。核心结果验证离线算法与 fake/诊断代码，不代表真机运动验证或历史全仓回归。
 
 若受限环境无法读取系统临时目录，给 pytest 加上 `--basetemp .cache/pytest-temp-<本次唯一名称> -o cache_dir=.cache/pytest-cache-<本次唯一名称>`，使用仓库内新建的独立目录。不要把已有研究数据目录传给 `--basetemp`，pytest 会清理该目录。
 

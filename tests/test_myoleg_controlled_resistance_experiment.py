@@ -9,7 +9,13 @@ from lower_limb_sim.myoleg_benchmark.controlled_resistance_cohort import build_p
 def test_sast_resistance_profile_uses_only_development_and_returns_auditable_result():
     profile = next(p for p in build_profiles() if p.arm == "EARLY" and p.split == "DEVELOPMENT")
     result = run_profile(profile, budget=8)
-    assert result["executed_trials"] == 8
+    # Once the evidence gate stays inactive, the common fallback is the
+    # already-observed reference; the runner must terminate without issuing a
+    # duplicate physical trial.
+    assert 1 <= result["executed_trials"] <= 8
+    assert result["termination"] in {
+        "BUDGET_EXHAUSTED", "RECOMMENDATION_ALREADY_OBSERVED", "SAFETY_LOCK",
+    }
     assert result["oracle_id"]
     assert result["recommendation_id"] in {None, *(o["candidate_id"] for o in result["observations"])}
     assert result["gate_status"] in {"PERSONALIZATION_ACTIVE", "PERSONALIZATION_INACTIVE"}

@@ -1,0 +1,72 @@
+{
+  "experiment_id": "CONTROLLED_RESISTANCE_INTERACTION_V2_DEVELOPMENT",
+  "truth_scope": "controlled synthetic resistance mechanism; not native or physiological evidence",
+  "profile_ids": [
+    "RESIST_COMMON_DEVE_00",
+    "RESIST_COMMON_DEVE_01",
+    "RESIST_EARLY_DEVE",
+    "RESIST_LATE_DEVE",
+    "RESIST_FAST_DEVE",
+    "RESIST_HIP_DEVE"
+  ],
+  "budget": 8,
+  "candidate_count": 27,
+  "probe_features": [
+    [
+      0.9,
+      0.5,
+      0.5
+    ],
+    [
+      1.1,
+      0.5,
+      0.5
+    ],
+    [
+      1.0,
+      0.25,
+      0.5
+    ],
+    [
+      1.0,
+      0.5,
+      0.75
+    ]
+  ],
+  "gate_config": {
+    "interaction_threshold": 0.0025,
+    "posterior_threshold": 0.95,
+    "min_valid_observations": 3,
+    "prior_interaction_std": 0.01,
+    "exploration_weight": 1.0,
+    "safety_probability": 0.95,
+    "e2_limit": 1.01,
+    "peak_ratio_limit": 1.1,
+    "trust_radius": 2.0,
+    "length_scale": 1.0,
+    "residual_signal_std": 0.6,
+    "constraint_signal_std": 0.1,
+    "constraint_noise_floor": 0.005,
+    "jitter": 1e-09
+  },
+  "confirmatory_access": false,
+  "feature_scaling": {
+    "reference": [
+      1.0,
+      0.5,
+      0.5
+    ],
+    "scale": [
+      0.1,
+      0.25,
+      0.25
+    ]
+  },
+  "cohort_manifest_sha256": "4afa77adcf5c98cb5a31110760ff50dcaa464165925a7e201171fc1a6590448e",
+  "oracle_access": "evaluator-only after run",
+  "code_sha256": {
+    "controlled_resistance_experiment.py": "f797aede947f9bca1f17a8da120734b2a52f6a7a319dad5d81bca48887f53b05",
+    "controlled_resistance_cohort.py": "c1b4f12616da0d0f502cf0a1a72b07af48a9d0d3d6dde7a7ef861c3f2a37f1bd",
+    "personalized_v2.py": "6492a1e97013b3285e9c18084cdb5e75d8b7d3140d3c422927744f73c2dac590"
+  }
+}

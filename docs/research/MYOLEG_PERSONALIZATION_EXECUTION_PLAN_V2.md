@@ -61,7 +61,7 @@
 | Controlled synthetic | 在 native 响应外加预声明的候选空间响应场；`COMMON_OPTIMUM` 与 `DIVERGENT_OPTIMA` | 门控、观测隔离、回退、regret 改善的软件机制验证 | 该响应场等价于肌肉/患者生理差异 |
 | 后续 MyoLeg 物理验证与真实测量 | 独立声明的物理扰动/任务条件；真实测量另有采集与放行流程 | 只有通过验证的对应层结论 | 用 synthetic 成功替代原生动力学或实测证据 |
 
-Controlled cohort 的 [manifest](../../external_simulation_audits/myoleg_controlled_positive_cohort_v1/MYOLEG_CONTROLLED_POSITIVE_COHORT_V1_MANIFEST.json)已单独定义 profile、seed、split 和响应规则，不改 MuJoCo XML 或 V1 虚拟主体 delta。24 个 execution ID 实际复用三个确定性响应场（common、A、B）；`CONFIRMATORY` 是冻结协议下的保留重复执行集，不是独立主体或新 landscape 泛化集。`DIVERGENT_OPTIMA` 的 policy-level 结果已保存于 [controlled policy output](../../outputs/myoleg_controlled_positive_policy_v2/REPORT.md)：null 门控 0%，A/B 门控 100%，平均 regret 从 0.256912 降至 0.069061（73.1%）。这些数字只证明合成分析压力测试中的机制行为，不是 native MyoLeg 生理证据；native null 与后续物理验证仍须单独执行。
+历史 controlled cohort 的 [V1 manifest](../../external_simulation_audits/myoleg_controlled_positive_cohort_v1/MYOLEG_CONTROLLED_POSITIVE_COHORT_V1_MANIFEST.json) 和 policy 输出保留作 provenance；其中 execution ID 复用了确定性响应场，不能当作独立确认集。当前修订版 [V2 manifest](../../external_simulation_audits/myoleg_controlled_positive_cohort_v2/MYOLEG_CONTROLLED_POSITIVE_COHORT_V2_MANIFEST.json) 为 development/confirmatory positive profile 使用不同预声明中心，并只把 null profile 作为重复假阳性控制。旧 policy-level 数字只证明合成压力测试机制行为，不是 native MyoLeg 生理证据；native null 与后续物理验证仍须单独执行。
 
 ## 3. 已生效的执行约束
 
@@ -119,4 +119,4 @@ $env:PYTHONUTF8 = "1"
   --output-dir outputs\myoleg_graybox_cv_development_reproduction
 ```
 
-全域审计入口为 [personalization_audit.py](../../lower_limb_sim/myoleg_benchmark/personalization_audit.py)，controlled cohort 的语义与封存规则见 [cohort README](../../external_simulation_audits/myoleg_controlled_positive_cohort_v1/README.md)。先检查已有产物与完整性，再决定是否重跑；本计划不要求重复已有 17,064 条无噪声 landscape。
+全域审计入口为 [personalization_audit.py](../../lower_limb_sim/myoleg_benchmark/personalization_audit.py)，历史 cohort 的语义与封存规则见 [cohort README](../../external_simulation_audits/myoleg_controlled_positive_cohort_v1/README.md)，修订版 manifest 见 V2 目录。先检查已有产物与完整性，再决定是否重跑；本计划不要求重复已有 17,064 条无噪声 landscape。

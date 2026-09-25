@@ -18,8 +18,18 @@ import numpy as np
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_MANIFEST = ROOT / "external_simulation_audits/myoleg_controlled_resistance_interaction_v1/MYOLEG_CONTROLLED_RESISTANCE_INTERACTION_V1_MANIFEST.json"
-COHORT_ID = "MYOLEG_CONTROLLED_RESISTANCE_INTERACTION_V1"
+DEFAULT_MANIFEST = ROOT / "external_simulation_audits/myoleg_controlled_resistance_interaction_v2/MYOLEG_CONTROLLED_RESISTANCE_INTERACTION_V2_MANIFEST.json"
+COHORT_ID = "MYOLEG_CONTROLLED_RESISTANCE_INTERACTION_V2"
+SCHEMA_VERSION = 2
+FORMULA_VERSION = "angle_onset_velocity_sensitive_load_share_v2"
+FORMULA_COEFFICIENTS = {
+    "onset_mismatch": 0.020,
+    "share_mismatch": 0.020,
+    "velocity_cost": 0.012,
+    "duration_common_cost": 0.002,
+    "timing_common_cost": 0.001,
+    "hip_share_common_cost": 0.001,
+}
 SCENARIOS = ("COMMON_RESISTANCE", "DIVERGENT_RESISTANCE")
 SPLITS = ("DEVELOPMENT", "CONFIRMATORY")
 DURATION_SCALES = (0.9, 1.0, 1.1)
@@ -39,7 +49,7 @@ class ResistanceProfile:
     velocity_sensitivity: float
     hip_resistance_share: float
     field_strength: float = 1.0
-    response_model: str = "angle_onset_velocity_sensitive_load_share"
+    response_model: str = FORMULA_VERSION
     truth_scope: str = "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
 
     def __post_init__(self) -> None:
@@ -84,17 +94,19 @@ class ResistanceProfile:
         # when the motion is faster than reference, while slowing does not
         # create an equal and opposite artificial benefit.
         velocity_cost = self.velocity_sensitivity * max((speed - 1.0) / 0.1, 0.0) ** 2
-        return float(self.field_strength * (0.020 * onset_mismatch +
-                                             0.020 * share_mismatch +
-                                             0.012 * velocity_cost))
+        return float(self.field_strength * (
+            FORMULA_COEFFICIENTS["onset_mismatch"] * onset_mismatch +
+            FORMULA_COEFFICIENTS["share_mismatch"] * share_mismatch +
+            FORMULA_COEFFICIENTS["velocity_cost"] * velocity_cost
+        ))
 
     def value(self, features: tuple[float, float, float] | np.ndarray) -> float:
         """Reference-normalized synthetic E3-like loss; lower is better."""
         x = np.asarray(features, dtype=float)
         duration, timing, hip_share = map(float, x)
-        common = 0.002 * ((duration - 1.0) / 0.1) ** 2
-        common += 0.001 * ((timing - 0.50) / 0.25) ** 2
-        common += 0.001 * ((hip_share - 0.50) / 0.25) ** 2
+        common = FORMULA_COEFFICIENTS["duration_common_cost"] * ((duration - 1.0) / 0.1) ** 2
+        common += FORMULA_COEFFICIENTS["timing_common_cost"] * ((timing - 0.50) / 0.25) ** 2
+        common += FORMULA_COEFFICIENTS["hip_share_common_cost"] * ((hip_share - 0.50) / 0.25) ** 2
         reference_cost = self.mechanism_cost(REFERENCE_FEATURES)
         return float(1.0 + common + self.mechanism_cost(x) - reference_cost)
 
@@ -113,36 +125,63 @@ def build_profiles(root_seed: int = 20260925) -> tuple[ResistanceProfile, ...]:
     if not isinstance(root_seed, int) or root_seed < 0:
         raise ValueError("INVALID_RESISTANCE_ROOT_SEED")
     profiles: list[ResistanceProfile] = []
+    # The null arm is intentionally repeated: it is a false-positive control,
+    # not evidence of independent subject heterogeneity. Positive arms use
+    # distinct parameters in the two splits so confirmation is genuinely held
+    # out rather than a renamed copy of development.
+    positive_parameters = {
+        "DEVELOPMENT": {
+            "EARLY": (0.25, 1.20, 0.25),
+            "LATE": (0.75, 1.20, 0.75),
+            "FAST": (0.50, 1.80, 0.50),
+            "HIP": (0.50, 0.60, 0.75),
+        },
+        "CONFIRMATORY": {
+            "EARLY": (0.30, 1.00, 0.30),
+            "LATE": (0.70, 1.00, 0.70),
+            "FAST": (0.50, 1.50, 0.50),
+            "HIP": (0.50, 0.80, 0.30),
+        },
+    }
     for split, offset in (("DEVELOPMENT", 0), ("CONFIRMATORY", 100)):
         profiles.extend([
             _profile(f"RESIST_COMMON_{split[:4]}_00", "COMMON_RESISTANCE", split, "COMMON",
                      root_seed + offset, 0.50, 0.50, 0.50, 0.0),
             _profile(f"RESIST_COMMON_{split[:4]}_01", "COMMON_RESISTANCE", split, "COMMON",
                      root_seed + offset + 1, 0.50, 0.50, 0.50, 0.0),
-            _profile(f"RESIST_EARLY_{split[:4]}", "DIVERGENT_RESISTANCE", split, "EARLY",
-                     root_seed + offset + 10, 0.25, 1.20, 0.25, 1.0),
-            _profile(f"RESIST_LATE_{split[:4]}", "DIVERGENT_RESISTANCE", split, "LATE",
-                     root_seed + offset + 11, 0.75, 1.20, 0.75, 1.0),
-            _profile(f"RESIST_FAST_{split[:4]}", "DIVERGENT_RESISTANCE", split, "FAST",
-                     root_seed + offset + 12, 0.50, 1.80, 0.50, 1.0),
-            _profile(f"RESIST_HIP_{split[:4]}", "DIVERGENT_RESISTANCE", split, "HIP",
-                     root_seed + offset + 13, 0.50, 0.60, 0.75, 1.0),
         ])
+        for index, arm in enumerate(("EARLY", "LATE", "FAST", "HIP"), start=10):
+            onset, velocity, share = positive_parameters[split][arm]
+            profiles.append(_profile(
+                f"RESIST_{arm}_{split[:4]}", "DIVERGENT_RESISTANCE", split, arm,
+                root_seed + offset + index, onset, velocity, share, 1.0,
+            ))
     validate_profiles(profiles)
     return tuple(profiles)
 
 
-def validate_profiles(profiles: tuple[ResistanceProfile, ...] | list[ResistanceProfile]) -> None:
+def validate_profile(profile: ResistanceProfile) -> None:
+    if not np.isclose(profile.value(REFERENCE_FEATURES), 1.0, atol=1e-15, rtol=0.0):
+        raise ValueError("REFERENCE_RESISTANCE_VALUE_NOT_ONE")
+
+
+def validate_profiles(
+    profiles: tuple[ResistanceProfile, ...] | list[ResistanceProfile],
+    *,
+    require_complete_splits: bool = True,
+) -> None:
     profiles = tuple(profiles)
     if not profiles or len({p.profile_id for p in profiles}) != len(profiles):
         raise ValueError("INVALID_RESISTANCE_PROFILE_SET")
     for profile in profiles:
-        if not np.isclose(profile.value(REFERENCE_FEATURES), 1.0, atol=1e-15, rtol=0.0):
-            raise ValueError("REFERENCE_RESISTANCE_VALUE_NOT_ONE")
+        validate_profile(profile)
     for scenario in SCENARIOS:
         rows = [p for p in profiles if p.scenario == scenario]
         if not rows or {p.split for p in rows} != set(SPLITS):
-            raise ValueError("RESISTANCE_SCENARIO_SPLIT_INCOMPLETE")
+            if require_complete_splits:
+                raise ValueError("RESISTANCE_SCENARIO_SPLIT_INCOMPLETE")
+            if not rows:
+                raise ValueError("RESISTANCE_SCENARIO_MISSING")
     positive = [p for p in profiles if p.scenario == "DIVERGENT_RESISTANCE"]
     if len({(p.resistance_onset_phase, p.velocity_sensitivity, p.hip_resistance_share) for p in positive}) < 2:
         raise ValueError("RESISTANCE_PROFILES_NOT_DIVERGENT")
@@ -152,7 +191,7 @@ def manifest(root_seed: int = 20260925) -> dict[str, Any]:
     profiles = build_profiles(root_seed)
     payload: dict[str, Any] = {
         "cohort_id": COHORT_ID,
-        "schema_version": 1,
+        "schema_version": SCHEMA_VERSION,
         "root_seed": root_seed,
         "task_scope": "controlled synthetic mechanism stress test; no physiological interpretation",
         "candidate_features": {
@@ -161,6 +200,8 @@ def manifest(root_seed: int = 20260925) -> dict[str, Any]:
             "reference": list(REFERENCE_FEATURES),
         },
         "mechanism": {
+            "formula_version": FORMULA_VERSION,
+            "formula_coefficients": FORMULA_COEFFICIENTS,
             "factors": ["resistance_onset_phase", "velocity_sensitivity", "hip_resistance_share"],
             "response": "reference-normalized E3-like loss; smooth angle-onset, speed, and load-share mismatch",
             "learner_oracle_access": False,
@@ -191,11 +232,18 @@ def load_profiles(split: str | None = None, *, path: str | Path = DEFAULT_MANIFE
     canonical = json.dumps(unsigned, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
     if expected != hashlib.sha256(canonical).hexdigest():
         raise ValueError("RESISTANCE_MANIFEST_FINGERPRINT_MISMATCH")
-    profiles = tuple(ResistanceProfile(**record) for record in document["profiles"])
-    validate_profiles(profiles)
-    return tuple(p for p in profiles if split is None or p.split == split)
+    if document.get("cohort_id") != COHORT_ID:
+        raise ValueError("RESISTANCE_COHORT_ID_MISMATCH")
+    if document.get("schema_version") != SCHEMA_VERSION:
+        raise ValueError("RESISTANCE_COHORT_SCHEMA_VERSION_MISMATCH")
+    records = document["profiles"]
+    selected_records = records if split is None else [r for r in records if r.get("split") == split]
+    profiles = tuple(ResistanceProfile(**record) for record in selected_records)
+    validate_profiles(profiles, require_complete_splits=split is None)
+    return profiles
 
 
-__all__ = ["COHORT_ID", "SCENARIOS", "SPLITS", "DURATION_SCALES", "ASSISTANCE_TIMINGS", "HIP_SHARES",
-           "REFERENCE_FEATURES", "ResistanceProfile", "build_profiles", "load_profiles", "manifest",
-           "validate_profiles", "write_manifest", "DEFAULT_MANIFEST"]
+__all__ = ["COHORT_ID", "SCHEMA_VERSION", "FORMULA_VERSION", "FORMULA_COEFFICIENTS", "SCENARIOS", "SPLITS",
+           "DURATION_SCALES", "ASSISTANCE_TIMINGS", "HIP_SHARES", "REFERENCE_FEATURES", "ResistanceProfile",
+           "build_profiles", "load_profiles", "manifest", "validate_profile", "validate_profiles", "write_manifest",
+           "DEFAULT_MANIFEST"]

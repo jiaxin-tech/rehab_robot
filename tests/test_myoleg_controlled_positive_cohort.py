@@ -56,9 +56,8 @@ def test_common_null_and_divergent_positive_fields_are_predeclared() -> None:
     assert len(common) == 8
     assert len(positive) == 16
     assert all(p.gain((1.0, -1.0, 1.0)) == 1.0 for p in common)
-    assert {tuple(p.center_features) for p in positive} == {
-        (-4.0, 4.0, -2.0), (4.0, -4.0, 2.0)
-    }
+    assert len({tuple(p.center_features) for p in positive}) == 16
+    assert {p.arm for p in positive} == {"A", "B"}
     assert all(p.gain(p.center_features) < 1.0 for p in positive)
 
 
