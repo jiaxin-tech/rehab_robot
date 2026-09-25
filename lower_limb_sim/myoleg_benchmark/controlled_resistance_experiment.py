@@ -1,0 +1,177 @@
+"""Small development pilot for the resistance-interaction stress test.
+
+The only learner-visible data are requested scalar responses and declared
+constraint predictions.  Full profile parameters and the oracle are used only
+after the policy run by this evaluator.
+"""
+
+from __future__ import annotations
+
+from dataclasses import asdict
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+from .controlled_resistance_cohort import (
+    DEFAULT_MANIFEST, ResistanceProfile, build_profiles, load_profiles,
+)
+from .personalized_v2 import CandidateView, GateConfig, ObservationRecord, SASTBO, run_sequence
+
+
+ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_OUTPUT = ROOT / "outputs/myoleg_controlled_resistance_pilot_v1"
+GRID = tuple((d, t, h) for d in (0.9, 1.0, 1.1) for t in (0.25, 0.5, 0.75) for h in (0.25, 0.5, 0.75))
+PROBES = ((0.9, 0.5, 0.5), (1.1, 0.5, 0.5), (1.0, 0.25, 0.5), (1.0, 0.5, 0.75))
+GATE_CONFIG = GateConfig(interaction_threshold=0.0025, posterior_threshold=0.95)
+PRACTICAL_GAP = 0.005
+
+
+def common_value(features: tuple[float, ...]) -> float:
+    d, t, h = map(float, features)
+    return float(1.0 + 0.002 * ((d - 1.0) / 0.1) ** 2 +
+                 0.001 * ((t - 0.5) / 0.25) ** 2 +
+                 0.001 * ((h - 0.5) / 0.25) ** 2)
+
+
+def build_candidates() -> tuple[CandidateView, ...]:
+    rows = []
+    for index, features in enumerate(GRID):
+        # Known analytic constraints are intentionally conservative and common
+        # to all profiles; they are not claimed to be native safety limits.
+        e2 = 0.98 + 0.001 * (abs(features[1] - 0.5) / 0.25 + abs(features[2] - 0.5) / 0.25)
+        rows.append(CandidateView(f"resist:{index:02d}", features,
+                                  {"E2": (e2, 0.0), "peak_ratio": (0.98, 0.0)}))
+    return tuple(rows)
+
+
+def run_profile(profile: ResistanceProfile, *, budget: int = 8) -> dict:
+    if budget < 5 or profile.split != "DEVELOPMENT":
+        raise ValueError("RESISTANCE_PILOT_DEVELOPMENT_BUDGET_OR_SPLIT")
+    candidates = build_candidates()
+    by_features = {c.features: c for c in candidates}
+    reference = by_features[(1.0, 0.5, 0.5)]
+    probes = tuple(by_features[x] for x in PROBES)
+    controller = SASTBO(
+        candidates, reference_id=reference.candidate_id,
+        calibration_probe_ids=tuple(p.candidate_id for p in probes),
+        common_policy_id=reference.candidate_id,
+        common_predictor=lambda candidate: common_value(candidate.features),
+        preapproved_candidate_ids=(reference.candidate_id, *(p.candidate_id for p in probes)),
+        config=GATE_CONFIG,
+    )
+
+    def evaluator(candidate: CandidateView, trial: int) -> ObservationRecord:
+        return ObservationRecord(
+            candidate_id=candidate.candidate_id, features=candidate.features,
+            value=profile.value(candidate.features), uncertainty=0.0, feasible=True,
+            constraint_values={name: pair[0] for name, pair in candidate.constraint_predictions.items()},
+            trial_index=trial,
+        )
+
+    sequence = run_sequence(controller, evaluator, budget=budget)
+    recommendation_id = controller.recommend()
+    truth = {c.candidate_id: profile.value(c.features) for c in candidates}
+    oracle_id = min(truth, key=lambda cid: (truth[cid], cid))
+    common_id = reference.candidate_id
+    rec_value = None if recommendation_id is None else truth[recommendation_id]
+    oracle_value, common_at = truth[oracle_id], truth[common_id]
+    return {
+        "profile_id": profile.profile_id, "scenario": profile.scenario,
+        "arm": profile.arm, "budget": budget,
+        "gate_status": controller.last_gate.status,
+        "gate_interaction_score": controller.last_gate.interaction_score,
+        "gate_posterior_score": controller.last_gate.posterior_probability,
+        "recommendation_id": recommendation_id,
+        "recommendation_value": rec_value,
+        "common_id": common_id, "common_value": common_at,
+        "oracle_id": oracle_id, "oracle_value": oracle_value,
+        "common_regret": common_at - oracle_value,
+        "policy_regret": None if rec_value is None else rec_value - oracle_value,
+        "policy_improvement_over_common": None if rec_value is None else common_at - rec_value,
+        "gate_active": bool(controller.last_gate.active),
+        "executed_trials": len(sequence["observations"]),
+        "termination": sequence["termination"] or "BUDGET_EXHAUSTED",
+        "observations": [asdict(o) for o in sequence["observations"]],
+    }
+
+
+def run_benchmark(*, output_dir: Path = DEFAULT_OUTPUT, budget: int = 8) -> Path:
+    profiles = load_profiles("DEVELOPMENT")
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=False)
+    manifest = json.loads(DEFAULT_MANIFEST.read_text(encoding="utf-8"))
+    protocol = {
+        "experiment_id": "CONTROLLED_RESISTANCE_INTERACTION_V1_DEVELOPMENT",
+        "truth_scope": "controlled synthetic resistance mechanism; not native or physiological evidence",
+        "profile_ids": [p.profile_id for p in profiles], "budget": budget,
+        "candidate_count": len(build_candidates()), "probe_features": PROBES,
+        "gate_config": asdict(GATE_CONFIG), "confirmatory_access": False,
+        "cohort_manifest_sha256": manifest["manifest_fingerprint_sha256"],
+        "oracle_access": "evaluator-only after run",
+        "code_sha256": {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in (
+            Path(__file__), Path(__file__).with_name("controlled_resistance_cohort.py"),
+            Path(__file__).with_name("personalized_v2.py"))},
+    }
+    (output_dir / "protocol.json").write_text(json.dumps(protocol, indent=2) + "\n", encoding="utf-8")
+    rows = [run_profile(profile, budget=budget) for profile in profiles]
+    scalar = [{k: v for k, v in row.items() if k not in ("observations",)} for row in rows]
+    pd.DataFrame(scalar).to_csv(output_dir / "results.csv", index=False)
+    (output_dir / "decision_logs.json").write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
+    summary = pd.DataFrame(scalar).groupby(["scenario", "arm"], sort=True).agg(
+        profiles=("profile_id", "count"), gate_active_rate=("gate_active", "mean"),
+        common_regret_mean=("common_regret", "mean"), policy_regret_mean=("policy_regret", "mean"),
+        policy_improvement_mean=("policy_improvement_over_common", "mean"),
+    ).reset_index()
+    summary.to_csv(output_dir / "summary.csv", index=False)
+    positive = pd.DataFrame([row for row in scalar if row["scenario"] == "DIVERGENT_RESISTANCE"])
+    null = pd.DataFrame([row for row in scalar if row["scenario"] == "COMMON_RESISTANCE"])
+    detectable = positive["common_regret"] >= PRACTICAL_GAP
+    useful = (positive["policy_improvement_over_common"] >= PRACTICAL_GAP)
+    decision = {
+        "null_gate_active_rate": float(null["gate_active"].mean()),
+        "positive_profile_count": int(len(positive)),
+        "positive_profiles_with_practical_common_regret": int(detectable.sum()),
+        "positive_profiles_with_practical_policy_improvement": int(useful.sum()),
+        "positive_detection_fraction": float(detectable.mean()) if len(positive) else 0.0,
+        "positive_policy_improvement_fraction": float(useful.mean()) if len(positive) else 0.0,
+        "positive_mean_policy_improvement": float(positive["policy_improvement_over_common"].mean()) if len(positive) else 0.0,
+        "decision": "MECHANISM_PILOT_ELIGIBLE_FOR_ALGORITHM_COMPARISON" if (
+            null["gate_active"].sum() == 0 and detectable.mean() >= 0.75 and
+            positive["policy_improvement_over_common"].mean() >= PRACTICAL_GAP
+        ) else "HOLD_MECHANISM_OR_GATE_REQUIRES_REVISION",
+        "threshold": PRACTICAL_GAP,
+        "confirmatory_ready": False,
+    }
+    (output_dir / "decision.json").write_text(json.dumps(decision, indent=2) + "\n", encoding="utf-8")
+    lines = ["# Controlled resistance interaction pilot", "",
+             "Analytical mechanism stress test; not native MyoLeg physiology or patient evidence.",
+             "The learner receives only queried values; profile parameters and oracle scoring are evaluator-only.", "",
+             "| Scenario / arm | Profiles | Gate active | Common regret | Policy regret | Improvement |",
+             "| --- | ---: | ---: | ---: | ---: | ---: |"]
+    for row in summary.to_dict("records"):
+        lines.append(f"| {row['scenario']} / {row['arm']} | {row['profiles']} | {row['gate_active_rate']:.0%} | "
+                     f"{row['common_regret_mean']:.6f} | {row['policy_regret_mean']:.6f} | {row['policy_improvement_mean']:.6f} |")
+    lines += ["", f"Decision: {decision['decision']}.",
+              f"Null gate active rate: {decision['null_gate_active_rate']:.0%}; practical divergent common-regret fraction: {decision['positive_detection_fraction']:.0%}; practical policy-improvement fraction: {decision['positive_policy_improvement_fraction']:.0%}.",
+              "A profile can trigger the gate without benefiting from personalization (the FAST arm is an explicit example); detection and useful regret reduction are reported separately.",
+              "This pilot is a go/no-go mechanism check, not a confirmatory experiment.",
+              "No confirmatory profiles were loaded; no claim about patient physiology or clinical safety is supported."]
+    (output_dir / "REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    (output_dir / "completion.json").write_text(json.dumps({"complete": True, "profiles": len(rows), "confirmatory_access": False}, indent=2) + "\n")
+    return output_dir
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--budget", type=int, default=8)
+    args = parser.parse_args(argv)
+    print(json.dumps({"complete": True, "output": str(run_benchmark(output_dir=args.output_dir, budget=args.budget))}))
+
+
+if __name__ == "__main__":
+    main()

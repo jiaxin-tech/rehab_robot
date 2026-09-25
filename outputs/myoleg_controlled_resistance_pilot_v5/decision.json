@@ -1,0 +1,12 @@
+{
+  "null_gate_active_rate": 0.0,
+  "positive_profile_count": 4,
+  "positive_profiles_with_practical_common_regret": 3,
+  "positive_profiles_with_practical_policy_improvement": 3,
+  "positive_detection_fraction": 0.75,
+  "positive_policy_improvement_fraction": 0.75,
+  "positive_mean_policy_improvement": 0.022750000000000048,
+  "decision": "MECHANISM_PILOT_ELIGIBLE_FOR_ALGORITHM_COMPARISON",
+  "threshold": 0.005,
+  "confirmatory_ready": false
+}

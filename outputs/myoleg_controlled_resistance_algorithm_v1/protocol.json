@@ -1,0 +1,58 @@
+{
+  "experiment_id": "CONTROLLED_RESISTANCE_ALGORITHM_V1",
+  "scope": "development-only controlled synthetic resistance mechanism",
+  "methods": [
+    "COMMON_POLICY",
+    "RANDOM",
+    "RESIDUAL_BO",
+    "SAST_BO"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "budget": 8,
+  "profile_ids": [
+    "RESIST_COMMON_DEVE_00",
+    "RESIST_COMMON_DEVE_01",
+    "RESIST_EARLY_DEVE",
+    "RESIST_LATE_DEVE",
+    "RESIST_FAST_DEVE",
+    "RESIST_HIP_DEVE"
+  ],
+  "candidate_count": 27,
+  "probes": [
+    [
+      0.9,
+      0.5,
+      0.5
+    ],
+    [
+      1.1,
+      0.5,
+      0.5
+    ],
+    [
+      1.0,
+      0.25,
+      0.5
+    ],
+    [
+      1.0,
+      0.5,
+      0.75
+    ]
+  ],
+  "confirmatory_access": false,
+  "oracle_access": "evaluator-only after run",
+  "cohort_manifest_sha256": "128392f827eb13326e70025c04442ed43032cd66374455510fddf7ff3787d3ba",
+  "code_sha256": {
+    "controlled_resistance_algorithm_comparison.py": "795b961aa3567db6ca53228463d815f478be7dd71325928fbe00bb88bc16cec1",
+    "controlled_resistance_experiment.py": "209c9f60153d6c05427a6e03aa39e695501f13f4124eb85f8408902ac6ed6fe1",
+    "controlled_resistance_cohort.py": "175aaecb0b92e2100cdfb1566f550d896828d4268eb49bf8007e2a0f78caa63b",
+    "personalized_v2.py": "634cf5bcb63711df13a789c4c6f87a091208190eb1e0167c9f4739eed7783912"
+  }
+}

@@ -26,6 +26,7 @@
 | 新 MyoLeg 开发实验 | 已完成 native＋24 development、两轨迹族、七算法比较。主 K=4 下关键姿态族的 Physics Greedy、残差 Greedy、MI-EI 均改善 E3 约 2.97%；工程默认选较简单的 Physics Greedy，尚未证明个体化必要性。[实际报告](outputs/myoleg_benchmark_v1/development_20260923_r2/REPORT.md) |
 | 真实测量与机器人 | 离线分析接口已有；生产采集仍用线程，原生并发阻塞尚未解决。真机运动保持 **NO-GO**，在线个体化未接入。 |
 | CONTROLLED_ACTUATION_V3 | 固定辅助峰值的 27 候选 × 3 development 主体已完成。出现两种 oracle，但最佳公共辅助方案最大相对 regret 仅 0.003589%，暂不扩展或确认；V1 30-seed 仍暂停。[协议、结果与复现](docs/research/MYOLEG_CONTROLLED_ACTUATION_V3.md) |
+| Resistance interaction V1 | 6 个 controlled development profile 已完成 null/positive pilot；null gate 0%，4 个 divergent profile 中 3 个有实用 regret，随后完成 4 方法固定预算比较。仅支持软件机制证据，尚未进入确认集或真实患者建模。[执行计划与边界](docs/research/MYOLEG_RESEARCH_EXECUTION_PLAN_V3.md) |
 
 指标定义、报告先后和限制见[研究主线](docs/RESEARCH.md)。软件测试通过不代表真机运动放行。
 

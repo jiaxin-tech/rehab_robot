@@ -1,0 +1,208 @@
+{
+  "cohort_id": "MYOLEG_CONTROLLED_RESISTANCE_INTERACTION_V1",
+  "schema_version": 1,
+  "root_seed": 20260925,
+  "task_scope": "controlled synthetic mechanism stress test; no physiological interpretation",
+  "candidate_features": {
+    "coordinates": [
+      "duration_scale",
+      "assistance_timing_within_branch",
+      "hip_share"
+    ],
+    "values": [
+      [
+        0.9,
+        1.0,
+        1.1
+      ],
+      [
+        0.25,
+        0.5,
+        0.75
+      ],
+      [
+        0.25,
+        0.5,
+        0.75
+      ]
+    ],
+    "reference": [
+      1.0,
+      0.5,
+      0.5
+    ]
+  },
+  "mechanism": {
+    "factors": [
+      "resistance_onset_phase",
+      "velocity_sensitivity",
+      "hip_resistance_share"
+    ],
+    "response": "reference-normalized E3-like loss; smooth angle-onset, speed, and load-share mismatch",
+    "learner_oracle_access": false,
+    "candidate_landscape_access": false
+  },
+  "splits": {
+    "DEVELOPMENT": "freeze policy and gate",
+    "CONFIRMATORY": "sealed until freeze"
+  },
+  "profiles": [
+    {
+      "profile_id": "RESIST_COMMON_DEVE_00",
+      "scenario": "COMMON_RESISTANCE",
+      "split": "DEVELOPMENT",
+      "arm": "COMMON",
+      "seed": 20260925,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 0.5,
+      "hip_resistance_share": 0.5,
+      "field_strength": 0.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_COMMON_DEVE_01",
+      "scenario": "COMMON_RESISTANCE",
+      "split": "DEVELOPMENT",
+      "arm": "COMMON",
+      "seed": 20260926,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 0.5,
+      "hip_resistance_share": 0.5,
+      "field_strength": 0.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_EARLY_DEVE",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "DEVELOPMENT",
+      "arm": "EARLY",
+      "seed": 20260935,
+      "resistance_onset_phase": 0.25,
+      "velocity_sensitivity": 1.2,
+      "hip_resistance_share": 0.25,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_LATE_DEVE",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "DEVELOPMENT",
+      "arm": "LATE",
+      "seed": 20260936,
+      "resistance_onset_phase": 0.75,
+      "velocity_sensitivity": 1.2,
+      "hip_resistance_share": 0.75,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_FAST_DEVE",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "DEVELOPMENT",
+      "arm": "FAST",
+      "seed": 20260937,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 1.8,
+      "hip_resistance_share": 0.5,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_HIP_DEVE",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "DEVELOPMENT",
+      "arm": "HIP",
+      "seed": 20260938,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 0.6,
+      "hip_resistance_share": 0.75,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_COMMON_CONF_00",
+      "scenario": "COMMON_RESISTANCE",
+      "split": "CONFIRMATORY",
+      "arm": "COMMON",
+      "seed": 20261025,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 0.5,
+      "hip_resistance_share": 0.5,
+      "field_strength": 0.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_COMMON_CONF_01",
+      "scenario": "COMMON_RESISTANCE",
+      "split": "CONFIRMATORY",
+      "arm": "COMMON",
+      "seed": 20261026,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 0.5,
+      "hip_resistance_share": 0.5,
+      "field_strength": 0.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_EARLY_CONF",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "CONFIRMATORY",
+      "arm": "EARLY",
+      "seed": 20261035,
+      "resistance_onset_phase": 0.25,
+      "velocity_sensitivity": 1.2,
+      "hip_resistance_share": 0.25,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_LATE_CONF",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "CONFIRMATORY",
+      "arm": "LATE",
+      "seed": 20261036,
+      "resistance_onset_phase": 0.75,
+      "velocity_sensitivity": 1.2,
+      "hip_resistance_share": 0.75,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_FAST_CONF",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "CONFIRMATORY",
+      "arm": "FAST",
+      "seed": 20261037,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 1.8,
+      "hip_resistance_share": 0.5,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    },
+    {
+      "profile_id": "RESIST_HIP_CONF",
+      "scenario": "DIVERGENT_RESISTANCE",
+      "split": "CONFIRMATORY",
+      "arm": "HIP",
+      "seed": 20261038,
+      "resistance_onset_phase": 0.5,
+      "velocity_sensitivity": 0.6,
+      "hip_resistance_share": 0.75,
+      "field_strength": 1.0,
+      "response_model": "angle_onset_velocity_sensitive_load_share",
+      "truth_scope": "CONTROLLED_SYNTHETIC_MECHANISM_STRESS_TEST"
+    }
+  ],
+  "manifest_fingerprint_sha256": "128392f827eb13326e70025c04442ed43032cd66374455510fddf7ff3787d3ba"
+}
