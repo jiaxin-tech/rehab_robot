@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "run_id": "2662b14e-09bb-495b-8a73-598a84575d8b",
+  "request_sha256": "927972252ca39d9699207f166213aaedd467d5ff8e97019f2a5c9914ec1f288f",
+  "case": "B",
+  "mode": "OFFLINE_DRY_RUN",
+  "source_hashes": {
+    "scripts/run_wrench_stationary_validation.py": "eb77c1f7859b161b14c1821a4f2ef64d40d0d57bdb72aa985052297cba727385",
+    "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+    "collection/wrench_process.py": "9a76c2d6b0f413b3181c4948806913ecb643bbbb9c43ef5fcc8c7f19697cd0b2",
+    "collection/episode_logger.py": "ba50925cd74f70bc29c17c0d878598da0f2362927487deb9cd7d42006585c34a",
+    "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+    "hardware/rokae_adapter.py": "cf55adb1f7ee89ac32cdb0028a9306bdebc8672776b4c558c61454bb92cfa1ae",
+    "hardware/windows/rokae_xcore.py": "e6ae5fc6ec06ed721e33ca6b7062920f887f1e24759d12242d3100b3afc38878"
+  },
+  "requested_duration_s": 900,
+  "actual_duration_s": 1.010141900012968,
+  "completed_900s": false,
+  "offline_dry_run_pass": true,
+  "intended_rt_rate_hz": 125.0,
+  "intended_state_poll_hz": 250.0,
+  "intended_wrench_rate_hz": 50.0,
+  "wrench_status": "ENABLED",
+  "rt_sample_count": 253,
+  "wrench_planned_queries": 45000,
+  "wrench_started_queries": 40,
+  "wrench_completed_queries": 39,
+  "query_count_semantics": "started=start intent; pre-call boundary does not prove native entry",
+  "wrench_successful_queries": 39,
+  "wrench_error_queries": 0,
+  "pending_queries": [
+    40
+  ],
+  "sdk_error_histogram": {},
+  "distributions": {
+    "state_age_s": {
+      "n": 94,
+      "minimum": 9.280000813305378e-05,
+      "maximum": 0.00499750001472421,
+      "mean": 0.0017799670198694506,
+      "p99": 0.00499750001472421
+    },
+    "wrench_age_s": {
+      "n": 73,
+      "minimum": 0.0038918999780435115,
+      "maximum": 0.029761250014416873,
+      "mean": 0.014240049997867685,
+      "p99": 0.029761250014416873
+    },
+    "state_wrench_skew_s": {
+      "n": 73,
+      "minimum": 0.0017198999994434416,
+      "maximum": 0.029534150002291426,
+      "mean": 0.012650356848870902,
+      "p99": 0.029534150002291426
+    },
+    "supervisor_interval_s": {
+      "n": 94,
+      "minimum": 9.00006853044033e-07,
+      "maximum": 0.011661500000627711,
+      "mean": 0.010635114893530239,
+      "p99": 0.011661500000627711
+    },
+    "rt_host_receive_interval_s": {
+      "n": 252,
+      "minimum": 0.0021532000100705773,
+      "maximum": 0.005267899978207424,
+      "mean": 0.004006736507959893,
+      "p99": 0.005227199988439679
+    },
+    "rt_delivery_latency_s": {
+      "n": 253,
+      "minimum": 4.699977580457926e-06,
+      "maximum": 0.00016649998724460602,
+      "mean": 1.1641895692986933e-05,
+      "p99": 3.1100003980100155e-05
+    },
+    "query_latency_s": {
+      "n": 39,
+      "minimum": 6.77e-05,
+      "maximum": 0.0010883,
+      "mean": 0.00013538974358974357,
+      "p99": 0.0010883
+    }
+  },
+  "rt_device_source_timing": "UNAVAILABLE_NO_DEVICE_TIMESTAMP",
+  "criteria": null,
+  "timing_acceptance": "UNDEFINED",
+  "reliability_acceptance": "UNDEFINED",
+  "cleanup": {
+    "parent": {
+      "normal_cleanup": true,
+      "graceful_sdk_disconnect": null,
+      "offline_disconnect_completed": true,
+      "unresolved_call": false,
+      "process_exitcode": null,
+      "process_exit": "runner_still_running",
+      "forced_termination": false,
+      "controller_session_recovery": null
+    },
+    "child": {
+      "NORMAL_CLEANUP": true,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": true,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 0,
+      "query_state": "IN_PROGRESS",
+      "failure_latch": [],
+      "audit_closed": true
+    },
+    "logger_closed": true,
+    "state_audit_closed": true,
+    "health_audit_closed": true,
+    "lifecycle_audit_closed": true
+  },
+  "final_robot_operation_state": "IDLE",
+  "logger_transport_gaps": {
+    "provider": [],
+    "rt_sequence_skips": 0,
+    "telemetry_failures": []
+  },
+  "failures": [],
+  "robot_connected": false,
+  "robot_motion_executed": false,
+  "reference_release": "NO_GO",
+  "r9_closed": false
+}

@@ -1,0 +1,2 @@
+host_time_s,q1,q2,q3,q4,q5,q6,tcp_x,tcp_y,tcp_z,tcp_rx,tcp_ry,tcp_rz,valid,invalid_reason
+159492.8778421,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,True,

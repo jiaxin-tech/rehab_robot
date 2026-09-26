@@ -1,0 +1,2 @@
+sequence_id,host_query_start_s,host_query_end_s,host_publish_s,host_monotonic_time_s,wall_time_iso,timestamp_source,valid,invalid_reason,raw_force_frame,cartesian_force_raw_n,cartesian_torque_raw_nm,joint_measured_torque_nm,joint_external_torque_nm,run_id,session_id,query_id,parent_receive_ns
+1,159490.0585661,159490.0601635,159490.0601635,159490.0593648,,OFFLINE_HOST_QUERY,True,,world,"[1.0, 2.0, 3.0]","[0.1, 0.2, 0.3]","[1.0, 1.0, 1.0, 1.0, 1.0, 1.0]","[0.5, 0.5, 0.5, 0.5, 0.5, 0.5]",08b225b4-197b-4568-b0c9-e1d50647163d,aaca231cf8fe49c79e626335c7849033,1,159490060492000

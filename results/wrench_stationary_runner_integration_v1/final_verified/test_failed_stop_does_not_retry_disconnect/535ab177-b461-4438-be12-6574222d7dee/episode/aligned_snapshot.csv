@@ -1,0 +1,7 @@
+host_time_s,state_time_s,wrench_time_s,state_age_s,wrench_age_s,state_wrench_skew_s,state_valid,wrench_valid,state_thread_alive,wrench_thread_alive,query_duration_ms,valid,invalid_reason
+159623.4007768,159623.4003192,,0.00045759999193251133,,,True,False,True,True,,False,DISABLED_FOR_STATIONARY_A;wrench_not_ready
+159623.4211996,159623.4204463,,0.0007533000025432557,,,True,False,True,True,,False,DISABLED_FOR_STATIONARY_A;wrench_not_ready
+159623.4421511,159623.4413376,,0.0008134999952744693,,,True,False,True,True,,False,DISABLED_FOR_STATIONARY_A;wrench_not_ready
+159623.4620815,159623.4610865,,0.0009950000094249845,,,True,False,True,True,,False,DISABLED_FOR_STATIONARY_A;wrench_not_ready
+159623.4820241,159623.4780531,,0.003970999998273328,,,True,False,True,True,,False,DISABLED_FOR_STATIONARY_A;wrench_not_ready
+159623.5019713,159623.4980217,,0.003949599980842322,,,True,False,True,True,,False,DISABLED_FOR_STATIONARY_A;wrench_not_ready

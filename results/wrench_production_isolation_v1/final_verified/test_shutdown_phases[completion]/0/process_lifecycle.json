@@ -1,0 +1,121 @@
+[
+  {
+    "version": 1,
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 4272,
+    "event_id": 1,
+    "query_id": 0,
+    "type": "PROCESS_START",
+    "timestamp_ns": 158349860148600,
+    "connection": {
+      "mode": "offline",
+      "rate_hz": 50,
+      "dispatch_ns": 158349670144100
+    },
+    "dispatch_ns": 158349670144100,
+    "parent_receive_ns": 158349862848100,
+    "durable_ns": 158349865160600
+  },
+  {
+    "version": 1,
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 4272,
+    "event_id": 2,
+    "query_id": 0,
+    "type": "PROCESS_READY",
+    "timestamp_ns": 158349866703100,
+    "identity": {
+      "provider": "OFFLINE_STUB",
+      "NOT_SAFETY_THRESHOLDS": true
+    },
+    "parent_receive_ns": 158349868237100,
+    "durable_ns": 158349869457900
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 13908,
+    "query_id": 1,
+    "event_id": 7,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 158349889022900
+  },
+  {
+    "version": 1,
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 4272,
+    "event_id": 6,
+    "query_id": 1,
+    "type": "DISCONNECT_START",
+    "timestamp_ns": 158349890942500,
+    "parent_receive_ns": 158349891988300,
+    "durable_ns": 158349893063700
+  },
+  {
+    "version": 1,
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 4272,
+    "event_id": 7,
+    "query_id": 1,
+    "type": "DISCONNECT_COMPLETE",
+    "timestamp_ns": 158349896914700,
+    "graceful_sdk_disconnect": null,
+    "offline_disconnect_completed": true,
+    "parent_receive_ns": 158349899505900,
+    "durable_ns": 158349900617500
+  },
+  {
+    "version": 1,
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 4272,
+    "event_id": 8,
+    "query_id": 1,
+    "type": "PROCESS_STOPPED",
+    "timestamp_ns": 158349901949300,
+    "parent_receive_ns": 158349904058100,
+    "durable_ns": 158349905257900
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 13908,
+    "query_id": 1,
+    "event_id": 11,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 158349921804000,
+    "exitcode": 0,
+    "completion": 158349884176000
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "2c7b542c879d466cacfd281e051e0eec",
+    "session_id": "f687d43265d94063a417246828dc3d45",
+    "pid": 13908,
+    "query_id": 1,
+    "event_id": 12,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 158349921836800,
+    "outcome": {
+      "NORMAL_CLEANUP": true,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": true,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 0,
+      "query_state": "SUCCEEDED",
+      "failure_latch": [],
+      "audit_closed": true
+    }
+  }
+]

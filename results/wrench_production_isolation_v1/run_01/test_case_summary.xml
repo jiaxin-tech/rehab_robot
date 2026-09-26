@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="28" time="27.409" timestamp="2026-09-26T16:53:01.749476+08:00" hostname="DESKTOP-P1EOI08"><testcase classname="tests.test_wrench_production_process" name="test_normal_durable_protocol" time="0.429" /><testcase classname="tests.test_wrench_production_process" name="test_blocking_parent_progress_and_forced_cleanup[block]" time="0.661" /><testcase classname="tests.test_wrench_production_process" name="test_blocking_parent_progress_and_forced_cleanup[never]" time="0.661" /><testcase classname="tests.test_wrench_production_process" name="test_blocking_parent_progress_and_forced_cleanup[gil_block]" time="0.681" /><testcase classname="tests.test_wrench_production_process" name="test_delayed_263_preserves_last_good" time="0.329" /><testcase classname="tests.test_wrench_production_process" name="test_crash_pending_no_fabricated_completion" time="0.199" /><testcase classname="tests.test_wrench_production_process" name="test_stale_last_good_and_failure_stays_latched" time="0.576" /><testcase classname="tests.test_wrench_production_process" name="test_shutdown_phases[startup]" time="0.383" /><testcase classname="tests.test_wrench_production_process" name="test_shutdown_phases[ack]" time="0.213" /><testcase classname="tests.test_wrench_production_process" name="test_shutdown_phases[query]" time="0.231"><failure message="assert False">make_provider = &lt;function make_provider.&lt;locals&gt;.make at 0x000001F9B52A0CC0&gt;
+phase = 'query'
+
+    @pytest.mark.parametrize("phase", ["startup", "ack", "query", "completion", "disconnect"])
+    def test_shutdown_phases(make_provider, phase):
+        config = {}
+        if phase == "startup": config["startup_delay_s"] = 10
+        if phase == "query": config.update(behavior="never")
+        if phase == "disconnect": config["disconnect_delay_s"] = 10
+        p = make_provider(**config)
+        if phase == "startup": until(p, lambda h: h["CURRENT_QUERY_STATE"] == "STARTING")
+        elif phase == "query": until(p, lambda h: h["CURRENT_QUERY_STATE"] == "IN_PROGRESS")
+        elif phase == "completion": until(p, lambda h: h["LAST_COMPLETED_QUERY_TIME"] is not None)
+        elif phase == "disconnect": until(p, lambda h: h["STREAM_HEALTH"])
+        # ack case stops before polling, while child awaits its first durable ACK.
+        result = p.stop()
+        assert result["process_exited"]
+        if phase in ("startup", "query", "disconnect"):
+&gt;           assert result["FORCED_WORKER_TERMINATION"]
+E           assert False
+
+tests\test_wrench_production_process.py:153: AssertionError</failure></testcase><testcase classname="tests.test_wrench_production_process" name="test_shutdown_phases[completion]" time="0.241" /><testcase classname="tests.test_wrench_production_process" name="test_shutdown_phases[disconnect]" time="0.459" /><testcase classname="tests.test_wrench_production_process" name="test_missing_first_heartbeat" time="0.365" /><testcase classname="tests.test_wrench_production_process" name="test_lost_ack" time="6.660"><failure message="AssertionError: condition not reached: {'LATEST_GOOD_SAMPLE_VALID': False, 'CURRENT_QUERY_STATE': 'STARTING', 'LAST_ERROR': None, 'QUERY_IN_PROGRESS': False, 'QUERY_START_TIME': None, 'LAST_COMPLETED_QUERY_TIME': None, 'WRENCH_SAMPLE_AGE': None, 'WORKER_HEARTBEAT_AGE': 6.4103414, 'PROCESS_ALIVE': False, 'STREAM_HEALTH': False, 'FAILURE_LATCH': ('cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed', 'worker_exited', 'startup_timeout'), 'entry_unconfirmed': False, 'host_ns': 157576891795900, 'query_id': 0, 'completion': None}">make_provider = &lt;function make_provider.&lt;locals&gt;.make at 0x000001F9B52A34C0&gt;
+budgets = WrenchBudgets(startup_s=4, query_s=0.25, progress_s=2, sample_age_s=1, ack_s=2, log_s=0.25, shutdown_s=0.2, terminate_s=0.5, state_age_s=1, skew_s=1, provenance='NOT_SAFETY_THRESHOLDS')
+
+    def test_lost_ack(make_provider, budgets):
+        p = make_provider(limits=replace(budgets, ack_s=.1))
+        time.sleep(.6)  # do not poll/ACK; child reports timeout via independent fatal slot
+&gt;       until(p, lambda h: any("ack_timeout" in x for x in h["FAILURE_LATCH"]))
+
+tests\test_wrench_production_process.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+provider = &lt;collection.wrench_process.WrenchProcessProvider object at 0x000001F9B51D2DE0&gt;
+predicate = &lt;function test_lost_ack.&lt;locals&gt;.&lt;lambda&gt; at 0x000001F9B52A14E0&gt;
+seconds = 6
+
+    def until(provider, predicate, seconds=6):
+        end = time.perf_counter() + seconds
+        while time.perf_counter() &lt; end:
+            state = provider.poll()
+            provider.trace.append(state)
+            if predicate(state):
+                return state
+            time.sleep(.002)
+&gt;       raise AssertionError(f"condition not reached: {provider.health()}")
+E       AssertionError: condition not reached: {'LATEST_GOOD_SAMPLE_VALID': False, 'CURRENT_QUERY_STATE': 'STARTING', 'LAST_ERROR': None, 'QUERY_IN_PROGRESS': False, 'QUERY_START_TIME': None, 'LAST_COMPLETED_QUERY_TIME': None, 'WRENCH_SAMPLE_AGE': None, 'WORKER_HEARTBEAT_AGE': 6.4103414, 'PROCESS_ALIVE': False, 'STREAM_HEALTH': False, 'FAILURE_LATCH': ('cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed', 'worker_exited', 'startup_timeout'), 'entry_unconfirmed': False, 'host_ns': 157576891795900, 'query_id': 0, 'completion': None}
+
+tests\test_wrench_production_process.py:63: AssertionError</failure></testcase><testcase classname="tests.test_wrench_production_process" name="test_logger_faults[backpressure]" time="0.474" /><testcase classname="tests.test_wrench_production_process" name="test_logger_faults[failure]" time="0.382" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[gap]" time="0.005" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[duplicate]" time="0.005" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[order]" time="0.006" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[pid]" time="0.006" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[run]" time="0.006" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[clock]" time="0.009" /><testcase classname="tests.test_wrench_production_process" name="test_protocol_faults_are_latched[overflow]" time="0.006" /><testcase classname="tests.test_wrench_production_process" name="test_invalid_supervisor_clock" time="0.287" /><testcase classname="tests.test_wrench_production_process" name="test_audit_queue_overflow_is_explicit" time="2.004" /><testcase classname="tests.test_wrench_production_process" name="test_existing_control_rejects_historical_good_unhealthy_stream" time="10.911"><failure message="RuntimeError: release bundle checksum mismatch: C:\Users\liumai\fjx\rehab_robot\reference_release\reference_cycle_closure_audit.csv">def test_existing_control_rejects_historical_good_unhealthy_stream():
+        from tests.test_execution_preflight import _inputs, _evaluate
+        from control.robot_trajectory_executor import RokaeMotionExecutor
+        from tests.test_robot_trajectory_executor import _safety
+&gt;       h = replace(_inputs()[-1], valid=False, invalid_reason='sdk_error',
+                    ^^^^^^^^^
+                    wrench_valid=True, wrench_stream_healthy=False, wrench_failure_latch=('sdk_error',))
+
+tests\test_wrench_production_process.py:233: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests\test_execution_preflight.py:69: in _inputs
+    trajectory, audit, _ = build_start_anchored_relative_trajectory(
+control\start_anchored_relative_trajectory.py:283: in build_start_anchored_relative_trajectory
+    source, source_metadata = _reference_and_metadata(reference)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+control\start_anchored_relative_trajectory.py:240: in _reference_and_metadata
+    frame, metadata = load_closed_reference_trajectory(reference)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lower_limb_sim\run_robot_trajectory_export.py:324: in load_closed_reference_trajectory
+    frozen_bundle = load_frozen_active_reference(path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lower_limb_sim\reference_release.py:515: in load_frozen_active_reference
+    _verify_release_checksums()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    def _verify_release_checksums() -&gt; None:
+        lines = RELEASE_SHA256SUMS_PATH.read_text(encoding="utf-8").splitlines()
+        seen: set[str] = set()
+        for line in lines:
+            digest, separator, filename = line.partition("  ")
+            if not separator or len(digest) != 64 or not filename:
+                raise RuntimeError("release SHA256SUMS.txt has invalid syntax")
+            if filename in seen or Path(filename).name != filename:
+                raise RuntimeError("release SHA256SUMS.txt has unsafe or duplicate path")
+            seen.add(filename)
+            path = RELEASE_DIRECTORY / filename
+            if not path.is_file() or sha256_file(path) != digest:
+&gt;               raise RuntimeError(f"release bundle checksum mismatch: {path}")
+E               RuntimeError: release bundle checksum mismatch: C:\Users\liumai\fjx\rehab_robot\reference_release\reference_cycle_closure_audit.csv
+
+lower_limb_sim\reference_release.py:333: RuntimeError</failure></testcase><testcase classname="tests.test_wrench_production_process" name="test_acquisition_process_integration" time="0.616" /><testcase classname="tests.test_wrench_production_process" name="test_missing_provider_refuses_before_connect" time="0.002" /></testsuite></testsuites>

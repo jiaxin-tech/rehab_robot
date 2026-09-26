@@ -1,0 +1,65 @@
+[
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "54aee9e33b4843038a0f7536e3e64eb9",
+    "session_id": "7fea5bc198e04e99ad97c42fdd0b02e3",
+    "pid": 10464,
+    "query_id": 0,
+    "event_id": 2,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 159363167973800
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "54aee9e33b4843038a0f7536e3e64eb9",
+    "session_id": "7fea5bc198e04e99ad97c42fdd0b02e3",
+    "pid": 10464,
+    "query_id": 0,
+    "event_id": 4,
+    "type": "FORCED_WORKER_TERMINATION",
+    "timestamp_ns": 159363369973400,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "54aee9e33b4843038a0f7536e3e64eb9",
+    "session_id": "7fea5bc198e04e99ad97c42fdd0b02e3",
+    "pid": 10464,
+    "query_id": 0,
+    "event_id": 5,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 159363372895500,
+    "exitcode": -15,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "54aee9e33b4843038a0f7536e3e64eb9",
+    "session_id": "7fea5bc198e04e99ad97c42fdd0b02e3",
+    "pid": 10464,
+    "query_id": 0,
+    "event_id": 6,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 159363372914700,
+    "outcome": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": false,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": true,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": -15,
+      "query_state": "NOT_STARTED",
+      "failure_latch": [
+        "logger_failure:audit_write:OSError:offline disk failure",
+        "telemetry_failure",
+        "forced_worker_termination"
+      ],
+      "audit_closed": false
+    }
+  }
+]

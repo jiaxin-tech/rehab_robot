@@ -1,0 +1,16 @@
+{
+  "NORMAL_CLEANUP": false,
+  "GRACEFUL_SDK_DISCONNECT": null,
+  "OFFLINE_DISCONNECT_COMPLETED": false,
+  "FORCED_WORKER_TERMINATION": false,
+  "CONTROLLER_SESSION_RECOVERY": null,
+  "process_exited": true,
+  "exitcode": 0,
+  "query_state": "STARTING",
+  "failure_latch": [
+    "cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed",
+    "worker_exited",
+    "startup_timeout"
+  ],
+  "audit_closed": true
+}

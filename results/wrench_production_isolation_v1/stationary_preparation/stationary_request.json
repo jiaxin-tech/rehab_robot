@@ -1,0 +1,37 @@
+{
+  "status": "PREPARED_NOT_AUTHORIZED",
+  "live_runner_ready": false,
+  "production_entry": "collection.real_robot_acquisition.RealRobotAcquisition",
+  "wrench_provider": "collection.wrench_process.WrenchProcessProvider",
+  "intended_wrench_hz": 50.0,
+  "budgets": null,
+  "duration_s": 900,
+  "order": [
+    "A",
+    "B"
+  ],
+  "cases": {
+    "A": "DISABLED_FOR_STATIONARY_A",
+    "B": "isolated_wrench"
+  },
+  "raw_streams": [
+    "robot_state.csv",
+    "robot_wrench.csv",
+    "aligned_snapshot.csv"
+  ],
+  "sidecars": [
+    "query_events.jsonl",
+    "health_timeline.jsonl",
+    "cleanup_outcome.json"
+  ],
+  "missing_evidence": [
+    "reviewed stationary authorization",
+    "parent/child identity binding",
+    "reviewed budgets",
+    "bounded parent native shutdown and end-state verification",
+    "reviewed recovery after blocked session"
+  ],
+  "robot_connected": false,
+  "reference_release": "NO_GO",
+  "retry": false
+}

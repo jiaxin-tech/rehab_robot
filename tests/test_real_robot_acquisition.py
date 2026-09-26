@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import threading
 import time
+from types import SimpleNamespace
 
 import pytest
 
@@ -12,6 +13,52 @@ from collection.real_robot_acquisition import RealRobotAcquisition
 from collection.state import KinematicStateFrame
 from hardware.rokae_adapter import RobotWrenchFrame
 from utils.clock import host_time_s
+
+
+class FakeIPCProvider:
+    """Consumer/lifecycle unit double; native isolation tested with OS children
+    in test_wrench_production_process.py. No SDK or shared parent adapter.
+    """
+    def __init__(self, adapter):
+        self.adapter = adapter
+        self.config = {'mode':'offline','rate_hz':50.0}
+        self.budgets = SimpleNamespace(state_age_s=1.,sample_age_s=1.,skew_s=1.)
+        self.process = None
+        self.last_good = None
+        self.failures = []
+        self.sequence = 0
+
+    def start(self):
+        return self
+
+    def poll(self):
+        self.adapter.wrench_entered.set()
+        if self.adapter.block_wrench:
+            self.adapter.release_wrench.wait(timeout=1.)
+        self.sequence += 1
+        now=host_time_s()
+        self.last_good=RobotWrenchFrame(self.sequence,now,now,now,now,'','offline',True,'','world',
+                                        (1.,2.,3.),(.1,.2,.3),(1.,)*6,(.5,)*6)
+        return self.health()
+
+    def health(self):
+        return dict(STREAM_HEALTH=not self.failures,PROCESS_ALIVE=True,
+                    FAILURE_LATCH=tuple(self.failures),CURRENT_QUERY_STATE='SUCCEEDED')
+
+    def fail(self,reason):
+        self.failures.append(reason)
+
+    def stop(self):
+        return {}
+
+
+@pytest.fixture(autouse=True)
+def inject_offline_consumer_provider(monkeypatch):
+    original=RealRobotAcquisition.__init__
+    def init(self,adapter,logger,**kwargs):
+        kwargs.setdefault('wrench_provider',FakeIPCProvider(adapter))
+        return original(self,adapter,logger,**kwargs)
+    monkeypatch.setattr(RealRobotAcquisition,'__init__',init)
 
 
 class FakeAdapter:

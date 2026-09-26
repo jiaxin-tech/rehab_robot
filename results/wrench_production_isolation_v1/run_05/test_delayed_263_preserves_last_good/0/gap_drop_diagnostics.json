@@ -1,0 +1,7 @@
+{
+  "gaps": [],
+  "failures": [
+    "sdk_error"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

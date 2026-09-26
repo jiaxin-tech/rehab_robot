@@ -1,0 +1,136 @@
+{
+  "status": "INCOMPLETE",
+  "acceptance": "UNDEFINED",
+  "causality": "NOT_ESTABLISHED",
+  "rt_device_source_timing": "UNAVAILABLE",
+  "cases": {
+    "A": "e83211bf-356f-473f-97ec-4787e72c1831",
+    "B": "7d724dc0-769c-45fc-9dc8-3b646f9e62cf"
+  },
+  "differences": {
+    "rt_host_receive_interval_s": {
+      "A": {
+        "n": 27,
+        "minimum": 0.003160699998261407,
+        "maximum": 0.0050475000170990825,
+        "mean": 0.004040625926184778,
+        "p99": 0.0050475000170990825
+      },
+      "B": {
+        "n": 88,
+        "minimum": 0.0002972999936901033,
+        "maximum": 0.020885900012217462,
+        "mean": 0.004381304545280396,
+        "p99": 0.020885900012217462
+      },
+      "p99_delta": 0.01583839999511838
+    },
+    "rt_delivery_latency_s": {
+      "A": {
+        "n": 28,
+        "minimum": 6.100017344579101e-06,
+        "maximum": 2.4600012693554163e-05,
+        "mean": 1.3574999424495868e-05,
+        "p99": 2.4600012693554163e-05
+      },
+      "B": {
+        "n": 89,
+        "minimum": 6.399990525096655e-06,
+        "maximum": 2.9700022423639894e-05,
+        "mean": 1.3804495834295502e-05,
+        "p99": 2.9700022423639894e-05
+      },
+      "p99_delta": 5.1000097300857306e-06
+    },
+    "state_age_s": {
+      "A": {
+        "n": 10,
+        "minimum": 0.0001604999997653067,
+        "maximum": 0.0029854000022169203,
+        "mean": 0.0015409100014949217,
+        "p99": 0.0029854000022169203
+      },
+      "B": {
+        "n": 35,
+        "minimum": 0.00017260000458918512,
+        "maximum": 0.017925099993590266,
+        "mean": 0.002261471433199144,
+        "p99": 0.017925099993590266
+      },
+      "p99_delta": 0.014939699991373345
+    },
+    "supervisor_interval_s": {
+      "A": {
+        "n": 10,
+        "minimum": 8.00006091594696e-07,
+        "maximum": 0.011278499994659796,
+        "mean": 0.009846790001029148,
+        "p99": 0.011278499994659796
+      },
+      "B": {
+        "n": 35,
+        "minimum": 8.999777492135763e-07,
+        "maximum": 0.02097520002280362,
+        "mean": 0.011053208571060428,
+        "p99": 0.02097520002280362
+      },
+      "p99_delta": 0.009696700028143823
+    }
+  },
+  "process_stability": {
+    "A": [],
+    "B": [
+      "sdk_error",
+      "child_cleanup_failed"
+    ]
+  },
+  "cleanup": {
+    "A": {
+      "parent": {
+        "normal_cleanup": true,
+        "graceful_sdk_disconnect": null,
+        "offline_disconnect_completed": true,
+        "unresolved_call": false,
+        "process_exitcode": null,
+        "process_exit": "runner_still_running",
+        "forced_termination": false,
+        "controller_session_recovery": null
+      },
+      "child": null,
+      "logger_closed": true,
+      "state_audit_closed": true,
+      "health_audit_closed": true,
+      "lifecycle_audit_closed": true
+    },
+    "B": {
+      "parent": {
+        "normal_cleanup": true,
+        "graceful_sdk_disconnect": null,
+        "offline_disconnect_completed": true,
+        "unresolved_call": false,
+        "process_exitcode": null,
+        "process_exit": "runner_still_running",
+        "forced_termination": false,
+        "controller_session_recovery": null
+      },
+      "child": {
+        "NORMAL_CLEANUP": false,
+        "GRACEFUL_SDK_DISCONNECT": null,
+        "OFFLINE_DISCONNECT_COMPLETED": true,
+        "FORCED_WORKER_TERMINATION": false,
+        "CONTROLLER_SESSION_RECOVERY": null,
+        "process_exited": true,
+        "exitcode": 0,
+        "query_state": "ERROR",
+        "failure_latch": [
+          "sdk_error"
+        ],
+        "audit_closed": true
+      },
+      "logger_closed": true,
+      "state_audit_closed": true,
+      "health_audit_closed": true,
+      "lifecycle_audit_closed": true
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "tests": 74,
+  "failures": 0,
+  "errors": 0,
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "74",
+    "time": "19.045",
+    "timestamp": "2026-09-26T17:27:14.546275+08:00",
+    "hostname": "DESKTOP-P1EOI08"
+  },
+  "source_hashes": {
+    "scripts/run_wrench_stationary_validation.py": "eb77c1f7859b161b14c1821a4f2ef64d40d0d57bdb72aa985052297cba727385",
+    "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+    "collection/wrench_process.py": "9a76c2d6b0f413b3181c4948806913ecb643bbbb9c43ef5fcc8c7f19697cd0b2",
+    "collection/episode_logger.py": "ba50925cd74f70bc29c17c0d878598da0f2362927487deb9cd7d42006585c34a",
+    "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+    "hardware/rokae_adapter.py": "cf55adb1f7ee89ac32cdb0028a9306bdebc8672776b4c558c61454bb92cfa1ae",
+    "hardware/windows/rokae_xcore.py": "e6ae5fc6ec06ed721e33ca6b7062920f887f1e24759d12242d3100b3afc38878"
+  },
+  "cli_runs": [
+    "698fdc1e-a936-4d95-b77b-7bfae7993ba9",
+    "2662b14e-09bb-495b-8a73-598a84575d8b"
+  ],
+  "cli_indexes_verified": true,
+  "scope": "offline only; fake state + actual production spawned wrench provider",
+  "status": {
+    "WRENCH_STATIONARY_RUNNER_INTEGRATION_V1": "COMPLETE_WITH_LIMITATIONS",
+    "CASE_A_OFFLINE_DRY_RUN": "PASS",
+    "CASE_B_OFFLINE_DRY_RUN": "PASS",
+    "USES_PRODUCTION_WRENCH_PROVIDER": true,
+    "MOTION_API_REACHABLE": false,
+    "LIVE_AUTHORIZATION_REQUIRED": true,
+    "STATIONARY_LIVE_ENTRY_READY": true,
+    "R9_CLOSED": false,
+    "REFERENCE_RELEASE": "NO_GO",
+    "ROBOT_CONNECTED": false,
+    "ROBOT_MOTION_EXECUTED": false,
+    "SAFETY_THRESHOLDS_CHANGED": false,
+    "CONTROL_CODE_MODIFIED": false
+  }
+}

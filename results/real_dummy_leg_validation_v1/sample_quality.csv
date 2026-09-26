@@ -1,0 +1,1 @@
+trial_id,sample_id,timestamp,sample_valid,invalid,reason,missing,stale,stale_age_s,query_start_time,query_end_time,latency_s,sdk_code,last_successful_wrench_timestamp,last_robot_state_timestamp

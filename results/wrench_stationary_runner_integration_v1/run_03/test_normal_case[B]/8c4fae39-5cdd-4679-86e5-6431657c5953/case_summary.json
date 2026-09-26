@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "run_id": "8c4fae39-5cdd-4679-86e5-6431657c5953",
+  "request_sha256": "296481194482468445d502e44350791ff7ca76414bb4f1394a83c84f9cccb671",
+  "case": "B",
+  "mode": "OFFLINE_DRY_RUN",
+  "requested_duration_s": 900,
+  "actual_duration_s": 1.2057433000009041,
+  "completed_900s": false,
+  "offline_dry_run_pass": true,
+  "intended_rt_rate_hz": 125.0,
+  "intended_state_poll_hz": 250.0,
+  "intended_wrench_rate_hz": 50.0,
+  "wrench_status": "ENABLED",
+  "rt_sample_count": 299,
+  "wrench_planned_queries": 45000,
+  "wrench_started_queries": 50,
+  "wrench_completed_queries": 50,
+  "query_count_semantics": "started=start intent; pre-call boundary does not prove native entry",
+  "wrench_successful_queries": 50,
+  "wrench_error_queries": 0,
+  "pending_queries": [],
+  "sdk_error_histogram": {},
+  "distributions": {
+    "state_age_s": {
+      "n": 111,
+      "minimum": 0.00011829999857582152,
+      "maximum": 0.01794389999122359,
+      "mean": 0.002059724324001083,
+      "p99": 0.004758299997774884
+    },
+    "wrench_age_s": {
+      "n": 92,
+      "minimum": 0.00372695000260137,
+      "maximum": 0.03229355000075884,
+      "mean": 0.014802243480517063,
+      "p99": 0.03229355000075884
+    },
+    "state_wrench_skew_s": {
+      "n": 92,
+      "minimum": 0.002006049995543435,
+      "maximum": 0.029431750008370727,
+      "mean": 0.01289273152487231,
+      "p99": 0.029431750008370727
+    },
+    "supervisor_interval_s": {
+      "n": 111,
+      "minimum": 8.00006091594696e-07,
+      "maximum": 0.020799599995370954,
+      "mean": 0.010769783783764872,
+      "p99": 0.011738899978809059
+    },
+    "rt_host_receive_interval_s": {
+      "n": 298,
+      "minimum": 0.002299599989783019,
+      "maximum": 0.013149999984307215,
+      "mean": 0.004042526510065178,
+      "p99": 0.005201400024816394
+    },
+    "rt_delivery_latency_s": {
+      "n": 299,
+      "minimum": 5.799985956400633e-06,
+      "maximum": 9.380001574754715e-05,
+      "mean": 1.400200672288827e-05,
+      "p99": 4.220000118948519e-05
+    },
+    "query_latency_s": {
+      "n": 50,
+      "minimum": 6.97e-05,
+      "maximum": 0.0011754,
+      "mean": 0.000151552,
+      "p99": 0.0011754
+    }
+  },
+  "rt_device_source_timing": "UNAVAILABLE_NO_DEVICE_TIMESTAMP",
+  "criteria": null,
+  "timing_acceptance": "UNDEFINED",
+  "reliability_acceptance": "UNDEFINED",
+  "cleanup": {
+    "parent": {
+      "normal_cleanup": true,
+      "graceful_sdk_disconnect": null,
+      "offline_disconnect_completed": true,
+      "unresolved_call": false,
+      "process_exitcode": null,
+      "process_exit": "runner_still_running",
+      "forced_termination": false,
+      "controller_session_recovery": null
+    },
+    "child": {
+      "NORMAL_CLEANUP": true,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": true,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 0,
+      "query_state": "SUCCEEDED",
+      "failure_latch": [],
+      "audit_closed": true
+    },
+    "logger_closed": true,
+    "state_audit_closed": true,
+    "health_audit_closed": true,
+    "lifecycle_audit_closed": true
+  },
+  "final_robot_operation_state": "IDLE",
+  "logger_transport_gaps": {
+    "provider": [],
+    "rt_sequence_skips": 0,
+    "telemetry_failures": []
+  },
+  "failures": [],
+  "robot_connected": false,
+  "robot_motion_executed": false,
+  "reference_release": "NO_GO",
+  "r9_closed": false
+}

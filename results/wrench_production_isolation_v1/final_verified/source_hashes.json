@@ -1,0 +1,13 @@
+{
+  "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+  "collection/wrench_process.py": "b65b31abb6d1e68da9881560f64d9a597e83b94c9e9b43835d7b1fa6f9c50388",
+  "collection/wrench_test_provider.py": "2b5e03c7d6d7b7a187a778ffb90feb440a1726d5021eb1df8b8d9a37159c8b8e",
+  "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+  "scripts/prepare_wrench_stationary_validation.py": "34fc459821a6828d4eec842452f180cce219caf34138b1e651b1adf235071270",
+  "tests/test_wrench_production_process.py": "df1868194022379726e009fd4cb4a73810e4a2f270d144bcf734d1481f5ab922",
+  "tests/test_real_robot_acquisition.py": "c1b24769b05cb5d8654a0e406b2fdd6eb942fbbd3d4218c8487bf52fd847b3a7",
+  "control/execution_preflight.py": "812f33f90e96c599f760900a373958c63c7ccb2d65b8412eece96956739e4c0e",
+  "control/robot_trajectory_executor.py": "4dd6b667322b4dff003f76b9c7172372fb198f48a73f7c557b5a907d5625b057",
+  "config/experiment_safety.json": "c3ee95b304be6c350f15a7dbcf10cefc103fbf2afbed7fc1aa29913a22ce23a4",
+  "reference_release/reference_release_manifest.json": "4545688abb3e72b285cecbf8a675e50a19f8b497febed8c70524decbb624cd81"
+}

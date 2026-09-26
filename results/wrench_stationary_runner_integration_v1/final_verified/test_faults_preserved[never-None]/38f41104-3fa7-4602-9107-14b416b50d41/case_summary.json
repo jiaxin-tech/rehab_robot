@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "run_id": "38f41104-3fa7-4602-9107-14b416b50d41",
+  "request_sha256": "e51df5bc74124cc6df5ba4aaede6c672da6dc0a7f8f017eeacdabff5181e15c2",
+  "case": "B",
+  "mode": "OFFLINE_DRY_RUN",
+  "source_hashes": {
+    "scripts/run_wrench_stationary_validation.py": "eb77c1f7859b161b14c1821a4f2ef64d40d0d57bdb72aa985052297cba727385",
+    "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+    "collection/wrench_process.py": "9a76c2d6b0f413b3181c4948806913ecb643bbbb9c43ef5fcc8c7f19697cd0b2",
+    "collection/episode_logger.py": "ba50925cd74f70bc29c17c0d878598da0f2362927487deb9cd7d42006585c34a",
+    "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+    "hardware/rokae_adapter.py": "cf55adb1f7ee89ac32cdb0028a9306bdebc8672776b4c558c61454bb92cfa1ae",
+    "hardware/windows/rokae_xcore.py": "e6ae5fc6ec06ed721e33ca6b7062920f887f1e24759d12242d3100b3afc38878"
+  },
+  "requested_duration_s": 900,
+  "actual_duration_s": 0.6926554999954533,
+  "completed_900s": false,
+  "offline_dry_run_pass": false,
+  "intended_rt_rate_hz": 125.0,
+  "intended_state_poll_hz": 250.0,
+  "intended_wrench_rate_hz": 50.0,
+  "wrench_status": "ENABLED",
+  "rt_sample_count": 170,
+  "wrench_planned_queries": 45000,
+  "wrench_started_queries": 1,
+  "wrench_completed_queries": 0,
+  "query_count_semantics": "started=start intent; pre-call boundary does not prove native entry",
+  "wrench_successful_queries": 0,
+  "wrench_error_queries": 0,
+  "pending_queries": [
+    1
+  ],
+  "sdk_error_histogram": {},
+  "distributions": {
+    "state_age_s": {
+      "n": 63,
+      "minimum": 0.00010510001447983086,
+      "maximum": 0.013519899977836758,
+      "mean": 0.002134069841029862,
+      "p99": 0.013519899977836758
+    },
+    "wrench_age_s": {
+      "n": 0,
+      "minimum": null,
+      "maximum": null,
+      "mean": null,
+      "p99": null
+    },
+    "state_wrench_skew_s": {
+      "n": 0,
+      "minimum": null,
+      "maximum": null,
+      "mean": null,
+      "p99": null
+    },
+    "supervisor_interval_s": {
+      "n": 63,
+      "minimum": 5.00003807246685e-07,
+      "maximum": 0.02189800000633113,
+      "mean": 0.010987523809215792,
+      "p99": 0.02189800000633113
+    },
+    "rt_host_receive_interval_s": {
+      "n": 169,
+      "minimum": 0.002227899996796623,
+      "maximum": 0.01432869999553077,
+      "mean": 0.004155704142152436,
+      "p99": 0.014222500001778826
+    },
+    "rt_delivery_latency_s": {
+      "n": 170,
+      "minimum": 5.299982149153948e-06,
+      "maximum": 0.00013070000568404794,
+      "mean": 1.2201763799085337e-05,
+      "p99": 5.909998435527086e-05
+    },
+    "query_latency_s": {
+      "n": 0,
+      "minimum": null,
+      "maximum": null,
+      "mean": null,
+      "p99": null
+    }
+  },
+  "rt_device_source_timing": "UNAVAILABLE_NO_DEVICE_TIMESTAMP",
+  "criteria": null,
+  "timing_acceptance": "UNDEFINED",
+  "reliability_acceptance": "UNDEFINED",
+  "cleanup": {
+    "parent": {
+      "normal_cleanup": true,
+      "graceful_sdk_disconnect": null,
+      "offline_disconnect_completed": true,
+      "unresolved_call": false,
+      "process_exitcode": null,
+      "process_exit": "runner_still_running",
+      "forced_termination": false,
+      "controller_session_recovery": null
+    },
+    "child": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": false,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": true,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": -15,
+      "query_state": "HUNG",
+      "failure_latch": [
+        "query_pending_too_long",
+        "forced_worker_termination"
+      ],
+      "audit_closed": true
+    },
+    "logger_closed": true,
+    "state_audit_closed": true,
+    "health_audit_closed": true,
+    "lifecycle_audit_closed": true
+  },
+  "final_robot_operation_state": "IDLE",
+  "logger_transport_gaps": {
+    "provider": [],
+    "rt_sequence_skips": 0,
+    "telemetry_failures": []
+  },
+  "failures": [
+    "query_pending_too_long",
+    "child_cleanup_failed",
+    "no_successful_wrench_sample"
+  ],
+  "robot_connected": false,
+  "robot_motion_executed": false,
+  "reference_release": "NO_GO",
+  "r9_closed": false
+}

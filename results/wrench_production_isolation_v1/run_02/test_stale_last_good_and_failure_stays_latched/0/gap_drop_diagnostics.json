@@ -1,0 +1,7 @@
+{
+  "gaps": [],
+  "failures": [
+    "wrench_sample_stale_or_clock_invalid"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

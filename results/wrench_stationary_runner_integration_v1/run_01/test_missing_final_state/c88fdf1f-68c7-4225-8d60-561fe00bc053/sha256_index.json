@@ -1,0 +1,12 @@
+{
+  "case_summary.json": "1356a14c688349d25d4971ff4cccd89910d950c352a05ed8b2ccbc49eada4640",
+  "cleanup_outcome.json": "27cfe2528b75922fb0fbbb09173768ffd5f2f9703f9afc20a45626ee3f5d8623",
+  "end_state.json": "78d4754afd152e1aa6020e638b4988b5e36fe03ff0feefdb7832c4688fac377a",
+  "health_timeline.jsonl": "f6bbbbaf20804e02b00e299204c26826d99d934e558adf506d30dd19e3c62b7d",
+  "process_lifecycle.jsonl": "a65b0088b2255bbf8796bd45d4166a019ae9473dd2531eb020e8ff8f9b2875d5",
+  "protocol_snapshot.json": "e0301ed55a00f4c7cdff463443f14223b4fd1897e05324f96cdbe6ec6efc5e54",
+  "rt_state.csv": "860bc1145d0595513eed9b004967fc850ceadf5e04caaddc3c68f0463461130d",
+  "rt_state_events.jsonl": "28cd5e78cb55cb6f290aaafd6d100b8d4c17245e0cdebec1e8e4faa5342108f2",
+  "wrench_query_events.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wrench_samples.csv": "d14cc82f0415ca2801a168e768eb5a2940fec55e88b47ac6cce521a9cc7f8246"
+}

@@ -1,0 +1,25 @@
+{
+  "parent": {
+    "normal_cleanup": true,
+    "graceful_sdk_disconnect": null,
+    "offline_disconnect_completed": true,
+    "unresolved_call": false,
+    "process_exitcode": null,
+    "process_exit": "runner_still_running",
+    "forced_termination": false,
+    "controller_session_recovery": null
+  },
+  "child": {
+    "NORMAL_CLEANUP": true,
+    "GRACEFUL_SDK_DISCONNECT": null,
+    "OFFLINE_DISCONNECT_COMPLETED": true,
+    "FORCED_WORKER_TERMINATION": false,
+    "CONTROLLER_SESSION_RECOVERY": null,
+    "process_exited": true,
+    "exitcode": 0,
+    "query_state": "SUCCEEDED",
+    "failure_latch": [],
+    "audit_closed": true
+  },
+  "logger_closed": true
+}

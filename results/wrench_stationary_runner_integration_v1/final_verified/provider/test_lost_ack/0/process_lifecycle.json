@@ -1,0 +1,52 @@
+[
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a8c09a3c13bd4676b662e344f3e3c9c9",
+    "session_id": "54bcf28d5ca74b13ba919713af1a5f04",
+    "pid": 13116,
+    "query_id": 0,
+    "event_id": 2,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 159629575358500,
+    "exitcode": 0,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a8c09a3c13bd4676b662e344f3e3c9c9",
+    "session_id": "54bcf28d5ca74b13ba919713af1a5f04",
+    "pid": 13116,
+    "query_id": 0,
+    "event_id": 4,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 159629575946200
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a8c09a3c13bd4676b662e344f3e3c9c9",
+    "session_id": "54bcf28d5ca74b13ba919713af1a5f04",
+    "pid": 13116,
+    "query_id": 0,
+    "event_id": 5,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 159629576012600,
+    "outcome": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 0,
+      "query_state": "NOT_STARTED",
+      "failure_latch": [
+        "child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed",
+        "worker_exited"
+      ],
+      "audit_closed": true
+    }
+  }
+]

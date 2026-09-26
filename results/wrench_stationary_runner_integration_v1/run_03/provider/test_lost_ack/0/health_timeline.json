@@ -1,0 +1,22 @@
+[
+  {
+    "LATEST_GOOD_SAMPLE_VALID": false,
+    "CURRENT_QUERY_STATE": "NOT_STARTED",
+    "LAST_ERROR": null,
+    "QUERY_IN_PROGRESS": false,
+    "QUERY_START_TIME": null,
+    "LAST_COMPLETED_QUERY_TIME": null,
+    "WRENCH_SAMPLE_AGE": null,
+    "WORKER_HEARTBEAT_AGE": null,
+    "PROCESS_ALIVE": false,
+    "STREAM_HEALTH": false,
+    "FAILURE_LATCH": [
+      "child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed",
+      "worker_exited"
+    ],
+    "entry_unconfirmed": false,
+    "host_ns": 159498875790500,
+    "query_id": 0,
+    "completion": null
+  }
+]

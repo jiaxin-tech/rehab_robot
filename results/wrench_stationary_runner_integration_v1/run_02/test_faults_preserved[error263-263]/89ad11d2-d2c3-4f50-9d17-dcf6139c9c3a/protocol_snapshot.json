@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "request": {
+    "status": "PREPARED_NOT_AUTHORIZED",
+    "live_runner_ready": false,
+    "schema_version": 1,
+    "request_id": "198ea7dc-345e-4de6-a9b0-517b26c592ae",
+    "state_poll_hz": 250.0,
+    "alignment_hz": 50.0,
+    "supervisor_hz": 100.0,
+    "rt_interval_ms": 8,
+    "connection": null,
+    "expected_identity": null,
+    "allowed_power_states": null,
+    "criteria": null,
+    "lifecycle_budgets": null,
+    "production_entry": "collection.real_robot_acquisition.RealRobotAcquisition",
+    "wrench_provider": "collection.wrench_process.WrenchProcessProvider",
+    "intended_wrench_hz": 50.0,
+    "budgets": null,
+    "duration_s": 900,
+    "order": [
+      "A",
+      "B"
+    ],
+    "cases": {
+      "A": "DISABLED_FOR_STATIONARY_A",
+      "B": "isolated_wrench"
+    },
+    "raw_streams": [
+      "robot_state.csv",
+      "robot_wrench.csv",
+      "aligned_snapshot.csv"
+    ],
+    "sidecars": [
+      "query_events.jsonl",
+      "health_timeline.jsonl",
+      "cleanup_outcome.json"
+    ],
+    "missing_evidence": [
+      "reviewed stationary authorization",
+      "parent/child identity binding",
+      "reviewed budgets",
+      "bounded parent native shutdown and end-state verification",
+      "reviewed recovery after blocked session"
+    ],
+    "robot_connected": false,
+    "reference_release": "NO_GO",
+    "retry": false
+  },
+  "request_sha256": "f518ce06c81854b0b67198e6076b1381e687d44d27dac5f06ca61ef94215b0c3",
+  "case": "B",
+  "mode": "OFFLINE_DRY_RUN",
+  "run_id": "89ad11d2-d2c3-4f50-9d17-dcf6139c9c3a",
+  "parent_session_id": "e195c14b-f48f-4231-a47e-c7021473654a",
+  "parent_pid": 10464,
+  "source_hashes": {
+    "scripts/run_wrench_stationary_validation.py": "846bdafbc5519f9b06a24f337747eab6a7c335a6fd71ea3348ed79cbf4605d84",
+    "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+    "collection/wrench_process.py": "9a76c2d6b0f413b3181c4948806913ecb643bbbb9c43ef5fcc8c7f19697cd0b2",
+    "collection/episode_logger.py": "ba50925cd74f70bc29c17c0d878598da0f2362927487deb9cd7d42006585c34a",
+    "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+    "hardware/rokae_adapter.py": "cf55adb1f7ee89ac32cdb0028a9306bdebc8672776b4c558c61454bb92cfa1ae",
+    "hardware/windows/rokae_xcore.py": "e6ae5fc6ec06ed721e33ca6b7062920f887f1e24759d12242d3100b3afc38878"
+  },
+  "authorization": null,
+  "budgets": {
+    "startup_s": 5.0,
+    "query_s": 0.5,
+    "progress_s": 2.0,
+    "sample_age_s": 2.0,
+    "ack_s": 2.0,
+    "log_s": 2.0,
+    "shutdown_s": 0.5,
+    "terminate_s": 0.5,
+    "state_age_s": 2.0,
+    "skew_s": 2.0,
+    "provenance": "NOT_SAFETY_THRESHOLDS"
+  },
+  "lifecycle_budgets": {
+    "connect_s": 5.0,
+    "stop_s": 5.0,
+    "end_state_s": 5.0,
+    "disconnect_s": 5.0,
+    "logger_s": 5.0
+  },
+  "offline_wall_duration_s": 3.0,
+  "timestamp_semantics": "host perf_counter; no invented device timestamps",
+  "reference_release": "NO_GO"
+}

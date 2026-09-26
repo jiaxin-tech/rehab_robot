@@ -1,0 +1,1 @@
+dummy_leg_id,condition_id,branch,feature,n_planned,n_attempted,n_valid,mean,standard_deviation,cv,cv_reason,pairwise_correlation,phase_aligned_rms_difference,peak_variation,timing_variability_s,baseline_drift,missing_fraction,invalid_fraction,status

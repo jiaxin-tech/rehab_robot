@@ -1,0 +1,127 @@
+{
+  "authorization": null,
+  "budgets": {
+    "ack_s": 2.0,
+    "log_s": 2.0,
+    "progress_s": 2.0,
+    "provenance": "NOT_SAFETY_THRESHOLDS",
+    "query_s": 0.5,
+    "sample_age_s": 2.0,
+    "shutdown_s": 0.5,
+    "skew_s": 2.0,
+    "startup_s": 5.0,
+    "state_age_s": 2.0,
+    "terminate_s": 0.5
+  },
+  "case": "A",
+  "lifecycle_budgets": {
+    "connect_s": 5.0,
+    "disconnect_s": 5.0,
+    "end_state_s": 5.0,
+    "logger_s": 5.0,
+    "stop_s": 5.0
+  },
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 48.727877543595206,
+      "robot_state": 227.39676187011096,
+      "robot_wrench": 0.0,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 0.1231328,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:acquisition_cleanup:RuntimeError:injected_stop_failure",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 159623514756100,
+    "finished_host_time_s": 159623.5147561,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 159623514990800,
+    "metadata_updated_host_time_s": 159623.5149908,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 6,
+      "robot_state": 28,
+      "robot_wrench": 0,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 159623391623300,
+    "started_host_time_s": 159623.3916233,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "mode": "OFFLINE_DRY_RUN",
+  "offline_wall_duration_s": 0.1,
+  "parent_pid": 13116,
+  "parent_session_id": "3196d25a-54d5-49dd-996b-8b865e94933a",
+  "reference_release": "NO_GO",
+  "request": {
+    "alignment_hz": 50.0,
+    "allowed_power_states": null,
+    "budgets": null,
+    "cases": {
+      "A": "DISABLED_FOR_STATIONARY_A",
+      "B": "isolated_wrench"
+    },
+    "connection": null,
+    "criteria": null,
+    "duration_s": 900,
+    "expected_identity": null,
+    "intended_wrench_hz": 50.0,
+    "lifecycle_budgets": null,
+    "live_runner_ready": false,
+    "missing_evidence": [
+      "reviewed stationary authorization",
+      "parent/child identity binding",
+      "reviewed budgets",
+      "bounded parent native shutdown and end-state verification",
+      "reviewed recovery after blocked session"
+    ],
+    "order": [
+      "A",
+      "B"
+    ],
+    "production_entry": "collection.real_robot_acquisition.RealRobotAcquisition",
+    "raw_streams": [
+      "robot_state.csv",
+      "robot_wrench.csv",
+      "aligned_snapshot.csv"
+    ],
+    "reference_release": "NO_GO",
+    "request_id": "d29b4b63-f4bc-4c52-ab6b-d2af350d96a3",
+    "retry": false,
+    "robot_connected": false,
+    "rt_interval_ms": 8,
+    "schema_version": 1,
+    "sidecars": [
+      "wrench_query_events.jsonl",
+      "health_timeline.jsonl",
+      "process_lifecycle.jsonl",
+      "cleanup_outcome.json",
+      "end_state.json",
+      "case_summary.json"
+    ],
+    "state_poll_hz": 250.0,
+    "status": "PREPARED_NOT_AUTHORIZED",
+    "supervisor_hz": 100.0,
+    "wrench_provider": "collection.wrench_process.WrenchProcessProvider"
+  },
+  "request_sha256": "6bc1c77cb183e1b5e78cde37c28c88b2dd5a797da1bb99deb0197884efd80bab",
+  "run_id": "535ab177-b461-4438-be12-6574222d7dee",
+  "schema_version": 1,
+  "source_hashes": {
+    "collection/episode_logger.py": "ba50925cd74f70bc29c17c0d878598da0f2362927487deb9cd7d42006585c34a",
+    "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+    "collection/wrench_process.py": "9a76c2d6b0f413b3181c4948806913ecb643bbbb9c43ef5fcc8c7f19697cd0b2",
+    "hardware/rokae_adapter.py": "cf55adb1f7ee89ac32cdb0028a9306bdebc8672776b4c558c61454bb92cfa1ae",
+    "hardware/windows/rokae_xcore.py": "e6ae5fc6ec06ed721e33ca6b7062920f887f1e24759d12242d3100b3afc38878",
+    "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+    "scripts/run_wrench_stationary_validation.py": "eb77c1f7859b161b14c1821a4f2ef64d40d0d57bdb72aa985052297cba727385"
+  },
+  "timestamp_semantics": "host perf_counter; no invented device timestamps"
+}

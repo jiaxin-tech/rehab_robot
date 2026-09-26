@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "run_id": "371f5050-8f69-432f-9b96-344a105bd964",
+  "request_sha256": "923f3854e09c00c0a22126f4534f79bbfcbdbf39c38c89059516b2e5cd8a5370",
+  "case": "B",
+  "mode": "OFFLINE_DRY_RUN",
+  "source_hashes": {
+    "scripts/run_wrench_stationary_validation.py": "eb77c1f7859b161b14c1821a4f2ef64d40d0d57bdb72aa985052297cba727385",
+    "collection/real_robot_acquisition.py": "f14b53822da566b1f66eae487bdf57353eece5d602596df2cefe75c6ce45a6e8",
+    "collection/wrench_process.py": "9a76c2d6b0f413b3181c4948806913ecb643bbbb9c43ef5fcc8c7f19697cd0b2",
+    "collection/episode_logger.py": "ba50925cd74f70bc29c17c0d878598da0f2362927487deb9cd7d42006585c34a",
+    "hardware/wrench_session.py": "bd6776ce6744017d9ed39846ea677119d99d48046807538ed27514183c13ee6c",
+    "hardware/rokae_adapter.py": "cf55adb1f7ee89ac32cdb0028a9306bdebc8672776b4c558c61454bb92cfa1ae",
+    "hardware/windows/rokae_xcore.py": "e6ae5fc6ec06ed721e33ca6b7062920f887f1e24759d12242d3100b3afc38878"
+  },
+  "requested_duration_s": 900,
+  "actual_duration_s": 0.34916020001401193,
+  "completed_900s": false,
+  "offline_dry_run_pass": false,
+  "intended_rt_rate_hz": 125.0,
+  "intended_state_poll_hz": 250.0,
+  "intended_wrench_rate_hz": 50.0,
+  "wrench_status": "ENABLED",
+  "rt_sample_count": 88,
+  "wrench_planned_queries": 45000,
+  "wrench_started_queries": 2,
+  "wrench_completed_queries": 2,
+  "query_count_semantics": "started=start intent; pre-call boundary does not prove native entry",
+  "wrench_successful_queries": 1,
+  "wrench_error_queries": 1,
+  "pending_queries": [],
+  "sdk_error_histogram": {
+    "263": 1
+  },
+  "distributions": {
+    "state_age_s": {
+      "n": 33,
+      "minimum": 0.00010989999282173812,
+      "maximum": 0.005243299994617701,
+      "mean": 0.0020718909059227867,
+      "p99": 0.005243299994617701
+    },
+    "wrench_age_s": {
+      "n": 13,
+      "minimum": 0.006329900003038347,
+      "maximum": 0.13691719999769703,
+      "mean": 0.07145403845620771,
+      "p99": 0.13691719999769703
+    },
+    "state_wrench_skew_s": {
+      "n": 13,
+      "minimum": 0.004412299982504919,
+      "maximum": 0.13167390000307932,
+      "mean": 0.0691861923036273,
+      "p99": 0.13167390000307932
+    },
+    "supervisor_interval_s": {
+      "n": 33,
+      "minimum": 2.7999922167509794e-06,
+      "maximum": 0.011269700014963746,
+      "mean": 0.010577278787615907,
+      "p99": 0.011269700014963746
+    },
+    "rt_host_receive_interval_s": {
+      "n": 87,
+      "minimum": 0.002586500020697713,
+      "maximum": 0.005457799998112023,
+      "mean": 0.004025549425451813,
+      "p99": 0.005457799998112023
+    },
+    "rt_delivery_latency_s": {
+      "n": 88,
+      "minimum": 5.399982910603285e-06,
+      "maximum": 0.00015029998030513525,
+      "mean": 1.484431512918408e-05,
+      "p99": 0.00015029998030513525
+    },
+    "query_latency_s": {
+      "n": 2,
+      "minimum": 0.0011437,
+      "maximum": 0.100737,
+      "mean": 0.050940349999999995,
+      "p99": 0.100737
+    }
+  },
+  "rt_device_source_timing": "UNAVAILABLE_NO_DEVICE_TIMESTAMP",
+  "criteria": null,
+  "timing_acceptance": "UNDEFINED",
+  "reliability_acceptance": "UNDEFINED",
+  "cleanup": {
+    "parent": {
+      "normal_cleanup": true,
+      "graceful_sdk_disconnect": null,
+      "offline_disconnect_completed": true,
+      "unresolved_call": false,
+      "process_exitcode": null,
+      "process_exit": "runner_still_running",
+      "forced_termination": false,
+      "controller_session_recovery": null
+    },
+    "child": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": true,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 0,
+      "query_state": "ERROR",
+      "failure_latch": [
+        "sdk_error"
+      ],
+      "audit_closed": true
+    },
+    "logger_closed": true,
+    "state_audit_closed": true,
+    "health_audit_closed": true,
+    "lifecycle_audit_closed": true
+  },
+  "final_robot_operation_state": "IDLE",
+  "logger_transport_gaps": {
+    "provider": [],
+    "rt_sequence_skips": 0,
+    "telemetry_failures": []
+  },
+  "failures": [
+    "sdk_error",
+    "child_cleanup_failed"
+  ],
+  "robot_connected": false,
+  "robot_motion_executed": false,
+  "reference_release": "NO_GO",
+  "r9_closed": false
+}

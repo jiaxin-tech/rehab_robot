@@ -1,0 +1,19 @@
+{
+  "NORMAL_CLEANUP": false,
+  "GRACEFUL_SDK_DISCONNECT": null,
+  "OFFLINE_DISCONNECT_COMPLETED": false,
+  "FORCED_WORKER_TERMINATION": false,
+  "CONTROLLER_SESSION_RECOVERY": null,
+  "process_exited": true,
+  "exitcode": 0,
+  "query_state": "SUCCEEDED",
+  "failure_latch": [
+    "telemetry_failure:ValueError:event_sequence_gap_duplicate_or_reorder",
+    "telemetry_failure:ValueError:duplicate_query_state",
+    "wrench_sample_stale_or_clock_invalid",
+    "worker_progress_missing",
+    "child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed",
+    "worker_exited"
+  ],
+  "audit_closed": true
+}

@@ -1,0 +1,295 @@
+{
+  "scope": "OFFLINE_ONLY_NOT_HARDWARE",
+  "test_budgets": "NOT_SAFETY_THRESHOLDS",
+  "passed": 48,
+  "cases": [
+    {
+      "name": "test_normal_durable_protocol",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.32,
+      "status": "PASS"
+    },
+    {
+      "name": "test_blocking_parent_progress_and_forced_cleanup[block]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.67,
+      "status": "PASS"
+    },
+    {
+      "name": "test_blocking_parent_progress_and_forced_cleanup[never]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.683,
+      "status": "PASS"
+    },
+    {
+      "name": "test_blocking_parent_progress_and_forced_cleanup[gil_block]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.698,
+      "status": "PASS"
+    },
+    {
+      "name": "test_delayed_263_preserves_last_good",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.316,
+      "status": "PASS"
+    },
+    {
+      "name": "test_crash_pending_no_fabricated_completion",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.231,
+      "status": "PASS"
+    },
+    {
+      "name": "test_stale_last_good_and_failure_stays_latched",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.577,
+      "status": "PASS"
+    },
+    {
+      "name": "test_shutdown_phases[startup]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.4,
+      "status": "PASS"
+    },
+    {
+      "name": "test_shutdown_phases[ack]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.22,
+      "status": "PASS"
+    },
+    {
+      "name": "test_shutdown_phases[query]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.425,
+      "status": "PASS"
+    },
+    {
+      "name": "test_shutdown_phases[completion]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.263,
+      "status": "PASS"
+    },
+    {
+      "name": "test_shutdown_phases[disconnect]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.466,
+      "status": "PASS"
+    },
+    {
+      "name": "test_missing_first_heartbeat",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.368,
+      "status": "PASS"
+    },
+    {
+      "name": "test_lost_ack",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.408,
+      "status": "PASS"
+    },
+    {
+      "name": "test_logger_faults[backpressure]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.486,
+      "status": "PASS"
+    },
+    {
+      "name": "test_logger_faults[failure]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.399,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[gap]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.007,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[duplicate]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.006,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[order]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.007,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[pid]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.006,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[run]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.007,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[clock]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.007,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[overflow]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.007,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[disconnect_order]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.006,
+      "status": "PASS"
+    },
+    {
+      "name": "test_protocol_faults_are_latched[stopped_order]",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.007,
+      "status": "PASS"
+    },
+    {
+      "name": "test_invalid_supervisor_clock",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.254,
+      "status": "PASS"
+    },
+    {
+      "name": "test_audit_queue_overflow_is_explicit",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 2.003,
+      "status": "PASS"
+    },
+    {
+      "name": "test_republished_acknowledged_event_is_rejected",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.3,
+      "status": "PASS"
+    },
+    {
+      "name": "test_state_freshness_failure_is_latched",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.294,
+      "status": "PASS"
+    },
+    {
+      "name": "test_stationary_preparation_no_live_entry",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.005,
+      "status": "PASS"
+    },
+    {
+      "name": "test_existing_control_rejects_historical_good_unhealthy_stream",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 2.065,
+      "status": "PASS"
+    },
+    {
+      "name": "test_acquisition_process_integration",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.561,
+      "status": "PASS"
+    },
+    {
+      "name": "test_missing_provider_refuses_before_connect",
+      "classname": "tests.test_wrench_production_process",
+      "seconds": 0.002,
+      "status": "PASS"
+    },
+    {
+      "name": "test_independent_streams_publish_and_health_is_visible",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.012,
+      "status": "PASS"
+    },
+    {
+      "name": "test_blocking_wrench_does_not_block_state_or_command_logging",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.056,
+      "status": "PASS"
+    },
+    {
+      "name": "test_acquisition_never_calls_motion_methods",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.012,
+      "status": "PASS"
+    },
+    {
+      "name": "test_stuck_wrench_refuses_concurrent_disconnect",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.052,
+      "status": "PASS"
+    },
+    {
+      "name": "test_stuck_producer_stop_uses_only_nonblocking_failure_signal",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.043,
+      "status": "PASS"
+    },
+    {
+      "name": "test_partial_start_failure_joins_started_thread_before_cleanup",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.001,
+      "status": "PASS"
+    },
+    {
+      "name": "test_partial_start_failure_refuses_cleanup_while_started_thread_is_alive",
+      "classname": "tests.test_real_robot_acquisition",
+      "seconds": 0.001,
+      "status": "PASS"
+    },
+    {
+      "name": "test_clock_uses_perf_counter_ns_as_the_only_source",
+      "classname": "tests.test_episode_logger.ClockTests",
+      "seconds": 0.002,
+      "status": "PASS"
+    },
+    {
+      "name": "test_append_error_marks_logger_failed_and_blocks_future_writes",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.015,
+      "status": "PASS"
+    },
+    {
+      "name": "test_bounded_timeout_signals_without_logger_lock_and_blocks_later_append",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.072,
+      "status": "PASS"
+    },
+    {
+      "name": "test_completed_writer_ack_is_not_delayed_by_pending_cleanup",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.02,
+      "status": "PASS"
+    },
+    {
+      "name": "test_csv_only_collision_close_does_not_create_metadata",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.005,
+      "status": "PASS"
+    },
+    {
+      "name": "test_ready_barrier_independent_streams_and_sparse_values",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.02,
+      "status": "PASS"
+    },
+    {
+      "name": "test_signal_failure_returns_while_fsync_holds_logger_lock",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.013,
+      "status": "PASS"
+    },
+    {
+      "name": "test_startup_collision_fails_without_overwriting_existing_data",
+      "classname": "tests.test_episode_logger.EpisodeLoggerTests",
+      "seconds": 0.005,
+      "status": "PASS"
+    }
+  ]
+}

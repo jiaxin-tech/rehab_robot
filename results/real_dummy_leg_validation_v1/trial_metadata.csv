@@ -1,0 +1,1 @@
+trial_id,stage,planned_order,actual_order,dummy_leg_id,cuff_setup_id,robot_config_id,rom_profile_id,trajectory_family,candidate_id,alpha_flex,alpha_extend,beta_flex,beta_extend,time_share_shift,duration_s,rom_json,trajectory_sha256,episode_path,executed,valid,invalid,reason

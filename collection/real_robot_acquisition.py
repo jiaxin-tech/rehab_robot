@@ -1,11 +1,8 @@
-"""Independent state, wrench, and alignment producers for real episodes.
+"""State/alignment and wrench IPC consumers for real episodes.
 
-The acquisition layer uses only the observation :class:`RokaeRobotAdapter`
-contract.  State cache polling, blocking ``getEndTorque`` queries, and aligned
-snapshot publication run in separate host threads with separate latest-value
-locks.  This prevents a slow wrench query from directly serializing state CSV
-publication or the trajectory-command logger.  Native SDK thread safety and
-the physical update rates still require supervised Windows/robot validation.
+Native wrench queries belong exclusively to an explicitly supplied spawned
+provider. No parent native-wrench fallback is permitted. State/RT remains in
+the parent; its native scheduling and controller isolation remain unvalidated.
 """
 
 from __future__ import annotations
@@ -51,6 +48,10 @@ class AcquisitionHealth:
     torque_magnitude_nm: float | None
     valid: bool
     invalid_reason: str
+    wrench_process_alive: bool = False
+    wrench_stream_healthy: bool = False
+    wrench_query_state: str = "NOT_STARTED"
+    wrench_failure_latch: tuple[str, ...] = ()
 
 
 class RealRobotAcquisition:
@@ -67,6 +68,8 @@ class RealRobotAcquisition:
         join_timeout_s: float = 1.0,
         clock: MonotonicClock = SYSTEM_CLOCK,
         thread_factory: Any | None = None,
+        wrench_provider: Any | None = None,
+        diagnostic_state_only: bool = False,
     ) -> None:
         for name, value in (
             ("state_poll_hz", state_poll_hz),
@@ -76,6 +79,10 @@ class RealRobotAcquisition:
             if not math.isfinite(value) or value <= 0.0:
                 raise ValueError(f"{name} must be finite and positive")
         self.adapter = adapter
+        self.wrench_provider = wrench_provider
+        self.diagnostic_state_only = diagnostic_state_only
+        if wrench_provider is not None and wrench_provider.config["rate_hz"] != wrench_hz:
+            raise ValueError("provider rate must match explicit acquisition wrench_hz")
         self.logger = logger
         self.state_poll_hz = float(state_poll_hz)
         self.wrench_hz = float(wrench_hz)
@@ -124,6 +131,13 @@ class RealRobotAcquisition:
         """Start observation producers after the five-file logger is ready."""
         if self._started:
             raise RuntimeError("real robot acquisition is already started")
+        if self.wrench_provider is None and not self.diagnostic_state_only:
+            raise PermissionError("explicit isolated wrench provider and reviewed budgets required before connection")
+        if self.wrench_provider is not None and self.wrench_provider.config["mode"] == "live":
+            native = self.adapter.native_robot
+            for child_key, parent_key in (("robot_ip", "ip_address"), ("local_ip", "local_ip"), ("robot_class", "robot_class")):
+                if self.wrench_provider.config[child_key] != getattr(native, parent_key, None):
+                    raise PermissionError("parent_child_connection_binding_mismatch:" + child_key)
         self.logger.assert_healthy()
         self._manage_connection = bool(manage_connection)
         self._started_threads = {}
@@ -133,7 +147,16 @@ class RealRobotAcquisition:
             connected = self.adapter.is_connected()
             if not connected:
                 raise ConnectionError("ROKAE adapter connection was not confirmed")
+            if self.wrench_provider is not None and self.wrench_provider.config["mode"] == "live":
+                metadata = self.adapter.read_robot_metadata()
+                expected = self.wrench_provider.config["expected_identity"]
+                for key, parent_key in (("robot_model", "robot_model"), ("robot_serial", "robot_serial_number"),
+                                        ("controller_version", "controller_version"), ("sdk_version", "sdk_version")):
+                    if str(metadata.get(parent_key)) != expected[key]:
+                        raise PermissionError("parent_child_identity_binding_mismatch:" + key)
             self.adapter.start_state_stream()
+            if self.wrench_provider is not None:
+                self.wrench_provider.start()
             self._stop_event.clear()
             self._threads = {
                 "state": self._thread_factory(
@@ -177,6 +200,8 @@ class RealRobotAcquisition:
             start_reason = f"acquisition_start:{type(exc).__name__}:{exc}"
             self._started = False
             if still_alive:
+                if self.wrench_provider is not None and self.wrench_provider.process is not None:
+                    self.wrench_provider.stop()
                 reason = (
                     start_reason
                     + ";acquisition_threads_did_not_stop:"
@@ -195,6 +220,8 @@ class RealRobotAcquisition:
                 self.logger.mark_failed(start_reason)
             except EpisodeLoggerError:
                 pass
+            if self.wrench_provider is not None and self.wrench_provider.process is not None:
+                self.wrench_provider.stop()
             self._cleanup_adapter()
             raise
 
@@ -211,6 +238,8 @@ class RealRobotAcquisition:
                 thread.join(timeout=self.join_timeout_s)
         still_alive = list(self.live_producer_names)
         if still_alive:
+            if self.wrench_provider is not None and self.wrench_provider.process is not None:
+                self.wrench_provider.stop()
             reason = "acquisition_threads_did_not_stop:" + ",".join(sorted(still_alive))
             self._background_error = reason
             # Do not inspect logger.healthy or call mark_failed here: either can
@@ -224,6 +253,8 @@ class RealRobotAcquisition:
                 + "; refusing SDK disconnect while a native query may still be active"
             )
         try:
+            if self.wrench_provider is not None:
+                self.wrench_provider.stop()
             self._cleanup_adapter()
         except Exception as exc:
             reason = f"acquisition_cleanup:{type(exc).__name__}:{exc}"
@@ -297,16 +328,27 @@ class RealRobotAcquisition:
                 next_tick = now_s
 
     def _wrench_loop(self) -> None:
-        period = 1.0 / self.wrench_hz
+        # IPC service frequency is independent of the native query rate.
+        period = min(0.002, 1.0 / self.wrench_hz)
         next_tick = self.clock.now_s()
+        previous_sequence = None
         while not self._stop_event.is_set():
             try:
-                frame = self.adapter.read_internal_wrench()
+                if self.wrench_provider is None:
+                    self._stop_event.wait(period)
+                    continue
+                process_health = self.wrench_provider.poll()
+                frame = self.wrench_provider.last_good
+                with self._wrench_lock:
+                    self._wrench_error = ";".join(process_health["FAILURE_LATCH"]) or None
+                if frame is None or frame.sequence_id == previous_sequence:
+                    self._stop_event.wait(period)
+                    continue
                 if not isinstance(frame, RobotWrenchFrame):
                     raise TypeError("read_internal_wrench must return RobotWrenchFrame")
                 with self._wrench_lock:
                     self._latest_wrench = frame
-                    self._wrench_error = None
+                previous_sequence = frame.sequence_id
                 self.logger.append_robot_wrench(
                     query_start_s=frame.host_query_start_s,
                     query_end_s=frame.host_query_end_s,
@@ -340,6 +382,8 @@ class RealRobotAcquisition:
             except Exception as exc:
                 with self._wrench_lock:
                     self._wrench_error = f"wrench_read:{type(exc).__name__}:{exc}"
+                if self.wrench_provider is not None:
+                    self.wrench_provider.fail(self._wrench_error)
             next_tick += period
             now_s = self._sleep_until(next_tick)
             if now_s - next_tick > period:
@@ -368,6 +412,26 @@ class RealRobotAcquisition:
         wrench_alive = self._thread_alive("wrench")
         alignment_alive = self._thread_alive("alignment")
         reasons = []
+        # This second supervisor entry can detect failure even if the raw-CSV
+        # consumer is held up in logger I/O. poll never waits on child locks/I/O.
+        process_health = self.wrench_provider.poll() if self.wrench_provider is not None else {}
+        stream_healthy = bool(process_health.get("STREAM_HEALTH"))
+        if not stream_healthy:
+            reasons.append(wrench_error or ";".join(process_health.get("FAILURE_LATCH", ())) or
+                           ("DISABLED_FOR_STATIONARY_A" if self.diagnostic_state_only else "wrench_process_not_ready"))
+        if self.wrench_provider is not None:
+            limits = self.wrench_provider.budgets
+            if state_age is None or state_age > limits.state_age_s:
+                reasons.append("state_stale_or_unavailable")
+                if state_age is not None:
+                    self.wrench_provider.fail("state_freshness_failure")
+            if wrench_age is None or wrench_age > limits.sample_age_s:
+                stream_healthy = False
+                reasons.append("wrench_stale_or_unavailable")
+            if skew is None or skew > limits.skew_s:
+                reasons.append("state_wrench_skew_unavailable_or_exceeded")
+                if skew is not None:
+                    self.wrench_provider.fail("state_wrench_skew_failure")
         if not state_valid:
             reasons.append(state_error or (state.invalid_reason if state else "state_not_ready"))
         if not wrench_valid:
@@ -404,8 +468,12 @@ class RealRobotAcquisition:
             query_duration_ms=wrench.query_duration_ms if wrench else None,
             force_magnitude_n=force_magnitude,
             torque_magnitude_nm=torque_magnitude,
-            valid=bool(state_valid and wrench_valid and state_alive and wrench_alive and alignment_alive),
+            valid=bool(state_valid and wrench_valid and state_alive and wrench_alive and alignment_alive and stream_healthy and not reasons),
             invalid_reason=";".join(unique_reasons),
+            wrench_process_alive=bool(process_health.get("PROCESS_ALIVE")),
+            wrench_stream_healthy=stream_healthy,
+            wrench_query_state=process_health.get("CURRENT_QUERY_STATE", "NOT_STARTED"),
+            wrench_failure_latch=tuple(process_health.get("FAILURE_LATCH", ())),
         )
 
     def latest_state_frame(self) -> KinematicStateFrame | None:

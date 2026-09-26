@@ -1,0 +1,17 @@
+{
+  "parent": {
+    "normal_cleanup": false,
+    "graceful_sdk_disconnect": null,
+    "offline_disconnect_completed": false,
+    "unresolved_call": false,
+    "process_exitcode": null,
+    "process_exit": "runner_still_running",
+    "forced_termination": false,
+    "controller_session_recovery": null
+  },
+  "child": null,
+  "logger_closed": true,
+  "state_audit_closed": true,
+  "health_audit_closed": true,
+  "lifecycle_audit_closed": true
+}

@@ -1,0 +1,9 @@
+{
+  "gaps": [],
+  "failures": [
+    "cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed",
+    "worker_exited",
+    "startup_timeout"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}
