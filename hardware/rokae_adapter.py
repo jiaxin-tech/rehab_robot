@@ -128,6 +128,26 @@ class RokaeRobotAdapter:
     def read_state_frame(self) -> KinematicStateFrame:
         return self._robot.get_state_frame()
 
+    def begin_state_capture(self) -> bool:
+        """Enable loss-detecting host-frame retention when the native supports it."""
+        begin = getattr(self._robot, "begin_state_capture", None)
+        drain = getattr(self._robot, "drain_state_frames", None)
+        end = getattr(self._robot, "end_state_capture", None)
+        if not all(callable(method) for method in (begin, drain, end)):
+            return False
+        return begin() is True
+
+    def drain_state_frames(self) -> tuple[KinematicStateFrame, ...]:
+        drain = getattr(self._robot, "drain_state_frames", None)
+        if not callable(drain):
+            raise RuntimeError("native state frame capture is not supported")
+        return drain()
+
+    def end_state_capture(self) -> None:
+        end = getattr(self._robot, "end_state_capture", None)
+        if callable(end):
+            end()
+
     def read_robot_metadata(self) -> dict[str, Any]:
         """Read SDK identity, tool/payload, and soft-limit metadata unchanged."""
 

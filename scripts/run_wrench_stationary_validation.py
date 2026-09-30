@@ -26,7 +26,7 @@ from collection.state import KinematicStateFrame
 from collection.wrench_process import DurableAudit, WrenchBudgets, WrenchProcessProvider
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ("scripts/run_wrench_stationary_validation.py", "collection/real_robot_acquisition.py",
+SOURCES = ("scripts/run_wrench_stationary_validation.py", "collection/real_robot_acquisition.py", "collection/state_buffer.py",
            "collection/wrench_process.py", "collection/episode_logger.py", "hardware/wrench_session.py",
            "hardware/rokae_adapter.py", "hardware/windows/rokae_xcore.py")
 MODES = ("OFFLINE_DRY_RUN", "LIVE_STATIONARY")
@@ -194,6 +194,7 @@ class ObservedAdapter:
         self.disconnect_confirmed = False
         self.connected_once = False
         self.run_id, self.criteria = run_id, criteria
+        self._capture_enabled = False
         self.failure = None
 
     # Required ONLY for existing acquisition's live identity/config binding.
@@ -217,8 +218,30 @@ class ObservedAdapter:
     def stop_state_stream(self): self.adapter.stop_state_stream()
     def read_robot_metadata(self): return self.adapter.read_robot_metadata()
 
+    def begin_state_capture(self):
+        methods = ("begin_state_capture", "drain_state_frames", "end_state_capture")
+        if not all(callable(getattr(self.adapter, name, None)) for name in methods):
+            return False
+        self._capture_enabled = self.adapter.begin_state_capture() is True
+        return self._capture_enabled
+
+    def drain_state_frames(self):
+        frames = self.adapter.drain_state_frames()
+        for frame in frames:
+            self._observe_state_frame(frame)
+        return frames
+
+    def end_state_capture(self):
+        self.adapter.end_state_capture()
+        self._capture_enabled = False
+
     def read_state_frame(self):
         frame = self.adapter.read_state_frame()
+        if not self._capture_enabled:
+            self._observe_state_frame(frame)
+        return frame
+
+    def _observe_state_frame(self, frame):
         delivered = time.perf_counter()
         if frame.sequence_id != self.last_sequence:
             receive = frame.host_monotonic_time_s
@@ -374,7 +397,7 @@ def run_case(request, case, output_root, *, mode="OFFLINE_DRY_RUN", authorizatio
         if live:
             def verify_site():
                 actual_identity = raw_adapter.read_robot_metadata()
-                aliases = {"robot_serial": "robot_serial_number"}
+                aliases = {"robot_serial": "robot_serial_number", "sdk_version": "xcore_sdk_version"}
                 for key, value in request["expected_identity"].items():
                     if str(actual_identity.get(aliases.get(key, key))) != value:
                         raise PermissionError("parent_identity_mismatch:" + key)

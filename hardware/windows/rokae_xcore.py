@@ -20,6 +20,7 @@ import threading
 import time
 from typing import Any, Sequence
 
+from collection.state_buffer import StateFrameBuffer
 from collection.state import (
     KinematicStateFrame,
     as_float_tuple,
@@ -123,6 +124,7 @@ class RokaeRobot:
         self._last_state_time: float | None = None
         self._state_sequence_id = 0
         self._state_error: str | None = None
+        self._state_capture_buffer: StateFrameBuffer | None = None
         self._state_keypads: tuple[bool, ...] | None = None
         self._state_wall_time_iso: str | None = None
         self._sdk_version: str | None = None
@@ -277,6 +279,7 @@ class RokaeRobot:
             self._state_wall_time_iso = None
             self._state_keypads = None
             self._state_error = "robot_state_disconnected"
+            self._state_capture_buffer = None
 
     def disconnect(self) -> None:
         """Stop feedback and disconnect. Calling this repeatedly is safe."""
@@ -442,6 +445,8 @@ class RokaeRobot:
             self._state_keypads = tuple(bool(value) for value in keypads) if keypads else ()
             self._state_sequence_id += 1
             self._state_error = None
+            if self._state_capture_buffer is not None:
+                self._state_capture_buffer.publish(self._state_frame_locked())
         self._state_ready.set()
 
     def _mark_state_error(self, exc: BaseException) -> None:
@@ -916,22 +921,57 @@ class RokaeRobot:
                 raise RuntimeError("Joint velocity needs two realtime state frames")
             return list(self.actual_joint_speeds)
 
-    def get_state_frame(self) -> KinematicStateFrame:
-        """Return an immutable latest realtime frame without re-querying the SDK."""
+    def begin_state_capture(self) -> bool:
+        """Retain accepted host frames until an explicit capture ends.
+
+        Call after connecting and starting the state stream. The current
+        complete frame seeds the queue; latest-only clients never enable it.
+        """
         with self._state_lock:
-            pose = list(self.cartesian_pose) if self.cartesian_pose is not None else None
-            tcp_speed = list(self.tcp_speed) if self.tcp_speed is not None else None
-            joints = list(self.joint_angles) if self.joint_angles is not None else None
-            joint_speed = (
-                list(self.actual_joint_speeds)
-                if self.actual_joint_speeds is not None
-                else None
-            )
-            error = self._state_error
-            state_time = self._last_state_time
-            sequence_id = self._state_sequence_id
-            wall_time_iso = self._state_wall_time_iso
-            keypads = self._state_keypads
+            if self._state_capture_buffer is not None:
+                raise RuntimeError("state frame capture is already active")
+            capture = StateFrameBuffer()
+            if (
+                self._last_state_time is not None
+                and self.cartesian_pose is not None
+                and self.joint_angles is not None
+            ):
+                capture.publish(self._state_frame_locked())
+            self._state_capture_buffer = capture
+        return True
+
+    def drain_state_frames(self) -> tuple[KinematicStateFrame, ...]:
+        """Consume retained frames once, without changing the latest state."""
+        with self._state_lock:
+            if self._state_capture_buffer is None:
+                raise RuntimeError("state frame capture is not active")
+            return self._state_capture_buffer.drain()
+
+    def end_state_capture(self) -> None:
+        """Disable retention after the capture owner drains its final frames."""
+        with self._state_lock:
+            self._state_capture_buffer = None
+
+    def get_state_frame(self) -> KinematicStateFrame:
+        """Return an immutable latest realtime frame without consuming capture."""
+        with self._state_lock:
+            return self._state_frame_locked()
+
+    def _state_frame_locked(self) -> KinematicStateFrame:
+        """Build a complete snapshot; caller must hold ``_state_lock``."""
+        pose = list(self.cartesian_pose) if self.cartesian_pose is not None else None
+        tcp_speed = list(self.tcp_speed) if self.tcp_speed is not None else None
+        joints = list(self.joint_angles) if self.joint_angles is not None else None
+        joint_speed = (
+            list(self.actual_joint_speeds)
+            if self.actual_joint_speeds is not None
+            else None
+        )
+        error = self._state_error
+        state_time = self._last_state_time
+        sequence_id = self._state_sequence_id
+        wall_time_iso = self._state_wall_time_iso
+        keypads = self._state_keypads
 
         valid = (
             self.is_connected

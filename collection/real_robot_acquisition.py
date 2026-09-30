@@ -15,6 +15,7 @@ from typing import Any
 
 from collection.episode_logger import EpisodeLogger, EpisodeLoggerError
 from collection.state import KinematicStateFrame
+from collection.state_buffer import StateBufferOverflow
 from hardware.rokae_adapter import RobotWrenchFrame
 from utils.clock import MonotonicClock, SYSTEM_CLOCK
 
@@ -98,7 +99,10 @@ class RealRobotAcquisition:
         self._state_lock = threading.Lock()
         self._wrench_lock = threading.Lock()
         self._latest_state: KinematicStateFrame | None = None
+        self._last_logged_state_sequence: int | None = None
+        self._state_capture_enabled = False
         self._latest_wrench: RobotWrenchFrame | None = None
+        self._last_logged_wrench_sequence: int | None = None
         self._state_error: str | None = None
         self._wrench_error: str | None = None
         self._background_error: str | None = None
@@ -151,10 +155,13 @@ class RealRobotAcquisition:
                 metadata = self.adapter.read_robot_metadata()
                 expected = self.wrench_provider.config["expected_identity"]
                 for key, parent_key in (("robot_model", "robot_model"), ("robot_serial", "robot_serial_number"),
-                                        ("controller_version", "controller_version"), ("sdk_version", "sdk_version")):
+                                        ("controller_version", "controller_version"), ("sdk_version", "xcore_sdk_version")):
                     if str(metadata.get(parent_key)) != expected[key]:
                         raise PermissionError("parent_child_identity_binding_mismatch:" + key)
             self.adapter.start_state_stream()
+            if all(callable(getattr(self.adapter, name, None)) for name in
+                   ("begin_state_capture", "drain_state_frames", "end_state_capture")):
+                self._state_capture_enabled = self.adapter.begin_state_capture() is True
             if self.wrench_provider is not None:
                 self.wrench_provider.start()
             self._stop_event.clear()
@@ -222,7 +229,7 @@ class RealRobotAcquisition:
                 pass
             if self.wrench_provider is not None and self.wrench_provider.process is not None:
                 self.wrench_provider.stop()
-            self._cleanup_adapter()
+            self._cleanup_adapter(persist_state_tail=False)
             raise
 
     def stop(self) -> None:
@@ -253,9 +260,22 @@ class RealRobotAcquisition:
                 + "; refusing SDK disconnect while a native query may still be active"
             )
         try:
+            wrench_log_error = None
             if self.wrench_provider is not None:
+                # All consumers have joined. Health polling may have published
+                # one unlogged frame, and stop can finish one in-flight query.
+                # Snapshot before stopping so the latter cannot overwrite it;
+                # stop the provider before doing any potentially blocking I/O.
+                before_stop = self.wrench_provider.last_good
                 self.wrench_provider.stop()
+                try:
+                    self._persist_wrench_frame(before_stop)
+                    self._persist_wrench_frame(self.wrench_provider.last_good)
+                except Exception as exc:
+                    wrench_log_error = exc
             self._cleanup_adapter()
+            if wrench_log_error is not None:
+                raise wrench_log_error
         except Exception as exc:
             reason = f"acquisition_cleanup:{type(exc).__name__}:{exc}"
             self._background_error = reason
@@ -268,17 +288,33 @@ class RealRobotAcquisition:
         finally:
             self._started = False
 
-    def _cleanup_adapter(self) -> None:
+    def _cleanup_adapter(self, *, persist_state_tail: bool = True) -> None:
         try:
             self.adapter.stop_state_stream()
+            if self._state_capture_enabled:
+                try:
+                    # The source has stopped, so this drain includes every
+                    # accepted tail frame before disconnect clears its cache.
+                    if persist_state_tail:
+                        for frame in self.adapter.drain_state_frames():
+                            self._persist_state_frame(frame)
+                finally:
+                    self.adapter.end_state_capture()
+                    self._state_capture_enabled = False
         finally:
             if self._manage_connection:
                 self.adapter.disconnect()
 
     def _sleep_until(self, deadline_s: float) -> float:
-        remaining = deadline_s - self.clock.now_s()
-        if remaining > 0.0:
-            self._stop_event.wait(remaining)
+        # On Windows, Event.wait can round millisecond waits up to the
+        # scheduler tick. Python's time.sleep uses a high-resolution timer.
+        # Bound each sleep so even low-rate loops observe stop promptly; this
+        # is a scheduling quantum, not a hardware stop guarantee.
+        while not self._stop_event.is_set():
+            remaining = deadline_s - self.clock.now_s()
+            if remaining <= 0.0:
+                break
+            time.sleep(min(remaining, 0.002))
         return self.clock.now_s()
 
     def _background_failure(self, producer: str, exc: BaseException) -> None:
@@ -287,35 +323,53 @@ class RealRobotAcquisition:
         self._stop_event.set()
         self.logger.signal_failure(reason, stream=producer)
 
+    def _persist_state_frame(self, frame: KinematicStateFrame) -> None:
+        """Write pending history without making health regress to an old frame."""
+        if not isinstance(frame, KinematicStateFrame):
+            raise TypeError("state capture must return KinematicStateFrame")
+        if frame.sequence_id == self._last_logged_state_sequence:
+            return
+        self.logger.append_robot_state(
+            host_time_s=frame.host_monotonic_time_s,
+            **{
+                f"q{index + 1}": _component(frame.joint_position_rad, index)
+                for index in range(6)
+            },
+            tcp_x=_component(frame.tcp_position_m, 0),
+            tcp_y=_component(frame.tcp_position_m, 1),
+            tcp_z=_component(frame.tcp_position_m, 2),
+            tcp_rx=_component(frame.tcp_orientation_rad, 0),
+            tcp_ry=_component(frame.tcp_orientation_rad, 1),
+            tcp_rz=_component(frame.tcp_orientation_rad, 2),
+            valid=frame.valid,
+            invalid_reason=frame.invalid_reason,
+        )
+        self._last_logged_state_sequence = frame.sequence_id
+
     def _state_loop(self) -> None:
         period = 1.0 / self.state_poll_hz
         next_tick = self.clock.now_s()
-        previous_sequence: int | None = None
         while not self._stop_event.is_set():
             try:
+                # Read health before destructively draining queued history;
+                # a failed snapshot must not discard a pending batch.
                 frame = self.adapter.read_state_frame()
                 if not isinstance(frame, KinematicStateFrame):
                     raise TypeError("read_state_frame must return KinematicStateFrame")
+                frames = (self.adapter.drain_state_frames() if self._state_capture_enabled
+                          else (frame,))
+                # Publication can advance while a batch is being drained.
+                # Keep live health at its newest frame, never at a backlog item.
+                if frames and frames[-1].sequence_id > frame.sequence_id:
+                    frame = frames[-1]
                 with self._state_lock:
                     self._latest_state = frame
                     self._state_error = None
-                if frame.sequence_id != previous_sequence:
-                    self.logger.append_robot_state(
-                        host_time_s=frame.host_monotonic_time_s,
-                        **{
-                            f"q{index + 1}": _component(frame.joint_position_rad, index)
-                            for index in range(6)
-                        },
-                        tcp_x=_component(frame.tcp_position_m, 0),
-                        tcp_y=_component(frame.tcp_position_m, 1),
-                        tcp_z=_component(frame.tcp_position_m, 2),
-                        tcp_rx=_component(frame.tcp_orientation_rad, 0),
-                        tcp_ry=_component(frame.tcp_orientation_rad, 1),
-                        tcp_rz=_component(frame.tcp_orientation_rad, 2),
-                        valid=frame.valid,
-                        invalid_reason=frame.invalid_reason,
-                    )
-                    previous_sequence = frame.sequence_id
+                for captured in frames:
+                    self._persist_state_frame(captured)
+            except StateBufferOverflow as exc:
+                self._background_failure("state_buffer", exc)
+                return
             except EpisodeLoggerError as exc:
                 self._background_failure("state_logger", exc)
                 return
@@ -327,55 +381,60 @@ class RealRobotAcquisition:
             if now_s - next_tick > period:
                 next_tick = now_s
 
+    def _persist_wrench_frame(self, frame: RobotWrenchFrame | None) -> None:
+        """Append an acknowledged frame once, including shutdown tail frames.
+
+        Called by the wrench consumer, or by stop only after consumers join.
+        The sequence advances only after a successful write.
+        """
+        if frame is None:
+            return
+        if not isinstance(frame, RobotWrenchFrame):
+            raise TypeError("read_internal_wrench must return RobotWrenchFrame")
+        if frame.sequence_id == self._last_logged_wrench_sequence:
+            return
+        with self._wrench_lock:
+            self._latest_wrench = frame
+        self.logger.append_robot_wrench(
+            query_start_s=frame.host_query_start_s,
+            query_end_s=frame.host_query_end_s,
+            publish_time_s=frame.host_publish_s,
+            **{
+                f"joint_measured_torque_{index + 1}": _component(
+                    frame.joint_measured_torque_nm, index
+                )
+                for index in range(6)
+            },
+            **{
+                f"joint_external_torque_{index + 1}": _component(
+                    frame.joint_external_torque_nm, index
+                )
+                for index in range(6)
+            },
+            fx=_component(frame.cartesian_force_raw_n, 0),
+            fy=_component(frame.cartesian_force_raw_n, 1),
+            fz=_component(frame.cartesian_force_raw_n, 2),
+            tx=_component(frame.cartesian_torque_raw_nm, 0),
+            ty=_component(frame.cartesian_torque_raw_nm, 1),
+            tz=_component(frame.cartesian_torque_raw_nm, 2),
+            frame_type=frame.raw_force_frame,
+            query_duration_ms=frame.query_duration_ms,
+            valid=frame.valid,
+            invalid_reason=frame.invalid_reason,
+        )
+        self._last_logged_wrench_sequence = frame.sequence_id
+
     def _wrench_loop(self) -> None:
         # IPC service frequency is independent of the native query rate.
         period = min(0.002, 1.0 / self.wrench_hz)
         next_tick = self.clock.now_s()
-        previous_sequence = None
         while not self._stop_event.is_set():
             try:
-                if self.wrench_provider is None:
-                    self._stop_event.wait(period)
-                    continue
-                process_health = self.wrench_provider.poll()
-                frame = self.wrench_provider.last_good
-                with self._wrench_lock:
-                    self._wrench_error = ";".join(process_health["FAILURE_LATCH"]) or None
-                if frame is None or frame.sequence_id == previous_sequence:
-                    self._stop_event.wait(period)
-                    continue
-                if not isinstance(frame, RobotWrenchFrame):
-                    raise TypeError("read_internal_wrench must return RobotWrenchFrame")
-                with self._wrench_lock:
-                    self._latest_wrench = frame
-                previous_sequence = frame.sequence_id
-                self.logger.append_robot_wrench(
-                    query_start_s=frame.host_query_start_s,
-                    query_end_s=frame.host_query_end_s,
-                    publish_time_s=frame.host_publish_s,
-                    **{
-                        f"joint_measured_torque_{index + 1}": _component(
-                            frame.joint_measured_torque_nm, index
-                        )
-                        for index in range(6)
-                    },
-                    **{
-                        f"joint_external_torque_{index + 1}": _component(
-                            frame.joint_external_torque_nm, index
-                        )
-                        for index in range(6)
-                    },
-                    fx=_component(frame.cartesian_force_raw_n, 0),
-                    fy=_component(frame.cartesian_force_raw_n, 1),
-                    fz=_component(frame.cartesian_force_raw_n, 2),
-                    tx=_component(frame.cartesian_torque_raw_nm, 0),
-                    ty=_component(frame.cartesian_torque_raw_nm, 1),
-                    tz=_component(frame.cartesian_torque_raw_nm, 2),
-                    frame_type=frame.raw_force_frame,
-                    query_duration_ms=frame.query_duration_ms,
-                    valid=frame.valid,
-                    invalid_reason=frame.invalid_reason,
-                )
+                if self.wrench_provider is not None:
+                    process_health = self.wrench_provider.poll()
+                    with self._wrench_lock:
+                        self._wrench_error = ";".join(process_health["FAILURE_LATCH"]) or None
+                    self._persist_wrench_frame(self.wrench_provider.last_good)
             except EpisodeLoggerError as exc:
                 self._background_failure("wrench_logger", exc)
                 return
