@@ -31,7 +31,7 @@ reference-freeze robot approval = false (NO-GO)
 | Persistence | `collection/episode_logger.py`, `utils/clock.py`, `utils/provenance.py` | Shared monotonic clock/Git provenance, logger-ready barrier, four independent CSV streams, bounded durable command logging, atomic metadata and global fail state |
 | Safety/preflight | `safety/experiment_safety.py`, `control/execution_preflight.py` | Human-reviewed identity/tool/load/limits and complete offline/live execute gate |
 | Scheduler | `control/robot_trajectory_executor.py` | Single-use slow-reference timing, deadline-bounded logging-before-dispatch, cached health checks and strict stop |
-| Operator CLIs | `scripts/rokae_probe.py`, `capture_start_anchor.py`, `preview_rehab_trajectory.py`, `acquire_robot_data.py`, `run_rehab_experiment.py` | Separate observation-only/offline/execute workflows |
+| Operator CLIs | `scripts/rokae_commission.py`, `scripts/rokae_probe.py`, `capture_start_anchor.py`, `preview_rehab_trajectory.py`, `acquire_robot_data.py`, `run_rehab_experiment.py` | Separate network check, supervised commissioning (connect/status/power/realtime prepare/bounded jog/stop), observation-only/offline/execute workflows |
 | Offline real-data adapter | `scripts/identify_real_episode.py` | Reviewed mapping from episode data into the unchanged five-parameter estimator |
 
 ## 3. Trajectory modes

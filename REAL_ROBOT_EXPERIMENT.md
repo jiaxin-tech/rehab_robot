@@ -72,11 +72,58 @@ If the `.pyd` cannot load, stop. Do not replace it with a fake success branch.
 
 ## 4. Phase C — supervised observation-only connection probe
 
-Ensure the physical robot is stationary and the operator controls the session. Then:
+First separate a network fault from an SDK/controller fault. This step imports no
+vendor extension and sends no robot command:
 
 ```powershell
+python -m scripts.rokae_commission --ip ROBOT_IP network
+```
+
+A missing ICMP reply alone is inconclusive because controllers often block
+ping; a TCP connect is the stronger signal. If no TCP port answers, fix the
+cable, subnet, local interface and controller firewall before opening a session.
+
+Then, with the physical robot stationary and the operator controlling the
+session:
+
+```powershell
+python -m scripts.rokae_commission --ip ROBOT_IP self-test
 python -m scripts.rokae_probe --ip ROBOT_IP
 ```
+
+`rokae_commission self-test` connects, runs read-only reads (metadata, state
+summary, TCP pose, joints, internal wrench, collision/soft-limit availability),
+and then disconnects only the session it opened itself. It reports
+`motion_commanded=false` and `power_commanded=false` and is safe to run before
+the richer probe. `status` prints one snapshot without powering or moving.
+
+The same console also provides the supervised commissioning actions that the
+probe deliberately omits. Every power/motion action requires the exact text
+`I CONFIRM SUPERVISED COMMISSIONING MOTION` (distinct from the experiment's
+`I CONFIRM SUPERVISED SLOW ROBOT MOTION`), and a wrong or missing confirmation is
+refused locally before any connection is opened:
+
+```powershell
+python -m scripts.rokae_commission --ip ROBOT_IP status
+python -m scripts.rokae_commission --ip ROBOT_IP --confirm "I CONFIRM SUPERVISED COMMISSIONING MOTION" power-on --speed-ratio 5
+python -m scripts.rokae_commission --ip ROBOT_IP --confirm "I CONFIRM SUPERVISED COMMISSIONING MOTION" jog-joint --joint 1 --delta-deg 1.0
+python -m scripts.rokae_commission --ip ROBOT_IP --confirm "I CONFIRM SUPERVISED COMMISSIONING MOTION" jog-cartesian --delta-mm 5 0 0
+python -m scripts.rokae_commission --ip ROBOT_IP --confirm "I CONFIRM SUPERVISED COMMISSIONING MOTION" power-off
+python -m scripts.rokae_commission --ip ROBOT_IP stop
+python -m scripts.rokae_commission --ip ROBOT_IP console
+```
+
+Motion is refused unless the live state is fresh and valid, the collision query
+is valid and reports no collision, joint soft limits are available, the target
+stays inside those soft limits (with margin), and the step is inside the
+per-command limits. Defaults: 3 deg joint step, 10 mm Cartesian step, speed
+ratio at most 10, 3 deg soft-limit margin, 0.5 s maximum state age. `stop` never
+needs a confirmation. Every attempted action is appended to an operator audit
+log (`--audit-log PATH`).
+
+This console is a commissioning aid, not a safety-rated stop and not a
+replacement for the site risk assessment or a trained operator at the physical
+E-stop.
 
 The project probe calls connect/disconnect, receive-state, pose/q reads, one internal-wrench query, robot identity/soft-limit/toolset/load/available-tool/workobject reads, and a safety-event collision query. It does not explicitly send a target, call power/automatic/clear-error/calibration/drag, or invoke MoveL/MoveJ/RT motion.
 
@@ -246,7 +293,19 @@ Before any human is in the robot workspace:
 1. Confirm physical E-stop and safety controller behavior.
 2. Confirm the robot is exactly at the reviewed StartAnchor.
 3. Confirm live robot identity, payload, soft limits and collision configuration against both the StartAnchor and reviewed safety file; separately verify the active HMI tool/workpiece because the SDK only reports available names.
-4. Through the approved external HMI/vendor procedure, prepare automatic mode, servo power, RT command mode and the exact reviewed network tolerance. The program does not set those values; during explicit attach it applies only the reviewed command-filter frequency.
+4. Prepare automatic mode, servo power, RT command mode and the exact reviewed network tolerance. Use the approved vendor HMI, or use the audited commissioning console below, which selects the mode and powers on without ever starting the realtime loop or sending a target:
+
+   ```powershell
+   python -m scripts.rokae_commission --ip ROBOT_IP --local-ip REVIEWED_WINDOWS_RT_NIC_IP --confirm "I CONFIRM SUPERVISED COMMISSIONING MOTION" prepare-realtime --network-tolerance-percent REVIEWED_PERCENT
+   python -m scripts.rokae_commission --ip ROBOT_IP --confirm "I CONFIRM SUPERVISED COMMISSIONING MOTION" end-realtime
+   ```
+
+   `prepare-realtime` refuses to run when servo power is already on from the
+   same console, refuses a tolerance above the configured ceiling, and reports
+   the queryable mode/power state it obtained. The frozen executor still
+   attaches to that preparation and applies only the reviewed command-filter
+   frequency; `end-realtime` stops the loop, returns to non-realtime mode and
+   powers down.
 5. Keep an operator at the E-stop.
 6. Use a reviewed conservative safety config for this empty-load setup.
 7. Run exactly one `reference_measured_asymmetric_closed_slow` execution.

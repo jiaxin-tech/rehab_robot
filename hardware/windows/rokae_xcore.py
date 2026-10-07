@@ -569,6 +569,29 @@ class RokaeRobot:
             raise
         self._refresh_operation_state()
 
+    def _realtime_prepared_state(self) -> dict[str, Any]:
+        """Best-effort readback of the queryable realtime preparation state."""
+        state: dict[str, Any] = {
+            "local_ip": self.local_ip or None,
+            "rt_network_tolerance_percent": self.rt_network_tolerance_percent,
+            "rt_filter_hz": self.rt_filter_hz,
+            "rt_controller_obtained": self._rt_controller is not None,
+            "rt_loop_active": bool(self._rt_active),
+        }
+        try:
+            state["operate_mode"] = str(self._call("operateMode", self._robot.operateMode))
+        except Exception as exc:
+            state["operate_mode_error"] = f"{type(exc).__name__}:{exc}"
+        try:
+            state["power_state"] = str(self._call("powerState", self._robot.powerState))
+        except Exception as exc:
+            state["power_state_error"] = f"{type(exc).__name__}:{exc}"
+        try:
+            state["operation_state"] = str(self._refresh_operation_state())
+        except Exception as exc:
+            state["operation_state_error"] = f"{type(exc).__name__}:{exc}"
+        return state
+
     def attach_externally_prepared_realtime(
         self,
         *,
