@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "scope": "LIVE_OBSERVATION_ACQUISITION",
+  "reviewed": false,
+  "connection": {
+    "robot_ip": null,
+    "local_ip": null,
+    "robot_class": null
+  },
+  "expected_identity": {
+    "robot_model": null,
+    "robot_serial": null,
+    "controller_version": null,
+    "sdk_version": null
+  },
+  "allowed_power_states": [],
+  "budgets": {
+    "startup_s": null,
+    "query_s": null,
+    "progress_s": null,
+    "sample_age_s": null,
+    "ack_s": null,
+    "log_s": null,
+    "shutdown_s": null,
+    "terminate_s": null,
+    "state_age_s": null,
+    "skew_s": null,
+    "provenance": null
+  },
+  "notes": [
+    "Template only. Every null and the reviewed=false flag must be filled from a site review.",
+    "used with: python -m scripts.acquire_robot_data --mode live --wrench-config <file>",
+    "budgets.provenance must not be NOT_SAFETY_THRESHOLDS.",
+    "The reviewed flag records a human review performed outside this process; it is not an approval service.",
+    "This configuration never authorizes robot motion. Motion remains NO_GO."
+  ]
+}

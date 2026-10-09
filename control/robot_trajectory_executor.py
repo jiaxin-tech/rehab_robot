@@ -24,6 +24,7 @@ from control.execution_preflight import (
 )
 from safety.experiment_safety import ExperimentSafetyConfig
 from utils.clock import MonotonicClock, SYSTEM_CLOCK
+from hardware.safety_events import safety_event_block_reason
 
 
 @dataclass(frozen=True)
@@ -93,6 +94,9 @@ class RokaeMotionExecutor:
 
     def _runtime_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
+        event_reason = safety_event_block_reason(getattr(self.acquisition, "adapter", None))
+        if event_reason:
+            reasons.append(event_reason)
         logger_health = getattr(self.logger, "healthy_signal", None)
         if logger_health is None:
             logger_health = getattr(self.logger, "healthy", False)

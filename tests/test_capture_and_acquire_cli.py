@@ -4,14 +4,19 @@ from __future__ import annotations
 
 import json
 import threading
+import time
 from types import SimpleNamespace
 
 import pytest
 
 from collection.state import KinematicStateFrame
+from collection.wrench_process import WrenchBudgets
 from hardware.rokae_adapter import RobotWrenchFrame
 import scripts.acquire_robot_data as acquire_cli
-from scripts.acquire_robot_data import run_acquisition
+from scripts.acquire_robot_data import (
+    load_live_wrench_config,
+    run_acquisition,
+)
 from scripts.capture_start_anchor import run_capture
 from utils.clock import host_time_s
 
@@ -138,9 +143,10 @@ def _track_episode_logger_close(monkeypatch):
 class StopFailureAcquisition:
     stop_message = "simulated acquisition.stop failure"
 
-    def __init__(self, adapter, logger):
+    def __init__(self, adapter, logger, **kwargs):
         self.adapter = adapter
         self.logger = logger
+        self.wrench_provider = kwargs.get("wrench_provider")
         self.background_error = None
 
     def start(self, *, manage_connection):
@@ -163,6 +169,85 @@ class RefusingStopAcquisition(StopFailureAcquisition):
         "acquisition_threads_did_not_stop:wrench; refusing SDK disconnect "
         "while a native query may still be active"
     )
+
+
+class FakeWrenchProvider:
+    """Explicit provider double for wiring regressions.
+
+    It reproduces the parts of ``WrenchProcessProvider`` that the acquisition
+    lifecycle actually touches, so the CLI wiring is exercised without an OS
+    process or a native SDK import.
+    """
+
+    def __init__(self, *, rate_hz=50.0):
+        self.config = {"mode": "offline", "rate_hz": rate_hz}
+        self.budgets = WrenchBudgets(
+            startup_s=5.0,
+            query_s=0.5,
+            progress_s=2.0,
+            sample_age_s=2.0,
+            ack_s=2.0,
+            log_s=2.0,
+            shutdown_s=0.5,
+            terminate_s=0.5,
+            state_age_s=2.0,
+            skew_s=2.0,
+            provenance="NOT_SAFETY_THRESHOLDS",
+        )
+        self.host_monotonic_time_s = None
+        self.last_good = None
+        self.cleanup = None
+        self.process = None
+        self.failure_latch = []
+        self.started = False
+        self.stopped = False
+        self.failed_reasons = []
+
+    def start(self):
+        self.started = True
+        self._publish()
+        return self
+
+    def _publish(self):
+        now = host_time_s()
+        self.host_monotonic_time_s = now
+        self.last_good = RobotWrenchFrame(
+            sequence_id=1,
+            host_query_start_s=now,
+            host_query_end_s=now,
+            host_publish_s=now,
+            host_monotonic_time_s=now,
+            wall_time_iso="",
+            timestamp_source="FAKE_PROVIDER",
+            valid=True,
+            invalid_reason="",
+            raw_force_frame="world",
+            cartesian_force_raw_n=(1.0, 2.0, 3.0),
+            cartesian_torque_raw_nm=(0.1, 0.2, 0.3),
+            joint_measured_torque_nm=(1.0,) * 6,
+            joint_external_torque_nm=(0.5,) * 6,
+        )
+
+    def poll(self, now_ns=None):
+        self._publish()
+        return {
+            "STREAM_HEALTH": True,
+            "PROCESS_ALIVE": not self.stopped,
+            "CURRENT_QUERY_STATE": "SUCCEEDED",
+            "FAILURE_LATCH": tuple(self.failure_latch),
+        }
+
+    def health(self):
+        return self.poll()
+
+    def fail(self, reason):
+        self.failure_latch.append(reason)
+        self.failed_reasons.append(reason)
+
+    def stop(self):
+        self.stopped = True
+        self.cleanup = {"NORMAL_CLEANUP": True, "FORCED_WORKER_TERMINATION": False}
+        return dict(self.cleanup)
 
 
 def test_capture_saves_unreviewed_anchor_and_never_moves(tmp_path):
@@ -221,16 +306,34 @@ def test_capture_stream_cleanup_failure_does_not_skip_disconnect(tmp_path):
 
 
 def test_acquire_writes_five_files_without_motion(tmp_path):
+    """End-to-end wiring regression for the reviewed observation path.
+
+    The provider is injected explicitly, exactly as the live path does, so this
+    test fails if the CLI silently drops back to the removed parent-native
+    wrench fallback.
+    """
+
     adapter = FakeAdapter()
+    provider = FakeWrenchProvider()
     episode = tmp_path / "episode"
+
+    def provider_factory(_episode_dir, rate_hz):
+        assert rate_hz == 50.0
+        return provider
+
     result = run_acquisition(
         robot_ip="192.0.2.1",
         episode_dir=episode,
         duration_s=0.03,
         adapter_factory=lambda _ip: adapter,
+        mode="offline",
+        wrench_provider_factory=provider_factory,
     )
     assert result["completed"]
     assert result["motion_commanded"] is False
+    assert result["wrench_mode"] == "offline"
+    assert provider.started is True
+    assert provider.stopped is True
     for filename in (
         "robot_state.csv",
         "robot_wrench.csv",
@@ -239,6 +342,8 @@ def test_acquire_writes_five_files_without_motion(tmp_path):
         "metadata.json",
     ):
         assert (episode / filename).is_file()
+    # The explicit provider is the only wrench source that may exist.
+    assert "read_internal_wrench" not in adapter.calls
     assert "connect" in adapter.calls
     assert "disconnect" in adapter.calls
     assert not any(
@@ -246,6 +351,75 @@ def test_acquire_writes_five_files_without_motion(tmp_path):
         for call in adapter.calls
         for token in ("enable", "power", "move", "drag", "calibrate", "clear_error")
     )
+
+
+def test_acquire_defaults_to_state_only_without_wrench_provider(tmp_path):
+    """The default must not silently construct an unreviewed wrench source."""
+
+    adapter = FakeAdapter()
+    episode = tmp_path / "state_only_episode"
+    result = run_acquisition(
+        robot_ip="192.0.2.1",
+        episode_dir=episode,
+        duration_s=0.01,
+        adapter_factory=lambda _ip: adapter,
+    )
+    assert result["completed"]
+    assert result["wrench_mode"] == "state-only"
+    assert "read_internal_wrench" not in adapter.calls
+    metadata = json.loads((episode / "metadata.json").read_text(encoding="utf-8"))
+    assert metadata["wrench_mode"] == "state-only"
+    assert metadata["reviewed_observation_acquisition"] is False
+
+
+def test_acquire_offline_mode_builds_explicit_isolated_provider(monkeypatch, tmp_path):
+    """``mode='offline'`` must construct the process-isolated provider."""
+
+    adapter = FakeAdapter()
+    provider = FakeWrenchProvider()
+    captured = {}
+
+    def build(episode_dir, *, wrench_hz):
+        captured["episode_dir"] = episode_dir
+        captured["wrench_hz"] = wrench_hz
+        return provider
+
+    monkeypatch.setattr(acquire_cli, "build_offline_wrench_provider", build)
+    result = run_acquisition(
+        robot_ip="192.0.2.1",
+        episode_dir=tmp_path / "offline_episode",
+        duration_s=0.01,
+        adapter_factory=lambda _ip: adapter,
+        mode="offline",
+    )
+    assert result["wrench_mode"] == "offline"
+    assert captured["wrench_hz"] == 50.0
+    assert provider.started and provider.stopped
+
+
+def test_acquire_rejects_conflicting_mode_and_provider(tmp_path):
+    adapter = FakeAdapter()
+    with pytest.raises(ValueError, match="incompatible with state-only"):
+        run_acquisition(
+            robot_ip="192.0.2.1",
+            episode_dir=tmp_path / "conflict",
+            duration_s=0.01,
+            adapter_factory=lambda _ip: adapter,
+            mode="state-only",
+            wrench_provider_factory=lambda _dir, _hz: FakeWrenchProvider(),
+        )
+
+
+def test_acquire_live_mode_requires_reviewed_config(tmp_path):
+    adapter = FakeAdapter()
+    with pytest.raises(ValueError, match="reviewed live_wrench_config"):
+        run_acquisition(
+            robot_ip="192.0.2.1",
+            episode_dir=tmp_path / "unreviewed_live",
+            duration_s=0.01,
+            adapter_factory=lambda _ip: adapter,
+            mode="live",
+        )
 
 
 def test_acquire_factory_failure_still_closes_logger(monkeypatch, tmp_path):

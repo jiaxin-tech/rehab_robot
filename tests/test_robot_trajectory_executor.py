@@ -241,6 +241,31 @@ def test_preflight_failure_sends_no_motion(tmp_path):
     assert motion.calls == []
 
 
+def test_safety_event_failure_after_start_stops_before_next_target(tmp_path):
+    logger = EpisodeLogger(tmp_path / "episode").start()
+    acquisition = Acquisition()
+    event = {"valid": True, "collision_state": False, "invalid_reason": ""}
+    acquisition.adapter.get_safety_event_status = lambda: dict(event)
+
+    class EventLostMotion(Motion):
+        def start_cartesian_hold(self, pose):
+            super().start_cartesian_hold(pose)
+            event.update(valid=False, collision_state=None, invalid_reason="safety_event_expired")
+
+    motion = EventLostMotion()
+    executor = RokaeMotionExecutor(motion, acquisition, logger, _safety())
+    try:
+        with pytest.raises(RuntimeError, match="safety_event_expired"):
+            executor.execute(_trajectory(), _preflight())
+        assert not any(call[0] == "send" for call in motion.calls)
+        assert any(call[0] == "stop" for call in motion.calls)
+        event.update(valid=True, collision_state=False, invalid_reason="")
+        with pytest.raises(RuntimeError):
+            executor.execute(_trajectory(), _preflight())
+    finally:
+        logger.close(completed=False)
+
+
 def test_runtime_stale_state_enters_unified_stop(tmp_path):
     logger = EpisodeLogger(tmp_path / "episode").start()
     acquisition = Acquisition()

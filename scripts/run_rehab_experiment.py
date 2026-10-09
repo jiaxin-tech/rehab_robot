@@ -40,10 +40,15 @@ from lower_limb_sim.reference_measured_asymmetric import (
 )
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 from safety.experiment_safety import load_experiment_safety_config
-from scripts.acquire_robot_data import run_acquisition
+from scripts.acquire_robot_data import (
+    build_live_wrench_provider,
+    load_live_wrench_config,
+    run_acquisition,
+)
 from scripts.preview_rehab_trajectory import preview_trajectory
 from utils.clock import TIMESTAMP_SOURCE
 from utils.provenance import current_git_commit
+from hardware.safety_events import validate_collision_source
 
 
 AdapterFactory = Callable[[str], Any]
@@ -72,10 +77,14 @@ def _reference_path(trajectory_id: str) -> Path:
         ) from exc
 
 
-def _default_adapter_factory(robot_ip: str, *, local_ip: str):
+def _default_adapter_factory(robot_ip: str, *, local_ip: str,
+                             collision_source: str = "query",
+                             collision_event_max_age_s: float | None = None):
     from hardware.rokae_adapter import RokaeRobotAdapter
 
-    return RokaeRobotAdapter(robot_ip, local_ip=local_ip)
+    return RokaeRobotAdapter(robot_ip, local_ip=local_ip,
+                             collision_source=collision_source,
+                             collision_event_max_age_s=collision_event_max_age_s)
 
 
 def _default_motion_factory(adapter: Any):
@@ -96,10 +105,15 @@ def run_execute(
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
+    live_wrench_config: dict[str, Any] | None = None,
+    wrench_hz: float | None = None,
     adapter_factory: AdapterFactory | None = None,
     motion_factory: MotionFactory | None = None,
+    collision_source: str = "query",
+    collision_event_max_age_s: float | None = None,
 ) -> dict[str, Any]:
     """Run one real episode only after static and live gates both pass."""
+    validate_collision_source(collision_source, collision_event_max_age_s)
     anchor = load_start_anchor(anchor_path)
     frame = load_rehab_frame_config(frame_config_path)
     safety = load_experiment_safety_config(safety_config_path)
@@ -130,6 +144,28 @@ def run_execute(
         raise PermissionError(
             "real robot execution blocked: reviewed local xCoreSDK interface IP "
             "is required via --local-ip or config.settings.ROBOT_LOCAL_IP"
+        )
+    # Execution needs a healthy state *and* wrench stream, so the isolated
+    # wrench provider has to be wired here exactly as in observation
+    # acquisition. Without it the connection gate in
+    # ``RealRobotAcquisition.start`` refuses to proceed, which is the intended
+    # fail-closed behaviour rather than a path to reopen.
+    if live_wrench_config is None:
+        raise PermissionError(
+            "real robot execution blocked: reviewed live wrench configuration "
+            "is required (--wrench-config)"
+        )
+    if wrench_hz is None or wrench_hz <= 0.0:
+        raise PermissionError(
+            "real robot execution blocked: explicit positive --wrench-hz is required"
+        )
+    if live_wrench_config["connection"]["robot_ip"] != robot_ip:
+        raise PermissionError(
+            "real robot execution blocked: wrench connection robot_ip must match"
+        )
+    if live_wrench_config["connection"]["local_ip"] != resolved_local_ip:
+        raise PermissionError(
+            "real robot execution blocked: wrench connection local_ip must match"
         )
 
     logger = EpisodeLogger(
@@ -170,10 +206,13 @@ def run_execute(
                 "xCoreSDK_0.7.0_realtime_cartesian_pyi_and_vendor_examples"
             ),
             "motion_api_physical_validation": False,
+            "collision_source": collision_source,
+            "collision_event_max_age_s": collision_event_max_age_s,
         },
     )
     adapter: Any | None = None
     acquisition: RealRobotAcquisition | None = None
+    wrench_provider: Any | None = None
     executor: RokaeMotionExecutor | None = None
     completed = False
     result = None
@@ -182,9 +221,21 @@ def run_execute(
         adapter = (
             adapter_factory(robot_ip)
             if adapter_factory is not None
-            else _default_adapter_factory(robot_ip, local_ip=resolved_local_ip)
+            else _default_adapter_factory(robot_ip, local_ip=resolved_local_ip,
+                                          collision_source=collision_source,
+                                          collision_event_max_age_s=collision_event_max_age_s)
         )
-        acquisition = RealRobotAcquisition(adapter, logger)
+        wrench_provider = build_live_wrench_provider(
+            Path(episode_dir),
+            config=live_wrench_config,
+            wrench_hz=float(wrench_hz),
+        )
+        acquisition = RealRobotAcquisition(
+            adapter,
+            logger,
+            wrench_provider=wrench_provider,
+            wrench_hz=float(wrench_hz),
+        )
         acquisition.start(manage_connection=True)
         if not acquisition.wait_until_healthy(timeout_s=3.0):
             raise RuntimeError(
@@ -351,6 +402,23 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--preview-output-dir")
     parser.add_argument("--enable-motion", action="store_true")
+    parser.add_argument("--collision-source", choices=("query", "events"), default="query")
+    parser.add_argument("--collision-event-max-age-s", type=float, default=None,
+                        help="required reviewed event freshness budget for events mode")
+    parser.add_argument(
+        "--wrench-config",
+        default=None,
+        help=(
+            "reviewed live wrench configuration JSON; required for execute so the "
+            "isolated wrench producer is wired explicitly"
+        ),
+    )
+    parser.add_argument(
+        "--wrench-hz",
+        type=float,
+        default=None,
+        help="explicit wrench rate for execute; must match the provider rate",
+    )
     parser.add_argument(
         "--operator-confirmation",
         default="",
@@ -366,7 +434,10 @@ def main(
     motion_factory: MotionFactory | None = None,
 ) -> int:
     args = build_parser().parse_args(argv)
+    validate_collision_source(args.collision_source, args.collision_event_max_age_s)
     if args.mode == "preview":
+        if args.collision_source != "query":
+            raise ValueError("safety event subscription is not available in offline preview")
         if not args.anchor or not args.preview_output_dir:
             raise ValueError("preview requires --anchor and --preview-output-dir")
         result = preview_trajectory(
@@ -378,6 +449,13 @@ def main(
     elif args.mode == "acquire":
         if not args.ip or not args.episode_dir or args.duration_s is None:
             raise ValueError("acquire requires --ip, --episode-dir, and --duration-s")
+        if adapter_factory is None:
+            from scripts.acquire_robot_data import _configured_adapter_factory
+            adapter_factory = _configured_adapter_factory(
+                local_ip=args.local_ip, robot_class=None, state_interval_ms=None,
+                collision_source=args.collision_source,
+                collision_event_max_age_s=args.collision_event_max_age_s,
+            )
         result = run_acquisition(
             robot_ip=args.ip,
             episode_dir=args.episode_dir,
@@ -394,6 +472,9 @@ def main(
         missing = [name for name, value in required.items() if not value]
         if missing:
             raise ValueError("execute missing required arguments: " + ", ".join(missing))
+        live_wrench_config = None
+        if args.wrench_config is not None:
+            live_wrench_config = load_live_wrench_config(args.wrench_config)
         result = run_execute(
             robot_ip=args.ip,
             episode_dir=args.episode_dir,
@@ -405,8 +486,12 @@ def main(
             enable_motion=args.enable_motion,
             operator_confirmation=args.operator_confirmation,
             local_ip=args.local_ip,
+            live_wrench_config=live_wrench_config,
+            wrench_hz=args.wrench_hz,
             adapter_factory=adapter_factory,
             motion_factory=motion_factory,
+            collision_source=args.collision_source,
+            collision_event_max_age_s=args.collision_event_max_age_s,
         )
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

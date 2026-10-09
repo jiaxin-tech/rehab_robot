@@ -20,6 +20,7 @@ import threading
 import time
 from typing import Any, Sequence
 
+from hardware.safety_events import SafetyEventMonitor, validate_collision_source
 from collection.state_buffer import StateFrameBuffer
 from collection.state import (
     KinematicStateFrame,
@@ -79,7 +80,10 @@ class RokaeRobot:
         command_cache_size: int = 1,
         rt_network_tolerance_percent: int = 20,
         rt_filter_hz: float = 50.0,
+        collision_source: str = "query",
+        collision_event_max_age_s: float | None = None,
     ):
+        validate_collision_source(collision_source, collision_event_max_age_s)
         if state_interval_ms not in (1, 2, 4, 8, 1000):
             raise ValueError("state_interval_ms must be one of 1, 2, 4, 8, or 1000")
         if max_linear_speed_m_s <= 0:
@@ -130,6 +134,12 @@ class RokaeRobot:
         self._sdk_version: str | None = None
         self._collision_state: bool | None = None
         self._collision_error: str | None = None
+        self.collision_source = collision_source
+        self._safety_events = (
+            SafetyEventMonitor(collision_event_max_age_s) if collision_source == "events" else None
+        )
+        self._safety_event_callback = None
+        self._disconnect_requested = False
         self._joint_soft_limits_rad: tuple[tuple[float, float], ...] | None = None
         self._joint_soft_limit_error: str | None = None
 
@@ -173,6 +183,7 @@ class RokaeRobot:
         if self.is_connected:
             return
 
+        self._disconnect_requested = False
         self._sdk = _load_sdk()
         sdk_version = str(self._sdk.BaseRobot.sdkVersion())
         if sdk_version != _EXPECTED_SDK_VERSION:
@@ -229,6 +240,8 @@ class RokaeRobot:
                 logger.warning("Unable to read xCoreSDK joint soft limits: %s", exc)
             self.start_state_stream()
             self._refresh_operation_state()
+            if self._safety_events is not None:
+                self.start_safety_events()
         except Exception as connection_exc:
             try:
                 self._cleanup_failed_connection()
@@ -244,6 +257,7 @@ class RokaeRobot:
     def _cleanup_failed_connection(self) -> None:
         """Strict cleanup that retains retryable handles on any uncertainty."""
 
+        self._invalidate_safety_events("safety_event_connection_failed")
         self._stop_realtime_impl(raise_on_error=True)
         self.stop_state_stream()
         if self._robot is not None:
@@ -256,6 +270,8 @@ class RokaeRobot:
     def _clear_after_confirmed_disconnect(self) -> None:
         """Clear local handles only after native disconnect has succeeded."""
 
+        self._invalidate_safety_events("safety_event_disconnected")
+        self._safety_event_callback = None
         self._robot = None
         self._robot_info = None
         self._force_control = None
@@ -283,6 +299,8 @@ class RokaeRobot:
 
     def disconnect(self) -> None:
         """Stop feedback and disconnect. Calling this repeatedly is safe."""
+        self._disconnect_requested = True
+        self._invalidate_safety_events("safety_event_disconnect_requested")
         if self._robot is None:
             self._clear_cached_state()
             self.is_connected = False
@@ -337,6 +355,7 @@ class RokaeRobot:
 
     def stop_state_stream(self) -> None:
         """Stop only receive-side state resources; calling repeatedly is safe."""
+        self._invalidate_safety_events("safety_event_state_stream_stopped")
         self._state_running = False
         thread = self._state_thread
         if thread is threading.current_thread():
@@ -453,6 +472,7 @@ class RokaeRobot:
         """Make stream faults visible to collector and SafetyGuard immediately."""
         with self._state_lock:
             self._state_error = f"robot_state_stream_error:{type(exc).__name__}:{exc}"
+        self._invalidate_safety_events("safety_event_state_stream_error")
 
     @staticmethod
     def _pose_to_sdk(pose: Sequence[float]) -> list[float]:
@@ -1031,7 +1051,8 @@ class RokaeRobot:
             joint_time_s=state_time,
             velocity_time_s=state_time if velocity_available else None,
             operation_state=self.robot_mode,
-            collision_state=self._collision_state,
+            collision_state=(self._safety_events.snapshot().collision_state
+                             if self._safety_events is not None else self._collision_state),
             controller_error=error,
             keypad_state=keypads,
         )
@@ -1070,6 +1091,8 @@ class RokaeRobot:
             "controller_version": getattr(info, "version", None) if info is not None else None,
             "xcore_sdk_version": self._sdk_version,
             "state_interval_ms": self.state_interval_ms,
+            "collision_source": self.collision_source,
+            "safety_event_status": self.get_safety_event_status(),
             "joint_soft_limits_rad": self._joint_soft_limits_rad,
             "joint_soft_limit_read_error": self._joint_soft_limit_error,
             "sdk_tool_payload": tool_payload,
@@ -1153,19 +1176,73 @@ class RokaeRobot:
         world_from_base = rpy_euler_xyz_rotation_matrix(base_pose_in_world[3:6])
         return transpose_rotation(world_from_base)
 
+    def _invalidate_safety_events(self, reason: str) -> None:
+        self._collision_state = None
+        if self._safety_events is not None:
+            self._safety_events.invalidate(reason)
+
+    def start_safety_events(self) -> None:
+        """Explicitly subscribe using the vendor signature; never infer clearance.
+
+        The callback has its own cache lock and performs no SDK calls or I/O.
+        Re-subscription may recover a transport fault, but cannot clear a
+        collision latch or resume an executor that already stopped.
+        """
+        if self._safety_events is None:
+            raise ValueError("collision_source=events is required")
+        with self._sdk_lock:
+            self._require_connected()
+            if self._disconnect_requested:
+                raise RuntimeError("cannot subscribe safety events while disconnect is pending")
+            if self._rt_active:
+                raise RuntimeError("cannot re-subscribe safety events during realtime motion")
+            monitor = self._safety_events
+            generation = monitor.begin()
+
+            def callback(payload):
+                try:
+                    monitor.receive(generation, payload)
+                except Exception:
+                    # Do not let Python exceptions escape a vendor callback.
+                    monitor.invalidate("safety_event_callback_error")
+
+            self._safety_event_callback = callback
+            try:
+                self._call("setEventWatcher(safety)", self._robot.setEventWatcher,
+                           self._sdk.Event.safety, callback)
+                if self._disconnect_requested:
+                    raise RuntimeError("disconnect requested during safety event registration")
+                monitor.registered(generation)
+            except Exception:
+                monitor.invalidate("safety_event_registration_failed")
+                raise
+
+    def get_safety_event_status(self) -> dict[str, Any] | None:
+        """Nonblocking local observation; does not poll or re-register the SDK."""
+        if self._safety_events is None:
+            return None
+        if not self.is_connected:
+            self._invalidate_safety_events("safety_event_disconnected")
+        return self._safety_events.snapshot().to_dict()
+
     def get_collision_state(self) -> bool | None:
-        """Poll the separate safety event when the controller supports it.
+        """Read the configured query or callback source without guessing clearance.
 
         Collision is not contained in the realtime state frame and has no
         synchronized timestamp in v0.7.0.  ``None`` means unavailable rather
         than a safe/false collision state.
         """
+        if self._safety_events is not None:
+            status = self.get_safety_event_status()
+            self._collision_error = status["invalid_reason"] or None
+            return status["collision_state"] if status["valid"] else None
         self._require_connected()
         try:
             event = self._sdk.Event.safety
             info = self._call("queryEventInfo(safety)", self._robot.queryEventInfo, event)
         except Exception as exc:
             self._collision_error = f"collision_query_error:{type(exc).__name__}:{exc}"
+            self._collision_state = None
             return None
 
         collided: bool | None = None

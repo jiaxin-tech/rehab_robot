@@ -297,6 +297,24 @@ def test_acquisition_never_calls_motion_methods(tmp_path):
     )
 
 
+def test_event_source_health_is_required_in_addition_to_state_and_wrench(tmp_path):
+    logger = EpisodeLogger(tmp_path / "episode").start()
+    adapter = FakeAdapter()
+    event = {"valid": True, "collision_state": False, "invalid_reason": ""}
+    adapter.get_safety_event_status = lambda: dict(event)
+    acquisition = RealRobotAcquisition(adapter, logger).start()
+    try:
+        assert acquisition.wait_until_healthy(1.)
+        event.update(valid=False, collision_state=None, invalid_reason="safety_event_initial_state_unknown")
+        assert not acquisition.latest_health().valid
+        assert "safety_event_initial_state_unknown" in acquisition.latest_health().invalid_reason
+        event.update(valid=True, collision_state=True, invalid_reason="")
+        assert "robot_collision" in acquisition.latest_health().invalid_reason
+    finally:
+        acquisition.stop()
+        logger.close(completed=False)
+
+
 def test_stuck_wrench_refuses_concurrent_disconnect(tmp_path):
     logger = EpisodeLogger(tmp_path / "episode").start()
     adapter = FakeAdapter(block_wrench=True)

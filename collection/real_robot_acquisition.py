@@ -17,6 +17,7 @@ from collection.episode_logger import EpisodeLogger, EpisodeLoggerError
 from collection.state import KinematicStateFrame
 from collection.state_buffer import StateBufferOverflow
 from hardware.rokae_adapter import RobotWrenchFrame
+from hardware.safety_events import safety_event_block_reason
 from utils.clock import MonotonicClock, SYSTEM_CLOCK
 
 
@@ -471,6 +472,9 @@ class RealRobotAcquisition:
         wrench_alive = self._thread_alive("wrench")
         alignment_alive = self._thread_alive("alignment")
         reasons = []
+        event_reason = safety_event_block_reason(self.adapter)
+        if event_reason:
+            reasons.append(event_reason)
         # This second supervisor entry can detect failure even if the raw-CSV
         # consumer is held up in logger I/O. poll never waits on child locks/I/O.
         process_health = self.wrench_provider.poll() if self.wrench_provider is not None else {}

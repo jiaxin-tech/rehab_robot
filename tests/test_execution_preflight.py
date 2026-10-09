@@ -174,6 +174,34 @@ def test_reference_freeze_keeps_even_reviewed_slow_request_no_go():
     assert result.trajectory_sha256
 
 
+def test_callback_state_can_satisfy_collision_gate_but_not_reference_release():
+    from hardware.safety_events import SafetyEventMonitor
+
+    monitor = SafetyEventMonitor(1.0)
+    generation = monitor.begin()
+    monitor.registered(generation)
+
+    class EventAdapter(ConnectedAdapter):
+        def get_robot_state_summary(self):
+            summary = super().get_robot_state_summary()
+            status = monitor.snapshot()
+            summary.update(collision_state=status.collision_state,
+                           collision_state_query_valid=status.valid,
+                           collision_state_source="events")
+            return summary
+
+    adapter = EventAdapter()
+    assert "runtime_collision_state_unavailable" in _evaluate(robot_adapter=adapter).reasons
+    monitor.receive(generation, {"collided": False})
+    assert _evaluate(robot_adapter=adapter).reasons == (
+        "reference_release_not_approved_for_first_robot_trial",
+    )
+    monitor.receive(generation, {"collided": True})
+    assert "runtime_collision_detected" in _evaluate(robot_adapter=adapter).reasons
+    monitor.invalidate("disconnected")
+    assert "runtime_collision_state_unavailable" in _evaluate(robot_adapter=adapter).reasons
+
+
 def test_execute_requires_explicit_enable_and_operator_confirmation():
     assert "enable_motion_flag_missing" in _evaluate(enable_motion=False).reasons
     assert "operator_confirmation_missing" in _evaluate(operator_confirmation="yes").reasons

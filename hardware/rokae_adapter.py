@@ -16,6 +16,7 @@ from typing import Any, Mapping, Sequence
 
 from collection.state import KinematicStateFrame, finite_vector, utc_now_iso
 from config import settings
+from hardware.safety_events import validate_collision_source
 
 
 def _clock_s() -> float:
@@ -66,7 +67,10 @@ class RokaeRobotAdapter:
         robot_class: str = settings.ROBOT_CLASS,
         state_interval_ms: int = settings.ROBOT_STATE_MS,
         native_robot: Any | None = None,
+        collision_source: str = "query",
+        collision_event_max_age_s: float | None = None,
     ) -> None:
+        validate_collision_source(collision_source, collision_event_max_age_s)
         if native_robot is None:
             # Importing this module is cross-platform; the native extension is
             # loaded only when the wrapped object's connect() is called.
@@ -81,6 +85,8 @@ class RokaeRobotAdapter:
                 command_cache_size=settings.ROBOT_CMD_CACHE,
                 rt_network_tolerance_percent=settings.ROBOT_RT_NETWORK_TOLERANCE,
                 rt_filter_hz=settings.ROBOT_RT_FILTER_HZ,
+                collision_source=collision_source,
+                collision_event_max_age_s=collision_event_max_age_s,
             )
         self._robot = native_robot
         self._wrench_sequence_id = 0
@@ -107,6 +113,10 @@ class RokaeRobotAdapter:
 
     def is_connected(self) -> bool:
         return bool(getattr(self._robot, "is_connected", False))
+
+    def get_safety_event_status(self) -> dict[str, Any] | None:
+        reader = getattr(self._robot, "get_safety_event_status", None)
+        return reader() if callable(reader) else None
 
     @property
     def state_thread_alive(self) -> bool:
@@ -237,7 +247,16 @@ class RokaeRobotAdapter:
         collision_state_query_valid = False
         collision_state_invalid_reason = "collision_state_query_unavailable"
         collision_reader = getattr(self._robot, "get_collision_state", None)
-        if callable(collision_reader):
+        event_status = self.get_safety_event_status()
+        if event_status is not None:
+            collision_value = event_status.get("collision_state")
+            if collision_value is True:
+                self._collision_latched = True
+            collision_state_query_valid = event_status.get("valid") is True and type(collision_value) is bool
+            collision_state = (True if self._collision_latched else
+                               (collision_value if collision_state_query_valid else None))
+            collision_state_invalid_reason = str(event_status.get("invalid_reason") or "")
+        elif callable(collision_reader):
             try:
                 collision_value = collision_reader()
                 if type(collision_value) is bool:
@@ -300,8 +319,11 @@ class RokaeRobotAdapter:
             "collision_state_query_valid": collision_state_query_valid,
             "collision_state_invalid_reason": collision_state_invalid_reason,
             "collision_state_timestamp_source": (
-                "host_query_unsynchronized_xcoresdk_safety_event"
+                event_status["timestamp_source"] if event_status is not None
+                else "host_query_unsynchronized_xcoresdk_safety_event"
             ),
+            "collision_state_source": "events" if event_status is not None else "query",
+            "safety_event_status": event_status,
             "joint_soft_limits_valid": joint_soft_limits_valid,
             "sdk_tool_payload_read_valid": sdk_tool_payload_read_valid,
             "robot_metadata": metadata,

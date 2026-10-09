@@ -21,6 +21,7 @@ from lower_limb_sim.reference_measured_asymmetric import (
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 from safety.experiment_safety import ExperimentSafetyConfig
 from scripts.run_rehab_experiment import run_execute
+import scripts.run_rehab_experiment as runner_module
 
 
 SOURCE_CANDIDATE_DIRECTORY = (
@@ -179,3 +180,56 @@ def test_real_default_factory_requires_explicit_local_interface_before_connectio
     ):
         _call(tmp_path, None)
     assert not (tmp_path / "episode").exists()
+
+
+class _AllowedOfflinePreflight:
+    """Stand-in for a preflight that passed every static gate."""
+
+    def require_allowed(self) -> None:
+        return None
+
+
+def test_execute_requires_reviewed_wrench_config_before_connection(
+    monkeypatch,
+    tmp_path,
+):
+    # Isolate the new wiring guard from the frozen release gate, which would
+    # otherwise be the first failure.  The point under test is that execution
+    # cannot reach the adapter without an explicit isolated wrench provider.
+    monkeypatch.setattr(
+        runner_module,
+        "evaluate_offline_execution_request",
+        lambda **kwargs: _AllowedOfflinePreflight(),
+    )
+    calls = []
+    with pytest.raises(PermissionError, match="reviewed live wrench configuration"):
+        _call(
+            tmp_path,
+            lambda ip: calls.append(ip),
+            local_ip="192.0.2.10",
+        )
+    assert calls == []
+
+
+def test_execute_rejects_wrench_config_with_mismatched_connection(
+    monkeypatch,
+    tmp_path,
+):
+    monkeypatch.setattr(
+        runner_module,
+        "evaluate_offline_execution_request",
+        lambda **kwargs: _AllowedOfflinePreflight(),
+    )
+    calls = []
+    with pytest.raises(PermissionError, match="wrench connection robot_ip must match"):
+        _call(
+            tmp_path,
+            lambda ip: calls.append(ip),
+            local_ip="192.0.2.10",
+            wrench_hz=50.0,
+            live_wrench_config={
+                "connection": {"robot_ip": "192.0.2.99", "local_ip": "192.0.2.10",
+                               "robot_class": "xMateRobot"}
+            },
+        )
+    assert calls == []
