@@ -74,23 +74,27 @@ flowchart TD
 `request_stop(reason)`；轨迹走完也走同一个停止路径并要求确认正常完成。
 软件停止**不能替代**机器人急停、安全控制器和守在急停旁的操作员。
 
-## 4. 为什么现在一定走不到运动
+## 4. 发布条件与现场缺口
 
 ### 4.1 发布 manifest 是冻结的 NO_GO
 
 `lower_limb_sim/reference_release.py: load_reference_release_manifest` 把
 `approved_for_first_robot_trial=False` 与 `robot_execution_status="NO_GO"`
 写成了**期望值**。也就是说，把 JSON 手动改成 `GO` 会被加载器判为非法，
-而不是被接受。这不是可以靠补一个字段绕过的开关，而是一条冻结的发布策略：
-诊断结果与发布之间不存在自动汇总更新链。
+而不是被接受。2026-10-15 起，首次空载试验使用独立的哈希绑定发布记录；
+冻结参考仍保持原值。生成、评审、完整校验及运行绑定见 [发布流程](ROBOT_TRIAL_RELEASE.md)。
+没有有效的独立批准文件，执行仍在连接前阻断。
 
-### 4.2 碰撞状态查询仍是死路
+### 4.2 碰撞状态来源仍需现场验证
 
 `queryEventInfo(safety)` 在这套 SDK 0.7.0 + 控制器 3.2.1 + XMC12-R1300 上返回
 错误码 259。`scripts/audit_rokae_safety_state.py` 的结论是
 `BLOCKED WITH EVIDENCE`：调用写法就是文档要求的形式，问题在厂商侧。
 `powerState` 和 `operationState` 能读，但不足以替代完整的碰撞状态门禁。
 **不得伪造 `collision_state`。**
+
+软件另已接入厂家 `Event.safety` 回调，可显式选择 `events` 并配置经评审的时效预算。
+该路径已做离线测试；订阅成功不等于安全状态有效，初始事件、时效、断连和恢复仍待真机验证。
 
 ### 4.3 安全配置与坐标系仍是空模板
 

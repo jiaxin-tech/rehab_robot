@@ -34,7 +34,7 @@ def _write_episode(path: Path, rows: int, rate_hz: float, *, atomic: bool = Fals
     axis1_torque = np.full(rows, -34.5872)
     axis4_torque = np.full(rows, 2.6403)
     sync = "atomic_task_buffer" if atomic else "not_atomic_axes_read_sequentially"
-    lines = ["host_time_s,sync_quality,axis1_position_motor_deg,axis4_position_motor_deg,"
+    lines = ["host_time_s,sync_quality,axis1_position_raw,axis4_position_raw,"
              "axis1_velocity_606c,axis4_velocity_606c,axis1_torque_3c1a,axis4_torque_3c1a,"
              "axis1_torque_6077,axis4_torque_6077,axis1_statusword_6041,axis4_statusword_6041,"
              "axis1_error_603f,axis4_error_603f,axis1_brake_override_381e,axis4_brake_override_381e"]
@@ -65,8 +65,8 @@ def test_axis_binding_does_not_cross_between_axis_one_and_four(tmp_path: Path):
     episode = read_leg_episode(_write_episode(tmp_path / "ep.csv", 12, 2.6))
     assert episode.joints["hip"].signals["torque_nm"] == "axis1_torque_3c1a"
     assert episode.joints["knee"].signals["torque_nm"] == "axis4_torque_3c1a"
-    assert episode.joints["hip"].signals["position"] == "axis1_position_motor_deg"
-    assert episode.joints["knee"].signals["position"] == "axis4_position_motor_deg"
+    assert episode.joints["hip"].signals["position"] == "axis1_position_raw"
+    assert episode.joints["knee"].signals["position"] == "axis4_position_raw"
 
 
 def test_underscore_alias_names_still_resolve(tmp_path: Path):
@@ -110,10 +110,12 @@ def test_low_rate_and_non_atomic_reads_are_reported(tmp_path: Path):
     assert "axis_channels_not_a_single_instant" in report["findings"]
 
 
-def test_high_rate_atomic_episode_is_usable(tmp_path: Path):
+def test_high_rate_alone_does_not_establish_dynamics_readiness(tmp_path: Path):
     episode = read_leg_episode(_write_episode(tmp_path / "ep.csv", 101, 200.0, atomic=True))
     report = quality_report(episode, minimum_rate_hz=100.0)
-    assert report["usable_for_dynamics"] is True
+    assert report["usable_for_dynamics"] is False
+    calibrated = read_leg_episode(episode.path, calibration=_calibration())
+    assert quality_report(calibrated)["usable_for_dynamics"] is True
     assert report["non_atomic_axis_reads"] is False
 
 

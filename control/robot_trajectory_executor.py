@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import math
 import threading
+import time
 from typing import Any, Mapping, Sequence
 
 import pandas as pd
@@ -47,12 +48,16 @@ class RokaeMotionExecutor:
         safety: ExperimentSafetyConfig,
         *,
         clock: MonotonicClock = SYSTEM_CLOCK,
+        execution_guard=None,
+        dispatch_observer=None,
     ) -> None:
         self.motion_adapter = motion_adapter
         self.acquisition = acquisition
         self.logger = logger
         self.safety = safety
         self.clock = clock
+        self.execution_guard = execution_guard
+        self.dispatch_observer = dispatch_observer
         self._stop_event = threading.Event()
         self._stop_lock = threading.Lock()
         self._native_stop_lock = threading.Lock()
@@ -94,6 +99,19 @@ class RokaeMotionExecutor:
 
     def _runtime_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
+        if self.execution_guard is not None:
+            try:
+                reason = self.execution_guard()
+                if reason:
+                    reasons.append(str(reason))
+            except Exception as exc:
+                reasons.append("external_acquisition_guard_failed:" + str(exc))
+        release = getattr(self, "_trial_release", None)
+        if release is not None:
+            try:
+                release.require_current()
+            except PermissionError as exc:
+                reasons.append("trial_release_invalid:" + str(exc))
         event_reason = safety_event_block_reason(getattr(self.acquisition, "adapter", None))
         if event_reason:
             reasons.append(event_reason)
@@ -421,6 +439,9 @@ class RokaeMotionExecutor:
         preflight.require_allowed()
         preflight.require_live_trajectory_binding(trajectory)
         preflight.require_safety_binding(self.safety)
+        self._trial_release = preflight.release_approval
+        if self._trial_release is not None:
+            self._trial_release.require_current(check_files=True)
         self.safety.require_execute_allowed()
         self.logger.assert_healthy()
         if len(trajectory) < 2:
@@ -551,7 +572,10 @@ class RokaeMotionExecutor:
             # the anchor, operation state, or collision state to change.  Make
             # this the last potentially blocking SDK gate before the atomic
             # stop-check/start transition.
-            self._require_post_attach_robot_summary()
+            final_summary = self._require_post_attach_robot_summary()
+            if self._trial_release is not None:
+                self._trial_release.require_current(check_files=True)
+                self._trial_release.require_runtime(final_summary)
             final_start_reasons = self._runtime_reasons()
             if final_start_reasons:
                 raise RuntimeError(
@@ -568,7 +592,12 @@ class RokaeMotionExecutor:
                     raise RuntimeError(
                         "initial hold deadline expired before realtime start"
                     )
+                if self._trial_release is not None:
+                    self._trial_release.require_current()
+                dispatch_start = time.perf_counter_ns()
                 self.motion_adapter.start_cartesian_hold(initial_pose)
+                if self.dispatch_observer is not None:
+                    self.dispatch_observer(float(times[0]), dispatch_start, time.perf_counter_ns())
                 dispatched = 1
             schedule_origin_s = self.clock.now_s() - float(times[0])
             for _, row in trajectory.iloc[1:].iterrows():
@@ -605,7 +634,12 @@ class RokaeMotionExecutor:
                         raise RuntimeError(
                             "command deadline expired during final safety check"
                         )
+                    if self._trial_release is not None:
+                        self._trial_release.require_current()
+                    dispatch_start = time.perf_counter_ns()
                     self.motion_adapter.send_cartesian_target(pose)
+                    if self.dispatch_observer is not None:
+                        self.dispatch_observer(float(row["time_s"]), dispatch_start, time.perf_counter_ns())
                     dispatched += 1
             self.request_stop("trajectory_completed")
             with self._stop_lock:

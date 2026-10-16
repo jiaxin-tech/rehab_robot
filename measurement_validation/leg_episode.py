@@ -61,7 +61,8 @@ def _normalise(name: str) -> str:
 
 
 _SIGNAL_ALIASES: dict[str, tuple[str, ...]] = {
-    "position": ("position", "position_actual", "position_motor_deg", "pos", "6064"),
+    "position": ("position_raw", "position_counts", "position_actual", "6064"),
+    "motor_position_deg": ("position_motor_deg",),
     "velocity": ("velocity", "velocity_actual", "vel", "606c"),
     "torque_nm": ("torqueclose", "torque_close", "torque_nm", "actual_torque", "3c1a"),
     "torque_pct": ("torque_6077", "torque_pct", "torque_percent", "motor_torque", "6077"),
@@ -69,6 +70,9 @@ _SIGNAL_ALIASES: dict[str, tuple[str, ...]] = {
     "error_code": ("error_code", "error", "603f"),
     "mode": ("mode", "6061"),
     "brake_override": ("brake_override", "brake", "381e"),
+    "operation_enabled": ("operation_enabled",),
+    "fault": ("fault",),
+    "following_error": ("following_error_raw",),
 }
 # Alias lists are normalised once, so an underscore spelling such as
 # ``host_time_s`` matches a ``Host Time [s]`` column instead of silently failing.
@@ -135,6 +139,9 @@ class LegJoint:
     error_code: np.ndarray | None = None
     mode: np.ndarray | None = None
     brake_override: np.ndarray | None = None
+    operation_enabled: np.ndarray | None = None
+    fault: np.ndarray | None = None
+    following_error: np.ndarray | None = None
     signals: dict[str, str] = field(default_factory=dict)
 
 
@@ -148,6 +155,7 @@ class LegEpisode:
     column_map: dict[str, str]
     unmapped_columns: tuple[str, ...]
     calibration: dict[str, JointCalibration] | None
+    source_frame: pd.DataFrame = field(default_factory=pd.DataFrame, repr=False)
 
     @property
     def rows(self) -> int:
@@ -219,8 +227,15 @@ def _read_csv(path: Path) -> pd.DataFrame:
 
 
 def _numeric(frame: pd.DataFrame, column: str) -> np.ndarray:
-    values = pd.to_numeric(frame[column], errors="coerce").to_numpy(dtype=float)
-    return values
+    def parse(value: Any) -> float:
+        text = str(value).strip().lower()
+        if text in ("true", "false"):
+            return float(text == "true")
+        try:
+            return float(int(text, 16)) if text.startswith(("0x", "-0x")) else float(value)
+        except (ValueError, TypeError):
+            return float("nan")
+    return np.asarray([parse(value) for value in frame[column]], dtype=float)
 
 
 def _resolve_time(frame: pd.DataFrame, column_map: Mapping[str, str] | None) -> tuple[np.ndarray, str]:
@@ -228,16 +243,43 @@ def _resolve_time(frame: pd.DataFrame, column_map: Mapping[str, str] | None) -> 
         column = column_map["time"]
         if column not in frame.columns:
             raise LegImportError(f"declared time column not present: {column}")
-        return _numeric(frame, column), column
+        unit = column_map.get("time_unit")
+        if unit is None:
+            unit = "ms" if _normalise(column) in ("receiveelapsedms", "elapsedms") else "s"
+            if "filetime" in column.lower():
+                unit = "filetime_100ns"
+            elif _normalise(column) == "hosttimestamputc":
+                unit = "utc"
+        return _time_values(frame, column, unit), column
     index = _build_alias_index(frame.columns)
+    for alias in ("receiveelapsedms", "elapsedms"):
+        if alias in index:
+            column = index[alias]
+            return _numeric(frame, column) / 1000.0, column
     for alias in _TIME_ALIASES:
         if alias in index:
             column = index[alias]
             return _numeric(frame, column), column
+    for name, unit in (("hosttimestampfiletime100ns", "filetime_100ns"),
+                       ("hosttimestamputc", "utc")):
+        if name in index:
+            return _time_values(frame, index[name], unit), index[name]
     raise LegImportError(
         "no time column found; declare one explicitly. Missing a clock would make "
         "every derived rate meaningless, so the importer refuses to invent one."
     )
+
+
+def _time_values(frame: pd.DataFrame, column: str, unit: str) -> np.ndarray:
+    if unit == "utc":
+        stamps = pd.to_datetime(frame[column], utc=True, errors="raise", format="ISO8601")
+        return (stamps - stamps.iloc[0]).dt.total_seconds().to_numpy()
+    if unit == "filetime_100ns":
+        ticks = [int(value) for value in frame[column]]
+        return np.asarray([(value - ticks[0]) / 10_000_000 for value in ticks])
+    if unit not in ("s", "ms", "us"):
+        raise LegImportError(f"unsupported time_unit: {unit}")
+    return _numeric(frame, column) * {"s": 1.0, "ms": .001, "us": .000001}[unit]
 
 
 def read_leg_episode(
@@ -315,7 +357,9 @@ def read_leg_episode(
                 joint.mode = values
             elif signal == "brake_override":
                 joint.brake_override = values
-        if joint.position_counts is None and joint.torque_nm is None:
+            elif signal in ("motor_position_deg", "operation_enabled", "fault", "following_error"):
+                setattr(joint, signal, values)
+        if joint.position_counts is None and joint.motor_position_deg is None and joint.torque_nm is None:
             raise LegImportError(
                 f"axis {axis} resolved neither a position nor a joint-torque column; "
                 "supply an explicit column_map rather than guessing names"
@@ -323,6 +367,8 @@ def read_leg_episode(
         if calibration is not None:
             if joint_name not in calibration:
                 raise CalibrationError(f"no calibration supplied for joint {joint_name}")
+            if joint.position_counts is None:
+                raise CalibrationError(f"raw position counts missing for joint {joint_name}")
             joint.flexion_deg = calibration[joint_name].to_degrees(joint.position_counts)
         joints[joint_name] = joint
 
@@ -337,6 +383,7 @@ def read_leg_episode(
         column_map=resolved,
         unmapped_columns=unmapped,
         calibration=dict(calibration) if calibration is not None else None,
+        source_frame=frame,
     )
 
 
@@ -399,6 +446,10 @@ def quality_report(
     report["gap_count"] = int(np.sum(diffs > period * 1.5)) if period > 0 else None
 
     findings: list[str] = []
+    if report["gap_count"]:
+        findings.append("receive_time_gaps")
+    if np.any(diffs <= 0):
+        findings.append("duplicate_or_reversed_receive_time")
     rate = report["sample_rate_hz"]
     if rate is None:
         findings.append("undefined_sample_rate")
@@ -418,6 +469,15 @@ def quality_report(
     joint_report: dict[str, Any] = {}
     for name, joint in episode.joints.items():
         entry: dict[str, Any] = {"axis": joint.axis, "signals": dict(joint.signals)}
+        for attr in ("position_counts", "torque_nm", "flexion_deg", "statusword", "error_code"):
+            values = getattr(joint, attr)
+            if values is None:
+                findings.append(f"{name}_missing_{attr}")
+        for signal in joint.signals:
+            attr = {"position": "position_counts"}.get(signal, signal)
+            values = getattr(joint, attr, None)
+            if values is not None and not np.isfinite(values).all():
+                findings.append(f"{name}_{signal}_nonfinite")
         if joint.torque_nm is not None:
             entry["raw_torque_nm"] = _distribution(joint.torque_nm)
             entry["torque_offset_note"] = (
@@ -428,16 +488,12 @@ def quality_report(
             entry["motor_side_torque_pct"] = _distribution(joint.torque_pct)
         if joint.position_counts is not None:
             entry["position_counts"] = _distribution(joint.position_counts)
-            entry["motor_side_deg_range"] = [
-                float(np.nanmin(joint.motor_position_deg)),
-                float(np.nanmax(joint.motor_position_deg)),
-            ]
+            motor = _distribution(joint.motor_position_deg)
+            entry["motor_side_deg_range"] = [motor["minimum"], motor["maximum"]]
             entry["joint_angle_available"] = joint.flexion_deg is not None
             if joint.flexion_deg is not None:
-                entry["flexion_deg_range"] = [
-                    float(np.nanmin(joint.flexion_deg)),
-                    float(np.nanmax(joint.flexion_deg)),
-                ]
+                angles = _distribution(joint.flexion_deg)
+                entry["flexion_deg_range"] = [angles["minimum"], angles["maximum"]]
             else:
                 findings.append(f"{name}_has_no_joint_angle_calibration")
         if joint.brake_override is not None:
@@ -452,15 +508,17 @@ def quality_report(
         if joint.error_code is not None:
             nonzero = joint.error_code[np.isfinite(joint.error_code) & (joint.error_code != 0)]
             entry["nonzero_error_count"] = int(len(nonzero))
+            if len(nonzero):
+                findings.append(f"{name}_nonzero_error")
+        if joint.fault is not None and np.any(joint.fault != 0):
+            findings.append(f"{name}_fault_present")
         joint_report[name] = entry
     report["joints"] = joint_report
 
-    usable = not any(
-        finding.startswith("sample_rate_below") or finding == "axis_channels_not_a_single_instant"
-        for finding in findings
-    )
+    usable = not findings
+    report["sync_evidence_note"] = "CSV synchronization labels are declarations, not independently verified physical simultaneity"
     report["usable_for_dynamics"] = bool(usable)
-    report["findings"] = findings
+    report["findings"] = list(dict.fromkeys(findings))
     report["interpretation"] = (
         "usable for identification-scale analysis"
         if usable

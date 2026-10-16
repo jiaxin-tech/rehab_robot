@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "mapping_reviewed": false,
+  "clock_domain": "LOCAL_HOST_PERF_COUNTER",
+  "ams_net_id": "10.20.4.89.1.1",
+  "ads_port": 11,
+  "index_group": 50593808,
+  "index_offset": 2147483807,
+  "image_bytes": 1366,
+  "axis_offsets": [0, 23, 46, 69],
+  "toggle_byte": 1365,
+  "toggle_bit": 4,
+  "expected_hz": 500,
+  "torque_6077_signedness_verified": false,
+  "ads_dll_path": null,
+  "ads_timeout_ms": null,
+  "startup_timeout_s": null,
+  "max_progress_age_s": null,
+  "shutdown_timeout_s": null,
+  "heartbeat_s": null,
+  "no_new_sample_timeout_s": null,
+  "poll_interval_s": null,
+  "guards": {
+    "axis1": {"max_abs_torque_nm": null, "expected_operation_enabled": null},
+    "axis4": {"max_abs_torque_nm": null, "expected_operation_enabled": null}
+  },
+  "source": "2026-10-11 lab handover; mapping still requires confirmation against the active TwinCAT project"
+}

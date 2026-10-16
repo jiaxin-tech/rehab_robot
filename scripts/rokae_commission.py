@@ -44,6 +44,7 @@ from hardware.rokae_commissioning import (
     RokaeCommissioningConsole,
     check_confirmation,
 )
+from hardware.safety_events import validate_collision_source
 
 AdapterFactory = Callable[[str], Any]
 
@@ -62,10 +63,14 @@ def _json_safe(value: Any) -> Any:
     return str(value)
 
 
-def _default_adapter_factory(robot_ip: str, *, local_ip: str = ""):
+def _default_adapter_factory(robot_ip: str, *, local_ip: str = "",
+                             collision_source: str = "query",
+                             collision_event_max_age_s: float | None = None):
     from hardware.rokae_adapter import RokaeRobotAdapter
 
-    return RokaeRobotAdapter(robot_ip, local_ip=local_ip)
+    return RokaeRobotAdapter(robot_ip, local_ip=local_ip,
+                             collision_source=collision_source,
+                             collision_event_max_age_s=collision_event_max_age_s)
 
 
 def _build_limits(args: argparse.Namespace) -> CommissioningLimits:
@@ -94,7 +99,11 @@ def _open_console(
     adapter_factory: AdapterFactory | None,
 ) -> RokaeCommissioningConsole:
     factory = adapter_factory or (
-        lambda ip: _default_adapter_factory(ip, local_ip=getattr(args, "local_ip", "") or "")
+        lambda ip: _default_adapter_factory(
+            ip, local_ip=getattr(args, "local_ip", "") or "",
+            collision_source=getattr(args, "collision_source", "query"),
+            collision_event_max_age_s=getattr(args, "collision_event_max_age_s", None),
+        )
     )
     adapter = factory(args.ip)
     console = RokaeCommissioningConsole(
@@ -123,7 +132,9 @@ def _run_single(
     if command == "self-test":
         factory = adapter_factory or (
             lambda ip: _default_adapter_factory(
-                ip, local_ip=getattr(args, "local_ip", "") or ""
+                ip, local_ip=getattr(args, "local_ip", "") or "",
+                collision_source=getattr(args, "collision_source", "query"),
+                collision_event_max_age_s=getattr(args, "collision_event_max_age_s", None),
             )
         )
         adapter = factory(args.ip)
@@ -305,6 +316,9 @@ def _shared_option_specs():
         (("--workspace-max",), dict(type=float, nargs=3, metavar=("X", "Y", "Z"))),
         (("--allow-missing-collision-query",), dict(action="store_true", default=False)),
         (("--allow-missing-soft-limits",), dict(action="store_true", default=False)),
+        (("--collision-source",), dict(choices=("query", "events"), default="query")),
+        (("--collision-event-max-age-s",), dict(type=float, default=None,
+                                                  help="required event freshness budget when using events")),
         (("--max-network-tolerance-percent",), dict(
             type=int,
             default=20,
@@ -389,6 +403,11 @@ def main(
     adapter_factory: AdapterFactory | None = None,
 ) -> int:
     args = build_parser().parse_args(argv)
+    try:
+        validate_collision_source(args.collision_source, args.collision_event_max_age_s)
+    except ValueError as exc:
+        print(f"blocked: {exc}", file=sys.stderr)
+        return 2
     # Refuse a missing/typoed confirmation before any adapter or socket exists.
     action = {
         "power-on": "power_on",

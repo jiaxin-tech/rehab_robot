@@ -1,0 +1,14 @@
+{
+  "reviewed": false,
+  "alignment_reviewed": false,
+  "sensor_receive_delay_s": null,
+  "command_application_delay_s": null,
+  "max_gap_s": null,
+  "max_read_duration_s": null,
+  "max_dispatch_time_error_s": null,
+  "derivative_rate_hz": null,
+  "derivative_window_s": null,
+  "max_start_angle_error_deg": null,
+  "max_tracking_error_deg": null,
+  "note": "Timing delays/budgets and derivative settings need measured alignment validation. No device hardware synchronization is assumed."
+}

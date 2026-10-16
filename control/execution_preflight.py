@@ -34,6 +34,7 @@ from lower_limb_sim.run_robot_trajectory_export import (
 )
 from lower_limb_sim.reference_release import load_reference_release_manifest
 from safety.experiment_safety import ExperimentSafetyConfig
+from safety.robot_trial_release import ValidatedRobotTrialRelease
 
 
 EXECUTE_MODE = "execute"
@@ -97,6 +98,7 @@ class ExecutionPreflight:
     evaluation_phase: str = "unbound"
     trajectory_sha256: str | None = None
     experiment_safety_sha256: str | None = None
+    release_approval: ValidatedRobotTrialRelease | None = field(default=None, repr=False, compare=False)
     _live_token: object | None = field(
         default=None,
         repr=False,
@@ -509,6 +511,7 @@ def evaluate_execution_preflight(
     logger: Any,
     robot_adapter: Any,
     current_tcp_pose_base: Any | None = None,
+    release_approval: ValidatedRobotTrialRelease | None = None,
     _evaluation_phase: str = "live",
 ) -> ExecutionPreflight:
     """Evaluate every offline, runtime, logging, and human-review gate."""
@@ -526,11 +529,17 @@ def evaluate_execution_preflight(
     block(not frame.reviewed, "rehab_frame_not_reviewed")
     block(not anchor.reviewed, "start_anchor_not_reviewed")
     block(requested_anchor_id != anchor.anchor_id, "requested_anchor_id_mismatch")
-    block(
-        load_reference_release_manifest()["approved_for_first_robot_trial"]
-        is not True,
-        "reference_release_not_approved_for_first_robot_trial",
-    )
+    validated_release = release_approval if isinstance(release_approval, ValidatedRobotTrialRelease) else None
+    release_is_approved = False
+    if validated_release is not None:
+        try:
+            validated_release.require_current(check_files=True)
+            validated_release.require_objects(safety=safety, frame=frame, anchor=anchor, trajectory=trajectory)
+            release_approval = validated_release.payload
+            release_is_approved = True
+        except (ValueError, OSError, PermissionError) as exc:
+            block(True, "release_validation_failed:" + str(exc))
+    block(not release_is_approved, "reference_release_not_approved_for_first_robot_trial")
     for reason in safety.execution_block_reasons():
         block(True, reason)
     adapter_connected = _connected(robot_adapter)
@@ -549,6 +558,11 @@ def evaluate_execution_preflight(
             except Exception:
                 runtime_summary = None
     block(runtime_summary is None, "runtime_robot_summary_unavailable")
+    if release_is_approved and _evaluation_phase == "live" and runtime_summary is not None:
+        try:
+            validated_release.require_runtime(runtime_summary)
+        except (ValueError, PermissionError) as exc:
+            block(True, "release_runtime_validation_failed:" + str(exc))
     metadata_value = (
         runtime_summary.get("robot_metadata") if runtime_summary is not None else None
     )
@@ -571,6 +585,20 @@ def evaluate_execution_preflight(
         if expected_value is not None:
             block(anchor_value != expected_value, f"anchor_{metadata_name}_mismatch")
             block(runtime_value != expected_value, f"runtime_{metadata_name}_mismatch")
+        if release_is_approved:
+            release_identity = release_approval.get("robot_identity")
+            release_key = {
+                "robot_model": "robot_model",
+                "robot_serial_number": "robot_serial_number",
+                "controller_version": "controller_version",
+            }[metadata_name]
+            release_value = (
+                release_identity.get(release_key)
+                if isinstance(release_identity, Mapping)
+                else None
+            )
+            block(anchor_value != release_value, f"anchor_{metadata_name}_release_mismatch")
+            block(runtime_value != release_value, f"runtime_{metadata_name}_release_mismatch")
 
     expected_tool = _optional_text(safety.reviewed_tool_name)
     expected_workpiece = _optional_text(safety.reviewed_workpiece_name)
@@ -713,6 +741,10 @@ def evaluate_execution_preflight(
         "runtime_collision_state_unavailable",
     )
     block(collision_state is True, "runtime_collision_detected")
+    if release_is_approved and _evaluation_phase == "live":
+        release_source = release_approval.get("collision_source")
+        runtime_source = runtime_summary.get("collision_state_source") if runtime_summary else None
+        block(runtime_source != release_source, "runtime_collision_source_release_mismatch")
 
     current_pose = np.asarray(current_tcp_pose_base, dtype=float) if current_tcp_pose_base is not None else None
     if current_pose is None or current_pose.shape != (6,) or not np.isfinite(current_pose).all():
@@ -837,6 +869,7 @@ def evaluate_execution_preflight(
         evaluation_phase=_evaluation_phase,
         trajectory_sha256=trajectory_execution_digest(trajectory),
         experiment_safety_sha256=experiment_safety_digest(safety),
+        release_approval=validated_release if release_is_approved else None,
         _live_token=(
             _LIVE_PREFLIGHT_TOKEN if _evaluation_phase == "live" else None
         ),
@@ -854,6 +887,7 @@ def evaluate_offline_execution_request(
     safety: ExperimentSafetyConfig,
     trajectory: pd.DataFrame,
     audit: RelativeTrajectoryAudit,
+    release_approval: ValidatedRobotTrialRelease | None = None,
 ) -> ExecutionPreflight:
     """Run all static gates before a robot connection is attempted.
 
@@ -930,6 +964,7 @@ def evaluate_offline_execution_request(
         logger=_ReadyLogger(),
         robot_adapter=_Connected(),
         current_tcp_pose_base=anchor.tcp_pose_base,
+        release_approval=release_approval,
         _evaluation_phase="offline",
     )
 

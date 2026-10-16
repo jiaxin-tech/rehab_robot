@@ -1,0 +1,9 @@
+{
+  "stability": {"max_range_counts": 50, "max_slope_counts_per_s": 20, "min_duration_s": 0.8},
+  "setup": {"phone_mount": null, "anatomical_zero": null, "phone_rezeroed": null},
+  "points": [
+    {"id": "hip_zero", "joint": "hip", "file": "angle_cal_axis1_A_0deg_20261011_191232_5s.csv", "sha256": "b860fe1650cded3c1f8688c63bbc9304ea64dc85e6732fc618236a54c72932de", "start_s": 0, "end_s": 5.01, "angle_deg": 0, "role": "fit", "pair_id": "near_zero_return"},
+    {"id": "hip_30_initial", "joint": "hip", "file": "angle_cal_axis1_B_30deg_20261011_191558_5s.csv", "sha256": "378b6bde6718592f08fb6388256caf561a8c96fd182e8a3f3fc3b9fe1937adda", "start_s": 0, "end_s": 1, "angle_deg": 30, "role": "fit"},
+    {"id": "hip_return_near_zero", "joint": "hip", "file": "angle_cal_axis1_B_30deg_20261011_191558_5s.csv", "sha256": "378b6bde6718592f08fb6388256caf561a8c96fd182e8a3f3fc3b9fe1937adda", "start_s": 3.9974605, "end_s": 5.01, "angle_deg": null, "role": "return", "pair_id": "near_zero_return"}
+  ]
+}

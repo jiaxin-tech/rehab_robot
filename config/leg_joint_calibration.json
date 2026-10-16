@@ -1,0 +1,16 @@
+{
+  "reviewed": false,
+  "independent_validation_passed": false,
+  "joints": {
+    "hip": {
+      "counts_per_degree": 993.5884722910836,
+      "zero_counts": -121084.4218312675,
+      "flexion_sign": -1,
+      "safe_min_deg": null,
+      "safe_max_deg": null,
+      "torque_sign_to_inverse_dynamics": null
+    },
+    "knee": null
+  },
+  "note": "Hip two-point provisional candidate only. Knee calibration, independently validated angles, measured ranges and action/reaction torque conventions are not inferred."
+}

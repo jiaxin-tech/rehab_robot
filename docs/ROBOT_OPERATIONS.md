@@ -194,6 +194,12 @@ state、wrench、alignment 在当前生产实现中各自使用线程；命令�
 
 运动实现使用本地 SDK 已确认的 realtime Cartesian callback API：`getRtMotionController`、`setFilterFrequency`、`setControlLoopCar`、`startMove(cartesianPosition)`、`startLoop`、`stopLoop`、`stopMove`。第一版只附着到实验人员已外部准备的 automatic/power/RT 状态，不切模式、不自动上电、不移动到起点；filter 只能来自 schema-v3 safety 中的人工审核值。静态 API 证据不能解释为真机慢速空载验证。
 
+### 2026-10-15 发布链路更新
+
+首次空载试验现在使用独立的 `FIRST_ROBOT_TRIAL_EMPTY_LOAD` 批准文件，冻结参考 manifest 仍为 `NO_GO`。生成与审批命令、`--wrench-hz`、执行入口的 `--release-approval`、配置/证据绑定和离线验证范围见 [首次空载发布流程](ROBOT_TRIAL_RELEASE.md)。没有有效批准文件仍在连接前拒绝执行。
+
+碰撞状态可显式选 `query` 或厂家 `events` 回调。事件模式会在命令循环中检查缓存有效性；这不等于对 SDK 做连续查询，也不证明真机有初始事件或心跳。控制器保护和现场验证要求仍保留。
+
 ## 真实 episode 离线辨识
 
 五参数模型本身没有修改。命令为：

@@ -40,6 +40,7 @@ from lower_limb_sim.reference_measured_asymmetric import (
 )
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 from safety.experiment_safety import load_experiment_safety_config
+from safety.robot_trial_release import load_and_validate_robot_trial_release
 from scripts.acquire_robot_data import (
     build_live_wrench_provider,
     load_live_wrench_config,
@@ -111,6 +112,10 @@ def run_execute(
     motion_factory: MotionFactory | None = None,
     collision_source: str = "query",
     collision_event_max_age_s: float | None = None,
+    release_approval_path: str | Path | None = None,
+    wrench_config_path: str | Path | None = None,
+    execution_guard=None,
+    dispatch_observer=None,
 ) -> dict[str, Any]:
     """Run one real episode only after static and live gates both pass."""
     validate_collision_source(collision_source, collision_event_max_age_s)
@@ -118,11 +123,30 @@ def run_execute(
     frame = load_rehab_frame_config(frame_config_path)
     safety = load_experiment_safety_config(safety_config_path)
     reference_path = _reference_path(trajectory_id)
+    release_approval = None
+    if release_approval_path is not None:
+        if wrench_config_path is None:
+            raise ValueError("release approval requires --wrench-config")
+        release_approval = load_and_validate_robot_trial_release(
+            release_approval_path,
+            reference_path=reference_path,
+            safety_config_path=safety_config_path,
+            frame_config_path=frame_config_path,
+            anchor_path=anchor_path,
+            wrench_config_path=wrench_config_path,
+        )
     trajectory, audit, trajectory_metadata = build_start_anchored_relative_trajectory(
         reference_path,
         current_tcp_start_pose=anchor.tcp_pose_base,
         rehab_frame=frame,
     )
+    if release_approval is not None:
+        release_approval.require_acquisition(
+            config=live_wrench_config, wrench_hz=wrench_hz, collision_source=collision_source,
+            collision_event_max_age_s=collision_event_max_age_s)
+        release_approval.require_objects(
+            safety=safety, frame=frame, anchor=anchor, trajectory=trajectory
+        )
     offline = evaluate_offline_execution_request(
         mode="execute",
         enable_motion=enable_motion,
@@ -133,6 +157,7 @@ def run_execute(
         safety=safety,
         trajectory=trajectory,
         audit=audit,
+        release_approval=release_approval,
     )
     # This is deliberately before adapter construction and before logging: a
     # bad flag/review/reference request cannot even attempt a robot connection.
@@ -208,6 +233,7 @@ def run_execute(
             "motion_api_physical_validation": False,
             "collision_source": collision_source,
             "collision_event_max_age_s": collision_event_max_age_s,
+            "trial_release": release_approval.as_metadata() if release_approval is not None else None,
         },
     )
     adapter: Any | None = None
@@ -243,6 +269,8 @@ def run_execute(
                 + acquisition.latest_health().invalid_reason
             )
         health = acquisition.latest_health()
+        if release_approval is not None:
+            release_approval.require_runtime(adapter.get_robot_state_summary())
         preflight = evaluate_execution_preflight(
             mode="execute",
             enable_motion=enable_motion,
@@ -257,6 +285,7 @@ def run_execute(
             logger=logger,
             robot_adapter=adapter,
             current_tcp_pose_base=adapter.read_tcp_pose(),
+            release_approval=release_approval,
         )
         preflight.require_allowed()
         robot_summary = preflight.runtime_robot_summary
@@ -276,11 +305,17 @@ def run_execute(
             }
         )
         motion_adapter = (motion_factory or _default_motion_factory)(adapter)
+        extra = {}
+        if execution_guard is not None:
+            extra["execution_guard"] = execution_guard
+        if dispatch_observer is not None:
+            extra["dispatch_observer"] = dispatch_observer
         executor = RokaeMotionExecutor(
             motion_adapter,
             acquisition,
             logger,
             safety,
+            **extra,
         )
         result = executor.execute(trajectory, preflight)
         logger.update_metadata({"execution_result": asdict(result)})
@@ -420,6 +455,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="explicit wrench rate for execute; must match the provider rate",
     )
     parser.add_argument(
+        "--release-approval",
+        default=None,
+        help="hash-bound approved first-robot-trial release JSON",
+    )
+    parser.add_argument(
         "--operator-confirmation",
         default="",
         help=f"execute requires the exact text: {OPERATOR_CONFIRMATION}",
@@ -492,6 +532,8 @@ def main(
             motion_factory=motion_factory,
             collision_source=args.collision_source,
             collision_event_max_age_s=args.collision_event_max_age_s,
+            release_approval_path=args.release_approval,
+            wrench_config_path=args.wrench_config,
         )
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0
