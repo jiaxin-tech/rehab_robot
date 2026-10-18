@@ -57,6 +57,7 @@ def measure(robot: Any, *, duration_s: float, target_hz: float, reference_frame:
 def main() -> None:
     parser = argparse.ArgumentParser(description="ROKAE getEndTorque 查询延迟诊断（只读，不上电、不运动）")
     parser.add_argument("--robot-ip", default=settings.ROBOT_IP)
+    parser.add_argument("--local-ip", default=settings.ROBOT_LOCAL_IP)
     parser.add_argument("--duration", type=float, default=10.0)
     parser.add_argument("--target-hz", type=float, default=50.0)
     parser.add_argument("--output-dir", default="diagnostics")
@@ -66,7 +67,7 @@ def main() -> None:
     rows: list[dict[str, Any]] = []
     summary: dict[str, Any] = {"diagnostic": "wrench_query_timing", "fatal_error": None}
     try:
-        with readonly_connection(make_robot(args.robot_ip)) as (robot, _):
+        with readonly_connection(make_robot(args.robot_ip, args.local_ip)) as (robot, _):
             rows, summary = measure(robot, duration_s=args.duration, target_hz=args.target_hz, reference_frame=settings.ROBOT_FORCE_RAW_FRAME)
     except Exception as exc:
         summary["fatal_error"] = f"{type(exc).__name__}:{exc}"

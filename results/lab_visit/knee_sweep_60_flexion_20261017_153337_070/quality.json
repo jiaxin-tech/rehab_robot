@@ -1,0 +1,1095 @@
+{
+  "file": "leg.csv",
+  "rows": 4837,
+  "duration_s": 10.0154757,
+  "sample_rate_hz": 482.8527515672571,
+  "mean_period_s": 0.002071024751861042,
+  "jitter_s": {
+    "std": 0.00105475623936592,
+    "max_abs_deviation_from_median": 0.033572199999999996
+  },
+  "expected_period_s": 0.002,
+  "gap_count": 501,
+  "non_atomic_axis_reads": false,
+  "joints": {
+    "hip": {
+      "axis": 1,
+      "signals": {
+        "position": "axis1_position_raw",
+        "motor_position_deg": "axis1_position_motor_deg",
+        "velocity": "axis1_velocity_raw",
+        "torque_nm": "axis1_torque_3c1a_nm",
+        "torque_pct": "axis1_torque_6077_raw_bits",
+        "statusword": "axis1_statusword_hex",
+        "error_code": "axis1_error_code_hex",
+        "mode": "axis1_mode_display",
+        "operation_enabled": "axis1_operation_enabled",
+        "fault": "axis1_fault",
+        "following_error": "axis1_following_error_raw"
+      },
+      "raw_torque_nm": {
+        "n": 4837,
+        "mean": -6.914063641964367,
+        "std": 0.1505646052234172,
+        "minimum": -7.323760986328125,
+        "maximum": -6.591400146484375
+      },
+      "torque_offset_note": "descriptive only; never subtracted by default because the offset moves with pose, gravity, brake and support",
+      "motor_side_torque_pct": {
+        "n": 4837,
+        "mean": 0.0,
+        "std": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "position_counts": {
+        "n": 4837,
+        "mean": -149853.56233202398,
+        "std": 2.911091453765337,
+        "minimum": -149864.0,
+        "maximum": -149843.0
+      },
+      "motor_side_deg_range": [
+        -68.6022991368,
+        -68.59268609909999
+      ],
+      "joint_angle_available": false,
+      "statusword_values": [
+        561.0
+      ],
+      "nonzero_error_count": 0
+    },
+    "knee": {
+      "axis": 4,
+      "signals": {
+        "position": "axis4_position_raw",
+        "motor_position_deg": "axis4_position_motor_deg",
+        "velocity": "axis4_velocity_raw",
+        "torque_nm": "axis4_torque_3c1a_nm",
+        "torque_pct": "axis4_torque_6077_raw_bits",
+        "statusword": "axis4_statusword_hex",
+        "error_code": "axis4_error_code_hex",
+        "mode": "axis4_mode_display",
+        "operation_enabled": "axis4_operation_enabled",
+        "fault": "axis4_fault",
+        "following_error": "axis4_following_error_raw"
+      },
+      "raw_torque_nm": {
+        "n": 4837,
+        "mean": 1.6292634766432577,
+        "std": 0.058886424727774535,
+        "minimum": 1.507476806640625,
+        "maximum": 1.7454986572265625
+      },
+      "torque_offset_note": "descriptive only; never subtracted by default because the offset moves with pose, gravity, brake and support",
+      "motor_side_torque_pct": {
+        "n": 4837,
+        "mean": 0.0,
+        "std": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "position_counts": {
+        "n": 4837,
+        "mean": -460150.18337812694,
+        "std": 0.529592365011174,
+        "minimum": -460152.0,
+        "maximum": -460148.0
+      },
+      "motor_side_deg_range": [
+        -210.6408820824,
+        -210.6390510276
+      ],
+      "joint_angle_available": false,
+      "statusword_values": [
+        561.0
+      ],
+      "nonzero_error_count": 0
+    }
+  },
+  "sync_evidence_note": "CSV synchronization labels are declarations, not independently verified physical simultaneity",
+  "usable_for_dynamics": false,
+  "findings": [
+    "receive_time_gaps",
+    "hip_missing_flexion_deg",
+    "hip_has_no_joint_angle_calibration",
+    "knee_missing_flexion_deg",
+    "knee_has_no_joint_angle_calibration"
+  ],
+  "interpretation": "trial/acquisition evidence only; not identification, phase or high-rate control data",
+  "source_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\lab_visit\\knee_sweep_60_flexion_20261017_153337_070\\leg.csv",
+  "sha256": "9f0f8ee0da9e7c27ac1509f89b496f805428c6c23a8496085f44c81b0a00f11c",
+  "thresholds": {
+    "expected_hz": 500,
+    "gap_factor": 2,
+    "window_s": 1,
+    "max_position_range_counts": 50,
+    "max_position_slope_counts_per_s": 20,
+    "torque_drift_flag_nm": 0.2
+  },
+  "long_intervals": [
+    {
+      "previous_csv_line": 131,
+      "csv_line": 132,
+      "start_s": 0.2588788,
+      "end_s": 0.2657426,
+      "interval_ms": 6.8637999999999755
+    },
+    {
+      "previous_csv_line": 132,
+      "csv_line": 133,
+      "start_s": 0.2657426,
+      "end_s": 0.27055989999999996,
+      "interval_ms": 4.817299999999969
+    },
+    {
+      "previous_csv_line": 188,
+      "csv_line": 189,
+      "start_s": 0.3799054,
+      "end_s": 0.4152487,
+      "interval_ms": 35.34330000000002
+    },
+    {
+      "previous_csv_line": 189,
+      "csv_line": 190,
+      "start_s": 0.4152487,
+      "end_s": 0.42069650000000003,
+      "interval_ms": 5.447800000000003
+    },
+    {
+      "previous_csv_line": 206,
+      "csv_line": 207,
+      "start_s": 0.4518294,
+      "end_s": 0.4621344,
+      "interval_ms": 10.305000000000009
+    },
+    {
+      "previous_csv_line": 208,
+      "csv_line": 209,
+      "start_s": 0.4639435,
+      "end_s": 0.4687107,
+      "interval_ms": 4.7671999999999715
+    },
+    {
+      "previous_csv_line": 209,
+      "csv_line": 210,
+      "start_s": 0.4687107,
+      "end_s": 0.4727354,
+      "interval_ms": 4.024699999999992
+    },
+    {
+      "previous_csv_line": 211,
+      "csv_line": 212,
+      "start_s": 0.4757353,
+      "end_s": 0.4807302,
+      "interval_ms": 4.994899999999969
+    },
+    {
+      "previous_csv_line": 246,
+      "csv_line": 247,
+      "start_s": 0.5498599000000001,
+      "end_s": 0.5555766,
+      "interval_ms": 5.716699999999908
+    },
+    {
+      "previous_csv_line": 272,
+      "csv_line": 273,
+      "start_s": 0.6037396,
+      "end_s": 0.6104563,
+      "interval_ms": 6.716699999999909
+    },
+    {
+      "previous_csv_line": 475,
+      "csv_line": 476,
+      "start_s": 1.0157333,
+      "end_s": 1.0204284000000001,
+      "interval_ms": 4.695100000000174
+    },
+    {
+      "previous_csv_line": 516,
+      "csv_line": 517,
+      "start_s": 1.1016728999999998,
+      "end_s": 1.1063308,
+      "interval_ms": 4.657900000000215
+    },
+    {
+      "previous_csv_line": 752,
+      "csv_line": 753,
+      "start_s": 1.5773183,
+      "end_s": 1.5826620999999998,
+      "interval_ms": 5.343799999999899
+    },
+    {
+      "previous_csv_line": 864,
+      "csv_line": 865,
+      "start_s": 1.8038113,
+      "end_s": 1.8104228,
+      "interval_ms": 6.611499999999992
+    },
+    {
+      "previous_csv_line": 1470,
+      "csv_line": 1471,
+      "start_s": 3.0211898,
+      "end_s": 3.0261548,
+      "interval_ms": 4.964999999999886
+    },
+    {
+      "previous_csv_line": 1837,
+      "csv_line": 1838,
+      "start_s": 3.7591955,
+      "end_s": 3.7642805999999998,
+      "interval_ms": 5.0850999999996205
+    },
+    {
+      "previous_csv_line": 1859,
+      "csv_line": 1860,
+      "start_s": 3.8076556,
+      "end_s": 3.8136074000000004,
+      "interval_ms": 5.951800000000507
+    },
+    {
+      "previous_csv_line": 1860,
+      "csv_line": 1861,
+      "start_s": 3.8136074000000004,
+      "end_s": 3.8185493999999998,
+      "interval_ms": 4.941999999999336
+    },
+    {
+      "previous_csv_line": 1893,
+      "csv_line": 1894,
+      "start_s": 3.8835079,
+      "end_s": 3.888165,
+      "interval_ms": 4.6570999999997476
+    },
+    {
+      "previous_csv_line": 1900,
+      "csv_line": 1901,
+      "start_s": 3.9015736,
+      "end_s": 3.9064434,
+      "interval_ms": 4.869800000000257
+    },
+    {
+      "previous_csv_line": 1918,
+      "csv_line": 1919,
+      "start_s": 3.9397689,
+      "end_s": 3.9740289,
+      "interval_ms": 34.260000000000176
+    },
+    {
+      "previous_csv_line": 1925,
+      "csv_line": 1926,
+      "start_s": 3.9858522,
+      "end_s": 3.9935779,
+      "interval_ms": 7.7256999999999465
+    },
+    {
+      "previous_csv_line": 1926,
+      "csv_line": 1927,
+      "start_s": 3.9935779,
+      "end_s": 3.9983577,
+      "interval_ms": 4.779800000000112
+    },
+    {
+      "previous_csv_line": 2233,
+      "csv_line": 2234,
+      "start_s": 4.6116524,
+      "end_s": 4.6165734,
+      "interval_ms": 4.921000000000397
+    },
+    {
+      "previous_csv_line": 2539,
+      "csv_line": 2540,
+      "start_s": 5.2274854,
+      "end_s": 5.2321579,
+      "interval_ms": 4.672499999999857
+    },
+    {
+      "previous_csv_line": 2637,
+      "csv_line": 2638,
+      "start_s": 5.4274633,
+      "end_s": 5.432735999999999,
+      "interval_ms": 5.27269999999902
+    },
+    {
+      "previous_csv_line": 2638,
+      "csv_line": 2639,
+      "start_s": 5.432735999999999,
+      "end_s": 5.4398202,
+      "interval_ms": 7.084200000000429
+    },
+    {
+      "previous_csv_line": 2639,
+      "csv_line": 2640,
+      "start_s": 5.4398202,
+      "end_s": 5.4455238,
+      "interval_ms": 5.703600000000364
+    },
+    {
+      "previous_csv_line": 2640,
+      "csv_line": 2641,
+      "start_s": 5.4455238,
+      "end_s": 5.4498579,
+      "interval_ms": 4.334099999999452
+    },
+    {
+      "previous_csv_line": 2684,
+      "csv_line": 2685,
+      "start_s": 5.5378968,
+      "end_s": 5.543027700000001,
+      "interval_ms": 5.13090000000016
+    },
+    {
+      "previous_csv_line": 2702,
+      "csv_line": 2703,
+      "start_s": 5.5774735,
+      "end_s": 5.5829192,
+      "interval_ms": 5.445700000000109
+    },
+    {
+      "previous_csv_line": 2783,
+      "csv_line": 2784,
+      "start_s": 5.741562399999999,
+      "end_s": 5.7481444,
+      "interval_ms": 6.582000000000754
+    },
+    {
+      "previous_csv_line": 2812,
+      "csv_line": 2813,
+      "start_s": 5.805535399999999,
+      "end_s": 5.8100413,
+      "interval_ms": 4.505900000000729
+    },
+    {
+      "previous_csv_line": 2818,
+      "csv_line": 2819,
+      "start_s": 5.8195629,
+      "end_s": 5.8260832,
+      "interval_ms": 6.520300000000034
+    },
+    {
+      "previous_csv_line": 2827,
+      "csv_line": 2828,
+      "start_s": 5.841541299999999,
+      "end_s": 5.8456868,
+      "interval_ms": 4.145500000000801
+    },
+    {
+      "previous_csv_line": 2828,
+      "csv_line": 2829,
+      "start_s": 5.8456868,
+      "end_s": 5.8501186,
+      "interval_ms": 4.431799999999875
+    },
+    {
+      "previous_csv_line": 2875,
+      "csv_line": 2876,
+      "start_s": 5.9435239,
+      "end_s": 5.9483005,
+      "interval_ms": 4.776600000000464
+    },
+    {
+      "previous_csv_line": 2919,
+      "csv_line": 2920,
+      "start_s": 6.0356521,
+      "end_s": 6.040220000000001,
+      "interval_ms": 4.567900000000513
+    },
+    {
+      "previous_csv_line": 2985,
+      "csv_line": 2986,
+      "start_s": 6.1697117,
+      "end_s": 6.1771668,
+      "interval_ms": 7.455100000000492
+    },
+    {
+      "previous_csv_line": 3165,
+      "csv_line": 3166,
+      "start_s": 6.5354991,
+      "end_s": 6.541460600000001,
+      "interval_ms": 5.961500000000619
+    },
+    {
+      "previous_csv_line": 3260,
+      "csv_line": 3261,
+      "start_s": 6.7275187999999995,
+      "end_s": 6.734884200000001,
+      "interval_ms": 7.365400000001188
+    },
+    {
+      "previous_csv_line": 3392,
+      "csv_line": 3393,
+      "start_s": 6.9975082,
+      "end_s": 7.002453,
+      "interval_ms": 4.944799999999638
+    },
+    {
+      "previous_csv_line": 3412,
+      "csv_line": 3413,
+      "start_s": 7.0395426,
+      "end_s": 7.0461797,
+      "interval_ms": 6.63709999999984
+    },
+    {
+      "previous_csv_line": 3449,
+      "csv_line": 3450,
+      "start_s": 7.1192668,
+      "end_s": 7.1244836000000005,
+      "interval_ms": 5.2168000000003545
+    },
+    {
+      "previous_csv_line": 3452,
+      "csv_line": 3453,
+      "start_s": 7.1290657,
+      "end_s": 7.1338687,
+      "interval_ms": 4.802999999999891
+    },
+    {
+      "previous_csv_line": 3455,
+      "csv_line": 3456,
+      "start_s": 7.1395944,
+      "end_s": 7.1446376,
+      "interval_ms": 5.0432000000002475
+    },
+    {
+      "previous_csv_line": 3504,
+      "csv_line": 3505,
+      "start_s": 7.2396324000000005,
+      "end_s": 7.2473815,
+      "interval_ms": 7.749099999999842
+    },
+    {
+      "previous_csv_line": 3505,
+      "csv_line": 3506,
+      "start_s": 7.2473815,
+      "end_s": 7.2520583,
+      "interval_ms": 4.676799999999481
+    },
+    {
+      "previous_csv_line": 3587,
+      "csv_line": 3588,
+      "start_s": 7.4141236,
+      "end_s": 7.41883,
+      "interval_ms": 4.7063999999998885
+    },
+    {
+      "previous_csv_line": 3588,
+      "csv_line": 3589,
+      "start_s": 7.41883,
+      "end_s": 7.4504389,
+      "interval_ms": 31.608900000000162
+    },
+    {
+      "previous_csv_line": 3596,
+      "csv_line": 3597,
+      "start_s": 7.4652134000000006,
+      "end_s": 7.4736436,
+      "interval_ms": 8.430199999999388
+    },
+    {
+      "previous_csv_line": 3635,
+      "csv_line": 3636,
+      "start_s": 7.549491700000001,
+      "end_s": 7.5534973,
+      "interval_ms": 4.005599999999276
+    },
+    {
+      "previous_csv_line": 3666,
+      "csv_line": 3667,
+      "start_s": 7.6133966,
+      "end_s": 7.6180051,
+      "interval_ms": 4.6085000000006815
+    },
+    {
+      "previous_csv_line": 3706,
+      "csv_line": 3707,
+      "start_s": 7.6955258,
+      "end_s": 7.7028549,
+      "interval_ms": 7.329099999999755
+    },
+    {
+      "previous_csv_line": 3839,
+      "csv_line": 3840,
+      "start_s": 7.967518200000001,
+      "end_s": 7.9733033,
+      "interval_ms": 5.785099999999765
+    },
+    {
+      "previous_csv_line": 3841,
+      "csv_line": 3842,
+      "start_s": 7.9756013,
+      "end_s": 7.9807445,
+      "interval_ms": 5.143200000000014
+    },
+    {
+      "previous_csv_line": 3983,
+      "csv_line": 3984,
+      "start_s": 8.2633159,
+      "end_s": 8.269391899999999,
+      "interval_ms": 6.075999999998416
+    },
+    {
+      "previous_csv_line": 3984,
+      "csv_line": 3985,
+      "start_s": 8.269391899999999,
+      "end_s": 8.2749808,
+      "interval_ms": 5.588900000001118
+    },
+    {
+      "previous_csv_line": 4454,
+      "csv_line": 4455,
+      "start_s": 9.213383799999999,
+      "end_s": 9.218415799999999,
+      "interval_ms": 5.031999999999925
+    },
+    {
+      "previous_csv_line": 4471,
+      "csv_line": 4472,
+      "start_s": 9.251271699999998,
+      "end_s": 9.264998199999999,
+      "interval_ms": 13.726500000000641
+    },
+    {
+      "previous_csv_line": 4480,
+      "csv_line": 4481,
+      "start_s": 9.2813387,
+      "end_s": 9.286260999999998,
+      "interval_ms": 4.922299999998714
+    },
+    {
+      "previous_csv_line": 4550,
+      "csv_line": 4551,
+      "start_s": 9.4241286,
+      "end_s": 9.429990699999998,
+      "interval_ms": 5.862099999998094
+    },
+    {
+      "previous_csv_line": 4698,
+      "csv_line": 4699,
+      "start_s": 9.7254274,
+      "end_s": 9.729973999999999,
+      "interval_ms": 4.546599999999401
+    },
+    {
+      "previous_csv_line": 4731,
+      "csv_line": 4732,
+      "start_s": 9.793526899999998,
+      "end_s": 9.799979899999999,
+      "interval_ms": 6.453000000000486
+    },
+    {
+      "previous_csv_line": 4781,
+      "csv_line": 4782,
+      "start_s": 9.899370999999999,
+      "end_s": 9.905218,
+      "interval_ms": 5.847000000001046
+    }
+  ],
+  "receive_time_duplicates_csv_lines": [],
+  "timing_missing_estimate": 594,
+  "missing_estimate_note": "Host interval estimate only; not exact device frame loss",
+  "missing_values_by_column": {
+    "period_us": 1,
+    "axis1_torque_6077_pct_rated": 4837,
+    "axis2_torque_6077_pct_rated": 4837,
+    "axis3_torque_6077_pct_rated": 4837,
+    "axis4_torque_6077_pct_rated": 4837
+  },
+  "secondary_clocks": {
+    "host_timestamp_utc": {
+      "duplicate_csv_lines": [],
+      "backward_csv_lines": []
+    }
+  },
+  "acquisition_metadata": {
+    "acquisition_method": [
+      "ADS_READ_ONLY_SINGLE_INPUT_IMAGE"
+    ],
+    "synchronization": [
+      "four_axes_same_process_image_snapshot_unverified_device_timing"
+    ]
+  },
+  "joint_checks": {
+    "hip": {
+      "missing_fields": [
+        "brake_override"
+      ],
+      "raw_torque_nm": {
+        "rows": 4837,
+        "missing": 0,
+        "mean": -6.914063641964367,
+        "std": 0.1505646052234172,
+        "range": 0.73236083984375,
+        "slope_per_s": -0.03043171317545578,
+        "end_minus_start": -0.27369686782236613
+      },
+      "torque_drift_flag": true,
+      "torque_drift_note": "Descriptive change; motion/load changes are not distinguished from sensor drift; no tare",
+      "position_counts": {
+        "rows": 4837,
+        "missing": 0,
+        "mean": -149853.56233202398,
+        "std": 2.911091453765337,
+        "range": 21.0,
+        "slope_per_s": 0.2607247015698691,
+        "end_minus_start": 2.5320910972950514
+      },
+      "whole_segment_stability": {
+        "rows": 4837,
+        "missing": 0,
+        "mean": -149853.56233202398,
+        "std": 2.911091453765337,
+        "range": 21.0,
+        "slope_per_s": 0.2607247015698691,
+        "end_minus_start": 2.5320910972950514,
+        "max_interval_s": 0.03534330000000002,
+        "stable": false,
+        "reasons": [
+          "time_gap_exceeded"
+        ]
+      },
+      "position_windows": [
+        {
+          "start_s": 0.0,
+          "end_s": 0.9986359,
+          "rows": 466,
+          "missing": 0,
+          "mean": -149854.8819742489,
+          "std": 2.7546670402357636,
+          "range": 17.0,
+          "slope_per_s": 1.0905370557418559,
+          "end_minus_start": 0.7826086956483778,
+          "max_interval_s": 0.03534330000000002,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 1.000402,
+          "end_s": 1.9990927000000003,
+          "rows": 492,
+          "missing": 0,
+          "mean": -149854.54471544715,
+          "std": 2.591705498972929,
+          "range": 18.0,
+          "slope_per_s": 0.08725741472728508,
+          "end_minus_start": 0.06122448979294859,
+          "max_interval_s": 0.006611499999999992,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 2.000801,
+          "end_s": 2.9983712,
+          "rows": 500,
+          "missing": 0,
+          "mean": -149854.052,
+          "std": 2.8058941683834653,
+          "range": 17.0,
+          "slope_per_s": 0.2902577689265279,
+          "end_minus_start": 0.34000000002561137,
+          "max_interval_s": 0.0038034000000002344,
+          "stable": true,
+          "reasons": []
+        },
+        {
+          "start_s": 3.0001317,
+          "end_s": 3.9983577,
+          "rows": 468,
+          "missing": 0,
+          "mean": -149853.85042735044,
+          "std": 2.831276039877194,
+          "range": 15.0,
+          "slope_per_s": 0.06102386155725278,
+          "end_minus_start": 0.6521739130257629,
+          "max_interval_s": 0.03426000000000018,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 4.0002327,
+          "end_s": 4.999924,
+          "rows": 499,
+          "missing": 0,
+          "mean": -149853.5731462926,
+          "std": 2.7558190206433077,
+          "range": 16.0,
+          "slope_per_s": -0.1438715214133634,
+          "end_minus_start": 0.44897959183435887,
+          "max_interval_s": 0.004921000000000397,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 5.0016223,
+          "end_s": 5.998428700000001,
+          "rows": 475,
+          "missing": 0,
+          "mean": -149853.55789473685,
+          "std": 2.843735395840218,
+          "range": 17.0,
+          "slope_per_s": 0.12997946844670225,
+          "end_minus_start": -0.12765957447118126,
+          "max_interval_s": 0.007084200000000429,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 6.0002066,
+          "end_s": 6.9975082,
+          "rows": 491,
+          "missing": 0,
+          "mean": -149853.24236252546,
+          "std": 2.9423573984381663,
+          "range": 17.0,
+          "slope_per_s": -0.4864572585396973,
+          "end_minus_start": -0.8775510204141028,
+          "max_interval_s": 0.007455100000000492,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 7.002453,
+          "end_s": 7.999478000000001,
+          "rows": 460,
+          "missing": 0,
+          "mean": -149852.98695652175,
+          "std": 2.8529393698805543,
+          "range": 17.0,
+          "slope_per_s": -0.3113973536044572,
+          "end_minus_start": -0.7608695652161259,
+          "max_interval_s": 0.03160890000000016,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 8.0029191,
+          "end_s": 8.998925499999999,
+          "rows": 495,
+          "missing": 0,
+          "mean": -149852.60808080807,
+          "std": 2.845540468919473,
+          "range": 18.0,
+          "slope_per_s": 0.3939440082050397,
+          "end_minus_start": 0.6530612244678196,
+          "max_interval_s": 0.006075999999998416,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 9.000665799999998,
+          "end_s": 9.998387999999998,
+          "rows": 482,
+          "missing": 0,
+          "mean": -149852.34854771785,
+          "std": 2.897932442191539,
+          "range": 19.0,
+          "slope_per_s": 0.026980530439109772,
+          "end_minus_start": 0.02083333334303461,
+          "max_interval_s": 0.013726500000000641,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 10.0004032,
+          "end_s": 10.0154757,
+          "rows": 9,
+          "missing": 0,
+          "mean": -149853.33333333334,
+          "std": 2.29128784747792,
+          "range": 8.0,
+          "slope_per_s": 125.85124329001744,
+          "end_minus_start": 0.0,
+          "max_interval_s": 0.00200489999999931,
+          "stable": false,
+          "reasons": [
+            "segment_too_short",
+            "position_drift_exceeded"
+          ]
+        }
+      ],
+      "stability_note": "Screening only; stationary counts do not verify the external angle",
+      "statusword": {
+        "values": [
+          561.0
+        ],
+        "missing": 0
+      },
+      "error_code": {
+        "values": [
+          0.0
+        ],
+        "missing": 0
+      },
+      "operation_enabled": {
+        "values": [
+          0.0
+        ],
+        "missing": 0
+      },
+      "fault": {
+        "values": [
+          0.0
+        ],
+        "missing": 0
+      }
+    },
+    "knee": {
+      "missing_fields": [
+        "brake_override"
+      ],
+      "raw_torque_nm": {
+        "rows": 4837,
+        "missing": 0,
+        "mean": 1.6292634766432577,
+        "std": 0.058886424727774535,
+        "range": 0.2380218505859375,
+        "slope_per_s": -0.0009672963005008499,
+        "end_minus_start": -0.008212672010465383
+      },
+      "torque_drift_flag": false,
+      "torque_drift_note": "Descriptive change; motion/load changes are not distinguished from sensor drift; no tare",
+      "position_counts": {
+        "rows": 4837,
+        "missing": 0,
+        "mean": -460150.18337812694,
+        "std": 0.529592365011174,
+        "range": 4.0,
+        "slope_per_s": 0.01473238499027964,
+        "end_minus_start": 0.07867494819220155
+      },
+      "whole_segment_stability": {
+        "rows": 4837,
+        "missing": 0,
+        "mean": -460150.18337812694,
+        "std": 0.529592365011174,
+        "range": 4.0,
+        "slope_per_s": 0.01473238499027964,
+        "end_minus_start": 0.07867494819220155,
+        "max_interval_s": 0.03534330000000002,
+        "stable": false,
+        "reasons": [
+          "time_gap_exceeded"
+        ]
+      },
+      "position_windows": [
+        {
+          "start_s": 0.0,
+          "end_s": 0.9986359,
+          "rows": 466,
+          "missing": 0,
+          "mean": -460150.2339055794,
+          "std": 0.5236437511919261,
+          "range": 2.0,
+          "slope_per_s": -0.05140209680437096,
+          "end_minus_start": 0.02173913043225184,
+          "max_interval_s": 0.03534330000000002,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 1.000402,
+          "end_s": 1.9990927000000003,
+          "rows": 492,
+          "missing": 0,
+          "mean": -460150.256097561,
+          "std": 0.5485246037978933,
+          "range": 3.0,
+          "slope_per_s": 0.028335407079322424,
+          "end_minus_start": -0.10204081633128226,
+          "max_interval_s": 0.006611499999999992,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 2.000801,
+          "end_s": 2.9983712,
+          "rows": 500,
+          "missing": 0,
+          "mean": -460150.242,
+          "std": 0.5253455776457091,
+          "range": 2.0,
+          "slope_per_s": -0.1548270462718768,
+          "end_minus_start": -0.13999999995576218,
+          "max_interval_s": 0.0038034000000002344,
+          "stable": true,
+          "reasons": []
+        },
+        {
+          "start_s": 3.0001317,
+          "end_s": 3.9983577,
+          "rows": 468,
+          "missing": 0,
+          "mean": -460150.202991453,
+          "std": 0.5547455615346767,
+          "range": 3.0,
+          "slope_per_s": -0.015238237662541157,
+          "end_minus_start": 0.04347826086450368,
+          "max_interval_s": 0.03426000000000018,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 4.0002327,
+          "end_s": 4.999924,
+          "rows": 499,
+          "missing": 0,
+          "mean": -460150.1863727455,
+          "std": 0.5295814340778547,
+          "range": 2.0,
+          "slope_per_s": 0.006073172110236257,
+          "end_minus_start": 0.06122448982205242,
+          "max_interval_s": 0.004921000000000397,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 5.0016223,
+          "end_s": 5.998428700000001,
+          "rows": 475,
+          "missing": 0,
+          "mean": -460150.16421052633,
+          "std": 0.5534540161478899,
+          "range": 2.0,
+          "slope_per_s": 0.06907207269737538,
+          "end_minus_start": 0.1276595745002851,
+          "max_interval_s": 0.007084200000000429,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 6.0002066,
+          "end_s": 6.9975082,
+          "rows": 491,
+          "missing": 0,
+          "mean": -460150.1547861507,
+          "std": 0.5115727102266325,
+          "range": 2.0,
+          "slope_per_s": -0.06564047419294868,
+          "end_minus_start": -0.08163265307666734,
+          "max_interval_s": 0.007455100000000492,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 7.002453,
+          "end_s": 7.999478000000001,
+          "rows": 460,
+          "missing": 0,
+          "mean": -460150.14130434784,
+          "std": 0.5023153741000846,
+          "range": 3.0,
+          "slope_per_s": -0.02791886401586261,
+          "end_minus_start": 0.1086956521612592,
+          "max_interval_s": 0.03160890000000016,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 8.0029191,
+          "end_s": 8.998925499999999,
+          "rows": 495,
+          "missing": 0,
+          "mean": -460150.096969697,
+          "std": 0.48738219701016844,
+          "range": 2.0,
+          "slope_per_s": -0.044533294549481,
+          "end_minus_start": -0.10204081633128226,
+          "max_interval_s": 0.006075999999998416,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 9.000665799999998,
+          "end_s": 9.998387999999998,
+          "rows": 482,
+          "missing": 0,
+          "mean": -460150.15145228215,
+          "std": 0.5355238820814663,
+          "range": 4.0,
+          "slope_per_s": -0.00987946731345152,
+          "end_minus_start": -0.0625,
+          "max_interval_s": 0.013726500000000641,
+          "stable": false,
+          "reasons": [
+            "time_gap_exceeded"
+          ]
+        },
+        {
+          "start_s": 10.0004032,
+          "end_s": 10.0154757,
+          "rows": 9,
+          "missing": 0,
+          "mean": -460150.3333333333,
+          "std": 0.7071067811865476,
+          "range": 2.0,
+          "slope_per_s": -52.565254784611916,
+          "end_minus_start": -1.0,
+          "max_interval_s": 0.00200489999999931,
+          "stable": false,
+          "reasons": [
+            "segment_too_short",
+            "position_drift_exceeded"
+          ]
+        }
+      ],
+      "stability_note": "Screening only; stationary counts do not verify the external angle",
+      "statusword": {
+        "values": [
+          561.0
+        ],
+        "missing": 0
+      },
+      "error_code": {
+        "values": [
+          0.0
+        ],
+        "missing": 0
+      },
+      "operation_enabled": {
+        "values": [
+          0.0
+        ],
+        "missing": 0
+      },
+      "fault": {
+        "values": [
+          0.0
+        ],
+        "missing": 0
+      }
+    }
+  }
+}

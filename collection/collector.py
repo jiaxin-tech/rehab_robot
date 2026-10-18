@@ -25,6 +25,7 @@ from collection.snapshot import read_live_robot_state_sample
 from collection.state import RobotStateSample, merge_invalid_reasons
 from collection.trajectory import TrajectoryGeometry, project_along_tangent
 from config import settings
+from utils.clock import host_time_s
 from utils.logger import get_logger
 
 
@@ -243,7 +244,7 @@ class DataCollector:
 
     def _empty_invalid_row(self, sample_index: int, reason: str) -> dict[str, Any]:
         row = {name: None for name in self.FIELDNAMES}
-        now_s = time.monotonic()
+        now_s = host_time_s()
         row.update(
             {
                 "schema_version": settings.DATA_SCHEMA_VERSION,

@@ -142,6 +142,26 @@ def test_template_requires_axes_and_review_is_never_inferred(tmp_path) -> None:
     assert frame.notes == "draft"
 
 
+def test_template_null_axes_report_the_missing_measurements(tmp_path) -> None:
+    path = tmp_path / "rehab_frame.json"
+    path.write_text(
+        json.dumps(
+            {
+                "rehab_x_axis_in_base": None,
+                "rehab_z_axis_in_base": None,
+                "reviewed": False,
+                "notes": "measure on site",
+            }
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        ValueError,
+        match="unmeasured axes: rehab_x_axis_in_base, rehab_z_axis_in_base",
+    ):
+        load_rehab_frame_config(path)
+
+
 def test_current_slow_reference_keeps_frozen_rom_theta_and_fk() -> None:
     trajectory, audit, metadata = _build()
     hip_deg = np.rad2deg(trajectory["q_hip_ref"].to_numpy(float))

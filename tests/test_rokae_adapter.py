@@ -225,6 +225,7 @@ def test_external_realtime_attach_checks_but_never_sets_power_or_mode():
     automatic = object()
     powered_on = object()
     idle = SimpleNamespace(name="idle")
+    rt_controlling = SimpleNamespace(name="rtControlling")
 
     class Controller:
         def __init__(self, calls):
@@ -237,6 +238,7 @@ def test_external_realtime_attach_checks_but_never_sets_power_or_mode():
         def __init__(self):
             self.calls = []
             self.controller = Controller(self.calls)
+            self.operation_reads = 0
 
         def operateMode(self, ec):
             self.calls.append("operateMode")
@@ -252,7 +254,8 @@ def test_external_realtime_attach_checks_but_never_sets_power_or_mode():
 
         def operationState(self, ec):
             self.calls.append("operationState")
-            return idle
+            self.operation_reads += 1
+            return idle if self.operation_reads == 1 else rt_controlling
 
         def setOperateMode(self, *_args):
             raise AssertionError("attach set operate mode")
@@ -267,7 +270,10 @@ def test_external_realtime_attach_checks_but_never_sets_power_or_mode():
     robot._sdk = SimpleNamespace(
         OperateMode=SimpleNamespace(automatic=automatic),
         PowerState=SimpleNamespace(on=powered_on),
-        OperationState=SimpleNamespace(idle=idle),
+        OperationState=SimpleNamespace(
+            idle=idle,
+            rtControlling=rt_controlling,
+        ),
     )
     robot._robot = Native()
     robot.is_connected = True

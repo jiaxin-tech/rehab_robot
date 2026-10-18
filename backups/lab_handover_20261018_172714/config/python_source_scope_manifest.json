@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "default_active_policy_gate_scan": true,
+  "non_production_path_prefixes": [
+    {
+      "path_prefix": "external_simulation",
+      "classification": "OFFLINE_EXTERNAL_SIMULATION_RESEARCH",
+      "reason": "Derived-model feasibility, diagnostic replay, and stress-only tooling; not imported by the active rehabilitation pipeline.",
+      "metadata_evidence_glob": "external_simulation_audits/**/metadata.json"
+    },
+    {
+      "path_prefix": "external_simulation_audits",
+      "classification": "GENERATED_OFFLINE_EXTERNAL_SIMULATION_AUDITS",
+      "reason": "Retained reports, reproducibility runners, and diagnostic artifacts with explicit offline evidence levels; not active policy gates.",
+      "metadata_evidence_glob": "external_simulation_audits/**/metadata.json"
+    }
+  ]
+}

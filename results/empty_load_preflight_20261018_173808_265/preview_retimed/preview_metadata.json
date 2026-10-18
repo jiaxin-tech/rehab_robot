@@ -1,0 +1,189 @@
+{
+  "allowed_for_first_robot_trial": false,
+  "anchor": {
+    "anchor_id": "empty_load_fixture_20261018_173808_265",
+    "capture_host_time_s": 2061067.8414896,
+    "controller_version": "3.2.1",
+    "created_at": "2026-10-18T09:38:18.334+00:00",
+    "notes": "Fixture installed; no dummy leg; no human subject; read-only start anchor capture.",
+    "reference_start_q_hip": 0.5061580913269217,
+    "reference_start_q_knee": 0.3203519370158654,
+    "reviewed": false,
+    "robot_joint_positions": [
+      -0.2682824539987838,
+      0.5460695967700059,
+      -1.983761212177575,
+      -3.0759382758682876,
+      0.5318119644001033,
+      -1.0444225639723461
+    ],
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "schema_version": 2,
+    "tcp_orientation": {
+      "representation": "euler_xyz_rad",
+      "strategy": "fixed",
+      "values_rad": [
+        3.093819737447366,
+        -0.07068065816867287,
+        0.7224815522486918
+      ]
+    },
+    "tcp_pose_base": [
+      0.7378495541390144,
+      -0.043101813915523986,
+      0.4358238542306304,
+      3.093819737447366,
+      -0.07068065816867287,
+      0.7224815522486918
+    ],
+    "tcp_position_base_m": [
+      0.7378495541390144,
+      -0.043101813915523986,
+      0.4358238542306304
+    ],
+    "tool_name": "custom_3d_printed_flange_fixture",
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "workpiece_name": "NONE_EMPTY_LOAD"
+  },
+  "anchor_reviewed": false,
+  "approved_first_robot_trial_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "approved_hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "approved_knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "equivalent_pull_point_geometry": {
+    "L1_hip_to_knee_m": 0.42,
+    "L2_knee_to_equivalent_shank_strap_pull_point_m": 0.3,
+    "matches_approved_first_trial_geometry": true,
+    "physical_scope": "supine passive hip-knee rehabilitation with an equivalent shank strap pull point"
+  },
+  "experiment_mode": "start_anchored_relative",
+  "first_robot_trial_candidate_whitelisted": true,
+  "frame_reviewed": true,
+  "git_commit": "5d0d3f5990adc325418ae53698cb93cbbd0c11bb",
+  "hardware_accessed": false,
+  "hip_center_required": false,
+  "model_angle_definition": "theta_shank = q_hip - q_knee",
+  "observed_ankle_used_as_pull_point": false,
+  "parent_reference_id": null,
+  "parent_reference_sha256": null,
+  "plots": [
+    "trajectory_3d.png",
+    "xyz_time.png",
+    "speed_time.png",
+    "acceleration_time.png"
+  ],
+  "preview_only": true,
+  "reference": {
+    "duration_s": 132.33544112325666,
+    "input_had_time_axis": true,
+    "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\reference_commissioning\\formal_reference_temp_20261018\\commissioning_reference.csv",
+    "reference_version": "reference_measured_asymmetric_closed",
+    "reference_version_verified": true,
+    "retimed_timing_is_original": false,
+    "retiming_profile": "provided_by_input",
+    "sample_count": 401,
+    "sha256": "892da699b9afd0f57b8e77a5fa1c9b8da6069599515f7e2c24fec6b064b3b945",
+    "source_approved_hip_rom_deg": [
+      0.0,
+      120.0
+    ],
+    "source_approved_knee_rom_deg": [
+      5.0,
+      145.0
+    ],
+    "source_approved_rom_normalized": true,
+    "source_formal_execution_allowed_all": true,
+    "stage6a_retimed_from_phase": false,
+    "supported_reference_versions": [
+      "reference_measured_asymmetric_closed",
+      "reference_closed_c2",
+      "reference_closed_symmetric"
+    ]
+  },
+  "reference_sha256_matches_approved_first_trial": false,
+  "reference_sha256_matches_frozen_release": false,
+  "rehab_frame": {
+    "R_base_from_rehab": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "construction": "x_normalize_then_z_orthogonalize_then_y_equals_z_cross_x",
+    "notes": "Submitted and reviewed by on-site safety officer jacey on 2026-10-17 for setup 01. The derived right-handed rehab +y direction is Base +y.",
+    "rehab_x_axis_in_base": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "rehab_y_axis_in_base": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "rehab_z_axis_in_base": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "reviewed": true
+  },
+  "rehab_pull_point_formula": "p_R(t)=[x_pull_FK(t),0,z_pull_FK(t)]",
+  "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@(p_R(t)-p_R(0))",
+  "robot_execution_approved": false,
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "start_tcp_pose_base": [
+    0.7378495541390144,
+    -0.043101813915523986,
+    0.4358238542306304,
+    3.093819737447366,
+    -0.07068065816867287,
+    0.7224815522486918
+  ],
+  "tcp_orientation_strategy": "fixed_at_start_anchor",
+  "tool_offset_applied_to_relative_increment": false,
+  "tool_offset_retained_for_mode": "absolute_calibrated",
+  "trajectory_audit": {
+    "all_samples_finite": true,
+    "approved_rom_valid": true,
+    "final_relative_displacement_zero": true,
+    "final_target_equals_anchor": true,
+    "first_relative_displacement_zero": true,
+    "first_target_equals_anchor": true,
+    "invalid_reasons": [],
+    "maximum_acceleration_step_m_s2": 0.0010809252664692078,
+    "maximum_position_step_m": 0.008602327937594915,
+    "maximum_velocity_step_m_s": 0.0011246491299655805,
+    "no_obvious_acceleration_jump": true,
+    "no_obvious_position_jump": true,
+    "no_obvious_velocity_jump": true,
+    "orientation_constant": true,
+    "pull_forward_kinematics_valid": true,
+    "sample_count": 401,
+    "source_formal_gate_valid": true,
+    "source_samples_valid": true,
+    "theta_shank_definition_valid": true,
+    "time_strictly_increasing": true,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "trajectory_valid": true
+  },
+  "trajectory_csv": "trajectory_preview.csv",
+  "trajectory_id": "reference_measured_asymmetric_closed_slow"
+}

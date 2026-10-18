@@ -22,11 +22,11 @@ from config import settings
 from hardware.windows import RokaeInternalWrenchSource, RokaeRobot
 
 
-def make_robot(robot_ip: str) -> RokaeRobot:
+def make_robot(robot_ip: str, local_ip: str | None = None) -> RokaeRobot:
     """Build the normal project adapter without changing robot state."""
     return RokaeRobot(
         ip_address=robot_ip,
-        local_ip=settings.ROBOT_LOCAL_IP,
+        local_ip=settings.ROBOT_LOCAL_IP if local_ip is None else local_ip,
         robot_class=settings.ROBOT_CLASS,
         state_interval_ms=settings.ROBOT_STATE_MS,
         max_linear_speed_m_s=settings.ROBOT_MAX_LINEAR_SPEED_M_S,

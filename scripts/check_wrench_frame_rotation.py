@@ -43,6 +43,7 @@ def capture(source: Any, *, duration_s: float, sample_hz: float, phase: str) -> 
 def main() -> None:
     parser = argparse.ArgumentParser(description="手工轻推 world→base wrench 旋转诊断（只读，不运动）")
     parser.add_argument("--robot-ip", default=settings.ROBOT_IP)
+    parser.add_argument("--local-ip", default=settings.ROBOT_LOCAL_IP)
     parser.add_argument("--direction", choices=("X", "Y", "Z", "x", "y", "z"), required=True, help="预期的正 base 轴")
     parser.add_argument("--baseline-duration", type=float, default=2.0)
     parser.add_argument("--push-duration", type=float, default=3.0)
@@ -55,7 +56,9 @@ def main() -> None:
     rows: list[dict[str, Any]] = []
     summary: dict[str, Any] = {"diagnostic": "wrench_frame_rotation", "base_rotation_config_verified": settings.BASE_WRENCH_ROTATION_VERIFIED, "fatal_error": None}
     try:
-        with readonly_connection(make_robot(args.robot_ip), use_wrench_stream=True) as (_, source):
+        with readonly_connection(
+            make_robot(args.robot_ip, args.local_ip), use_wrench_stream=True
+        ) as (_, source):
             assert source is not None
             require_confirmed_bias(source, args.confirm_unloaded)
             print("Recording unloaded baseline; keep the robot still and untouched...")

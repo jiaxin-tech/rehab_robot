@@ -90,7 +90,7 @@ class Acquisition:
             "connected": True,
             "state_valid": True,
             "state_stream_thread_alive": True,
-            "operation_state": "IDLE",
+            "operation_state": "RT_CONTROLLING",
             "collision_state_query_valid": True,
             "collision_state": False,
             "joint_position_rad": [0.0] * 6,

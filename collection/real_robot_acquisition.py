@@ -290,6 +290,13 @@ class RealRobotAcquisition:
             self._started = False
 
     def _cleanup_adapter(self, *, persist_state_tail: bool = True) -> None:
+        logger_failure_event = getattr(self.logger, "failure_event", None)
+        logger_failed = bool(
+            logger_failure_event is not None
+            and callable(getattr(logger_failure_event, "is_set", None))
+            and logger_failure_event.is_set()
+        )
+        persist_state_tail = bool(persist_state_tail and not logger_failed)
         try:
             self.adapter.stop_state_stream()
             if self._state_capture_enabled:
@@ -479,6 +486,7 @@ class RealRobotAcquisition:
         # consumer is held up in logger I/O. poll never waits on child locks/I/O.
         process_health = self.wrench_provider.poll() if self.wrench_provider is not None else {}
         stream_healthy = bool(process_health.get("STREAM_HEALTH"))
+        provider_has_sample = bool(process_health.get("LATEST_GOOD_SAMPLE_VALID"))
         if not stream_healthy:
             reasons.append(wrench_error or ";".join(process_health.get("FAILURE_LATCH", ())) or
                            ("DISABLED_FOR_STATIONARY_A" if self.diagnostic_state_only else "wrench_process_not_ready"))
@@ -486,14 +494,18 @@ class RealRobotAcquisition:
             limits = self.wrench_provider.budgets
             if state_age is None or state_age > limits.state_age_s:
                 reasons.append("state_stale_or_unavailable")
-                if state_age is not None:
+                # The robot is stationary during process startup.  Require a
+                # currently fresh state before motion, but latch only after the
+                # child has produced its first valid wrench sample.  This keeps
+                # Windows spawn latency from becoming a false motion fault.
+                if state_age is not None and provider_has_sample:
                     self.wrench_provider.fail("state_freshness_failure")
             if wrench_age is None or wrench_age > limits.sample_age_s:
                 stream_healthy = False
                 reasons.append("wrench_stale_or_unavailable")
             if skew is None or skew > limits.skew_s:
                 reasons.append("state_wrench_skew_unavailable_or_exceeded")
-                if skew is not None:
+                if skew is not None and provider_has_sample:
                     self.wrench_provider.fail("state_wrench_skew_failure")
         if not state_valid:
             reasons.append(state_error or (state.invalid_reason if state else "state_not_ready"))

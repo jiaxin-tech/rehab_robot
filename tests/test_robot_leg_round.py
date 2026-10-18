@@ -278,7 +278,7 @@ def test_round_attempt_is_exclusive_and_persistent(tmp_path, monkeypatch):
     with pytest.raises(PermissionError): rounds.run(tmp_path, confirmation="no")
 
 
-def prepared_round(tmp_path, *, empty=False):
+def prepared_round(tmp_path, *, empty=False, capture_only=False):
     from tests.test_run_rehab_experiment import _reviewed_files
     from tests.test_robot_trial_release import _wrench_config
     anchor, frame, safety = _reviewed_files(tmp_path)
@@ -297,7 +297,10 @@ def prepared_round(tmp_path, *, empty=False):
         pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
         robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
             controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
-    c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+    if empty and capture_only:
+        raise ValueError("test fixture cannot be both empty and loaded capture-only")
+    c["trial_kind"] = ("empty_load" if empty else
+        "dummy_leg_capture_only" if capture_only else "dummy_leg_reference")
     for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
         p = tmp_path / (kind+".txt")
         p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
@@ -360,6 +363,22 @@ def test_empty_load_is_never_trained(tmp_path):
         capture_factory=SyntheticCapture, execute_fn=synthetic_execute)
     assert state["training_status"] == "EXCLUDED_EMPTY_LOAD"
     assert not (directory / "training_request.json").exists()
+
+
+def test_loaded_capture_only_keeps_guards_and_never_trains(tmp_path):
+    directory = prepared_round(tmp_path, capture_only=True)
+    state = rounds.run(directory, confirmation=rounds.CONFIRMATION,
+        capture_factory=SyntheticCapture, execute_fn=synthetic_execute)
+    assert state["status"] == "CAPTURE_ONLY_COMPLETE"
+    assert state["training_status"] == "SKIPPED_CAPTURE_ONLY"
+    assert (directory / "leg/leg.csv").is_file()
+    assert (directory / "quality.json").is_file()
+    assert (directory / "measured.csv").is_file()
+    assert (directory / "measured_metrics.json").is_file()
+    assert not (directory / "algorithm_initialization_request.json").exists()
+    assert not (directory / "algorithm_ready.json").exists()
+    assert not (directory / "training_request.json").exists()
+    assert not (directory / "model_update.json").exists()
 
 
 @pytest.mark.parametrize("kind", ["unready", "incomplete", "unclosed"])

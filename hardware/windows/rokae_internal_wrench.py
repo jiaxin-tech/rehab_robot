@@ -27,6 +27,7 @@ from collection.state import (
     utc_now_iso,
 )
 from config import settings
+from utils.clock import host_time_s
 
 
 class RokaeInternalWrenchSource:
@@ -185,7 +186,7 @@ class RokaeInternalWrenchSource:
                 next_tick = time.monotonic()
 
     def _publish_failure(self, exc: BaseException) -> None:
-        now_s = time.monotonic()
+        now_s = host_time_s()
         error = f"robot_wrench_query_error:{type(exc).__name__}:{exc}"
         with self._condition:
             self._sequence_id += 1
@@ -220,7 +221,7 @@ class RokaeInternalWrenchSource:
         measured = raw.get("joint_measured_torque_nm", raw.get("joint_torque_measured"))
         external = raw.get("joint_external_torque_nm", raw.get("joint_torque_external"))
         raw_frame = str(raw.get("raw_force_frame", raw.get("reference_frame", self.raw_force_frame))).lower()
-        now_s = float(raw.get("host_monotonic_time_s", raw.get("ts", time.monotonic())))
+        now_s = float(raw.get("host_monotonic_time_s", raw.get("ts", host_time_s())))
         if not math.isfinite(now_s):
             raise ValueError("Wrench query did not provide a finite host timestamp")
 
@@ -348,7 +349,7 @@ class RokaeInternalWrenchSource:
 
     def snapshot(self, now_s: float | None = None) -> InternalWrenchFrame:
         """Return the latest controller wrench, invalidating stale data safely."""
-        current_s = time.monotonic() if now_s is None else float(now_s)
+        current_s = host_time_s() if now_s is None else float(now_s)
         with self._condition:
             latest = self._latest
             last_error = self._last_error

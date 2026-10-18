@@ -34,6 +34,9 @@ from lower_limb_sim.run_robot_trajectory_export import (
 )
 from lower_limb_sim.reference_release import load_reference_release_manifest
 from safety.experiment_safety import ExperimentSafetyConfig
+from safety.empty_load_commissioning_release import (
+    ValidatedEmptyLoadCommissioningRelease,
+)
 from safety.robot_trial_release import ValidatedRobotTrialRelease
 
 
@@ -98,7 +101,9 @@ class ExecutionPreflight:
     evaluation_phase: str = "unbound"
     trajectory_sha256: str | None = None
     experiment_safety_sha256: str | None = None
-    release_approval: ValidatedRobotTrialRelease | None = field(default=None, repr=False, compare=False)
+    release_approval: (
+        ValidatedRobotTrialRelease | ValidatedEmptyLoadCommissioningRelease | None
+    ) = field(default=None, repr=False, compare=False)
     _live_token: object | None = field(
         default=None,
         repr=False,
@@ -441,11 +446,16 @@ def audit_execution_trajectory_content(
     )
     max_speed = float(np.linalg.norm(derived_velocity, axis=1).max())
     max_acceleration = float(np.linalg.norm(derived_acceleration, axis=1).max())
+    numerical_limit_tolerance = 1e-12
     if safety.max_tcp_speed_m_s is not None:
-        block(max_speed > safety.max_tcp_speed_m_s, "trajectory_speed_limit_exceeded")
+        block(
+            max_speed > safety.max_tcp_speed_m_s + numerical_limit_tolerance,
+            "trajectory_speed_limit_exceeded",
+        )
     if safety.max_tcp_acceleration_m_s2 is not None:
         block(
-            max_acceleration > safety.max_tcp_acceleration_m_s2,
+            max_acceleration
+            > safety.max_tcp_acceleration_m_s2 + numerical_limit_tolerance,
             "trajectory_acceleration_limit_exceeded",
         )
     if safety.workspace_min_base_m is not None and safety.workspace_max_base_m is not None:
@@ -511,7 +521,9 @@ def evaluate_execution_preflight(
     logger: Any,
     robot_adapter: Any,
     current_tcp_pose_base: Any | None = None,
-    release_approval: ValidatedRobotTrialRelease | None = None,
+    release_approval: (
+        ValidatedRobotTrialRelease | ValidatedEmptyLoadCommissioningRelease | None
+    ) = None,
     _evaluation_phase: str = "live",
 ) -> ExecutionPreflight:
     """Evaluate every offline, runtime, logging, and human-review gate."""
@@ -529,7 +541,14 @@ def evaluate_execution_preflight(
     block(not frame.reviewed, "rehab_frame_not_reviewed")
     block(not anchor.reviewed, "start_anchor_not_reviewed")
     block(requested_anchor_id != anchor.anchor_id, "requested_anchor_id_mismatch")
-    validated_release = release_approval if isinstance(release_approval, ValidatedRobotTrialRelease) else None
+    validated_release = (
+        release_approval
+        if isinstance(
+            release_approval,
+            (ValidatedRobotTrialRelease, ValidatedEmptyLoadCommissioningRelease),
+        )
+        else None
+    )
     release_is_approved = False
     if validated_release is not None:
         try:
@@ -728,6 +747,11 @@ def evaluate_execution_preflight(
             "runtime_joint_position_outside_soft_limits",
         )
 
+    commissioning_collision_waiver = bool(
+        release_is_approved
+        and isinstance(validated_release, ValidatedEmptyLoadCommissioningRelease)
+        and release_approval.get("allow_missing_sdk_collision_state_error") == 259
+    )
     collision_state = (
         runtime_summary.get("collision_state") if runtime_summary is not None else None
     )
@@ -736,10 +760,18 @@ def evaluate_execution_preflight(
         if runtime_summary is not None
         else None
     )
-    block(
-        collision_query_valid is not True or type(collision_state) is not bool,
-        "runtime_collision_state_unavailable",
-    )
+    if not commissioning_collision_waiver:
+        block(
+            collision_query_valid is not True or type(collision_state) is not bool,
+            "runtime_collision_state_unavailable",
+        )
+    elif collision_query_valid is not True:
+        invalid_reason = str(
+            runtime_summary.get("collision_state_invalid_reason")
+            if runtime_summary is not None
+            else ""
+        )
+        block("259" not in invalid_reason, "runtime_collision_waiver_error_mismatch")
     block(collision_state is True, "runtime_collision_detected")
     if release_is_approved and _evaluation_phase == "live":
         release_source = release_approval.get("collision_source")
@@ -814,7 +846,9 @@ def evaluate_execution_preflight(
         expected_trajectory_id=trajectory_id,
         frame=frame,
         anchor=anchor,
-        require_official_reference=True,
+        require_official_reference=not isinstance(
+            validated_release, ValidatedEmptyLoadCommissioningRelease
+        ),
     )
     for content_reason in content_reasons:
         block(True, content_reason)
@@ -887,7 +921,9 @@ def evaluate_offline_execution_request(
     safety: ExperimentSafetyConfig,
     trajectory: pd.DataFrame,
     audit: RelativeTrajectoryAudit,
-    release_approval: ValidatedRobotTrialRelease | None = None,
+    release_approval: (
+        ValidatedRobotTrialRelease | ValidatedEmptyLoadCommissioningRelease | None
+    ) = None,
 ) -> ExecutionPreflight:
     """Run all static gates before a robot connection is attempted.
 

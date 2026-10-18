@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "scope": "LIVE_OBSERVATION_ACQUISITION",
+  "reviewed": true,
+  "reviewer": "jacey",
+  "reviewed_at": "2026-10-18T17:27:14+08:00",
+  "restriction": "NO_HUMAN_SUBJECT_DUMMY_LEG_CAPTURE_ONLY_NO_TRAINING",
+  "connection": {
+    "robot_ip": "192.168.50.103",
+    "local_ip": "192.168.50.209",
+    "robot_class": "xMateRobot"
+  },
+  "expected_identity": {
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "controller_version": "3.2.1",
+    "sdk_version": "0.7.0"
+  },
+  "allowed_power_states": [
+    "on",
+    "off"
+  ],
+  "budgets": {
+    "startup_s": 5.0,
+    "query_s": 0.05,
+    "progress_s": 0.25,
+    "sample_age_s": 0.05,
+    "ack_s": 0.1,
+    "log_s": 0.1,
+    "shutdown_s": 1.0,
+    "terminate_s": 1.0,
+    "state_age_s": 0.025,
+    "skew_s": 0.04,
+    "provenance": "Safety reviewer jacey explicitly approved these temporary debugging budgets on 2026-10-18 for supervised dummy-leg capture with no human subject, with immediate stop on any exceedance. State/wrench evidence: diagnostics/rt_state_timing_20261018T090859Z.json, diagnostics/snapshot_alignment_20261018T092141Z.json, diagnostics/wrench_query_timing_20261018T092232Z.json."
+  },
+  "evidence": {
+    "state_timing": "../diagnostics/rt_state_timing_20261018T090859Z.json",
+    "snapshot_alignment": "../diagnostics/snapshot_alignment_20261018T092141Z.json",
+    "wrench_query_timing": "../diagnostics/wrench_query_timing_20261018T092232Z.json",
+    "base_x_direction": "../diagnostics/wrench_frame_rotation_20261018T091752Z.json",
+    "base_z_direction": "../diagnostics/wrench_frame_rotation_20261018T091939Z.json"
+  },
+  "notes": [
+    "This approval authorizes observation/capture only and does not authorize robot motion or training.",
+    "The acquisition supervisor must latch a failure and request the upper-layer stop when any budget is exceeded.",
+    "Power state on/off is accepted only because this file is an observation configuration; any motion path must independently require the reviewed powered state.",
+    "The 30 s query diagnostic observed 239.844 ms and 311.986 ms SDK stalls; the 50 ms query and sample-age budgets deliberately reject them."
+  ]
+}

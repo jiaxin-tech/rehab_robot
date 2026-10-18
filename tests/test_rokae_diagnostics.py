@@ -75,7 +75,8 @@ def test_fake_adapter_timing_diagnostics_collect_rows() -> None:
     assert query_rows and query_summary["query_duration_ms"]["count"] == len(query_rows)
 
 
-def test_fake_adapter_snapshot_alignment_uses_project_snapshot() -> None:
+def test_fake_adapter_snapshot_alignment_uses_project_snapshot(monkeypatch) -> None:
+    monkeypatch.setattr("config.settings.BASE_WRENCH_ROTATION_VERIFIED", False)
     rows, summary = measure_alignment(FakeAdapter(), FakeSource(), duration_s=0.004, sample_hz=1_000.0)
     assert rows
     assert summary["force_query_duration_ms"]["count"] == len(rows)

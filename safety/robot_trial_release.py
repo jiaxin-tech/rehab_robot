@@ -1,4 +1,4 @@
-"""Offline, evidence-bound release for one supervised empty-load reference trial.
+"""Offline, evidence-bound release for one supervised reference trial.
 
 Hashes bind reviewed content, not the identity of a human signer. Review files
 are trusted local records; this module is not a digital signature authority.
@@ -19,6 +19,7 @@ from hardware.safety_events import validate_collision_source
 
 SCOPE = "FIRST_ROBOT_TRIAL_EMPTY_LOAD"
 LOADED_SCOPE = "ROBOT_DUMMY_LEG_REFERENCE_TRIAL"
+LOADED_TRIAL_KINDS = ("dummy_leg_reference", "dummy_leg_capture_only")
 LOADED_EVIDENCE = ("dummy_leg_installation", "joint_angle_calibration", "cross_device_timing")
 APPROVAL_CONFIRMATION = "I CONFIRM REVIEWED FIRST ROBOT TRIAL RELEASE"
 IDENTITY_KEYS = ("robot_model", "robot_serial_number", "controller_version", "sdk_version")
@@ -129,8 +130,9 @@ def _trial_setup(reference):
     from measurement_validation.robot_leg_round import validate_analysis
     validate_config(data["leg_acquisition"])
     validate_analysis(data["analysis"], data["calibration"])
-    if data["round_config"].get("reviewed") is not True or data["round_config"].get("trial_kind") != "dummy_leg_reference":
-        raise PermissionError("round config is not reviewed for connected dummy-leg training")
+    if (data["round_config"].get("reviewed") is not True or
+            data["round_config"].get("trial_kind") not in LOADED_TRIAL_KINDS):
+        raise PermissionError("round config is not reviewed for a connected dummy-leg trial")
     for name, key in (("leg_acquisition", "leg_config"), ("calibration", "calibration"), ("analysis", "analysis")):
         actual = (input_paths["round_config"].parent / data["round_config"][key]).resolve()
         if actual != input_paths[name]:

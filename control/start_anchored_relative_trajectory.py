@@ -152,6 +152,15 @@ def load_rehab_frame_config(path: str | Path) -> RehabFrameConfig:
     missing = required.difference(payload)
     if missing:
         raise ValueError(f"rehab frame config missing fields: {sorted(missing)}")
+    unmeasured_axes = [
+        name
+        for name in ("rehab_x_axis_in_base", "rehab_z_axis_in_base")
+        if payload[name] is None
+    ]
+    if unmeasured_axes:
+        raise ValueError(
+            "rehab frame config has unmeasured axes: " + ", ".join(unmeasured_axes)
+        )
     return RehabFrameConfig(
         rehab_x_axis_in_base=tuple(payload["rehab_x_axis_in_base"]),
         rehab_z_axis_in_base=tuple(payload["rehab_z_axis_in_base"]),

@@ -271,11 +271,22 @@ class WrenchProcessProvider:
         if self.config["mode"] == "offline" and budgets.provenance != "NOT_SAFETY_THRESHOLDS":
             raise ValueError("offline budgets must be labelled NOT_SAFETY_THRESHOLDS")
         if self.config["mode"] == "live":
-            required = ("robot_ip", "local_ip", "robot_class", "expected_identity", "allowed_power_states")
+            required = (
+                "robot_ip",
+                "local_ip",
+                "robot_class",
+                "expected_identity",
+                "allowed_power_states",
+                "allowed_operation_states",
+            )
             if any(not self.config.get(k) for k in required) or budgets.provenance == "NOT_SAFETY_THRESHOLDS":
                 raise ValueError("live identity/connection/reviewed budgets required")
             if set(self.config["expected_identity"]) != {"robot_model", "robot_serial", "controller_version", "sdk_version"}:
                 raise ValueError("complete identity binding required")
+            if not set(self.config["allowed_operation_states"]).issubset(
+                {"idle", "rtcontrolling"}
+            ):
+                raise ValueError("invalid live wrench operation-state allowlist")
         self.budgets = budgets
         self.run_id = uuid.uuid4().hex
         self.session_id = uuid.uuid4().hex
@@ -513,6 +524,23 @@ class WrenchProcessProvider:
             now = time.perf_counter_ns()
         alive = bool(self.process and self.process.is_alive())
         pending = self.query_state in ("START_INTENT", "IN_PROGRESS", "HUNG")
+        native_marker = None
+        try:
+            candidate_marker = self.latest_slot.read()
+            if (
+                isinstance(candidate_marker, dict)
+                and candidate_marker.get("run_id") == self.run_id
+                and candidate_marker.get("pid") == getattr(self.process, "pid", None)
+                and candidate_marker.get("query_id") == self.query_id
+            ):
+                native_marker = candidate_marker
+        except Exception as exc:
+            self.fail(f"telemetry_failure:{type(exc).__name__}:{exc}")
+        native_pending = bool(
+            native_marker is not None
+            and native_marker.get("query_in_progress") is True
+            and isinstance(native_marker.get("native_start_ns"), int)
+        )
         sample_time = self.last_good.host_monotonic_time_s if self.last_good else None
         age = None if sample_time is None else now / 1e9 - sample_time
         progress_age = None if self.progress_ns is None else (now - self.progress_ns) / 1e9
@@ -524,7 +552,15 @@ class WrenchProcessProvider:
                     self.fail("startup_timeout")
             elif progress_age is not None and progress_age > self.budgets.progress_s:
                 self.fail("worker_progress_missing")
-            if pending and (now - self.query_start_ns) / 1e9 > self.budgets.query_s:
+            # query_s starts at the child-published native_start_ns marker,
+            # written only after the PRE_CALL audit boundary was durably
+            # acknowledged. Audit waiting remains governed by ack_s/log_s/
+            # progress_s and is not vendor query time.
+            if (
+                native_pending
+                and (now - int(native_marker["native_start_ns"])) / 1e9
+                > self.budgets.query_s
+            ):
                 if self.query_state != "HUNG":
                     self.query_state = "HUNG"
                     self._record("QUERY_HUNG", completion=None)

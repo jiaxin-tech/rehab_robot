@@ -1,0 +1,2 @@
+results/robot_leg_round was not created because no robot motion round ran.
+No site photo directory/files were present in the workspace at backup time.

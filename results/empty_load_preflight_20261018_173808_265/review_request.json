@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "scope": "FIRST_ROBOT_TRIAL_EMPTY_LOAD_FIXTURE_ONLY",
+  "status": "AWAITING_EXPLICIT_ONSITE_REVIEW",
+  "motion_authorized": false,
+  "reviewer": "jacey",
+  "operator": "jacey",
+  "expires_at": "2027-10-31T23:59:59+08:00",
+  "physical_scope": {
+    "human_subject_present": false,
+    "dummy_leg_installed": false,
+    "flange_fixture_installed": true,
+    "cycles": 1,
+    "training_allowed": false,
+    "capture_required": true
+  },
+  "bindings": {
+    "retimed_reference": {
+      "path": "../reference_commissioning/formal_reference_temp_20261018/commissioning_reference.csv",
+      "sha256": "892da699b9afd0f57b8e77a5fa1c9b8da6069599515f7e2c24fec6b064b3b945",
+      "duration_s": 132.33544112325666,
+      "max_tcp_speed_m_s": 0.03000000000000005,
+      "max_tcp_acceleration_m_s2": 0.0038343839780059187
+    },
+    "start_anchor": {
+      "path": "anchor.json",
+      "sha256": "3e589d6fe0c71bab64b1a2dca8dd367d5ffd4d8390f210ed64c66715ad92dd4c"
+    },
+    "safety_config": {
+      "path": "../../config/empty_load_commissioning_safety_20261018.json",
+      "sha256": "d3ff305bd3e9d09b3776b70c9fa63d1af4262d0a63fdc5e800c74d5112baf616"
+    },
+    "wrench_config": {
+      "path": "../../config/empty_load_live_observation_20261018.json",
+      "sha256": "65df2906f78ca9d926a960baff2775550c658236c2213c231de43a9b918efcb4"
+    },
+    "frame_config": {
+      "path": "../../config/rehab_frame_config.json",
+      "sha256": "d28dc599d3809ece32c9d073da78b60368d521e409c176fd986e8b4f8cbf171f"
+    }
+  },
+  "candidate_limits_requiring_review": {
+    "start_position_tolerance_m": 0.005,
+    "start_orientation_tolerance_rad": 0.05235987755982989,
+    "start_orientation_tolerance_deg": 3.0,
+    "command_lateness_s": 0.02,
+    "rt_filter_hz": 50.0,
+    "rt_network_tolerance_percent": 20.0
+  },
+  "runtime_requirements": {
+    "controller_collision_protection_active": true,
+    "operator_at_emergency_stop": true,
+    "workspace_clear": true,
+    "automatic_mode": true,
+    "servo_powered_before_execute": true,
+    "stop_on_any_state_wrench_timing_or_force_limit": true
+  },
+  "known_exception_requiring_explicit_waiver": {
+    "sdk_collision_state_query_available": false,
+    "error_code": 259,
+    "waiver_scope": "one supervised empty-load fixture-only commissioning cycle; controller collision protection and operator emergency stop remain mandatory"
+  },
+  "required_confirmation": "我确认当前仅安装法兰夹具、无假腿、无人体；控制器活动负载1.085 kg、质心[0,0,0.100] m、惯量[0,0,0]与当前夹具一致；批准起点容差5 mm/3 deg、命令延迟20 ms、RT滤波50 Hz、网络容差20%；批准SHA256 892da699b9afd0f57b8e77a5fa1c9b8da6069599515f7e2c24fec6b064b3b945的132.335秒降速轨迹运行一周期；控制器碰撞保护开启、急停在手、运动范围无人；同意仅本次空载调试豁免SDK碰撞状态查询错误259，任何超限立即停止。",
+  "notes": [
+    "This review request is not an execution release.",
+    "The original 24 s reference remains NO_GO and is not bound here.",
+    "The retimed artifact preserves geometry but requires a dedicated execution binding before motion."
+  ]
+}

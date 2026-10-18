@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "reviewed": false,
+  "raw_wrench_frame": null,
+  "R_rehab_from_raw_wrench": null,
+  "force_sign_robot_on_leg": null,
+  "assumed_wrench_delay_s": null,
+  "baseline_subject_template": {
+    "mass_thigh_kg": null,
+    "mass_shank_kg": null,
+    "com_thigh_m": null,
+    "com_shank_m": null,
+    "inertia_thigh_kg_m2": null,
+    "inertia_shank_kg_m2": null,
+    "q0_hip_rad": null,
+    "q0_knee_rad": null,
+    "gravity_m_s2": null
+  },
+  "notes": "Template only. Do not identify a person until anthropometry, force sign/frame, and delay are reviewed for the actual setup."
+}

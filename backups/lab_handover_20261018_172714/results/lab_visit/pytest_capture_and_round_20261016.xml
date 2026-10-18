@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="41" time="9.767" timestamp="2026-10-16T21:47:09.492853+08:00" hostname="DESKTOP-P1EOI08"><testcase classname="tests.test_capture_leg_segment" name="test_segment_closes_and_retains_failure_report[None]" time="0.377" /><testcase classname="tests.test_capture_leg_segment" name="test_segment_closes_and_retains_failure_report[start]" time="0.019" /><testcase classname="tests.test_capture_leg_segment" name="test_segment_closes_and_retains_failure_report[health]" time="0.130" /><testcase classname="tests.test_capture_leg_segment" name="test_segment_closes_and_retains_failure_report[close]" time="0.137" /><testcase classname="tests.test_capture_leg_segment" name="test_bad_duration_never_creates_source[0]" time="0.003" /><testcase classname="tests.test_capture_leg_segment" name="test_bad_duration_never_creates_source[-1]" time="0.002" /><testcase classname="tests.test_capture_leg_segment" name="test_bad_duration_never_creates_source[nan]" time="0.002" /><testcase classname="tests.test_capture_leg_segment" name="test_bad_duration_never_creates_source[3601]" time="0.002" /><testcase classname="tests.test_robot_leg_round" name="test_decoder_axis_offsets_raw_signedness_and_native_structs" time="0.001" /><testcase classname="tests.test_robot_leg_round" name="test_polling_cannot_exceed_source_cycle" time="0.001" /><testcase classname="tests.test_robot_leg_round" name="test_capture_ready_and_completed_only_after_close" time="0.015" /><testcase classname="tests.test_robot_leg_round" name="test_capture_failure_never_acknowledges_complete[fault]" time="0.003" /><testcase classname="tests.test_robot_leg_round" name="test_capture_failure_never_acknowledges_complete[torque]" time="0.004" /><testcase classname="tests.test_robot_leg_round" name="test_capture_failure_never_acknowledges_complete[stuck]" time="0.023" /><testcase classname="tests.test_robot_leg_round" name="test_capture_failure_never_acknowledges_complete[short]" time="0.003" /><testcase classname="tests.test_robot_leg_round" name="test_supervisor_rejects_dead_stale_and_bad_protocol" time="0.006" /><testcase classname="tests.test_robot_leg_round" name="test_native_ads_short_or_failed_read_is_rejected[0-1365]" time="0.001" /><testcase classname="tests.test_robot_leg_round" name="test_native_ads_short_or_failed_read_is_rejected[1797-1366]" time="0.001" /><testcase classname="tests.test_robot_leg_round" name="test_supervisor_requires_close_ack_and_bounds_shutdown[True]" time="0.006" /><testcase classname="tests.test_robot_leg_round" name="test_supervisor_requires_close_ack_and_bounds_shutdown[False]" time="0.006" /><testcase classname="tests.test_robot_leg_round" name="test_measured_alignment_and_reference_normalization" time="0.354" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[gap]" time="0.450" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[duplicate]" time="0.458" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[fault]" time="0.451" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[missing]" time="0.462" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[tracking]" time="0.462" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[dispatch]" time="0.476" /><testcase classname="tests.test_robot_leg_round" name="test_invalid_data_cannot_enter_training[short_read]" time="0.487" /><testcase classname="tests.test_robot_leg_round" name="test_missing_knee_is_not_substituted" time="0.001" /><testcase classname="tests.test_robot_leg_round" name="test_real_frozen_training_worker" time="1.192"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;frozen runpy&gt;&quot;, line 198, in _run_module_as_main&#10;    File &quot;&lt;frozen runpy&gt;&quot;, line 88, in _run_code&#10;    File &quot;C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py&quot;, line 166, in &lt;module&gt;&#10;      main()&#10;    File &quot;C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py&quot;, line 161, in main&#10;      result = train(request, validate_only=args.validate_only)&#10;               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py&quot;, line 39, in train&#10;      root = Path(request[&quot;algorithm_root&quot;]).resolve(strict=True)&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\liumai\AppData\Local\Programs\Python\Python312\Lib\pathlib.py&quot;, line 1240, in resolve&#10;      s = self._flavour.realpath(self, strict=strict)&#10;          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;&lt;frozen ntpath&gt;&quot;, line 727, in realpath&#10;  FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\完整算法验证_2026-09-29'&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\liumai\\fjx\\rehab_robot\\.venv\\Scripts\\python.exe', '-X', 'utf8', '-m', 'scripts...undError: [WinError 3] 系统找不到指定的路径。: \'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\'\n').returncode">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_real_frozen_training_work0')
+
+    def test_real_frozen_training_worker(tmp_path):
+        csv, dispatch = measured_fixture(tmp_path)
+        measured, _ = aligned_measurement(csv, dispatch, DEFAULT_REFERENCE_PATH, analysis_config(), calibration_config())
+        target = tmp_path / "measured.csv"
+        measured.to_csv(target, index=False)
+        request = tmp_path / "request.json"
+        atomic_json(request, training_request(tmp_path, target))
+        output = tmp_path / "update.json"
+        result = subprocess.run([sys.executable, "-X", "utf8", "-m", "scripts.train_robot_leg_round", str(request),
+            "--output", str(output)], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", timeout=120)
+&gt;       assert result.returncode == 0, result.stdout+result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "&lt;frozen runpy&gt;", line 198, in _run_module_as_main
+E           File "&lt;frozen runpy&gt;", line 88, in _run_code
+E           File "C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py", line 166, in &lt;module&gt;
+E             main()
+E           File "C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py", line 161, in main
+E             result = train(request, validate_only=args.validate_only)
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py", line 39, in train
+E             root = Path(request["algorithm_root"]).resolve(strict=True)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Users\liumai\AppData\Local\Programs\Python\Python312\Lib\pathlib.py", line 1240, in resolve
+E             s = self._flavour.realpath(self, strict=strict)
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "&lt;frozen ntpath&gt;", line 727, in realpath
+E         FileNotFoundError: [WinError 3] 系统找不到指定的路径。: 'C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\完整算法验证_2026-09-29'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\liumai\\fjx\\rehab_robot\\.venv\\Scripts\\python.exe', '-X', 'utf8', '-m', 'scripts...undError: [WinError 3] 系统找不到指定的路径。: \'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\'\n').returncode
+
+tests\test_robot_leg_round.py:250: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_unreviewed_setup_blocks_before_hardware" time="0.014" /><testcase classname="tests.test_robot_leg_round" name="test_malformed_setup_still_produces_report" time="0.011" /><testcase classname="tests.test_robot_leg_round" name="test_round_attempt_is_exclusive_and_persistent" time="0.005" /><testcase classname="tests.test_robot_leg_round" name="test_full_round_with_real_release_analysis_and_training" time="0.136"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_full_round_with_real_rele0')
+
+    def test_full_round_with_real_release_analysis_and_training(tmp_path):
+&gt;       directory = prepared_round(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_robot_leg_round.py:338: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_full_round_with_real_rele0')
+empty = False
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_empty_load_is_never_trained" time="0.108"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_empty_load_is_never_train0')
+
+    def test_empty_load_is_never_trained(tmp_path):
+&gt;       directory = prepared_round(tmp_path, empty=True)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_robot_leg_round.py:358: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_empty_load_is_never_train0')
+empty = True
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_failed_round_keeps_partial_data_without_training[unready]" time="0.122"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_failed_round_keeps_partia0')
+kind = 'unready'
+
+    @pytest.mark.parametrize("kind", ["unready", "incomplete", "unclosed"])
+    def test_failed_round_keeps_partial_data_without_training(tmp_path, kind):
+&gt;       directory = prepared_round(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_robot_leg_round.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_failed_round_keeps_partia0')
+empty = False
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_failed_round_keeps_partial_data_without_training[incomplete]" time="0.161"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_failed_round_keeps_partia1')
+kind = 'incomplete'
+
+    @pytest.mark.parametrize("kind", ["unready", "incomplete", "unclosed"])
+    def test_failed_round_keeps_partial_data_without_training(tmp_path, kind):
+&gt;       directory = prepared_round(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_robot_leg_round.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_failed_round_keeps_partia1')
+empty = False
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_failed_round_keeps_partial_data_without_training[unclosed]" time="0.123"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_failed_round_keeps_partia2')
+kind = 'unclosed'
+
+    @pytest.mark.parametrize("kind", ["unready", "incomplete", "unclosed"])
+    def test_failed_round_keeps_partial_data_without_training(tmp_path, kind):
+&gt;       directory = prepared_round(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_robot_leg_round.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_failed_round_keeps_partia2')
+empty = False
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_external_capture_failure_stops_real_executor" time="0.037" /><testcase classname="tests.test_robot_leg_round" name="test_unavailable_algorithm_blocks_before_capture_and_motion" time="0.124"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_unavailable_algorithm_blo0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x0000018E24A05400&gt;
+
+    def test_unavailable_algorithm_blocks_before_capture_and_motion(tmp_path, monkeypatch):
+&gt;       directory = prepared_round(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_robot_leg_round.py:405: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_unavailable_algorithm_blo0')
+empty = False
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase><testcase classname="tests.test_robot_leg_round" name="test_connection_class_mismatch_blocks_readonly_preparation" time="0.125"><failure message="assert [&quot;algorithm s...\\config.py'&quot;] == []&#10;  &#10;  Left contains one more item: &quot;algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'&quot;&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_connection_class_mismatch0')
+
+    def test_connection_class_mismatch_blocks_readonly_preparation(tmp_path):
+&gt;       prepared_round(tmp_path)
+
+tests\test_robot_leg_round.py:415: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+tmp_path = WindowsPath('C:/Users/liumai/AppData/Local/Temp/pytest-of-liumai/pytest-45/test_connection_class_mismatch0')
+empty = False
+
+    def prepared_round(tmp_path, *, empty=False):
+        from tests.test_run_rehab_experiment import _reviewed_files
+        from tests.test_robot_trial_release import _wrench_config
+        anchor, frame, safety = _reviewed_files(tmp_path)
+        wrench = _wrench_config(tmp_path / "wrench.json")
+        configs = {}
+        for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
+            p = tmp_path / (key+".json")
+            atomic_json(p, value)
+            configs[key] = str(p)
+        c = rounds.paths(ROOT / "config/robot_leg_round.json")
+        c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
+            safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
+            robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
+            tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
+            collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
+            pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+            robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
+                controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
+        c["trial_kind"] = "empty_load" if empty else "dummy_leg_reference"
+        for kind in (*EVIDENCE_KINDS, *(() if empty else LOADED_EVIDENCE)):
+            p = tmp_path / (kind+".txt")
+            p.write_text("SYNTHETIC TEST EVIDENCE ONLY", encoding="ascii")
+            c["site_evidence"][kind] = dict(passed=True, path=str(p), sha256=sha256_file(p))
+        p = tmp_path / "round.json"
+        atomic_json(p, c)
+&gt;       assert rounds.check_config(p) == []
+E       assert ["algorithm s...\\config.py'"] == []
+E         
+E         Left contains one more item: "algorithm sources: [Errno 2] No such file or directory: 'C:\\\\Users\\\\CSR001279\\\\Documents\\\\ChatGPT\\\\康复\\\\完整算法验证_2026-09-29\\\\config.py'"
+E         Use -v to get more diff
+
+tests\test_robot_leg_round.py:307: AssertionError</failure></testcase></testsuite></testsuites>

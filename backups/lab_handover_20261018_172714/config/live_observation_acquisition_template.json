@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "scope": "LIVE_OBSERVATION_ACQUISITION",
+  "reviewed": false,
+  "connection": {
+    "robot_ip": "192.168.50.103",
+    "local_ip": "192.168.50.209",
+    "robot_class": "xMateRobot"
+  },
+  "expected_identity": {
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "controller_version": "3.2.1",
+    "sdk_version": "0.7.0"
+  },
+  "allowed_power_states": [],
+  "budgets": {
+    "startup_s": null,
+    "query_s": null,
+    "progress_s": null,
+    "sample_age_s": null,
+    "ack_s": null,
+    "log_s": null,
+    "shutdown_s": null,
+    "terminate_s": null,
+    "state_age_s": null,
+    "skew_s": null,
+    "provenance": null
+  },
+  "notes": [
+    "Template only. Every null and the reviewed=false flag must be filled from a site review.",
+    "Connection and identity values were reconfirmed by a read-only xCoreSDK 0.7.0 session on 2026-10-16; physical setup and safety values still require site review.",
+    "used with: python -m scripts.acquire_robot_data --mode live --wrench-config <file>",
+    "budgets.provenance must not be NOT_SAFETY_THRESHOLDS.",
+    "The reviewed flag records a human review performed outside this process; it is not an approval service.",
+    "This configuration never authorizes robot motion. Motion remains NO_GO."
+  ]
+}

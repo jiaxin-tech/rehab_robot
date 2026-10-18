@@ -2,8 +2,10 @@
 
 Only ``--mode execute`` together with ``--enable-motion`` can reach the motion
 adapter.  All offline review gates are evaluated before the adapter is created
-or a robot connection is attempted.  The execute path assumes the operator has
-prepared mode and servo power externally; it never powers on or moves to start.
+or a robot connection is attempted.  Normal releases assume the operator has
+prepared mode and servo power externally.  The separately reviewed empty-load
+commissioning release may opt into a same-session realtime preparation that
+powers on but never moves to the start pose.
 """
 
 from __future__ import annotations
@@ -40,6 +42,10 @@ from lower_limb_sim.reference_measured_asymmetric import (
 )
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 from safety.experiment_safety import load_experiment_safety_config
+from safety.empty_load_commissioning_release import (
+    SCOPE as EMPTY_LOAD_COMMISSIONING_SCOPE,
+    load_and_validate_empty_load_commissioning_release,
+)
 from safety.robot_trial_release import load_and_validate_robot_trial_release
 from scripts.acquire_robot_data import (
     build_live_wrench_provider,
@@ -94,6 +100,52 @@ def _default_motion_factory(adapter: Any):
     return RokaeCartesianMotionAdapter(adapter)
 
 
+def _prepare_empty_load_realtime_session(
+    adapter: Any,
+    *,
+    filter_hz: float,
+    network_tolerance_percent: float,
+) -> None:
+    """Connect and prepare RT mode without starting a motion loop.
+
+    This is intentionally reachable only after the caller has validated the
+    hash-bound empty-load commissioning release.  Keeping preparation and
+    execution on the same native session avoids a prepare CLI disconnect from
+    undoing realtime mode before the executor attaches.
+    """
+
+    if not float(network_tolerance_percent).is_integer():
+        raise ValueError("reviewed RT network tolerance must be an integer percent")
+    adapter.connect()
+    native = getattr(adapter, "native_robot", None)
+    if native is None or not callable(getattr(native, "enable_realtime", None)):
+        raise TypeError("empty-load realtime preparation requires the native SDK wrapper")
+    native.rt_network_tolerance_percent = int(network_tolerance_percent)
+    native.rt_filter_hz = float(filter_hz)
+    native.enable_realtime(load=0.0)
+
+
+def _cleanup_empty_load_realtime_session(adapter: Any) -> list[BaseException]:
+    """Best-effort stop, power-down and disconnect for a prepared session."""
+
+    errors: list[BaseException] = []
+    native = getattr(adapter, "native_robot", None)
+    if native is not None:
+        try:
+            native.stop_realtime(switch_to_nrt=True)
+        except BaseException as exc:
+            errors.append(exc)
+        try:
+            native.disable()
+        except BaseException as exc:
+            errors.append(exc)
+    try:
+        adapter.disconnect()
+    except BaseException as exc:
+        errors.append(exc)
+    return errors
+
+
 def run_execute(
     *,
     robot_ip: str,
@@ -103,6 +155,7 @@ def run_execute(
     frame_config_path: str | Path,
     safety_config_path: str | Path,
     trajectory_id: str,
+    reference_path_override: str | Path | None = None,
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
@@ -116,24 +169,49 @@ def run_execute(
     wrench_config_path: str | Path | None = None,
     execution_guard=None,
     dispatch_observer=None,
+    prepare_realtime: bool = False,
 ) -> dict[str, Any]:
     """Run one real episode only after static and live gates both pass."""
     validate_collision_source(collision_source, collision_event_max_age_s)
     anchor = load_start_anchor(anchor_path)
     frame = load_rehab_frame_config(frame_config_path)
     safety = load_experiment_safety_config(safety_config_path)
-    reference_path = _reference_path(trajectory_id)
+    reference_path = (
+        Path(reference_path_override).resolve()
+        if reference_path_override is not None
+        else _reference_path(trajectory_id)
+    )
+    if reference_path_override is not None and release_approval_path is None:
+        raise PermissionError(
+            "real robot execution blocked: reference override requires a bound release"
+        )
     release_approval = None
     if release_approval_path is not None:
         if wrench_config_path is None:
             raise ValueError("release approval requires --wrench-config")
-        release_approval = load_and_validate_robot_trial_release(
+        release_payload = json.loads(
+            Path(release_approval_path).read_text(encoding="utf-8")
+        )
+        release_loader = (
+            load_and_validate_empty_load_commissioning_release
+            if release_payload.get("scope") == EMPTY_LOAD_COMMISSIONING_SCOPE
+            else load_and_validate_robot_trial_release
+        )
+        release_approval = release_loader(
             release_approval_path,
             reference_path=reference_path,
             safety_config_path=safety_config_path,
             frame_config_path=frame_config_path,
             anchor_path=anchor_path,
             wrench_config_path=wrench_config_path,
+        )
+    if prepare_realtime and (
+        release_approval is None
+        or release_approval.payload.get("scope") != EMPTY_LOAD_COMMISSIONING_SCOPE
+    ):
+        raise PermissionError(
+            "same-session realtime preparation is restricted to the reviewed "
+            "empty-load commissioning release"
         )
     trajectory, audit, trajectory_metadata = build_start_anchored_relative_trajectory(
         reference_path,
@@ -242,6 +320,7 @@ def run_execute(
     executor: RokaeMotionExecutor | None = None
     completed = False
     result = None
+    realtime_prepared_here = False
     try:
         logger.start()
         adapter = (
@@ -251,6 +330,19 @@ def run_execute(
                                           collision_source=collision_source,
                                           collision_event_max_age_s=collision_event_max_age_s)
         )
+        if prepare_realtime:
+            if safety.reviewed_rt_filter_hz is None:
+                raise PermissionError("reviewed RT filter frequency is unavailable")
+            if safety.reviewed_rt_network_tolerance_percent is None:
+                raise PermissionError("reviewed RT network tolerance is unavailable")
+            # Own cleanup before the first connection attempt so a partial
+            # enable failure still reaches stop/power-down/disconnect.
+            realtime_prepared_here = True
+            _prepare_empty_load_realtime_session(
+                adapter,
+                filter_hz=safety.reviewed_rt_filter_hz,
+                network_tolerance_percent=safety.reviewed_rt_network_tolerance_percent,
+            )
         wrench_provider = build_live_wrench_provider(
             Path(episode_dir),
             config=live_wrench_config,
@@ -262,8 +354,9 @@ def run_execute(
             wrench_provider=wrench_provider,
             wrench_hz=float(wrench_hz),
         )
-        acquisition.start(manage_connection=True)
-        if not acquisition.wait_until_healthy(timeout_s=3.0):
+        acquisition.start(manage_connection=not realtime_prepared_here)
+        startup_timeout_s = float(live_wrench_config["budgets"]["startup_s"]) + 0.5
+        if not acquisition.wait_until_healthy(timeout_s=startup_timeout_s):
             raise RuntimeError(
                 "state/wrench streams did not become healthy: "
                 + acquisition.latest_health().invalid_reason
@@ -374,6 +467,12 @@ def run_execute(
                     logger_may_close
                     and not acquisition.live_producer_names
                 )
+        if (
+            realtime_prepared_here
+            and adapter is not None
+            and (acquisition is None or not acquisition.live_producer_names)
+        ):
+            cleanup_errors.extend(_cleanup_empty_load_realtime_session(adapter))
         if logger.pending_write_count:
             logger_may_close = False
         if logger_may_close:
@@ -435,8 +534,21 @@ def build_parser() -> argparse.ArgumentParser:
             MEASURED_ASYMMETRIC_NOMINAL_ID,
         ),
     )
+    parser.add_argument(
+        "--reference-path",
+        default=None,
+        help="release-bound reference override; execute only",
+    )
     parser.add_argument("--preview-output-dir")
     parser.add_argument("--enable-motion", action="store_true")
+    parser.add_argument(
+        "--prepare-realtime",
+        action="store_true",
+        help=(
+            "same-session RT mode preparation; allowed only by the hash-bound "
+            "empty-load fixture commissioning release"
+        ),
+    )
     parser.add_argument("--collision-source", choices=("query", "events"), default="query")
     parser.add_argument("--collision-event-max-age-s", type=float, default=None,
                         help="required reviewed event freshness budget for events mode")
@@ -523,6 +635,7 @@ def main(
             frame_config_path=args.frame_config,
             safety_config_path=args.safety_config,
             trajectory_id=args.trajectory,
+            reference_path_override=args.reference_path,
             enable_motion=args.enable_motion,
             operator_confirmation=args.operator_confirmation,
             local_ip=args.local_ip,
@@ -534,6 +647,7 @@ def main(
             collision_event_max_age_s=args.collision_event_max_age_s,
             release_approval_path=args.release_approval,
             wrench_config_path=args.wrench_config,
+            prepare_realtime=args.prepare_realtime,
         )
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0
