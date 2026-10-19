@@ -18,7 +18,7 @@ from tests.test_run_rehab_experiment import _reviewed_files
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 
 
-def _wrench_config(path: Path) -> Path:
+def _wrench_config(path: Path, *, allowed_operation_states=None) -> Path:
     payload = {
         "schema_version": 1,
         "scope": "LIVE_OBSERVATION_ACQUISITION",
@@ -35,6 +35,8 @@ def _wrench_config(path: Path) -> Path:
             "state_age_s": 1.0, "skew_s": 1.0, "provenance": "REVIEWED_SITE_BUDGET",
         },
     }
+    if allowed_operation_states is not None:
+        payload["allowed_operation_states"] = allowed_operation_states
     path.write_text(json.dumps(payload), encoding="utf-8")
     return path
 

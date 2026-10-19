@@ -79,6 +79,14 @@ def check_config(config_path):
         except (ValueError, OSError, KeyError, TypeError, PermissionError) as exc:
             problems.append(name + ": " + str(exc))
     check("scope", lambda: scope_for(c))
+    if is_loaded_trial(c) and c.get("realtime_preparation") != "same_session":
+        problems.append("loaded setup must explicitly review realtime_preparation=same_session")
+    def realtime_wrench():
+        if is_loaded_trial(c):
+            wrench = load_live_wrench_config(c["wrench_config"])
+            if "rtcontrolling" not in wrench.get("allowed_operation_states", []):
+                raise ValueError("same-session RT wrench config must review rtcontrolling")
+    check("RT wrench states", realtime_wrench)
     from hardware.safety_events import validate_collision_source
     check("collision events", lambda: validate_collision_source(c.get("collision_source"), c.get("collision_event_max_age_s")))
     def expiry():
@@ -190,12 +198,21 @@ def check_config(config_path):
 
 
 def report(directory, state):
-    atomic_json(directory / "round_status.json", state)
+    errors = []
+    try:
+        atomic_json(directory / "round_status.json", state)
+    except OSError as exc:
+        errors.append(exc)
     scores = state.get("endpoints")
     lines = ["# 本轮机器人与假腿实验报告", "", f"- 状态：{state['status']}",
         f"- 实验类型：{state.get('trial_kind', '未确定')}", f"- 训练状态：{state.get('training_status', 'NOT_STARTED')}",
         f"- 原因：{state.get('reason') or '无'}", "",
         "训练只使用完整、通过检查的真实采集记录。空载联调不进入训练。", ""]
+    if state.get("software_verification_only") is True:
+        lines[2:2] = ["SOFTWARE VERIFICATION ONLY: SYNTHETIC HARDWARE / NOT LAB RESULTS", ""]
+    if state.get("robot_session_cleanup"):
+        lines += ["机器人会话清理：" + state["robot_session_cleanup"],
+                  "此项记录 SDK 调用完成；实际停止状态仍需现场核对。", ""]
     if scores:
         lines += [f"E3：{scores['E3']:.6g}；E2：{scores['E2']:.6g}；峰值比：{scores['peak_ratio']:.6g}。", "",
             "本轮为参考初始化，自身归一化得到 1，不代表优化有效。", ""]
@@ -215,7 +232,13 @@ def report(directory, state):
         lines += ["待补齐：", ""] + ["- " + x for x in state["blockers"]]
     lines += ["", "数据文件：leg/leg.csv、robot/ 内的机器人记录、dispatch.csv。", "",
               "详细来源哈希、对齐方法和拟合诊断保存在本轮 JSON 中。"]
-    (directory / "report.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
+    try:
+        (directory / "report.md").write_text("\n".join(lines)+"\n", encoding="utf-8")
+    except OSError as exc:
+        errors.append(exc)
+    if errors:
+        print("ROUND_REPORT_WRITE_FAILED " + json.dumps(state, ensure_ascii=True), file=sys.stderr)
+        raise OSError("round report persistence failed: " + "; ".join(map(str, errors))) from errors[0]
 
 
 def prepare(config_path, directory, *, capture_fn=run_capture):
@@ -378,9 +401,14 @@ def _run_once(directory, *, capture_factory, execute_fn):
                 collision_event_max_age_s=c["collision_event_max_age_s"]),
             wrench_hz=c["wrench_hz"], collision_source=c["collision_source"],
             collision_event_max_age_s=c["collision_event_max_age_s"], release_approval_path=directory / "release_approval.json",
+            prepare_realtime=is_loaded_trial(c),
             wrench_config_path=c["wrench_config"], execution_guard=lambda: guard(initial=not dispatches), dispatch_observer=dispatched)
         if result.get("completed") is not True or not dispatches:
             raise RuntimeError("robot did not confirm complete reference execution")
+        if is_loaded_trial(c) and result.get("same_session_realtime_cleanup_completed") is not True:
+            raise RuntimeError("loaded RT cleanup not confirmed; training blocked")
+        if result.get("same_session_realtime_cleanup_completed") is True:
+            state["robot_session_cleanup"] = "SDK_STOP_POWER_DOWN_DISCONNECT_COMPLETED"
         deadline = time.perf_counter()+c["post_roll_s"]
         while time.perf_counter() < deadline:
             reason = guard()
@@ -421,14 +449,21 @@ def _run_once(directory, *, capture_factory, execute_fn):
         return state
     except BaseException as exc:
         state.update(status="ROUND_FAILED", training_status="NOT_UPDATED", reason=f"{type(exc).__name__}: {exc}")
-        if dispatches:
-            pd.DataFrame(dispatches).to_csv(directory / "dispatch.csv", index=False)
+        # Stop the producer before attempting any potentially failing writes.
         if capture:
             try:
                 capture.stop()
             except BaseException as cleanup:
-                state["capture_cleanup_error"] = str(cleanup)
-        report(directory, state)
+                state["capture_cleanup_error"] = f"{type(cleanup).__name__}: {cleanup}"
+        if dispatches:
+            try:
+                pd.DataFrame(dispatches).to_csv(directory / "dispatch.csv", index=False)
+            except BaseException as persistence:
+                state["dispatch_persistence_error"] = str(persistence)
+        try:
+            report(directory, state)
+        except BaseException as persistence:
+            exc.add_note("failure report could not be fully saved: " + str(persistence))
         raise
 
 

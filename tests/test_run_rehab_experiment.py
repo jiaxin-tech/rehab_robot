@@ -151,6 +151,13 @@ def test_missing_enable_motion_fails_before_adapter_construction(tmp_path):
     assert not (tmp_path / "episode").exists()
 
 
+def test_same_session_without_release_blocks_before_adapter_construction(tmp_path):
+    calls = []
+    with pytest.raises(PermissionError, match="requires a reviewed release"):
+        _call(tmp_path, lambda ip: calls.append(ip), prepare_realtime=True)
+    assert calls == []
+
+
 def test_wrong_operator_confirmation_fails_before_connection(tmp_path):
     calls = []
     with pytest.raises(PermissionError, match="operator_confirmation_missing"):

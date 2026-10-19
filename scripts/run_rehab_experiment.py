@@ -2,10 +2,9 @@
 
 Only ``--mode execute`` together with ``--enable-motion`` can reach the motion
 adapter.  All offline review gates are evaluated before the adapter is created
-or a robot connection is attempted.  Normal releases assume the operator has
-prepared mode and servo power externally.  The separately reviewed empty-load
-commissioning release may opt into a same-session realtime preparation that
-powers on but never moves to the start pose.
+or a robot connection is attempted. Reviewed releases may opt into same-session
+RT preparation. Loaded trials require an explicit bound setup and valid collision
+state; the empty-load commissioning exception never applies to loaded trials.
 """
 
 from __future__ import annotations
@@ -46,7 +45,9 @@ from safety.empty_load_commissioning_release import (
     SCOPE as EMPTY_LOAD_COMMISSIONING_SCOPE,
     load_and_validate_empty_load_commissioning_release,
 )
-from safety.robot_trial_release import load_and_validate_robot_trial_release
+from safety.robot_trial_release import (
+    LOADED_SCOPE, load_and_validate_robot_trial_release, read_json,
+)
 from scripts.acquire_robot_data import (
     build_live_wrench_provider,
     load_live_wrench_config,
@@ -146,6 +147,40 @@ def _cleanup_empty_load_realtime_session(adapter: Any) -> list[BaseException]:
     return errors
 
 
+def _require_loaded_realtime_setup(release: Any) -> None:
+    payload = release.require_current(check_files=True)
+    if payload.get("scope") != LOADED_SCOPE:
+        raise PermissionError("same-session RT requires a reviewed loaded or commissioning release")
+    setup_path = (Path(release.approval_path).parent / payload["trial_setup"]["path"]).resolve()
+    setup = read_json(setup_path)
+    config = read_json(setup_path.parent / setup["inputs"]["round_config"]["path"])
+    if config.get("realtime_preparation") != "same_session":
+        raise PermissionError("bound round setup must explicitly review same_session RT preparation")
+
+
+def _prepare_loaded_realtime_session(adapter: Any, *, release: Any,
+                                     filter_hz: float, network_tolerance_percent: float) -> None:
+    # load=0 is the SDK interface sentinel; it does not configure payload mass.
+    # The controller toolset is preserved and checked again by live preflight.
+    if not float(network_tolerance_percent).is_integer():
+        raise ValueError("reviewed RT network tolerance must be an integer percent")
+    adapter.connect()
+    release.require_current(check_files=True)
+    summary = adapter.get_robot_state_summary()
+    release.require_runtime(summary)
+    if (summary.get("collision_state_query_valid") is not True
+            or summary.get("collision_state") is not False):
+        raise PermissionError("loaded RT preparation requires valid clear collision state")
+    native = getattr(adapter, "native_robot", None)
+    if native is None or not callable(getattr(native, "enable_realtime", None)):
+        raise TypeError("loaded realtime preparation requires the native SDK wrapper")
+    if native.get_robot_mode() != "IDLE":
+        raise PermissionError("loaded RT preparation requires initial IDLE state")
+    native.rt_network_tolerance_percent = int(network_tolerance_percent)
+    native.rt_filter_hz = float(filter_hz)
+    native.enable_realtime(load=0.0)
+
+
 def run_execute(
     *,
     robot_ip: str,
@@ -205,14 +240,16 @@ def run_execute(
             anchor_path=anchor_path,
             wrench_config_path=wrench_config_path,
         )
-    if prepare_realtime and (
-        release_approval is None
-        or release_approval.payload.get("scope") != EMPTY_LOAD_COMMISSIONING_SCOPE
-    ):
-        raise PermissionError(
-            "same-session realtime preparation is restricted to the reviewed "
-            "empty-load commissioning release"
-        )
+    loaded_preparation = False
+    if prepare_realtime:
+        if release_approval is None:
+            raise PermissionError("same-session realtime preparation requires a reviewed release")
+        if release_approval.payload.get("scope") != EMPTY_LOAD_COMMISSIONING_SCOPE:
+            _require_loaded_realtime_setup(release_approval)
+            loaded_preparation = True
+        if (live_wrench_config is None
+                or "rtcontrolling" not in live_wrench_config.get("allowed_operation_states", [])):
+            raise PermissionError("same-session RT wrench config must review rtcontrolling")
     trajectory, audit, trajectory_metadata = build_start_anchored_relative_trajectory(
         reference_path,
         current_tcp_start_pose=anchor.tcp_pose_base,
@@ -338,11 +375,11 @@ def run_execute(
             # Own cleanup before the first connection attempt so a partial
             # enable failure still reaches stop/power-down/disconnect.
             realtime_prepared_here = True
-            _prepare_empty_load_realtime_session(
-                adapter,
-                filter_hz=safety.reviewed_rt_filter_hz,
-                network_tolerance_percent=safety.reviewed_rt_network_tolerance_percent,
-            )
+            preparation = (_prepare_loaded_realtime_session if loaded_preparation
+                           else _prepare_empty_load_realtime_session)
+            preparation(adapter, filter_hz=safety.reviewed_rt_filter_hz,
+                        network_tolerance_percent=safety.reviewed_rt_network_tolerance_percent,
+                        **({"release": release_approval} if loaded_preparation else {}))
         wrench_provider = build_live_wrench_provider(
             Path(episode_dir),
             config=live_wrench_config,
@@ -470,9 +507,20 @@ def run_execute(
         if (
             realtime_prepared_here
             and adapter is not None
-            and (acquisition is None or not acquisition.live_producer_names)
         ):
-            cleanup_errors.extend(_cleanup_empty_load_realtime_session(adapter))
+            if acquisition is not None and acquisition.live_producer_names:
+                # Stop/power-down must still be attempted; avoid disconnecting a
+                # session while a native producer may still be using it.
+                native = getattr(adapter, "native_robot", None)
+                for action in (lambda: native.stop_realtime(switch_to_nrt=True),
+                               lambda: native.disable()):
+                    try:
+                        action()
+                    except BaseException as cleanup_exc:
+                        cleanup_errors.append(cleanup_exc)
+                cleanup_errors.append(RuntimeError("live producers remain; disconnect unconfirmed"))
+            else:
+                cleanup_errors.extend(_cleanup_empty_load_realtime_session(adapter))
         if logger.pending_write_count:
             logger_may_close = False
         if logger_may_close:
@@ -506,6 +554,7 @@ def run_execute(
         "commands_dispatched": result.commands_dispatched if result else 0,
         "stop_reason": result.stop_reason if result else None,
         "motion_was_explicitly_enabled": enable_motion,
+        "same_session_realtime_cleanup_completed": realtime_prepared_here,
     }
 
 
@@ -545,8 +594,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--prepare-realtime",
         action="store_true",
         help=(
-            "same-session RT mode preparation; allowed only by the hash-bound "
-            "empty-load fixture commissioning release"
+            "same-session RT mode preparation; requires a hash-bound commissioning "
+            "release or an explicitly reviewed loaded same_session setup"
         ),
     )
     parser.add_argument("--collision-source", choices=("query", "events"), default="query")

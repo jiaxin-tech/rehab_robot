@@ -65,7 +65,7 @@ def build(output):
         if sha(target) != digest:
             raise ValueError("copy checksum mismatch")
         manifest.append(dict(path=os.path.relpath(target, ROOT).replace("\\", "/"), sha256=digest))
-    draft = dict(config, reviewed=False, trial_kind="dummy_leg_reference", algorithm_dependencies=dependencies,
+    draft = dict(config, reviewed=False, trial_kind="dummy_leg_reference", realtime_preparation="same_session", algorithm_dependencies=dependencies,
                  algorithm_root=os.path.relpath(frozen_root, output), candidates=candidates)
     for key in ("leg_config", "calibration", "analysis", "safety_config", "frame_config", "wrench_config"):
         draft[key] = os.path.relpath((config_path.parent / config[key]).resolve(), output).replace("\\", "/")

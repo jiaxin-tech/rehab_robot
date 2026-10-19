@@ -3,6 +3,7 @@ from copy import deepcopy
 from datetime import datetime, timedelta, timezone
 import ctypes
 import json
+import os
 from pathlib import Path
 import struct
 import subprocess
@@ -23,6 +24,23 @@ from safety.robot_trial_release import read_json, sha256_file, EVIDENCE_KINDS, L
 import scripts.run_robot_leg_round as rounds
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def portable_test_config():
+    """Relocate checkout files only, always retaining frozen expected hashes."""
+    c = rounds.paths(ROOT / "config/robot_leg_round.json")
+    if os.environ.get("REHAB_TEST_ROUND_CONFIG"):
+        portable = rounds.paths(os.environ["REHAB_TEST_ROUND_CONFIG"])
+        assert portable["algorithm_sha256"] == c["algorithm_sha256"]
+        assert sorted(portable["algorithm_dependencies"].values()) == sorted(c["algorithm_dependencies"].values())
+        c = portable
+    def relocate(name):
+        parts = name.replace("\\", "/").split("/rehab_robot/", 1)
+        return str(ROOT / parts[1]) if len(parts) == 2 else name
+    c["algorithm_dependencies"] = {relocate(p): h for p, h in c["algorithm_dependencies"].items()}
+    for item in c["candidates"]:
+        item["path"] = relocate(item["path"])
+    return c
 
 
 def capture_config():
@@ -78,7 +96,7 @@ def measured_fixture(directory, reference=DEFAULT_REFERENCE_PATH):
 
 
 def training_request(directory, measured):
-    c = rounds.paths(ROOT / "config/robot_leg_round.json")
+    c = portable_test_config()
     return dict(algorithm_root=c["algorithm_root"], algorithm_sha256=c["algorithm_sha256"],
         algorithm_dependencies=c["algorithm_dependencies"], geometry_m=c["geometry_m"],
         candidates=c["candidates"], reference_candidate_id=c["reference_candidate_id"],
@@ -282,19 +300,19 @@ def prepared_round(tmp_path, *, empty=False, capture_only=False):
     from tests.test_run_rehab_experiment import _reviewed_files
     from tests.test_robot_trial_release import _wrench_config
     anchor, frame, safety = _reviewed_files(tmp_path)
-    wrench = _wrench_config(tmp_path / "wrench.json")
+    wrench = _wrench_config(tmp_path / "wrench.json", allowed_operation_states=["idle", "rtcontrolling"])
     configs = {}
     for key, value in (("leg_config", capture_config()), ("calibration", calibration_config()), ("analysis", analysis_config())):
         p = tmp_path / (key+".json")
         atomic_json(p, value)
         configs[key] = str(p)
-    c = rounds.paths(ROOT / "config/robot_leg_round.json")
+    c = portable_test_config()
     c.update(configs, reviewed=True, setup_id="SYNTHETIC_TEST_ONLY", reviewer="test", operator="test",
         safety_config=str(safety), frame_config=str(frame), wrench_config=str(wrench),
         robot_ip="192.0.2.1", local_ip="192.0.2.2", robot_class="xMateRobot",
         tool_name="rehab_cuff", workpiece_name="rehab_fixture", wrench_hz=50.,
         collision_event_max_age_s=.5, expires_at=(datetime.now(timezone.utc)+timedelta(hours=1)).isoformat(),
-        pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5,
+        pre_roll_s=.001, post_roll_s=.001, max_leg_start_age_s=.5, realtime_preparation="same_session",
         robot_identity=dict(robot_model="xMate6-Pro", robot_serial_number="SN-RUNNER",
             controller_version="controller-test", sdk_version="0.7.0"), site_evidence={})
     if empty and capture_only:
@@ -334,7 +352,7 @@ def synthetic_execute(**kwargs):
     d = pd.read_csv(kwargs["episode_dir"].parent / "leg/dispatch.csv")
     for r in d.itertuples():
         kwargs["dispatch_observer"](r.trajectory_time_s, r.dispatch_start_ns, r.dispatch_end_ns)
-    return dict(completed=True, commands_dispatched=len(d))
+    return dict(completed=True, commands_dispatched=len(d), same_session_realtime_cleanup_completed=True)
 
 
 def test_full_round_with_real_release_analysis_and_training(tmp_path):
