@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -112,6 +113,36 @@ class ValidatedEmptyLoadCommissioningRelease:
             "approval_sha256": self.approval_sha256,
             "approval": self.payload,
         }
+
+    def _claim_path(self) -> Path:
+        return _ROOT / "results" / "commissioning_release_uses" / (self.approval_sha256 + ".json")
+
+    def require_unused(self) -> None:
+        self.require_current()
+        if self._claim_path().exists():
+            raise PermissionError("commissioning release already claimed; no automatic retry")
+
+    def claim_execution(self) -> str:
+        """Conservatively consume at arming, before the first command intent.
+
+        Exclusive creation arbitrates independent processes on this checkout.
+        An incomplete claim remains consumed after a crash or write failure.
+        This is a local ledger, not a cross-machine authorization service.
+        """
+        self.require_current(check_files=True)
+        path = self._claim_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with path.open("x", encoding="utf-8") as stream:
+                json.dump(dict(approval_sha256=self.approval_sha256,
+                               approval_path=self.approval_path,
+                               claimed_at=datetime.now(timezone.utc).isoformat(),
+                               pid=os.getpid(), state="CLAIMED_NO_AUTOMATIC_RETRY"), stream)
+                stream.flush()
+                os.fsync(stream.fileno())
+        except FileExistsError as exc:
+            raise PermissionError("commissioning release already claimed; no automatic retry") from exc
+        return str(path)
 
     def require_current(self, *, check_files: bool = False) -> dict[str, Any]:
         if self._token is not _VALIDATED:
@@ -371,6 +402,7 @@ def load_and_validate_empty_load_commissioning_release(
         _token=_VALIDATED,
     )
     result.require_current(check_files=True)
+    result.require_unused()
     return result
 
 

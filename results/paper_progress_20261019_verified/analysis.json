@@ -1,0 +1,354 @@
+{
+  "knee_scan_fit": {
+    "slope_counts_per_deg": 36794.03559955393,
+    "zero_counts": -2615016.542023978,
+    "rmse_deg": 1.0782751221541156,
+    "max_abs_deg": 2.075070667720837
+  },
+  "knee_leave_one_angle_out": {
+    "predictions_deg": [
+      -0.7289107679307936,
+      13.467706699722472,
+      31.264330406119452,
+      44.80745624378585,
+      57.54847869144659,
+      47.599904960418364,
+      30.22855470103442,
+      15.471404931301766,
+      -0.2697293533394109
+    ],
+    "errors_deg": [
+      -0.7289107679307936,
+      -1.5322933002775283,
+      1.264330406119452,
+      -0.19254375621414965,
+      -2.45152130855341,
+      2.599904960418364,
+      0.22855470103441888,
+      0.4714049313017661,
+      -0.2697293533394109
+    ],
+    "rmse_deg": 1.3996632314695077,
+    "max_abs_deg": 2.599904960418364
+  },
+  "knee_direction_fits": {
+    "flexion_including_start": {
+      "slope_counts_per_deg": 36460.64167681445,
+      "zero_counts": -2625656.470345591,
+      "rmse_deg": 0.9025773614121521,
+      "max_abs_deg": 1.668286559291225
+    },
+    "extension": {
+      "slope_counts_per_deg": 38148.88164515962,
+      "zero_counts": -2619698.3955453583,
+      "rmse_deg": 0.5312390130715077,
+      "max_abs_deg": 0.8869129026041946
+    }
+  },
+  "knee_out_of_fit_rmse_deg": 7.162721326036934,
+  "knee_out_of_fit_max_abs_deg": 12.217197375051114,
+  "old_AB_slope": 45155.236677473906,
+  "slope_change_percent": -18.51657015473255,
+  "knee_scan_angle_range_deg": [
+    0.0,
+    60.0
+  ],
+  "reference_knee_range_deg": [
+    18.31912469027814,
+    124.78660371882795
+  ],
+  "reference_time_fraction_above_knee_calibration_range": 0.6483333333333333,
+  "statics": [
+    {
+      "segment": "static_10s_20261017_143046_907",
+      "rows": 4887,
+      "duration_s": 10.0081645,
+      "rate_hz": 488.2014079604707,
+      "interval_ms": {
+        "count": 4886,
+        "mean": 2.048334936553418,
+        "p50": 1.7661,
+        "p95": 3.458625,
+        "p99": 3.7632149999999918,
+        "max": 32.6052
+      },
+      "read_ms": {
+        "count": 4887,
+        "mean": 1.122520175977082,
+        "p50": 1.0467,
+        "p95": 2.0014,
+        "p99": 2.090712,
+        "max": 31.925
+      },
+      "gaps_over_4ms": 39,
+      "gaps_over_10ms": 4,
+      "fraction_over_4ms": 0.007981989357347523,
+      "required_missing": {
+        "axis1_position_raw": 0,
+        "axis1_torque_3c1a_nm": 0,
+        "axis4_position_raw": 0,
+        "axis4_torque_3c1a_nm": 0
+      },
+      "joints": {
+        "hip": {
+          "position_range_counts": 23.0,
+          "torque_mean_nm": -23.29881992578165,
+          "torque_sd_nm": 0.12216954563370828,
+          "torque_end_minus_start_nm": 0.008253816698417182,
+          "faults": [
+            "False"
+          ],
+          "enabled": [
+            "False"
+          ],
+          "error_codes": [
+            "0x0000"
+          ]
+        },
+        "knee": {
+          "position_range_counts": 11.0,
+          "torque_mean_nm": -2.04670362821844,
+          "torque_sd_nm": 0.07241493198163734,
+          "torque_end_minus_start_nm": -0.0018697019483222554,
+          "faults": [
+            "False"
+          ],
+          "enabled": [
+            "False"
+          ],
+          "error_codes": [
+            "0x0000"
+          ]
+        }
+      }
+    },
+    {
+      "segment": "static_30s_20261017_143106_873",
+      "rows": 14607,
+      "duration_s": 30.0066517,
+      "rate_hz": 486.7587408961061,
+      "interval_ms": {
+        "count": 14606,
+        "mean": 2.0544058400657264,
+        "p50": 1.7675,
+        "p95": 3.4664,
+        "p99": 3.9488000000000016,
+        "max": 37.9195
+      },
+      "read_ms": {
+        "count": 14607,
+        "mean": 1.1297608201547205,
+        "p50": 1.0493,
+        "p95": 2.0103,
+        "p99": 2.0831880000000003,
+        "max": 33.4576
+      },
+      "gaps_over_4ms": 142,
+      "gaps_over_10ms": 12,
+      "fraction_over_4ms": 0.009722032041626728,
+      "required_missing": {
+        "axis1_position_raw": 0,
+        "axis1_torque_3c1a_nm": 0,
+        "axis4_position_raw": 0,
+        "axis4_torque_3c1a_nm": 0
+      },
+      "joints": {
+        "hip": {
+          "position_range_counts": 25.0,
+          "torque_mean_nm": -23.298468328039693,
+          "torque_sd_nm": 0.1217324258226305,
+          "torque_end_minus_start_nm": -0.017054309583691918,
+          "faults": [
+            "False"
+          ],
+          "enabled": [
+            "False"
+          ],
+          "error_codes": [
+            "0x0000"
+          ]
+        },
+        "knee": {
+          "position_range_counts": 11.0,
+          "torque_mean_nm": -2.045375650306253,
+          "torque_sd_nm": 0.07210375502490489,
+          "torque_end_minus_start_nm": -0.0031789596766640393,
+          "faults": [
+            "False"
+          ],
+          "enabled": [
+            "False"
+          ],
+          "error_codes": [
+            "0x0000"
+          ]
+        }
+      }
+    },
+    {
+      "segment": "stability_240s_20261017_143202_596",
+      "rows": 117130,
+      "duration_s": 240.007306,
+      "rate_hz": 488.02264377735236,
+      "interval_ms": {
+        "count": 117129,
+        "mean": 2.0490852478890798,
+        "p50": 1.7633,
+        "p95": 3.4557,
+        "p99": 3.777788,
+        "max": 39.1875
+      },
+      "read_ms": {
+        "count": 117130,
+        "mean": 1.1246950516520107,
+        "p50": 1.0476,
+        "p95": 2.0077,
+        "p99": 2.082370999999999,
+        "max": 35.0398
+      },
+      "gaps_over_4ms": 935,
+      "gaps_over_10ms": 115,
+      "fraction_over_4ms": 0.007982651606348555,
+      "required_missing": {
+        "axis1_position_raw": 0,
+        "axis1_torque_3c1a_nm": 0,
+        "axis4_position_raw": 0,
+        "axis4_torque_3c1a_nm": 0
+      },
+      "joints": {
+        "hip": {
+          "position_range_counts": 29.0,
+          "torque_mean_nm": -23.302121406789013,
+          "torque_sd_nm": 0.11883862737459225,
+          "torque_end_minus_start_nm": 0.004575914519559632,
+          "faults": [
+            "False"
+          ],
+          "enabled": [
+            "False"
+          ],
+          "error_codes": [
+            "0x0000"
+          ]
+        },
+        "knee": {
+          "position_range_counts": 12.0,
+          "torque_mean_nm": -2.0357979956123473,
+          "torque_sd_nm": 0.06890617819717094,
+          "torque_end_minus_start_nm": 0.014180750990569368,
+          "faults": [
+            "False"
+          ],
+          "enabled": [
+            "False"
+          ],
+          "error_codes": [
+            "0x0000"
+          ]
+        }
+      }
+    }
+  ],
+  "wrench": {
+    "query_duration_ms": {
+      "count": 1430,
+      "mean": 1.3589144055944056,
+      "p50": 0.8815500000000001,
+      "p95": 1.2493899999999996,
+      "p99": 1.8747260000000001,
+      "max": 311.9857
+    },
+    "budget_ms": 50.0,
+    "over_budget_count": 2,
+    "sample_count": 1430,
+    "note": "Static diagnostic calls, not independent-process capture or moving robot validation."
+  },
+  "snapshots": [
+    {
+      "file": "snapshot_alignment_20261018T090938Z.csv",
+      "rows": 462,
+      "original_valid": 0,
+      "temporary_timing_only_valid": 0,
+      "max_wrench_age_ms": null,
+      "max_skew_ms": 63.55019984766841
+    },
+    {
+      "file": "snapshot_alignment_20261018T091108Z.csv",
+      "rows": 473,
+      "original_valid": 0,
+      "temporary_timing_only_valid": 0,
+      "max_wrench_age_ms": 62.80765007250011,
+      "max_skew_ms": 54.69104996882379
+    },
+    {
+      "file": "snapshot_alignment_20261018T091525Z.csv",
+      "rows": 465,
+      "original_valid": 0,
+      "temporary_timing_only_valid": 463,
+      "max_wrench_age_ms": 79.45704995654523,
+      "max_skew_ms": 71.49054994806647
+    },
+    {
+      "file": "snapshot_alignment_20261018T092141Z.csv",
+      "rows": 454,
+      "original_valid": 409,
+      "temporary_timing_only_valid": 452,
+      "max_wrench_age_ms": 255.6626999285072,
+      "max_skew_ms": 247.6606999989599
+    }
+  ],
+  "geometric_scenarios": [
+    {
+      "label": "Observed-error magnitudes",
+      "hip_perturbation_deg": 4.650904414612535,
+      "knee_perturbation_deg": 12.217197375051114,
+      "max_pullpoint_shift_mm": 121.5290304315599,
+      "scenario_only_not_measured_or_probabilistic_bound": true
+    },
+    {
+      "label": "Declared tolerance",
+      "hip_perturbation_deg": 15.0,
+      "knee_perturbation_deg": 15.0,
+      "max_pullpoint_shift_mm": 263.78858747988033,
+      "scenario_only_not_measured_or_probabilistic_bound": true
+    }
+  ],
+  "raw_csv_count": 23,
+  "leg_csv_count": 18,
+  "robot_leg_round_directory_present": false,
+  "latest_rt_session": {
+    "diagnostic": "rt_second_session_no_motion",
+    "timestamp_utc": "2026-10-18T09:57:39.008190+00:00",
+    "motion_loop_started": false,
+    "target_sent": false,
+    "cleanup": [
+      "second_disconnected",
+      "parent_rt_stopped",
+      "parent_powered_off",
+      "parent_disconnected"
+    ],
+    "parent_prepared": {
+      "local_ip": "192.168.50.209",
+      "rt_network_tolerance_percent": 20,
+      "rt_filter_hz": 50.0,
+      "rt_controller_obtained": true,
+      "rt_loop_active": false,
+      "operate_mode": "OperateMode.automatic",
+      "power_state": "PowerState.on",
+      "operation_state": "OperationState.rtControlling"
+    },
+    "second_session": {
+      "operation_state": "rtControlling",
+      "operation_state_value": 2,
+      "power_state": "on",
+      "operate_mode": "automatic"
+    }
+  },
+  "limitations": [
+    "One installation/session, no independent devices or subjects.",
+    "Phone-reference placement uncertainty is not measured.",
+    "Out-of-fit checks were assessed retrospectively; they are not a prospective locked test set.",
+    "No moving robot/leg trial or real algorithm optimization outcomes are present.",
+    "Sampling intervals are host receive intervals; no exact device frame loss claim."
+  ]
+}

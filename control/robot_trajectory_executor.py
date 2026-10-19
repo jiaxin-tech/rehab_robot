@@ -565,6 +565,11 @@ class RokaeMotionExecutor:
                     "robot_execution_approved": False,
                 }
             )
+            from safety.empty_load_commissioning_release import ValidatedEmptyLoadCommissioningRelease
+
+            if isinstance(self._trial_release, ValidatedEmptyLoadCommissioningRelease):
+                claim_path = self._trial_release.claim_execution()
+                self.logger.update_metadata({"commissioning_release_claim": claim_path})
             initial_start_deadline_s = self.clock.now_s() + lateness_limit_s
             # Starting the RT hold already publishes the first TCP target.
             # Persist that first command before any callback can become active.

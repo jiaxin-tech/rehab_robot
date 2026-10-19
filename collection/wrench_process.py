@@ -124,21 +124,41 @@ class DurableAudit:
                     item = self.work.get()
                     if item is None:
                         return
-                    event, ticket = item
+                    batch = [item]
+                    closing = False
+                    # Group only records already queued; never wait to fill a
+                    # batch. Every ticket still waits for the shared fsync.
+                    while len(batch) < self.work.maxsize:
+                        try:
+                            item = self.work.get_nowait()
+                        except queue.Empty:
+                            break
+                        if item is None:
+                            closing = True
+                            break
+                        batch.append(item)
                     try:
-                        if self.write_hook:
-                            self.write_hook(event)
-                        # This field marks write dispatch, NOT fsync completion.
-                        event["log_write_ns"] = time.perf_counter_ns()
-                        stream.write(json.dumps(event, allow_nan=False) + "\n")
+                        for event, ticket in batch:
+                            if self.write_hook:
+                                self.write_hook(event)
+                            # Write dispatch is NOT fsync completion.
+                            event["log_write_ns"] = time.perf_counter_ns()
+                            stream.write(json.dumps(event, allow_nan=False) + "\n")
                         stream.flush()
                         os.fsync(stream.fileno())
-                        ticket["durable_ns"] = time.perf_counter_ns()
+                        durable_ns = time.perf_counter_ns()
+                        for _, ticket in batch:
+                            ticket["durable_ns"] = durable_ns
                     except BaseException as exc:
-                        ticket["error"] = self.failure = f"audit_write:{type(exc).__name__}:{exc}"
+                        self.failure = f"audit_write:{type(exc).__name__}:{exc}"
+                        for _, ticket in batch:
+                            ticket["error"] = self.failure
                         return
                     finally:
-                        ticket["done"].set()
+                        for _, ticket in batch:
+                            ticket["done"].set()
+                    if closing:
+                        return
         except BaseException as exc:
             self.failure = f"audit_open:{type(exc).__name__}:{exc}"
 
@@ -427,6 +447,15 @@ class WrenchProcessProvider:
             raise ValueError("unknown_event")
         if kind == "QUERY_ERROR":
             self.fail("sdk_error")  # do not wait for fsync to invalidate stream
+        if kind in ("QUERY_SUCCESS", "QUERY_ERROR"):
+            # A completed query can replace the in-flight IPC marker between
+            # polls. Its measured duration must still enforce the same budget.
+            duration_ns = event["completion_ns"] - event["native_start_ns"]
+            if duration_ns / 1e9 > self.budgets.query_s:
+                self.fail("query_pending_too_long")
+                self._record("QUERY_BUDGET_EXCEEDED", native_start_ns=event["native_start_ns"],
+                             completion_ns=event["completion_ns"], duration_ns=duration_ns,
+                             budget_s=self.budgets.query_s)
         event = dict(event, parent_receive_ns=now)
         self.pending_ticket = self.writer.submit(event)
         self.pending_event = event
@@ -507,6 +536,10 @@ class WrenchProcessProvider:
                     if ticket["error"]:
                         self.fail("logger_failure:" + ticket["error"])
                     else:
+                        # Checking only unfinished writes misses an fsync that
+                        # finished late while the supervisor was descheduled.
+                        if (ticket["durable_ns"] - self.pending_since) / 1e9 > self.budgets.log_s:
+                            self.fail("logger_backpressure")
                         self._apply(self.pending_event, ticket["durable_ns"])
                     self.pending_ticket = None
                     self.pending_event = None
@@ -618,18 +651,26 @@ class WrenchProcessProvider:
             self.exit_seen = True
             self._record("PROCESS_EXIT", exitcode=self.process.exitcode,
                          completion=None if self.query_state in ("HUNG", "IN_PROGRESS", "START_INTENT") else self.last_completed_ns)
-        self.cleanup = dict(NORMAL_CLEANUP=exited and not forced,
+        disconnect_complete = (
+            self.disconnect_confirmed is True if self.config["mode"] == "live"
+            else self.offline_disconnect_completed
+        )
+        self.cleanup = dict(NORMAL_CLEANUP=bool(exited and not forced and disconnect_complete
+                                              and not self.failure_latch),
                             GRACEFUL_SDK_DISCONNECT=False if forced else self.disconnect_confirmed,
                             OFFLINE_DISCONNECT_COMPLETED=self.offline_disconnect_completed,
                             FORCED_WORKER_TERMINATION=forced, CONTROLLER_SESSION_RECOVERY=None,
                             process_exited=exited, exitcode=self.process.exitcode if self.process else None,
                             query_state=self.query_state, failure_latch=list(self.failure_latch))
-        self._record("CLEANUP_OUTCOME", outcome=self.cleanup)
+        # Snapshot before queueing: the writer must not race later mutations.
+        # audit_closed is confirmed only by close() and the returned outcome.
+        self._record("CLEANUP_OUTCOME", outcome=dict(self.cleanup))
         durable = self.writer.close(self.budgets.log_s) if self.writer else False
         self.cleanup["audit_closed"] = durable
         if not durable:
             self.fail("audit_cleanup_unconfirmed")
         self.cleanup["NORMAL_CLEANUP"] &= durable and not bool(self.failure_latch)
+        self.cleanup["failure_latch"] = list(self.failure_latch)
         self._health.update(PROCESS_ALIVE=not exited, STREAM_HEALTH=False,
                             FAILURE_LATCH=tuple(self.failure_latch))
         return dict(self.cleanup)

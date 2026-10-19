@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
+import math
 from pathlib import Path
 from uuid import uuid4
 
@@ -33,6 +34,15 @@ from scripts.acquire_robot_data import load_live_wrench_config
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def bounded_expiry(reviewed_expiry, minutes, issued_at):
+    if not math.isfinite(minutes) or not 0 < minutes <= 30:
+        raise ValueError("valid-for-minutes must be positive and at most 30")
+    expiry = datetime.fromisoformat(reviewed_expiry.replace("Z", "+00:00"))
+    if expiry.tzinfo is None or expiry <= issued_at:
+        raise PermissionError("reviewed request expiry must be timezone-aware and future")
+    return min(expiry, issued_at + timedelta(minutes=minutes))
+
+
 def _object_digest(value) -> str:
     return hashlib.sha256(
         json.dumps(
@@ -55,6 +65,8 @@ def main(argv=None) -> int:
     parser.add_argument("--anchor", type=Path, required=True)
     parser.add_argument("--wrench-config", type=Path, required=True)
     parser.add_argument("--confirmation", required=True)
+    parser.add_argument("--valid-for-minutes", type=float, default=30.0,
+                        help="shorten release validity to at most 30 minutes and never extend the reviewed expiry")
     args = parser.parse_args(argv)
 
     request_path = args.review_request.resolve()
@@ -63,6 +75,8 @@ def main(argv=None) -> int:
         raise PermissionError("review request is not for empty-load commissioning")
     if args.confirmation != request.get("required_confirmation"):
         raise PermissionError("exact reviewed confirmation is required")
+    issued_at = datetime.now(timezone.utc)
+    expires_at = bounded_expiry(request["expires_at"], args.valid_for_minutes, issued_at)
     validate_retimed_reference(args.reference)
     safety = load_experiment_safety_config(args.safety_config)
     safety.require_execute_allowed()
@@ -105,8 +119,8 @@ def main(argv=None) -> int:
         "approved": True,
         "reviewer": request["reviewer"],
         "operator": request["operator"],
-        "issued_at": datetime.now(timezone.utc).isoformat(),
-        "expires_at": request["expires_at"],
+        "issued_at": issued_at.isoformat(),
+        "expires_at": expires_at.isoformat(),
         "single_cycle": True,
         "training_allowed": False,
         "reference_sha256": sha256_file(paths["reference"]),

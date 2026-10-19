@@ -588,8 +588,11 @@ class RealRobotAcquisition:
     def wait_until_healthy(self, timeout_s: float = 3.0) -> bool:
         deadline = self.clock.now_s() + timeout_s
         while self.clock.now_s() < deadline and not self._stop_event.is_set():
-            if self.latest_health().valid:
+            health = self.latest_health()
+            if health.valid:
                 return True
+            if health.wrench_failure_latch or self._background_error:
+                return False
             time.sleep(0.005)
         return False
 
