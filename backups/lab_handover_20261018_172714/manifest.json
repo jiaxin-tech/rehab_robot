@@ -1,0 +1,861 @@
+{
+    "schema_version":  1,
+    "created_at":  "2026-10-18T17:30:26.5198626+08:00",
+    "source_repo":  "C:\\Users\\liumai\\fjx\\rehab_robot",
+    "destination":  "C:\\Users\\liumai\\fjx\\rehab_robot\\backups\\lab_handover_20261018_172714",
+    "copied_sections":  {
+                            "results/lab_visit":  true,
+                            "results/robot_leg_round":  false,
+                            "results/reference_commissioning":  true,
+                            "config":  true,
+                            "site_evidence":  true,
+                            "docs/NEXT_LAB_VISIT.md":  true,
+                            "_rokae_log_":  true,
+                            "diagnostics/*20261018*":  true
+                        },
+    "photo_file_count":  0,
+    "file_count":  168,
+    "total_bytes":  116516730,
+    "files":  [
+                  {
+                      "path":  "MISSING_ITEMS.txt",
+                      "size_bytes":  153,
+                      "sha256":  "4158ad65fad09c501eaa32d48b5b6171ae713f36331905f7c332fef5931c9ae3"
+                  },
+                  {
+                      "path":  "config/experiment_safety.json",
+                      "size_bytes":  2563,
+                      "sha256":  "71ee63af52680b98c6e8e4c95010e561171abb520d986323655ea6e6bd90b17e"
+                  },
+                  {
+                      "path":  "config/formal_experiment_manifest.json",
+                      "size_bytes":  701,
+                      "sha256":  "f80a44e24c1b3ce3ffb98f459364883a9798c179f8b7cfa7e05cc9eb401ad441"
+                  },
+                  {
+                      "path":  "config/leg_joint_calibration.json",
+                      "size_bytes":  1042,
+                      "sha256":  "52eb5e44d2bee5d11578f6766f9c291f8cc06df2dbf6e07e3135f4e2005c88a2"
+                  },
+                  {
+                      "path":  "config/leg_round_analysis.json",
+                      "size_bytes":  505,
+                      "sha256":  "5cdc0fac57afc1a16552c8a16d73639029457b5faef5f6e857e26874ed9a3b77"
+                  },
+                  {
+                      "path":  "config/live_observation_acquisition_20261018.json",
+                      "size_bytes":  2219,
+                      "sha256":  "e2bdae3f492b7b5c9b40dc629285cc0062d3e01f5bcf7948b8bab033b8d5cd18"
+                  },
+                  {
+                      "path":  "config/live_observation_acquisition_template.json",
+                      "size_bytes":  1353,
+                      "sha256":  "9eb14d8e5413b3c14edafa51e572d6efc84bc62c632afca768d945521c0fef6c"
+                  },
+                  {
+                      "path":  "config/python_source_scope_manifest.json",
+                      "size_bytes":  833,
+                      "sha256":  "59503a3b00cb1044ebe748a2f9b2f7e582a7ba30058d6e65cdef484ff5716ca3"
+                  },
+                  {
+                      "path":  "config/real_identification_config.json",
+                      "size_bytes":  619,
+                      "sha256":  "5b5c1c881a3bb2b3508f4e1ced4a3fd3e2fcc171a5b916b809b49ef46fb9c0d8"
+                  },
+                  {
+                      "path":  "config/reference_commissioning.json",
+                      "size_bytes":  1174,
+                      "sha256":  "53467f6428651fab30ae2be38d3005e7d576f59c87d416431d9fbe18606fba6e"
+                  },
+                  {
+                      "path":  "config/rehab_frame_config.json",
+                      "size_bytes":  268,
+                      "sha256":  "d28dc599d3809ece32c9d073da78b60368d521e409c176fd986e8b4f8cbf171f"
+                  },
+                  {
+                      "path":  "config/robot_leg_round.json",
+                      "size_bytes":  5426,
+                      "sha256":  "cb5848bf3483bec2eee0ffc375b9484804121475c58a7b42fa7bcf9352300ea3"
+                  },
+                  {
+                      "path":  "config/settings.py",
+                      "size_bytes":  6081,
+                      "sha256":  "2f1373e08c3d713a395c87b0405c91fc7f7a9dfeae676289d3419a4c7a903b97"
+                  },
+                  {
+                      "path":  "config/static_validation_logging.json",
+                      "size_bytes":  286,
+                      "sha256":  "759e6a87e3b5cfda3b26e47d48ca0a7876a28d8314f5b744fe0cc5eeee6fc7bb"
+                  },
+                  {
+                      "path":  "config/twincat_leg_capture.json",
+                      "size_bytes":  2075,
+                      "sha256":  "433f41e2b1b664b37c95e352035275d720a9ea5a6bf506272d8e263ad7dbf30c"
+                  },
+                  {
+                      "path":  "config/__init__.py",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "config/__pycache__/settings.cpython-312.pyc",
+                      "size_bytes":  2051,
+                      "sha256":  "321574a644d60e3054f513716c498b4a788731d4af7c9a441355b87038fe29c7"
+                  },
+                  {
+                      "path":  "config/__pycache__/__init__.cpython-312.pyc",
+                      "size_bytes":  147,
+                      "sha256":  "2d7924b4c8b63ecc1f70d861da8846c8f0c086aa978d0c7131b9eebc24f8c45b"
+                  },
+                  {
+                      "path":  "diagnostics/rt_state_timing_20261018T090004Z.csv",
+                      "size_bytes":  14,
+                      "sha256":  "72e78ea889c81eae72ad3df55054dd894e0a65edbe7b283aa9d698d0e7987844"
+                  },
+                  {
+                      "path":  "diagnostics/rt_state_timing_20261018T090004Z.json",
+                      "size_bytes":  148,
+                      "sha256":  "a9038ac194f548345c50835f3672f5fecfcc2ac22b6d430d99e24ce7d3d7ba98"
+                  },
+                  {
+                      "path":  "diagnostics/rt_state_timing_20261018T090503Z.csv",
+                      "size_bytes":  14,
+                      "sha256":  "72e78ea889c81eae72ad3df55054dd894e0a65edbe7b283aa9d698d0e7987844"
+                  },
+                  {
+                      "path":  "diagnostics/rt_state_timing_20261018T090503Z.json",
+                      "size_bytes":  148,
+                      "sha256":  "a9038ac194f548345c50835f3672f5fecfcc2ac22b6d430d99e24ce7d3d7ba98"
+                  },
+                  {
+                      "path":  "diagnostics/rt_state_timing_20261018T090859Z.csv",
+                      "size_bytes":  43664,
+                      "sha256":  "0dacdba54d08af8462193efecf004314ae5dda32412cb58ae0875e2731333dfc"
+                  },
+                  {
+                      "path":  "diagnostics/rt_state_timing_20261018T090859Z.json",
+                      "size_bytes":  167176,
+                      "sha256":  "079f850ec704b1997dda1d28fe7fba0180ff5f5ee2b7328292866be8a59b7c8c"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T090938Z.csv",
+                      "size_bytes":  92762,
+                      "sha256":  "eb6a51c8024b8d6b4298c151035e902865f6c13dde9c0e8938a5a43381f81ff2"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T090938Z.json",
+                      "size_bytes":  248703,
+                      "sha256":  "b53911b0fa5b4a4a5c928b4b30b9ae6941484dd84860d6045a8420ed67936c02"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T091108Z.csv",
+                      "size_bytes":  85261,
+                      "sha256":  "5dc1ef8e03808a53b3a11bf32dfec4a00ab2337afcc14875a38cd43581ffcf79"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T091108Z.json",
+                      "size_bytes":  241259,
+                      "sha256":  "4273e153919b297aa9537e8f4c00722bc3ad54c771fc7aab9de57f62e9c9c969"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T091525Z.csv",
+                      "size_bytes":  92557,
+                      "sha256":  "57bb49f42abb12d8e03575d1a1eb648b206d4e8c12651c9dd70020e9164f7fe0"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T091525Z.json",
+                      "size_bytes":  245952,
+                      "sha256":  "6271a71ace65add78d26c2825b729be9156fdc047136a106cf4cca9554982909"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T092141Z.csv",
+                      "size_bytes":  71700,
+                      "sha256":  "6bdf01a84eace33c5b976ed27393fe4bba1981db44b6c0cde25c32114f7092f4"
+                  },
+                  {
+                      "path":  "diagnostics/snapshot_alignment_20261018T092141Z.json",
+                      "size_bytes":  221443,
+                      "sha256":  "45b08efb5f494890570f7beaff30fad041c24780b01d0619e64325ae820b0037"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_frame_rotation_20261018T091752Z.csv",
+                      "size_bytes":  68254,
+                      "sha256":  "994d479d5a9d05760a7d1c822e86c1abfdab6a9fd3cf9feae71e840255388036"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_frame_rotation_20261018T091752Z.json",
+                      "size_bytes":  166721,
+                      "sha256":  "0afac66c4a11f72e03d637739dcf36c0d69574ef826d5dea89dc508f95e1dce0"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_frame_rotation_20261018T091939Z.csv",
+                      "size_bytes":  68691,
+                      "sha256":  "18b32ba5fac97837318c1fd73b03a73e03cb332d7ed8a86fe9a291df11390a5f"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_frame_rotation_20261018T091939Z.json",
+                      "size_bytes":  167159,
+                      "sha256":  "ab5e5ccf7879bd6dd459999f227699c025e757b3b710b287b853e07b3b5d7d0b"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_query_timing_20261018T090004Z.csv",
+                      "size_bytes":  14,
+                      "sha256":  "72e78ea889c81eae72ad3df55054dd894e0a65edbe7b283aa9d698d0e7987844"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_query_timing_20261018T090004Z.json",
+                      "size_bytes":  152,
+                      "sha256":  "686413eebb3d4e9429742b635394b5e7f53f5829800252e8c89ca214a29fbd3b"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_query_timing_20261018T090922Z.csv",
+                      "size_bytes":  58193,
+                      "sha256":  "66949a390c4e84d216b4faf8684ced46cfa4f6f8521374f68142213da343959e"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_query_timing_20261018T090922Z.json",
+                      "size_bytes":  227389,
+                      "sha256":  "6ac96d1d66b9adbf7fd1cc30d63a025f9e5ebc999e64dd80b691a4f3688315a1"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_query_timing_20261018T092232Z.csv",
+                      "size_bytes":  172230,
+                      "sha256":  "1b52300d0ce3ed1501c511350c1875839b27aad49918d4a47f8aa79c6f2604a9"
+                  },
+                  {
+                      "path":  "diagnostics/wrench_query_timing_20261018T092232Z.json",
+                      "size_bytes":  671596,
+                      "sha256":  "d13ff68a6b22ae550f2eacc4024357c75533dc5f58ae87e01bb4dea917c0e938"
+                  },
+                  {
+                      "path":  "docs/NEXT_LAB_VISIT.md",
+                      "size_bytes":  18031,
+                      "sha256":  "deb6848cfd891ee6504ee10e115717214a9be457000afd4b3420156c7174a1b2"
+                  },
+                  {
+                      "path":  "results/lab_visit/2026-10-16_handover.md",
+                      "size_bytes":  4305,
+                      "sha256":  "aa70af7d146ee992da5374b22dafd050b8843bbeba7a25da32c7162304aa889d"
+                  },
+                  {
+                      "path":  "results/lab_visit/algorithm_dependency_audit_20261016.md",
+                      "size_bytes":  2357,
+                      "sha256":  "0c036279f9f75916933b7862f4ba508785bd0b60dfae00b51e81c917d6fa54a4"
+                  },
+                  {
+                      "path":  "results/lab_visit/calibration_knee_ABCAreturn_20261017.json",
+                      "size_bytes":  7470,
+                      "sha256":  "ec9e9e8963628f1a2b362c0deb893be45ee9e98adffe619b5dd5f21e62d1d4ea"
+                  },
+                  {
+                      "path":  "results/lab_visit/calibration_knee_ABC_20261017.json",
+                      "size_bytes":  6101,
+                      "sha256":  "d13d37a1c8f5fca5255143b9cb86935ed8b841a608bb2bece24ca925a60138da"
+                  },
+                  {
+                      "path":  "results/lab_visit/calibration_knee_AB_20261017.json",
+                      "size_bytes":  5118,
+                      "sha256":  "81e36658825c69ca7c8c28448ced4cab8bf7b348cc35f3f9f0b138fa622f6457"
+                  },
+                  {
+                      "path":  "results/lab_visit/calibration_knee_and_hip_validation_20261017.json",
+                      "size_bytes":  8687,
+                      "sha256":  "283f4c4c897d6e2e163869d696c964dd46fe37fd19270fa4f391cbdaed730105"
+                  },
+                  {
+                      "path":  "results/lab_visit/calibration_knee_A_20261017.json",
+                      "size_bytes":  3899,
+                      "sha256":  "463671bcc8bd353c0802503153e3b51e9feecb92896a933bc84eb9da9aaf4e0b"
+                  },
+                  {
+                      "path":  "results/lab_visit/calibration_knee_hip_complete_20261017.json",
+                      "size_bytes":  9995,
+                      "sha256":  "afc4907c762e46ce6cb3264f3b43e780022f0aaf93b51d6ff58e0abda43b041e"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_20261017.json",
+                      "size_bytes":  8414,
+                      "sha256":  "20bbeafe7790f7022fc3faa8cb85a34c49ea8f5bf8fb800322139c5ab17ae2f3"
+                  },
+                  {
+                      "path":  "results/lab_visit/points_20261017.json",
+                      "size_bytes":  3859,
+                      "sha256":  "a29ac6f274cf97505beeb13b9eba203bf4ae8a2f0468b65ef56effc4c7ab9b9c"
+                  },
+                  {
+                      "path":  "results/lab_visit/pytest_capture_and_round_20261016.xml",
+                      "size_bytes":  31655,
+                      "sha256":  "3fd035517df5835dfa90d703215a86c9251b3a7210043a024a411baac915c7e2"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261016_after_comms.json",
+                      "size_bytes":  4014,
+                      "sha256":  "fa47c437be5a8275cb14ab3d8947cc7749907484db103368fe023b49a01413e3"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261016_after_dll.json",
+                      "size_bytes":  4240,
+                      "sha256":  "3eda432670cb8041ae598635237fa6de0ee455d7d14adb30a766e854b20ea367"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261016_codex.json",
+                      "size_bytes":  4385,
+                      "sha256":  "e39a420fe9acf013973602181a26234e4d190d1dbb339274d58ce6d09da1c616"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261016_remediated.json",
+                      "size_bytes":  4170,
+                      "sha256":  "692cb8b0a9945cee8bca8d64da3de2a2885b741783ba9263fec1658e79b12b2d"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261016_remediated_v2.json",
+                      "size_bytes":  4068,
+                      "sha256":  "aea853ae9af511fbf361945abbc6ac2459ebd03ad21b534c3e04d638188edab1"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261017_141624_142_after_declaration.json",
+                      "size_bytes":  3316,
+                      "sha256":  "74a1cccce36657350422a572091e73f9878efea954d5a7803b2e5c90b0339282"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261017_141707_549_after_safety_declaration.json",
+                      "size_bytes":  3652,
+                      "sha256":  "1dd6e5ee5cb2fa9df9dbaa228350881c57c7c91a7937f6c72bbd31d3e9a7eef6"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261017_141750_941_after_safety_declaration_final.json",
+                      "size_bytes":  3776,
+                      "sha256":  "ace50db1bf8a23a45702f406e7e4fe33bf0912d832490594a5501946a9687ffa"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261017_143720_932_after_real_capture.json",
+                      "size_bytes":  3263,
+                      "sha256":  "6e6d99adbff2f4c73527a8eeb3550c8c309d7b37ffb4c94f015a64b6ed4f91d7"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_20261018_after_expiry.json",
+                      "size_bytes":  2248,
+                      "sha256":  "a23f98013ac76bc591c47c56e25dc0857eb0b2582b0d0f74550c8111dd3fdd6a"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_after_15deg_20261017.json",
+                      "size_bytes":  3314,
+                      "sha256":  "e9a959fdb31117f2259dda0dcbdbde1d4f67df55dd4f2226f8423873a4a135cf"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_after_physical_inputs_20261017.json",
+                      "size_bytes":  2318,
+                      "sha256":  "86368e9b81571896953c6a9a7d14553f08bdcd950eb215d4b1ff8591f132f83b"
+                  },
+                  {
+                      "path":  "results/lab_visit/readiness_capture_only_20261017.json",
+                      "size_bytes":  3143,
+                      "sha256":  "c62bcfefd2fa580c30f10ae589806bda180848c2bbf75f2e6d72873a6b0df1ed"
+                  },
+                  {
+                      "path":  "results/lab_visit/rokae_sdk_port.txt",
+                      "size_bytes":  2,
+                      "sha256":  "b3d510ef04275ca8e698e5b3cbb0ece3949ef9252f0cdc839e9ee347409a2209"
+                  },
+                  {
+                      "path":  "results/lab_visit/twincat_readonly_mapping_20261016.json",
+                      "size_bytes":  3361,
+                      "sha256":  "6b107a623fd47c3b69dbbde7acb8c90c9381c1a1bdca07d98d231753a1b5f275"
+                  },
+                  {
+                      "path":  "results/lab_visit/twincat_readonly_pre_capture_20261017_142916_550.json",
+                      "size_bytes":  3372,
+                      "sha256":  "8daccfe35a69b896ef032b4e971ce2d26967f919bce8ea3a207ed15ed3b46342"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_return_20261017_151625_423/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_return_20261017_151625_423/leg.csv",
+                      "size_bytes":  2576092,
+                      "sha256":  "95d23e091d56ec7101f943e14c0839bcb56798f21a1acddeab46e714e6e9f1b9"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_return_20261017_151625_423/quality.json",
+                      "size_bytes":  28869,
+                      "sha256":  "99623154ffcbdb3373b7495ee8c1f29ad9b25f07f2751ec247b8329be8fe352d"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_return_20261017_151625_423/segment_status.json",
+                      "size_bytes":  518,
+                      "sha256":  "a51a6a3bf2ba4fe32a98f400848c3569d3269ee2cc8eb1be1022756746879baf"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_validation_20261017_151512_425/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_validation_20261017_151512_425/leg.csv",
+                      "size_bytes":  2597168,
+                      "sha256":  "56efdb198d9d5551cae85a0e3b2fd733887c8df5c70133b3f37f297290efcb0f"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_validation_20261017_151512_425/quality.json",
+                      "size_bytes":  26309,
+                      "sha256":  "07c1e73f729a4e2ad67ff1b6e2efcb22b9d026903aedf12c14ab2a333cfcf8b6"
+                  },
+                  {
+                      "path":  "results/lab_visit/hip_validation_20261017_151512_425/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "154c4ab69106a5317a36be1b716005c4f1ef37d287360a15f1f17d0a9a0a553e"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_20261017_145441_837/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_20261017_145441_837/leg.csv",
+                      "size_bytes":  2562725,
+                      "sha256":  "28aea8d68adf91f89cb2335ee5477ce140d5fc4d06815496838e85caf5e305c7"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_20261017_145441_837/quality.json",
+                      "size_bytes":  26447,
+                      "sha256":  "72d5dc584d96277c14da65f4c5ea3fe42d986d243e471ec2abf55a844fa1065a"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_20261017_145441_837/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "b7ee920d7b37de35ad5a17810a275b55b6e54cdb9961b276936a5d6a44af4cba"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_return_20261017_150620_204/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_return_20261017_150620_204/leg.csv",
+                      "size_bytes":  2562298,
+                      "sha256":  "a5e4941c498ca2a5e9586162f8ea64b455938c6c8214494e54a6389baa8f8e4e"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_return_20261017_150620_204/quality.json",
+                      "size_bytes":  33136,
+                      "sha256":  "68d3d72ab904f3e46671ef99f114d5b260a4d4bf60f8c4b3486a54b8c8c0a14d"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_A_return_20261017_150620_204/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "267001daaee18de5bcd6e939dc3ac855e7e7cbb950313c860f5e59fcb06b51a6"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_B_20261017_145800_944/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_B_20261017_145800_944/leg.csv",
+                      "size_bytes":  2568226,
+                      "sha256":  "e76027afcf750e0840e51246bccd640fba323be490125462293f3c23f6b806e4"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_B_20261017_145800_944/quality.json",
+                      "size_bytes":  27276,
+                      "sha256":  "2d3a2427c21a3fda5b6a359626b1f16a9b3e3d958fcdac9e861f9057f9d1db37"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_B_20261017_145800_944/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "46375a8b1ad217d2e712437ee83deafec3743c1205db5ee5ac04d7a1d03d565c"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_C_validation_20261017_150333_327/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_C_validation_20261017_150333_327/leg.csv",
+                      "size_bytes":  2560979,
+                      "sha256":  "4d8bd64152bcc9c6d58c677bc2f171a4e203b5a72946c4a04c10eac947b2a0df"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_C_validation_20261017_150333_327/quality.json",
+                      "size_bytes":  30914,
+                      "sha256":  "5e0a018f0ffbb75021555386f925a32c4c2fecc6037251e902bacb7e2f0e0f9f"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_C_validation_20261017_150333_327/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "666396ecd0b0da96ba1c58c623803dc5ff13325f70f27f0c73f4b2f4a69b7c48"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_extension_20261017_154309_016/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_extension_20261017_154309_016/leg.csv",
+                      "size_bytes":  2588595,
+                      "sha256":  "bed2541be10b50d219cf2194332aaa3cc46b2ff8d174cb32a39f6b68712f1513"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_extension_20261017_154309_016/quality.json",
+                      "size_bytes":  30028,
+                      "sha256":  "ad06930855b3735e34616951fd959522f0a708f4238a2665480fcca832961442"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_extension_20261017_154309_016/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "e3535be498566459a4a48c826371e5813a482e0287483c54265a3bb6955d63f3"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_start_20261017_152010_702/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_start_20261017_152010_702/leg.csv",
+                      "size_bytes":  2591321,
+                      "sha256":  "eaedeada1fcb1b5cdd5f08559c5f0f0ac49c84565ffd74d564a3892ed2fcd03a"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_start_20261017_152010_702/quality.json",
+                      "size_bytes":  26936,
+                      "sha256":  "1ff48859662b6d876ed8dcfb1a4c0b1728507efc876a8a99350076a45f7e9690"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_00_start_20261017_152010_702/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "719c2d8d40f8fd9680c179767e2cbaa0c7e3c4d175b15423dcf435d5fc45546c"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_extension_20261017_154135_020/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_extension_20261017_154135_020/leg.csv",
+                      "size_bytes":  2575309,
+                      "sha256":  "fb76c198a2d11fa1c1fa510eca8f5c93db5408727e0e475b61d95cba365b3d98"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_extension_20261017_154135_020/quality.json",
+                      "size_bytes":  28494,
+                      "sha256":  "601a6197bff19ec2fb2389d804908f0cb06a464d70a3611ffaf2d08f90993968"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_extension_20261017_154135_020/segment_status.json",
+                      "size_bytes":  518,
+                      "sha256":  "91497ebb4612d7ee045d0ec6b7dad6c8c7a5fd022bec27a51369954f866bab37"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_flexion_20261017_152652_188/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_flexion_20261017_152652_188/leg.csv",
+                      "size_bytes":  2563209,
+                      "sha256":  "12831832e41f24c4c783a9050120fa02e00e4d6b5e9f94e1060813eb4ecd9e69"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_flexion_20261017_152652_188/quality.json",
+                      "size_bytes":  29599,
+                      "sha256":  "67f3156311d771d417157b178f3e0208f2cd9edbd7650f572c2bc6dc225c97e1"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_15_flexion_20261017_152652_188/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "de0bd38a2b834334725dae5f548d97c51161832dda00ace3459c15faa4c62275"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_extension_20261017_154018_644/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_extension_20261017_154018_644/leg.csv",
+                      "size_bytes":  2601180,
+                      "sha256":  "55181a7b519af15932b9e7e1c9be7652646c29279bc4908f592de02e2d206b15"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_extension_20261017_154018_644/quality.json",
+                      "size_bytes":  25714,
+                      "sha256":  "4c43e1ad5884f0043627cba073f2502fdee4ffbefdbabc720c92f15b111270b3"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_extension_20261017_154018_644/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "08b908598ff1459d49c164bb767807b813ed3831f84db46cca9e42b33b813431"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_flexion_20261017_152919_039/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_flexion_20261017_152919_039/leg.csv",
+                      "size_bytes":  2542075,
+                      "sha256":  "540e2a59c67a2e2f4cab46b22e66b8480345b5a50fae35431a51b8ff8db53a1d"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_flexion_20261017_152919_039/quality.json",
+                      "size_bytes":  29670,
+                      "sha256":  "f5e63da83140f90812569c93a62294141e5869507bb0c90bd6d0ff370fd2ba94"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_30_flexion_20261017_152919_039/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "20fe1d2064455e179b1b9e871e4cace76581b4964793807a340f0d914c460699"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_extension_20261017_153556_566/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_extension_20261017_153556_566/leg.csv",
+                      "size_bytes":  2556297,
+                      "sha256":  "2bd1171a812844cd0091ccdc34793a9869f2844b9fa119e901f4f3b2a788455d"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_extension_20261017_153556_566/quality.json",
+                      "size_bytes":  32340,
+                      "sha256":  "e768ecdc83bd96bd97b54f7800c79bfb74b960a9a389ff3c9eabf7559d0119ec"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_extension_20261017_153556_566/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "ca7098b136920255e782a50e0e4e58cabd6a0065bb2591e20956513412c974b4"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_flexion_20261017_153159_228/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_flexion_20261017_153159_228/leg.csv",
+                      "size_bytes":  2556817,
+                      "sha256":  "40ed04d3e8b1f25fb70f325048d2707889a248a4c9c1707bd485f3432e230da1"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_flexion_20261017_153159_228/quality.json",
+                      "size_bytes":  27344,
+                      "sha256":  "beb4939adcd65b90f8772d4c8528a115471a2a3f455b8dc4261d01526c6315fc"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_45_flexion_20261017_153159_228/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "71b9b8b577925e20125f53922a964c21fdefe828e04c0bf1cf1cfea70faf9d29"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_60_flexion_20261017_153337_070/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_60_flexion_20261017_153337_070/leg.csv",
+                      "size_bytes":  2549408,
+                      "sha256":  "9f0f8ee0da9e7c27ac1509f89b496f805428c6c23a8496085f44c81b0a00f11c"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_60_flexion_20261017_153337_070/quality.json",
+                      "size_bytes":  30645,
+                      "sha256":  "6496fa570e8893b55c412946fc36a1d1cbe13303c0a2e8e511042d5a61899145"
+                  },
+                  {
+                      "path":  "results/lab_visit/knee_sweep_60_flexion_20261017_153337_070/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "37d9e92f1bf7d67494cabf72f922913bdc1e8e86f09b2879db008da2c99d8f9d"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_port_probe/rt_state_timing_20261016T143443Z.csv",
+                      "size_bytes":  14,
+                      "sha256":  "72e78ea889c81eae72ad3df55054dd894e0a65edbe7b283aa9d698d0e7987844"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_port_probe/rt_state_timing_20261016T143443Z.json",
+                      "size_bytes":  148,
+                      "sha256":  "a9038ac194f548345c50835f3672f5fecfcc2ac22b6d430d99e24ce7d3d7ba98"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_port_probe/rt_state_timing_20261016T143451Z.csv",
+                      "size_bytes":  14,
+                      "sha256":  "72e78ea889c81eae72ad3df55054dd894e0a65edbe7b283aa9d698d0e7987844"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_port_probe/rt_state_timing_20261016T143451Z.json",
+                      "size_bytes":  200,
+                      "sha256":  "93ce246bd6dc1638a39b10fa5783242ac7a71892ddd0bef14ac65ee948ff7273"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_timing/rt_state_timing_20261016T143854Z.csv",
+                      "size_bytes":  38739,
+                      "sha256":  "c8defbed1c74ef974f090e82388c9041afa641fbada093462286c4354ea10d64"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_timing/rt_state_timing_20261016T143854Z.json",
+                      "size_bytes":  173992,
+                      "sha256":  "1f37f618dd1ff8d23cb34cef2b8c820f3896528ba32cac913f9c8aefd1f8c00b"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_timing_clockfix/rt_state_timing_20261016T144000Z.csv",
+                      "size_bytes":  14580,
+                      "sha256":  "24e8fe5e2ce5d350de76d92f8579ff074f39cae300ab0da9c5e0f2335ed0884a"
+                  },
+                  {
+                      "path":  "results/lab_visit/rt_state_timing_clockfix/rt_state_timing_20261016T144000Z.json",
+                      "size_bytes":  56442,
+                      "sha256":  "1d97c9c47c90eb4182c2d3b4dd46f5af33b20ac737ffbd01e454b67117cf4aaa"
+                  },
+                  {
+                      "path":  "results/lab_visit/stability_240s_20261017_143202_596/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/stability_240s_20261017_143202_596/leg.csv",
+                      "size_bytes":  62421974,
+                      "sha256":  "a3926956b09b11819a5bf15197f486b895bd6d7bb87b7db74db516da085bae06"
+                  },
+                  {
+                      "path":  "results/lab_visit/stability_240s_20261017_143202_596/quality.json",
+                      "size_bytes":  413655,
+                      "sha256":  "3e27520fa62c42a96ae045d39b182de39fdef2705b920ee8fc1370e2847ef9da"
+                  },
+                  {
+                      "path":  "results/lab_visit/stability_240s_20261017_143202_596/segment_status.json",
+                      "size_bytes":  523,
+                      "sha256":  "0343a0e0c90f35a991c575217beec5d846881e1c73df163a0a303a8f5d7e8c66"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_10s_20261017_143046_907/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_10s_20261017_143046_907/leg.csv",
+                      "size_bytes":  2592572,
+                      "sha256":  "848079e4b8a8ab07ed1c38d28aa248890aaa71d38b0a9a6f420b7affabdeb3b7"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_10s_20261017_143046_907/quality.json",
+                      "size_bytes":  26304,
+                      "sha256":  "c9d2dc87f59183e5b9bfb9604ffa346f57522787437238ec5aab8a8b261e2842"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_10s_20261017_143046_907/segment_status.json",
+                      "size_bytes":  519,
+                      "sha256":  "877068241da27f4b61ee24083dec2a610a50abb717fcfb61e314c46fb7888377"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_30s_20261017_143106_873/capture_stderr.log",
+                      "size_bytes":  0,
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_30s_20261017_143106_873/leg.csv",
+                      "size_bytes":  7763019,
+                      "sha256":  "e4fe9a34a88f30e1e6279de17041f3b59006e2b2e84f2d584300995a340bdaa1"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_30s_20261017_143106_873/quality.json",
+                      "size_bytes":  64373,
+                      "sha256":  "10917e5f108bc54dedecf49b7acbf540f482e40cd0508f9495679c1681e72e31"
+                  },
+                  {
+                      "path":  "results/lab_visit/static_30s_20261017_143106_873/segment_status.json",
+                      "size_bytes":  520,
+                      "sha256":  "c6f924385a71b63d82ea479586ff981479bf59344afa613d6c014fca83c997ff"
+                  },
+                  {
+                      "path":  "results/lab_visit/wrench_query_timing/wrench_query_timing_20261016T143911Z.csv",
+                      "size_bytes":  59864,
+                      "sha256":  "c5f8136f24b683bc93a8b9ad96a494e8a5a703aab70795130cc876ff85637c1b"
+                  },
+                  {
+                      "path":  "results/lab_visit/wrench_query_timing/wrench_query_timing_20261016T143911Z.json",
+                      "size_bytes":  233943,
+                      "sha256":  "5c0db07e6ffc9a7ae4987545d69d9e0164da7b7cdcbd1880e37d9b04bbe51561"
+                  },
+                  {
+                      "path":  "results/reference_commissioning/formal_reference_temp_20261018/commissioning_manifest.json",
+                      "size_bytes":  4389,
+                      "sha256":  "9ddf298a879e6e9e4194980dbc64811f184238208c6623fc2e29716a6d7f8837"
+                  },
+                  {
+                      "path":  "results/reference_commissioning/formal_reference_temp_20261018/commissioning_reference.csv",
+                      "size_bytes":  289490,
+                      "sha256":  "892da699b9afd0f57b8e77a5fa1c9b8da6069599515f7e2c24fec6b064b3b945"
+                  },
+                  {
+                      "path":  "site_evidence/acquisition_stability.md",
+                      "size_bytes":  2484,
+                      "sha256":  "b3b9b94885ef8337462cbbc34cef3cd76e04918a2657de4af724603fe73fbccb"
+                  },
+                  {
+                      "path":  "site_evidence/HANDOVER_2026-10-18.md",
+                      "size_bytes":  4193,
+                      "sha256":  "130c6d73ec6414829a76cbd446debcfad1213a0c09f88f8340f4e816adc885d3"
+                  },
+                  {
+                      "path":  "site_evidence/joint_angle_calibration.md",
+                      "size_bytes":  5925,
+                      "sha256":  "7be97fc3aa2a0f607c2d2203fb428403203d8ec75de572bc702ac0f6efd9dd4d"
+                  },
+                  {
+                      "path":  "site_evidence/ON_SITE_REVIEW_FORM_2026-10-16.md",
+                      "size_bytes":  9419,
+                      "sha256":  "b8c3ade16cba407abf29e6dbf44d249b10a6a1fdabd02c2bbc76954cb8d6d687"
+                  },
+                  {
+                      "path":  "site_evidence/REAL_ROBOT_SAFETY_DECLARATION_2026-10-17.json",
+                      "size_bytes":  4418,
+                      "sha256":  "cd51fbc9937f453254f63de937ef9a056c6d9ca65cf7a312e1ab1ec3fa4adced"
+                  },
+                  {
+                      "path":  "site_evidence/reference_commissioning_gate_attempt_2026-10-18.md",
+                      "size_bytes":  8901,
+                      "sha256":  "3d8f48fd04296ec6d5bce171f2a62af8022cde64604ba2b3aac37813abaf80d2"
+                  },
+                  {
+                      "path":  "site_evidence/robot_network_2026-10-16.md",
+                      "size_bytes":  2804,
+                      "sha256":  "a4df62c8f6cac34d6f4dfe12b686f6ef174cb54ce722c1b3bb5e22095acc23c3"
+                  },
+                  {
+                      "path":  "site_evidence/twincat_mapping_2026-10-16.md",
+                      "size_bytes":  4153,
+                      "sha256":  "19cc0c7d6bf31ca3e240eb5cfe94f49ef3998e27d5e3c6cb5cf02a3a1ea4d0a7"
+                  },
+                  {
+                      "path":  "_rokae_log_/0f98879e-e936-47a2-9c0d-f7b748a7eb86/xCoreSDK_2026-08-13.log",
+                      "size_bytes":  9135,
+                      "sha256":  "196327cf7652ef748d3d4107d8fb2003ab8f9f7b0e422e62f259c9ec3bc7a7eb"
+                  },
+                  {
+                      "path":  "_rokae_log_/0f98879e-e936-47a2-9c0d-f7b748a7eb86/xCoreSDK_2026-08-14.log",
+                      "size_bytes":  2716,
+                      "sha256":  "12b675786b5616a97e46c1e90ef432903977f476ddca1a1e5bf3a2c9b112d766"
+                  },
+                  {
+                      "path":  "_rokae_log_/0f98879e-e936-47a2-9c0d-f7b748a7eb86/xCoreSDK_2026-09-02.log",
+                      "size_bytes":  1606,
+                      "sha256":  "e6e22a00a21f570f8eddb4351f4e6e4f6005a9f2283e57a19cb9e65a8328ad0b"
+                  },
+                  {
+                      "path":  "_rokae_log_/0f98879e-e936-47a2-9c0d-f7b748a7eb86/xCoreSDK_2026-10-07.log",
+                      "size_bytes":  866,
+                      "sha256":  "1ffec64247fe2fcdd37408eadf563a5f83871e2b54071bd4f913fdaaf80f039f"
+                  },
+                  {
+                      "path":  "_rokae_log_/0f98879e-e936-47a2-9c0d-f7b748a7eb86/xCoreSDK_2026-10-16.log",
+                      "size_bytes":  3668,
+                      "sha256":  "168c460aee88f8ce9cab40eca064752e37075679e6c5ea7a7a3624f7f560a41b"
+                  },
+                  {
+                      "path":  "_rokae_log_/0f98879e-e936-47a2-9c0d-f7b748a7eb86/xCoreSDK_2026-10-18.log",
+                      "size_bytes":  6729,
+                      "sha256":  "f5a82057a8877c25755f2b875f26fd375dba529c8f4b58af0e89ef5d46873a00"
+                  }
+              ]
+}

@@ -40,8 +40,15 @@ class WrenchSession:
                         controller_version=str(info.version), sdk_version=str(sdk.BaseRobot.sdkVersion()))
         if identity != self.config["expected_identity"]:
             raise RuntimeError("wrench_session_identity_mismatch")
-        if self._call(self.robot.operationState).name.lower() != "idle":
-            raise RuntimeError("stationary_wrench_session_requires_idle")
+        operation_state = self._call(self.robot.operationState).name.lower()
+        allowed_operation_states = set(
+            self.config.get("allowed_operation_states", ("idle",))
+        )
+        if operation_state not in allowed_operation_states:
+            raise RuntimeError(
+                "wrench_session_operation_state_mismatch:"
+                f"observed={operation_state};allowed={sorted(allowed_operation_states)}"
+            )
         if self._call(self.robot.powerState).name.lower() not in self.config["allowed_power_states"]:
             raise RuntimeError("wrench_session_power_state_mismatch")
         self.wrapper = RokaeRobot(self.config["robot_ip"], local_ip=self.config["local_ip"],

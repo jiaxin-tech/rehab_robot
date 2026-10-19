@@ -233,3 +233,59 @@ def test_execute_rejects_wrench_config_with_mismatched_connection(
             },
         )
     assert calls == []
+
+
+def test_empty_load_realtime_session_prepares_and_cleans_up_in_order():
+    calls = []
+
+    class Native:
+        rt_network_tolerance_percent = 0
+        rt_filter_hz = 0.0
+
+        def enable_realtime(self, *, load):
+            calls.append(("enable_realtime", load))
+
+        def stop_realtime(self, *, switch_to_nrt):
+            calls.append(("stop_realtime", switch_to_nrt))
+
+        def disable(self):
+            calls.append(("disable",))
+
+    class Adapter:
+        native_robot = Native()
+
+        def connect(self):
+            calls.append(("connect",))
+
+        def disconnect(self):
+            calls.append(("disconnect",))
+
+    adapter = Adapter()
+    runner_module._prepare_empty_load_realtime_session(
+        adapter,
+        filter_hz=50.0,
+        network_tolerance_percent=20.0,
+    )
+    assert adapter.native_robot.rt_filter_hz == 50.0
+    assert adapter.native_robot.rt_network_tolerance_percent == 20
+    assert runner_module._cleanup_empty_load_realtime_session(adapter) == []
+    assert calls == [
+        ("connect",),
+        ("enable_realtime", 0.0),
+        ("stop_realtime", True),
+        ("disable",),
+        ("disconnect",),
+    ]
+
+
+def test_empty_load_realtime_session_rejects_fractional_network_tolerance():
+    class Adapter:
+        def connect(self):
+            raise AssertionError("must reject before connection")
+
+    with pytest.raises(ValueError, match="integer percent"):
+        runner_module._prepare_empty_load_realtime_session(
+            Adapter(),
+            filter_hz=50.0,
+            network_tolerance_percent=20.5,
+        )

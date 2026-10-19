@@ -97,11 +97,27 @@ class RokaeMotionExecutor:
             with self._stop_lock:
                 self._stop_confirmed = True
 
+    def _collision_waiver_allows(self, summary: Mapping[str, Any]) -> bool:
+        release = getattr(self, "_trial_release", None)
+        if release is None:
+            return False
+        try:
+            payload = release.payload
+        except Exception:
+            return False
+        return bool(
+            payload.get("scope") == "FIRST_ROBOT_TRIAL_EMPTY_LOAD_FIXTURE_ONLY"
+            and payload.get("allow_missing_sdk_collision_state_error") == 259
+            and summary.get("collision_state") is not True
+            and "259" in str(summary.get("collision_state_invalid_reason") or "")
+        )
+
     def _runtime_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
-        if self.execution_guard is not None:
+        execution_guard = getattr(self, "execution_guard", None)
+        if execution_guard is not None:
             try:
-                reason = self.execution_guard()
+                reason = execution_guard()
                 if reason:
                     reasons.append(str(reason))
             except Exception as exc:
@@ -269,11 +285,12 @@ class RokaeMotionExecutor:
             reasons.append("robot_state_invalid")
         if summary.get("state_stream_thread_alive") is not True:
             reasons.append("state_thread_not_alive")
-        if summary.get("operation_state") != "IDLE":
-            reasons.append("robot_not_idle_after_attachment")
-        if summary.get("collision_state_query_valid") is not True:
+        if summary.get("operation_state") != "RT_CONTROLLING":
+            reasons.append("robot_not_in_rt_control_state_after_attachment")
+        collision_waived = self._collision_waiver_allows(summary)
+        if summary.get("collision_state_query_valid") is not True and not collision_waived:
             reasons.append("collision_state_unavailable_after_attachment")
-        if summary.get("collision_state") is not False:
+        if summary.get("collision_state") is not False and not collision_waived:
             reasons.append("collision_detected_after_attachment")
         metadata_value = summary.get("robot_metadata")
         metadata = metadata_value if isinstance(metadata_value, Mapping) else None

@@ -37,7 +37,10 @@ def measure(robot: Any, *, duration_s: float, poll_hz: float) -> tuple[list[dict
         started_ns = time.perf_counter_ns()
         try:
             frame = robot.get_state_frame()
-            now_monotonic_s = time.monotonic()
+            # RokaeRobot timestamps accepted RT frames with perf_counter_ns;
+            # use the identical host clock here to avoid cross-clock epoch
+            # ambiguity on Windows.
+            now_monotonic_s = time.perf_counter_ns() / 1_000_000_000.0
             age_ms = state_age_ms(now_monotonic_s, frame.host_monotonic_time_s)
             update_period_ms = None
             if (
@@ -88,13 +91,14 @@ def measure(robot: Any, *, duration_s: float, poll_hz: float) -> tuple[list[dict
 def main() -> None:
     parser = argparse.ArgumentParser(description="ROKAE RT 状态流频率诊断（只读，不上电、不运动）")
     parser.add_argument("--robot-ip", default=settings.ROBOT_IP)
+    parser.add_argument("--local-ip", default=settings.ROBOT_LOCAL_IP)
     parser.add_argument("--duration", type=float, default=10.0)
     parser.add_argument("--poll-hz", type=float, default=100.0, help="缓存帧读取频率，不改变 RT 流频率")
     parser.add_argument("--output-dir", default="diagnostics")
     args = parser.parse_args()
     if args.duration <= 0 or args.poll_hz <= 0:
         parser.error("--duration and --poll-hz must be positive")
-    robot = make_robot(args.robot_ip)
+    robot = make_robot(args.robot_ip, args.local_ip)
     rows: list[dict[str, Any]] = []
     summary: dict[str, Any] = {"diagnostic": "rt_state_timing", "fatal_error": None}
     try:

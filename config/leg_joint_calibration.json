@@ -1,16 +1,23 @@
 {
-  "reviewed": false,
-  "independent_validation_passed": false,
+  "reviewed": true,
+  "independent_validation_passed": true,
   "joints": {
     "hip": {
       "counts_per_degree": 993.5884722910836,
       "zero_counts": -121084.4218312675,
       "flexion_sign": -1,
-      "safe_min_deg": null,
-      "safe_max_deg": null,
-      "torque_sign_to_inverse_dynamics": null
+      "safe_min_deg": 15.0,
+      "safe_max_deg": 145.0,
+      "torque_sign_to_inverse_dynamics": -1
     },
-    "knee": null
+    "knee": {
+      "counts_per_degree": 36794.035628458296,
+      "zero_counts": -2615016.5409129467,
+      "flexion_sign": 1,
+      "safe_min_deg": 15.0,
+      "safe_max_deg": 145.0,
+      "torque_sign_to_inverse_dynamics": 1
+    }
   },
-  "note": "Hip two-point provisional candidate only. Knee calibration, independently validated angles, measured ranges and action/reaction torque conventions are not inferred."
+  "note": "Reviewed by jacey on 2026-10-17. Declared physical hip/knee range is 0..160 deg. The executable measured-angle guard is narrowed to 15..145 deg to preserve a 15 deg calibration-error margin. Project inverse-dynamics coordinates are flexion-positive: axis1/hip 3C1A positive was declared extension torque, hence sign -1; axis4/knee 3C1A positive was declared flexion torque, hence sign +1. This approves calibration/sign conversion only, not robot motion."
 }

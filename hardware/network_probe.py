@@ -20,7 +20,10 @@ import subprocess
 import time
 from typing import Sequence
 
-DEFAULT_PROBE_PORTS = (8055,)
+# Observed on the supervised xCoreSDK 0.7.0 / controller 3.2.1 connection on
+# 2026-10-16.  The SDK opens both channels during connectToRobot(); 8055 was an
+# earlier unverified project assumption and is not used by this controller.
+DEFAULT_PROBE_PORTS = (6666, 7777)
 
 _IPV4 = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")
 _IPV6 = re.compile(r"^[0-9A-Fa-f:]+$")
@@ -37,7 +40,7 @@ def validate_ipv4(address: str) -> str:
     return ".".join(str(part) for part in octets)
 
 
-def resolve_local_interface(remote_ip: str, *, port: int = 8055) -> str | None:
+def resolve_local_interface(remote_ip: str, *, port: int = DEFAULT_PROBE_PORTS[0]) -> str | None:
     """Return the local IPv4 address a route to ``remote_ip`` would use."""
     target = validate_ipv4(remote_ip)
     probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -168,7 +171,10 @@ def probe_controller(
         ports=tuple(parsed_ports),
         icmp=icmp_ping(target, timeout_s=float(timeout_s) + 0.5),
         tcp={port: tcp_reachable(target, port, timeout_s=float(timeout_s)) for port in parsed_ports},
-        local_interface=resolve_local_interface(target, port=parsed_ports[0] if parsed_ports else 8055),
+        local_interface=resolve_local_interface(
+            target,
+            port=parsed_ports[0] if parsed_ports else DEFAULT_PROBE_PORTS[0],
+        ),
     )
 
 

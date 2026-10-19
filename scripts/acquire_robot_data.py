@@ -140,6 +140,16 @@ def load_live_wrench_config(path: str | Path) -> dict[str, Any]:
         state not in ("on", "off") for state in power_states
     ):
         raise ValueError("live wrench allowed_power_states must be a non-empty subset of on/off")
+    operation_states = payload.get("allowed_operation_states", ["idle"])
+    if (
+        not isinstance(operation_states, list)
+        or not operation_states
+        or any(state not in ("idle", "rtcontrolling") for state in operation_states)
+    ):
+        raise ValueError(
+            "live wrench allowed_operation_states must be a non-empty subset "
+            "of idle/rtcontrolling"
+        )
     budgets = payload["budgets"]
     if not isinstance(budgets, dict):
         raise ValueError("live wrench budgets must be an object")
@@ -167,6 +177,9 @@ def build_live_wrench_provider(
         rate_hz=wrench_hz,
         expected_identity=dict(config["expected_identity"]),
         allowed_power_states=list(config["allowed_power_states"]),
+        allowed_operation_states=list(
+            config.get("allowed_operation_states", ["idle"])
+        ),
     )
     return WrenchProcessProvider(
         provider_config,

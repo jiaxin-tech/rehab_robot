@@ -1,0 +1,6 @@
+{
+  "rehab_x_axis_in_base": [1.0, 0.0, 0.0],
+  "rehab_z_axis_in_base": [0.0, 0.0, 1.0],
+  "reviewed": true,
+  "notes": "Submitted and reviewed by on-site safety officer jacey on 2026-10-17 for setup 01. The derived right-handed rehab +y direction is Base +y."
+}

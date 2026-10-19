@@ -40,9 +40,15 @@ ROBOT_FORCE_STALE_S            = 0.05     # 力估计超过此时间必须失效
 FORCE_BIAS_DURATION_S          = 1.0
 FORCE_BIAS_REQUIRE_CONFIRMATION = True
 BASE_WRENCH_TRANSFORM_KIND     = "rotation_only"
-# Keep false until the documented empty-load and known-direction checks have
-# verified the baseFrame/Euler direction on this exact robot/tool setup.
-BASE_WRENCH_ROTATION_VERIFIED  = False
+# Verified on 2026-10-18 for robot XMC12-R1300-W7G3B4, serial
+# 0f98879e-e936-47a2-9c0d-f7b748a7eb86, and the then-current tool installation.
+# Independent manual pushes produced the expected dominant axes/signs for Base
+# +X and Base +Z.  Evidence:
+# diagnostics/wrench_frame_rotation_20261018T091752Z.json
+# diagnostics/wrench_frame_rotation_20261018T091939Z.json
+# This must be reset to False if the robot, tool mounting, frame convention, or
+# SDK wrench transform changes.
+BASE_WRENCH_ROTATION_VERIFIED  = True
 
 # ── 采集参数 ──────────────────────────────────────────
 COLLECT_HZ        = 50              # 数据存储频率

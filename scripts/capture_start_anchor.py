@@ -123,6 +123,11 @@ def main(
         )
     )
     parser.add_argument("--ip", required=True)
+    parser.add_argument(
+        "--local-ip",
+        default="",
+        help="local adapter IPv4 address used by xCoreSDK",
+    )
     parser.add_argument("--output", required=True)
     parser.add_argument("--reference", default=str(DEFAULT_REFERENCE_PATH))
     parser.add_argument("--anchor-id")
@@ -136,6 +141,14 @@ def main(
     )
     parser.add_argument("--notes", default="")
     args = parser.parse_args(argv)
+    selected_factory = adapter_factory
+    if selected_factory is None and args.local_ip:
+        from hardware.rokae_adapter import RokaeRobotAdapter
+
+        selected_factory = lambda robot_ip: RokaeRobotAdapter(
+            robot_ip,
+            local_ip=args.local_ip,
+        )
     result = run_capture(
         robot_ip=args.ip,
         output_path=args.output,
@@ -144,7 +157,7 @@ def main(
         tool_name=args.tool_name,
         workpiece_name=args.workpiece_name,
         notes=args.notes,
-        adapter_factory=adapter_factory,
+        adapter_factory=selected_factory,
     )
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

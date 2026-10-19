@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import math
-import time
 from typing import Any
 
 from collection.state import (
@@ -17,6 +16,7 @@ from collection.state import (
     utc_now_iso,
 )
 from config import settings
+from utils.clock import host_time_s
 
 
 def _acceleration_estimate(
@@ -64,7 +64,7 @@ def compose_robot_state_sample(
     resulting sample carries both host times and is invalidated when age/skew
     exceeds policy.  Missing values remain ``None`` for CSV blank output.
     """
-    now_s = time.monotonic() if sample_time_s is None else float(sample_time_s)
+    now_s = host_time_s() if sample_time_s is None else float(sample_time_s)
     if not math.isfinite(now_s):
         raise ValueError("sample_time_s must be finite")
     state_age = state_age_ms(now_s, kinematic.host_monotonic_time_s)
@@ -197,12 +197,12 @@ def read_live_robot_state_sample(
     # first can make a concurrently published state appear to come from the
     # future and was previously hidden by age clamping.
     kinematic = robot.get_state_frame()
-    snapshot_time_s = time.monotonic() if sample_time_s is None else float(sample_time_s)
+    snapshot_time_s = host_time_s() if sample_time_s is None else float(sample_time_s)
     wrench = wrench_source.snapshot(snapshot_time_s)
     # Mark the sample only after both cached frames have been obtained.  This
     # avoids treating a producer that published during the read as a
     # future-dated zero-age frame.
-    now_s = time.monotonic() if sample_time_s is None else snapshot_time_s
+    now_s = host_time_s() if sample_time_s is None else snapshot_time_s
     return compose_robot_state_sample(
         kinematic,
         wrench,

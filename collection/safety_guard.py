@@ -9,6 +9,7 @@ from typing import Any, Sequence
 
 from config import settings
 from utils.logger import get_logger
+from utils.clock import host_time_s
 
 
 logger = get_logger("SafetyGuard")
@@ -123,7 +124,7 @@ class SafetyGuard:
             state = self.robot.get_state_frame()
             # Obtain the host check time only after reading the cached state;
             # otherwise a concurrently published frame can falsely look future.
-            now_s = time.monotonic()
+            now_s = host_time_s()
             if not state.valid:
                 return state.invalid_reason or "robot_state_invalid"
             if state.host_monotonic_time_s is None:
@@ -155,7 +156,7 @@ class SafetyGuard:
             if not hasattr(self.wrench_source, "snapshot"):
                 return "robot_wrench_snapshot_api_missing"
             wrench = self.wrench_source.snapshot(now_s)
-            wrench_check_time_s = time.monotonic()
+            wrench_check_time_s = host_time_s()
             if not wrench.valid:
                 return wrench.invalid_reason or "robot_wrench_invalid"
             if wrench.host_monotonic_time_s is None:

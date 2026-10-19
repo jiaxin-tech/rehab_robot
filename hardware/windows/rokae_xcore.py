@@ -258,6 +258,7 @@ class RokaeRobot:
         """Strict cleanup that retains retryable handles on any uncertainty."""
 
         self._invalidate_safety_events("safety_event_connection_failed")
+        self._stop_safety_events()
         self._stop_realtime_impl(raise_on_error=True)
         self.stop_state_stream()
         if self._robot is not None:
@@ -312,6 +313,10 @@ class RokaeRobot:
         # leaves native activity uncertain.  Preserve every handle and refuse
         # disconnect so the caller can retry or escalate to supervised manual
         # recovery without a false local "DISCONNECTED" state.
+        # The vendor retains the Python callback until explicitly cancelled.
+        # Drop that registration before interpreter teardown or native
+        # disconnect so no SDK thread can call a released Python object.
+        self._stop_safety_events()
         self._stop_realtime_impl(raise_on_error=True)
         self.stop_state_stream()
         self._call("disconnectFromRobot", self._robot.disconnectFromRobot)
@@ -641,6 +646,15 @@ class RokaeRobot:
                 "ROBOT_LOCAL_IP is required for xCoreSDK realtime control"
             )
         if self._rt_controller is not None:
+            operation_state = self._refresh_operation_state()
+            if operation_state != self._sdk.OperationState.rtControlling:
+                raise RuntimeError(
+                    "existing realtime controller is not in rtControlling state"
+                )
+            if self._rt_active:
+                raise RuntimeError(
+                    "cannot attach: realtime loop was already active outside executor"
+                )
             return
         operation_state = self._refresh_operation_state()
         if operation_state != self._sdk.OperationState.idle:
@@ -672,9 +686,11 @@ class RokaeRobot:
             ) from exc
         self._rt_controller = controller
         operation_state = self._refresh_operation_state()
-        if operation_state != self._sdk.OperationState.idle:
+        if operation_state != self._sdk.OperationState.rtControlling:
             self._rt_controller = None
-            raise RuntimeError("robot left idle state during realtime attachment")
+            raise RuntimeError(
+                "robot did not enter rtControlling state during realtime attachment"
+            )
 
     def start_realtime_cartesian(
         self, initial_pose: Sequence[float] | None = None
@@ -1180,6 +1196,17 @@ class RokaeRobot:
         self._collision_state = None
         if self._safety_events is not None:
             self._safety_events.invalidate(reason)
+
+    def _stop_safety_events(self) -> None:
+        """Cancel a native event callback before disconnecting or clearing it."""
+        if self._safety_event_callback is None or self._robot is None:
+            return
+        self._call(
+            "setNoneEventWatcher(safety)",
+            self._robot.setNoneEventWatcher,
+            self._sdk.Event.safety,
+        )
+        self._safety_event_callback = None
 
     def start_safety_events(self) -> None:
         """Explicitly subscribe using the vendor signature; never infer clearance.

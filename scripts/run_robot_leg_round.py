@@ -32,6 +32,7 @@ from scripts.run_rehab_experiment import run_execute
 LOADED_SCOPE = "ROBOT_DUMMY_LEG_REFERENCE_TRIAL"
 CONFIRMATION = "I CONFIRM REVIEWED ROBOT LEG ROUND"
 ALGORITHM_FILES = ("config.py", "surrogate.py", "policy.py")
+LOADED_TRIAL_KINDS = ("dummy_leg_reference", "dummy_leg_capture_only")
 
 
 def resolve(base, value):
@@ -53,9 +54,17 @@ def paths(config_path):
 
 
 def scope_for(c):
-    if c["trial_kind"] not in ("empty_load", "dummy_leg_reference"):
+    if c["trial_kind"] not in ("empty_load", *LOADED_TRIAL_KINDS):
         raise ValueError("unknown trial_kind")
     return SCOPE if c["trial_kind"] == "empty_load" else LOADED_SCOPE
+
+
+def is_loaded_trial(c):
+    return c["trial_kind"] in LOADED_TRIAL_KINDS
+
+
+def training_enabled(c):
+    return c["trial_kind"] == "dummy_leg_reference"
 
 
 def check_config(config_path):
@@ -94,7 +103,7 @@ def check_config(config_path):
             for key, value in capture["guards"][axis].items():
                 if value is None:
                     problems.append("ADS capture missing: " + axis + "." + key)
-        if c["trial_kind"] == "dummy_leg_reference":
+        if is_loaded_trial(c):
             for joint, values in read_json(c["calibration"])["joints"].items():
                 if values is None:
                     problems.append("joint calibration missing: " + joint)
@@ -106,7 +115,10 @@ def check_config(config_path):
                 if value is None:
                     problems.append("analysis missing: " + key)
     check("missing physical facts", missing_facts)
-    for key in ("pre_roll_s", "post_roll_s", "training_timeout_s", "wrench_hz", "max_leg_start_age_s"):
+    required_positive = ["pre_roll_s", "post_roll_s", "wrench_hz", "max_leg_start_age_s"]
+    if training_enabled(c):
+        required_positive.append("training_timeout_s")
+    for key in required_positive:
         check(key, lambda key=key: positive(c.get(key), key))
     check("ADS capture mapping", lambda: validate_config(read_json(c["leg_config"])))
     def dll():
@@ -127,7 +139,7 @@ def check_config(config_path):
         if not load_rehab_frame_config(c["frame_config"]).reviewed:
             raise ValueError("frame not reviewed")
     check("rehab frame", frame)
-    if c["trial_kind"] == "dummy_leg_reference":
+    if is_loaded_trial(c):
         check("joint angles/timing", lambda: validate_analysis(read_json(c["analysis"]), read_json(c["calibration"])))
         def planned_joint_ranges():
             conversions = validate_analysis(read_json(c["analysis"]), read_json(c["calibration"]))
@@ -138,7 +150,7 @@ def check_config(config_path):
                     raise ValueError(name + " reference exceeds reviewed leg angle range")
         check("planned leg angles", planned_joint_ranges)
     expected_evidence = set(EVIDENCE_KINDS)
-    if c["trial_kind"] == "dummy_leg_reference":
+    if is_loaded_trial(c):
         expected_evidence |= {"dummy_leg_installation", "joint_angle_calibration", "cross_device_timing"}
     if set(c["site_evidence"]) != expected_evidence:
         problems.append("site evidence categories differ from required scope: " + ",".join(sorted(expected_evidence)))
@@ -160,7 +172,8 @@ def check_config(config_path):
         for name, digest in c["algorithm_dependencies"].items():
             if sha256_file(name) != digest:
                 raise ValueError("algorithm dependency changed: " + name)
-    check("algorithm sources", algorithm)
+    if training_enabled(c):
+        check("algorithm sources", algorithm)
     def catalog():
         ids = [p["candidate_id"] for p in c["candidates"]]
         if len(set(ids)) != len(ids) or c["reference_candidate_id"] not in ids:
@@ -171,7 +184,8 @@ def check_config(config_path):
         for point in c["candidates"]:
             if sha256_file(point["path"]) != point["sha256"]:
                 raise ValueError("candidate changed")
-    check("candidate catalog", catalog)
+    if training_enabled(c):
+        check("candidate catalog", catalog)
     return problems
 
 
@@ -308,7 +322,7 @@ def _run_once(directory, *, capture_factory, execute_fn):
     try:
         release = approve_prepared(c, config_path, directory, state)
         request = None
-        if c["trial_kind"] == "dummy_leg_reference":
+        if training_enabled(c):
             state.update(status="INITIALIZING_ALGORITHM")
             report(directory, state)
             request = dict(algorithm_root=c["algorithm_root"], algorithm_sha256=c["algorithm_sha256"],
@@ -323,7 +337,7 @@ def _run_once(directory, *, capture_factory, execute_fn):
             release.require_current(check_files=True)
         capture = capture_factory(c["leg_config"], directory / "leg")
         capture.start()
-        calibration = read_json(c["calibration"]) if c["trial_kind"] == "dummy_leg_reference" else None
+        calibration = read_json(c["calibration"]) if is_loaded_trial(c) else None
         analysis = read_json(c["analysis"]) if calibration else None
         conversions = validate_analysis(analysis, calibration) if calibration else None
         reference = pd.read_csv(DEFAULT_REFERENCE_PATH)
@@ -390,6 +404,10 @@ def _run_once(directory, *, capture_factory, execute_fn):
                 DEFAULT_REFERENCE_PATH, read_json(c["analysis"]), calibration)
             measured.to_csv(directory / "measured.csv", index=False)
             atomic_json(directory / "measured_metrics.json", metrics)
+            if not training_enabled(c):
+                state.update(status="CAPTURE_ONLY_COMPLETE", training_status="SKIPPED_CAPTURE_ONLY")
+                report(directory, state)
+                return state
             scores = endpoints(metrics, metrics)
             state.update(status="TRAINING", endpoints=scores)
             report(directory, state)

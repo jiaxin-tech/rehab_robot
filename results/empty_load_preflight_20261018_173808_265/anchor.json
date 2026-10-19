@@ -1,0 +1,46 @@
+{
+  "anchor_id": "empty_load_fixture_20261018_173808_265",
+  "capture_host_time_s": 2061067.8414896,
+  "controller_version": "3.2.1",
+  "created_at": "2026-10-18T09:38:18.334+00:00",
+  "notes": "Fixture installed; no dummy leg; no human subject; read-only start anchor capture.",
+  "reference_start_q_hip": 0.5061580913269217,
+  "reference_start_q_knee": 0.3203519370158654,
+  "reviewed": false,
+  "robot_joint_positions": [
+    -0.2682824539987838,
+    0.5460695967700059,
+    -1.983761212177575,
+    -3.0759382758682876,
+    0.5318119644001033,
+    -1.0444225639723461
+  ],
+  "robot_model": "XMC12-R1300-W7G3B4",
+  "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+  "schema_version": 2,
+  "tcp_orientation": {
+    "representation": "euler_xyz_rad",
+    "strategy": "fixed",
+    "values_rad": [
+      3.093819737447366,
+      -0.07068065816867287,
+      0.7224815522486918
+    ]
+  },
+  "tcp_pose_base": [
+    0.7378495541390144,
+    -0.043101813915523986,
+    0.4358238542306304,
+    3.093819737447366,
+    -0.07068065816867287,
+    0.7224815522486918
+  ],
+  "tcp_position_base_m": [
+    0.7378495541390144,
+    -0.043101813915523986,
+    0.4358238542306304
+  ],
+  "tool_name": "custom_3d_printed_flange_fixture",
+  "trajectory_id": "reference_measured_asymmetric_closed_slow",
+  "workpiece_name": "NONE_EMPTY_LOAD"
+}

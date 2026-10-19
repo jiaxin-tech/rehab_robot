@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "mapping_reviewed": false,
+  "mapping_reviewed": true,
   "clock_domain": "LOCAL_HOST_PERF_COUNTER",
   "ams_net_id": "10.20.4.89.1.1",
   "ads_port": 11,
@@ -12,17 +12,17 @@
   "toggle_bit": 4,
   "expected_hz": 500,
   "torque_6077_signedness_verified": false,
-  "ads_dll_path": null,
-  "ads_timeout_ms": null,
-  "startup_timeout_s": null,
-  "max_progress_age_s": null,
-  "shutdown_timeout_s": null,
-  "heartbeat_s": null,
-  "no_new_sample_timeout_s": null,
-  "poll_interval_s": null,
+  "ads_dll_path": "C:/TwinCAT/Common64/TcAdsDll.dll",
+  "ads_timeout_ms": 100,
+  "startup_timeout_s": 5.0,
+  "max_progress_age_s": 0.25,
+  "shutdown_timeout_s": 5.0,
+  "heartbeat_s": 0.05,
+  "no_new_sample_timeout_s": 0.1,
+  "poll_interval_s": 0.0005,
   "guards": {
-    "axis1": {"max_abs_torque_nm": null, "expected_operation_enabled": null},
-    "axis4": {"max_abs_torque_nm": null, "expected_operation_enabled": null}
+    "axis1": {"max_abs_torque_nm": 100.0, "expected_operation_enabled": false},
+    "axis4": {"max_abs_torque_nm": 100.0, "expected_operation_enabled": false}
   },
-  "source": "2026-10-11 lab handover; mapping still requires confirmation against the active TwinCAT project"
+  "source": "2026-10-11 lab handover. 2026-10-16 local inspection found 64-bit TcAdsDll.dll version 2.11.0.45 at C:/TwinCAT/Common64/TcAdsDll.dll (SHA-256 46B306A26F54210DAB7279F0A7880F3122AD7E9FF7B0E946DDCDC69434D44CEC); Python is 64-bit. File and live read-only evidence is recorded in site_evidence/twincat_mapping_2026-10-16.md and results/lab_visit/twincat_readonly_mapping_20261016.json. A second read-only pre-capture check on 2026-10-17 completed 200/200 reads, observed max ADS read time 2.2095 ms and 89 toggle transitions, with axes 1 and 4 operation_enabled=false, fault=false and error=0x0000. Capture-process timeouts are engineering guards derived from these read-only observations, not physical safety limits. Operator/safety reviewer jacey declared a 100 N.m acquisition guard for axes 1 and 4 and on 2026-10-17 explicitly confirmed axis1=hip, axis4=knee, the per-axis input PDO order/types 6041/U16, 6064/I32, 606C/I32, 6077/I16, 60F4/I32, 603F/U16, 6061/I8, 3C1A/F32, and 3C1A units N.m. Expected operation-enabled=false records the current stationary capture condition; the collector will fail closed if either axis becomes enabled. 0x6077 signedness/direction remains unverified and is not used for the 3C1A torque guard."
 }

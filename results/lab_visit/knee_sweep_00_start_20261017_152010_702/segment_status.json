@@ -1,0 +1,12 @@
+{
+  "status": "CAPTURE_COMPLETE",
+  "motion_commanded": false,
+  "duration_requested_s": 10.0,
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\twincat_leg_capture.json",
+  "config_sha256": "433f41e2b1b664b37c95e352035275d720a9ea5a6bf506272d8e263ad7dbf30c",
+  "csv_sha256": "eaedeada1fcb1b5cdd5f08559c5f0f0ac49c84565ffd74d564a3892ed2fcd03a",
+  "rows": 4884,
+  "sample_rate_hz": 487.75760378943403,
+  "long_intervals": 42,
+  "note": "Capture completion is not calibration or dynamics approval."
+}

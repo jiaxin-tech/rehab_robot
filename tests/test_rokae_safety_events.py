@@ -44,6 +44,10 @@ class Native:
         if self.fail_registration:
             ec.update(ec=259, message="synthetic registration failure")
 
+    def setNoneEventWatcher(self, event, ec):
+        assert event == "safety"
+        self.calls.append("unsubscribe")
+
     def disconnectFromRobot(self, ec):
         self.calls.append("disconnect")
         if self.fail_disconnect:
@@ -143,6 +147,14 @@ def test_reconnect_needs_new_initial_event_and_ignores_old_callback(rig):
     assert robot.get_collision_state() is None
     native.callbacks[-1]({"collided": False})
     assert robot.get_collision_state() is False
+
+
+def test_disconnect_cancels_native_callback_before_native_disconnect(rig):
+    robot, native, _ = rig
+    robot.connect()
+    robot.disconnect()
+    assert native.calls[-2:] == ["unsubscribe", "disconnect"]
+    assert robot._safety_event_callback is None
 
 
 def test_failed_disconnect_invalidates_events_and_prevents_resubscription(rig):

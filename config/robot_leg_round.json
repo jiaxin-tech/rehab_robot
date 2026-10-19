@@ -1,16 +1,16 @@
 {
   "schema_version": 1,
   "reviewed": false,
-  "trial_kind": "dummy_leg_reference",
-  "setup_id": "",
-  "reviewer": "",
-  "operator": "",
+  "trial_kind": "dummy_leg_capture_only",
+  "setup_id": "01",
+  "reviewer": "jacey",
+  "operator": "jacey",
   "leg_config": "twincat_leg_capture.json",
   "calibration": "leg_joint_calibration.json",
   "analysis": "leg_round_analysis.json",
   "safety_config": "experiment_safety.json",
   "frame_config": "rehab_frame_config.json",
-  "wrench_config": "live_observation_acquisition_template.json",
+  "wrench_config": "live_observation_acquisition_20261018.json",
   "algorithm_root": "C:/Users/CSR001279/Documents/ChatGPT/康复/完整算法验证_2026-09-29",
   "algorithm_sha256": {
     "config.py": "4c0088edc7191fa799e8a69cd185aa5dfbe1fea36f2050339d5a92321f1865c5",
@@ -18,22 +18,22 @@
     "policy.py": "2ab3ed5ba501974b856342b1b96f7da2de5fec3a2bc1fe4fdd9c1218b9fdbee1"
   },
   "algorithm_dependencies": {
-    "D:/rehab_robot/external_simulation/myoleg_reference_trajectory_replay_v1/build_and_replay.py": "8a5c536d30d0031e0e49adaddd98a496c574e95bb1f75f2b3eddc07791e51472",
+    "C:/Users/liumai/fjx/rehab_robot/external_simulation/myoleg_reference_trajectory_replay_v1/build_and_replay.py": "8a5c536d30d0031e0e49adaddd98a496c574e95bb1f75f2b3eddc07791e51472",
     "C:/Users/CSR001279/Documents/ChatGPT/康复/升级模型试跑_2026-09-28/coupled_model.py": "6fb016127bd05b209ab7bd42ce1424e68f784ea9f224e51ec087d65aa3df7186",
     "C:/Users/CSR001279/Documents/ChatGPT/康复/升级模型试跑_2026-09-28/root_cause/mass_model/coordinate_consistent_model.py": "0900ff8fb6443a5bf558708c6e2833015579eda8d9a84bc25aa7b868a7c29b4e",
-    "D:/rehab_robot/lower_limb_sim/config.py": "16b02c11196e30357f3c97193fabb8898b957c35aa332e7230c8977472f95940",
-    "D:/rehab_robot/lower_limb_sim/dynamic_subject.py": "1cddafcce71fc1159e693e9e05d00a6975683d7462ae235d2ce40bdfba5ca8c8",
-    "D:/rehab_robot/lower_limb_sim/parameter_estimator.py": "e27ea27c2300678f056295c9053ed10c6e49b8856d381ff6109cd5966899e0e6",
-    "D:/rehab_robot/lower_limb_sim/mechanical_endpoints.py": "473696d369e88faf3451d92d76c79b65d64e82792273760c8840e8c1f20bc71e",
-    "D:/rehab_robot/lower_limb_sim/e3_low_budget/run.py": "10d55d9f0524ef1aba785d3f4a67d11130d68880d081041dfc9862b27a571e64",
-    "D:/rehab_robot/lower_limb_sim/myoleg_benchmark/portable_model.py": "f21ae3cf35c1237dbb3347924b0699945acd4ecd8134d323cc5ea0489f65269d",
-    "D:/rehab_robot/external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml": "960cdb3dca5eeda281a69c99e899bbd1571377e8f12d8c729286948ce9792e59"
+    "C:/Users/liumai/fjx/rehab_robot/lower_limb_sim/config.py": "16b02c11196e30357f3c97193fabb8898b957c35aa332e7230c8977472f95940",
+    "C:/Users/liumai/fjx/rehab_robot/lower_limb_sim/dynamic_subject.py": "1cddafcce71fc1159e693e9e05d00a6975683d7462ae235d2ce40bdfba5ca8c8",
+    "C:/Users/liumai/fjx/rehab_robot/lower_limb_sim/parameter_estimator.py": "e27ea27c2300678f056295c9053ed10c6e49b8856d381ff6109cd5966899e0e6",
+    "C:/Users/liumai/fjx/rehab_robot/lower_limb_sim/mechanical_endpoints.py": "473696d369e88faf3451d92d76c79b65d64e82792273760c8840e8c1f20bc71e",
+    "C:/Users/liumai/fjx/rehab_robot/lower_limb_sim/e3_low_budget/run.py": "10d55d9f0524ef1aba785d3f4a67d11130d68880d081041dfc9862b27a571e64",
+    "C:/Users/liumai/fjx/rehab_robot/lower_limb_sim/myoleg_benchmark/portable_model.py": "f21ae3cf35c1237dbb3347924b0699945acd4ecd8134d323cc5ea0489f65269d",
+    "C:/Users/liumai/fjx/rehab_robot/external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml": "960cdb3dca5eeda281a69c99e899bbd1571377e8f12d8c729286948ce9792e59"
   },
   "candidates": [
     {
       "share_shift": 0.0,
       "candidate_id": "reference_measured_asymmetric_closed_slow",
-      "path": "D:/rehab_robot/reference_release/reference_measured_asymmetric_closed_slow.csv",
+      "path": "C:/Users/liumai/fjx/rehab_robot/reference_release/reference_measured_asymmetric_closed_slow.csv",
       "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
       "beta_flex": 0.0,
       "beta_extend": 0.0
@@ -46,19 +46,19 @@
   ],
   "robot_ip": "192.168.50.103",
   "local_ip": "192.168.50.209",
-  "robot_class": null,
-  "tool_name": null,
-  "workpiece_name": null,
+  "robot_class": "xMateRobot",
+  "tool_name": "自制 3D 打印末端牵引工具（直接安装法兰）",
+  "workpiece_name": "TCHL 关节模组假腿组件",
   "robot_identity": {
     "sdk_version": "0.7.0",
     "controller_version": "3.2.1",
     "robot_model": "XMC12-R1300-W7G3B4",
     "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86"
   },
-  "wrench_hz": null,
+  "wrench_hz": 50.0,
   "collision_source": "events",
   "collision_event_max_age_s": null,
-  "expires_at": null,
+  "expires_at": "2027-10-31T23:59:59+08:00",
   "pre_roll_s": 1.0,
   "post_roll_s": 1.0,
   "training_timeout_s": 300.0,
@@ -72,7 +72,7 @@
     "acquisition_stability": {
       "passed": false,
       "path": "../site_evidence/acquisition_stability.md",
-      "sha256": null
+      "sha256": "b3b9b94885ef8337462cbbc34cef3cd76e04918a2657de4af724603fe73fbccb"
     },
     "wrench_semantics": {
       "passed": false,
@@ -90,9 +90,9 @@
       "sha256": null
     },
     "joint_angle_calibration": {
-      "passed": false,
+      "passed": true,
       "path": "../site_evidence/joint_angle_calibration.md",
-      "sha256": null
+      "sha256": "7be97fc3aa2a0f607c2d2203fb428403203d8ec75de572bc702ac0f6efd9dd4d"
     },
     "cross_device_timing": {
       "passed": false,
@@ -100,5 +100,5 @@
       "sha256": null
     }
   },
-  "note": "Unreviewed first-reference configuration. Historical addresses and identity require on-site confirmation. Null physical values must be measured, never inferred."
+  "note": "Configured for loaded dummy-leg motion capture without training at jacey's request. The temporary commissioning payload now matches the 2026-10-18 SDK readback: 1.085 kg, CoG [0,0,0.100] m, inertia [0,0,0] kg*m^2. Zero inertia is controller state rather than physical validation. Missing collision-state feedback may be bypassed only for a dedicated supervised one-command commissioning jog; the automatic reference-trajectory gate is unchanged. reviewed remains false because active tool/workobject identity, active robot soft limits, reviewed RT settings, timing budgets and remaining evidence are incomplete."
 }

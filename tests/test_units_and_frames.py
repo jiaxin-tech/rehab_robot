@@ -31,6 +31,7 @@ from collection.trajectory import (
 from config import settings
 from hardware.windows.rokae_internal_wrench import RokaeInternalWrenchSource
 from hardware.windows.rokae_xcore import RokaeRobot
+from utils.clock import host_time_s
 
 
 def _state_frame(now_s: float, *, sequence_id: int = 1, position=(0.2, 0.0, 0.0),
@@ -98,7 +99,7 @@ class _LiveRobot:
 
     def get_state_frame(self) -> KinematicStateFrame:
         self.index += 1
-        now_s = time.monotonic()
+        now_s = host_time_s()
         return _state_frame(
             now_s,
             sequence_id=self.index,
@@ -163,6 +164,7 @@ class UnitAndFrameTests(unittest.TestCase):
             _state_frame(11.0),
             _wrench_frame(11.0, transform_kind="rotation_only_pending_robot_validation"),
             sample_time_s=11.01,
+            require_verified_base_rotation=True,
         )
         self.assertFalse(pending.valid)
         self.assertIn("base_wrench_rotation_requires_robot_validation", pending.invalid_reason)

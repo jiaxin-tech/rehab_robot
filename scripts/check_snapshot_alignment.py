@@ -54,6 +54,7 @@ def measure(robot: Any, source: Any, *, duration_s: float, sample_hz: float) -> 
 def main() -> None:
     parser = argparse.ArgumentParser(description="ROKAE RT/wrench 快照对齐诊断（只读，不上电、不运动）")
     parser.add_argument("--robot-ip", default=settings.ROBOT_IP)
+    parser.add_argument("--local-ip", default=settings.ROBOT_LOCAL_IP)
     parser.add_argument("--duration", type=float, default=10.0)
     parser.add_argument("--sample-hz", type=float, default=float(settings.COLLECT_HZ))
     parser.add_argument("--software-bias", action="store_true", help="显式请求会话软件 bias")
@@ -65,7 +66,9 @@ def main() -> None:
     rows: list[dict[str, Any]] = []
     summary: dict[str, Any] = {"diagnostic": "snapshot_alignment", "fatal_error": None}
     try:
-        with readonly_connection(make_robot(args.robot_ip), use_wrench_stream=True) as (robot, source):
+        with readonly_connection(
+            make_robot(args.robot_ip, args.local_ip), use_wrench_stream=True
+        ) as (robot, source):
             assert source is not None
             if args.software_bias:
                 require_confirmed_bias(source, args.confirm_unloaded)

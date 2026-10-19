@@ -170,6 +170,23 @@ def test_lost_ack(make_provider, budgets):
     assert p.last_good is None
 
 
+def test_query_budget_starts_only_after_native_boundary(tmp_path, budgets):
+    p = WrenchProcessProvider(
+        dict(mode="offline", rate_hz=50),
+        replace(budgets, query_s=.05, progress_s=1.0),
+        tmp_path / "audit.jsonl",
+    )
+    now = time.perf_counter_ns()
+    p.process = SimpleNamespace(pid=123, is_alive=lambda: True)
+    p.started_ns = now - 200_000_000
+    p.progress_ns = now - 60_000_000
+    p.query_state = "START_INTENT"
+    p.query_start_ns = now - 60_000_000
+    p.lifecycle_state = "READY"
+    health = p.poll(now_ns=now)
+    assert "query_pending_too_long" not in health["FAILURE_LATCH"]
+
+
 @pytest.mark.parametrize("mode", ["backpressure", "failure"])
 def test_logger_faults(make_provider, mode, budgets):
     release = threading.Event()

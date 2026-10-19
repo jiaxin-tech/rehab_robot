@@ -419,6 +419,7 @@ def test_audit_records_a_failed_motion_wait(tmp_path: Path):
 def test_network_probe_validates_and_separates_network_from_sdk(monkeypatch):
     from hardware import network_probe
 
+    assert network_probe.DEFAULT_PROBE_PORTS == (6666, 7777)
     assert network_probe.validate_ipv4("192.168.50.103") == "192.168.50.103"
     with pytest.raises(ValueError, match="not an IPv4"):
         network_probe.validate_ipv4("192.168.50")
