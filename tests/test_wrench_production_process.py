@@ -63,7 +63,7 @@ def until(provider, predicate, seconds=6):
     raise AssertionError(f"condition not reached: {provider.health()}")
 
 
-def test_normal_durable_protocol(make_provider):
+def test_normal_bounded_async_durable_protocol(make_provider):
     p = make_provider()
     until(p, lambda h: p.query_id >= 3 and h["STREAM_HEALTH"])
     assert p.last_good.valid
@@ -73,13 +73,36 @@ def test_normal_durable_protocol(make_provider):
     assert outcome["OFFLINE_DISCONNECT_COMPLETED"]
     assert outcome["GRACEFUL_SDK_DISCONNECT"] is None  # no SDK used
     events = [json.loads(x) for x in p.audit_path.read_text().splitlines()]
+    summaries = [row for row in events if row["type"] == "AUDIT_WRITE_SUMMARY"]
+    assert len(summaries) == 1
+    child_events = [row for row in events if row.get("origin") != "supervisor"]
+    assert summaries[0]["pending_child_event_count"] == 0
+    assert summaries[0]["written_child_event_count"] == len(child_events)
     for event in events:
         if event["type"] == "QUERY_SUCCESS":
-            starts = [x for x in events if x["type"] == "QUERY_START_INTENT" and x["query_id"] == event["query_id"]]
-            assert len(starts) == 1
-            acks = [x for x in events if x["type"] == "DURABLE_ACK" and x["child_event_id"] == starts[0]["event_id"]]
-            assert len(acks) == 1
-            assert acks[0]["durable_ns"] <= event["native_start_ns"]
+            assert event["intent_ns"] <= event["native_start_ns"]
+            assert event["native_start_ns"] <= event["completion_ns"]
+
+
+def test_50hz_publication_is_not_serialized_by_each_fsync(make_provider, monkeypatch):
+    real_fsync = os.fsync
+
+    def slow_fsync(fd):
+        time.sleep(.03)
+        return real_fsync(fd)
+
+    monkeypatch.setattr(os, "fsync", slow_fsync)
+    p = make_provider()
+    until(p, lambda h: p.query_id >= 25 and h["STREAM_HEALTH"])
+    successes = [e for e in p.events if e["type"] == "QUERY_SUCCESS"]
+    assert len(successes) >= 20
+    elapsed_s = (successes[-1]["native_start_ns"] - successes[0]["native_start_ns"]) / 1e9
+    observed_hz = (len(successes) - 1) / elapsed_s
+    assert observed_hz >= 45
+    assert not p.failure_latch
+    # Batching depends on scheduler timing; the invariant is that fsync count
+    # remains far below event count while publication holds 50 Hz.
+    assert p.writer.fsync_count < len(successes)
 
 
 @pytest.mark.parametrize("behavior", ["block", "never", "gil_block"])
@@ -160,14 +183,17 @@ def test_missing_first_heartbeat(make_provider, budgets):
     until(p, lambda h: "missing_first_heartbeat" in h["FAILURE_LATCH"])
 
 
-def test_lost_ack(make_provider, budgets):
+def test_independent_supervisor_prevents_ack_starvation(make_provider, budgets):
     p = make_provider(limits=replace(budgets, ack_s=.1))
     deadline=time.perf_counter()+4
     while p.audit_slot.read() is None and time.perf_counter()<deadline:
         time.sleep(.002)
-    time.sleep(.2)  # no poll/ACK after observing first publication
-    until(p, lambda h: any("ack_timeout" in x for x in h["FAILURE_LATCH"]))
-    assert p.last_good is None
+    time.sleep(.2)  # caller does not poll; supervisor must continue ACK service
+    state = p.poll()
+    assert state["STREAM_HEALTH"]
+    assert not any("ack_timeout" in x for x in state["FAILURE_LATCH"])
+    assert p.query_id >= 3
+    assert p.last_good is not None
 
 
 def test_query_budget_starts_only_after_native_boundary(tmp_path, budgets):
@@ -197,9 +223,29 @@ def test_logger_faults(make_provider, mode, budgets):
     try:
         until(p, lambda h: any("logger" in x for x in h["FAILURE_LATCH"]))
         assert not p.health()["STREAM_HEALTH"]
-        assert p.last_good is None  # no start ACK while fsync is outstanding
+        # Admission may allow bounded progress before the asynchronous writer
+        # failure is observed, but the fault must remain latched.
+        assert p.failure_latch
     finally:
         release.set()
+
+
+def test_periodic_fsync_failure_is_latched(make_provider, monkeypatch):
+    import collection.wrench_process as module
+
+    def fail_fsync(_fd):
+        raise OSError("offline fsync failure")
+
+    monkeypatch.setattr(module.os, "fsync", fail_fsync)
+    p = make_provider(
+        writer=lambda path: DurableAudit(path, sync_interval_s=.01)
+    )
+    health = until(
+        p,
+        lambda h: any("logger_failure:audit_fsync:OSError" in x for x in h["FAILURE_LATCH"]),
+    )
+    assert not health["STREAM_HEALTH"]
+    assert p.stop_flag.value == 1
 
 
 @pytest.mark.parametrize("fault", ["gap", "duplicate", "order", "pid", "run", "clock", "overflow", "disconnect_order", "stopped_order"])
@@ -259,13 +305,14 @@ def test_republished_acknowledged_event_is_rejected(make_provider):
     assert any('sequence' in x for x in p.failure_latch)
 
 
-def test_state_freshness_failure_is_latched(make_provider,tmp_path):
+def test_runtime_state_freshness_failure_is_latched(make_provider,tmp_path):
     from tests.test_real_robot_acquisition import FakeAdapter
     from collection.episode_logger import EpisodeLogger
     from collection.real_robot_acquisition import RealRobotAcquisition
     p=make_provider()
     until(p,lambda h:h['STREAM_HEALTH'])
     acquisition=RealRobotAcquisition(FakeAdapter(),EpisodeLogger(tmp_path/'unused'),wrench_provider=p)
+    acquisition._runtime_freshness_armed=True
     stale=FakeAdapter().read_state_frame()
     acquisition._latest_state=replace(stale,host_monotonic_time_s=time.perf_counter()-10)
     acquisition._latest_wrench=p.last_good

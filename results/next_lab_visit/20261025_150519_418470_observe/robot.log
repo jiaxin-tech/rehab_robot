@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\acquire_robot_data.py", line 366, in run_acquisition
+    raise RuntimeError(f"acquisition did not become ready: {reason}")
+RuntimeError: acquisition did not become ready: safety_event_expired_or_clock_invalid
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\acquire_robot_data.py", line 528, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\acquire_robot_data.py", line 514, in main
+    result = run_acquisition(
+             ^^^^^^^^^^^^^^^^
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\acquire_robot_data.py", line 437, in run_acquisition
+    raise cleanup_error from primary_error
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\acquire_robot_data.py", line 383, in run_acquisition
+    acquisition.stop()
+  File "C:\Users\liumai\fjx\rehab_robot\collection\real_robot_acquisition.py", line 285, in stop
+    raise wrench_log_error
+  File "C:\Users\liumai\fjx\rehab_robot\collection\real_robot_acquisition.py", line 280, in stop
+    self._persist_wrench_frame(self.wrench_provider.last_good)
+  File "C:\Users\liumai\fjx\rehab_robot\collection\real_robot_acquisition.py", line 412, in _persist_wrench_frame
+    self.logger.append_robot_wrench(
+  File "C:\Users\liumai\fjx\rehab_robot\collection\episode_logger.py", line 406, in append_robot_wrench
+    self._append("robot_wrench", _row_mapping(row, values))
+  File "C:\Users\liumai\fjx\rehab_robot\collection\episode_logger.py", line 554, in _append
+    raise EpisodeLoggerError(f"cannot append {stream_name}: {detail}")
+collection.episode_logger.EpisodeLoggerError: cannot append robot_wrench: acquire_exception:RuntimeError:acquisition did not become ready: safety_event_expired_or_clock_invalid

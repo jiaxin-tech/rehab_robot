@@ -1,0 +1,16 @@
+subject_id,noise_scenario,parameter,true_value,estimated_value,absolute_error,relative_error_percent,compensation_method
+baseline,delay_0ms_uncompensated,mass_scale,1.0,1.0000000000000009,8.881784197001252e-16,8.881784197001252e-14,uncompensated
+baseline,delay_0ms_uncompensated,k_hip_nm_per_rad,15.0,14.999999999999963,3.730349362740526e-14,2.4868995751603507e-13,uncompensated
+baseline,delay_0ms_uncompensated,k_knee_nm_per_rad,12.0,12.000000000000002,1.7763568394002505e-15,1.4802973661668755e-14,uncompensated
+baseline,delay_0ms_uncompensated,b_hip_nm_s_per_rad,2.0,1.999999999999998,1.9984014443252818e-15,9.992007221626409e-14,uncompensated
+baseline,delay_0ms_uncompensated,b_knee_nm_s_per_rad,1.5,1.5,0.0,0.0,uncompensated
+baseline,delay_0ms_known_truth,mass_scale,1.0,1.0000000000000009,8.881784197001252e-16,8.881784197001252e-14,known_truth
+baseline,delay_0ms_known_truth,k_hip_nm_per_rad,15.0,14.999999999999963,3.730349362740526e-14,2.4868995751603507e-13,known_truth
+baseline,delay_0ms_known_truth,k_knee_nm_per_rad,12.0,12.000000000000002,1.7763568394002505e-15,1.4802973661668755e-14,known_truth
+baseline,delay_0ms_known_truth,b_hip_nm_s_per_rad,2.0,1.999999999999998,1.9984014443252818e-15,9.992007221626409e-14,known_truth
+baseline,delay_0ms_known_truth,b_knee_nm_s_per_rad,1.5,1.5,0.0,0.0,known_truth
+baseline,delay_0ms_automatic_estimated,mass_scale,1.0,1.000000000000001,1.1102230246251565e-15,1.1102230246251565e-13,automatic_estimated
+baseline,delay_0ms_automatic_estimated,k_hip_nm_per_rad,15.0,14.999999999999963,3.730349362740526e-14,2.4868995751603507e-13,automatic_estimated
+baseline,delay_0ms_automatic_estimated,k_knee_nm_per_rad,12.0,12.000000000000004,3.552713678800501e-15,2.960594732333751e-14,automatic_estimated
+baseline,delay_0ms_automatic_estimated,b_hip_nm_s_per_rad,2.0,1.9999999999999976,2.4424906541753444e-15,1.2212453270876722e-13,automatic_estimated
+baseline,delay_0ms_automatic_estimated,b_knee_nm_s_per_rad,1.5,1.5,0.0,0.0,automatic_estimated

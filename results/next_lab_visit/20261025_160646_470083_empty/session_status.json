@@ -1,0 +1,7 @@
+{
+  "action": "empty",
+  "status": "BLOCKED_OR_FAILED",
+  "steps": [],
+  "motion_requested": true,
+  "reason": "FileNotFoundError:[Errno 2] No such file or directory: 'C:\\\\Users\\\\liumai\\\\fjx\\\\rehab_robot\\\\本次生成的release.json完整路径'"
+}

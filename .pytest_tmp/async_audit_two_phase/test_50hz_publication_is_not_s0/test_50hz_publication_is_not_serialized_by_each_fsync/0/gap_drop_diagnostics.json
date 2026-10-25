@@ -1,0 +1,10 @@
+{
+  "gaps": [],
+  "failures": [
+    "logger_backpressure",
+    "worker_exited",
+    "wrench_sample_stale_or_clock_invalid",
+    "worker_progress_missing"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

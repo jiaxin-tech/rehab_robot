@@ -1,0 +1,2 @@
+host_time_s,state_time_s,wrench_time_s,state_age_s,wrench_age_s,state_wrench_skew_s,state_valid,wrench_valid,state_thread_alive,wrench_thread_alive,query_duration_ms,valid,invalid_reason
+2651656.6420294,2651656.6413845,2651656.6417999,0.0006448999047279358,0.00022949976846575737,0.0004154001362621784,True,True,True,True,0.0,True,

@@ -1,0 +1,43 @@
+{
+  "experiment_mode": "observation_only_acquire",
+  "git_commit": "86b9ddd39e861347f123c79b82ffe3f80e75323a",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 0.0,
+      "robot_state": 0.0,
+      "robot_wrench": 0.0,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 0.0081969,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:acquire_exception:RuntimeError:simulated connect failure",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 2654750028683400,
+    "finished_host_time_s": 2654750.0286834,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 2654750029079400,
+    "metadata_updated_host_time_s": 2654750.0290794,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 0,
+      "robot_state": 0,
+      "robot_wrench": 0,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 2654750020486500,
+    "started_host_time_s": 2654750.0204865,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "reviewed_observation_acquisition": false,
+  "robot_execution_approved": false,
+  "robot_ip": "192.0.2.1",
+  "timestamp_source": "time.perf_counter_ns",
+  "wrench_mode": "state-only"
+}

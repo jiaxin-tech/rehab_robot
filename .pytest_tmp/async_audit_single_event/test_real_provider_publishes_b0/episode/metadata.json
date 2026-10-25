@@ -1,0 +1,36 @@
+{
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 45.21810335542992,
+      "robot_state": 213.75830677112324,
+      "robot_wrench": 8.221473337350893,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 0.2432654,
+    "failed_stream": null,
+    "failure_reason": "OFFLINE_REGRESSION_TEST",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 2654491558749000,
+    "finished_host_time_s": 2654491.558749,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 2654491558954500,
+    "metadata_updated_host_time_s": 2654491.5589545,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 11,
+      "robot_state": 52,
+      "robot_wrench": 2,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 2654491315483600,
+    "started_host_time_s": 2654491.3154836,
+    "status": "aborted",
+    "timestamp_source": "time.perf_counter_ns"
+  }
+}

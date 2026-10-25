@@ -39,6 +39,9 @@ class SafetyEventStatus:
     valid: bool
     invalid_reason: str
     timestamp_source: str = "host_callback_receive_time_no_robot_device_timestamp"
+    initial_query_attempted: bool = False
+    initial_query_succeeded: bool = False
+    initial_query_error: str | None = None
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -58,6 +61,10 @@ class SafetyEventMonitor:
         self._received: float | None = None
         self._fault: str | None = "safety_events_not_subscribed"
         self._collision_latched = False
+        self._timestamp_source = "host_callback_receive_time_no_robot_device_timestamp"
+        self._initial_query_attempted = False
+        self._initial_query_succeeded = False
+        self._initial_query_error: str | None = None
 
     def begin(self) -> int:
         with self._lock:
@@ -68,6 +75,10 @@ class SafetyEventMonitor:
             self._state = None
             self._received = None
             self._fault = None
+            self._timestamp_source = "host_callback_receive_time_no_robot_device_timestamp"
+            self._initial_query_attempted = False
+            self._initial_query_succeeded = False
+            self._initial_query_error = None
             # Collision evidence survives re-subscription and reconnection.
             return self._generation
 
@@ -99,7 +110,37 @@ class SafetyEventMonitor:
             self._sequence += 1
             self._received = now
             self._state = payload["collided"]
+            self._timestamp_source = "host_callback_receive_time_no_robot_device_timestamp"
             self._collision_latched = self._collision_latched or self._state
+
+    def seed_from_query(self, generation: int, payload: object) -> None:
+        """Seed the cache from a read-only query made after watcher registration.
+
+        This is not counted as a callback event.  Invalid or failed queries do
+        not invent clearance and do not poison a later valid callback.
+        """
+        with self._lock:
+            if generation != self._generation or not self._active:
+                return
+            self._initial_query_attempted = True
+            if not isinstance(payload, dict) or type(payload.get("collided")) is not bool:
+                self._initial_query_error = "safety_initial_query_invalid_collided_boolean"
+                return
+            self._received = self._clock()
+            self._state = payload["collided"]
+            self._timestamp_source = "host_active_query_receive_time_no_robot_device_timestamp"
+            self._collision_latched = self._collision_latched or self._state
+            self._initial_query_succeeded = True
+            self._initial_query_error = None
+
+    def note_initial_query_error(self, generation: int, reason: str) -> None:
+        """Retain query diagnostics while leaving callbacks able to establish state."""
+        with self._lock:
+            if generation != self._generation or not self._active:
+                return
+            self._initial_query_attempted = True
+            self._initial_query_succeeded = False
+            self._initial_query_error = str(reason)
 
     def snapshot(self) -> SafetyEventStatus:
         with self._lock:
@@ -119,6 +160,10 @@ class SafetyEventMonitor:
                 collision_state=state, collision_latched=self._collision_latched,
                 received_host_time_s=self._received, age_s=age,
                 max_age_s=self.max_age_s, valid=bool(valid), invalid_reason=reason or "",
+                timestamp_source=self._timestamp_source,
+                initial_query_attempted=self._initial_query_attempted,
+                initial_query_succeeded=self._initial_query_succeeded,
+                initial_query_error=self._initial_query_error,
             )
 
 

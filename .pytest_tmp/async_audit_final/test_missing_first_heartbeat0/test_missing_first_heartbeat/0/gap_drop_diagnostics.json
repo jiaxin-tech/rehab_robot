@@ -1,0 +1,9 @@
+{
+  "gaps": [],
+  "failures": [
+    "missing_first_heartbeat",
+    "startup_timeout",
+    "forced_worker_termination"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

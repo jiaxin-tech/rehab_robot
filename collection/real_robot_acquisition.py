@@ -111,6 +111,12 @@ class RealRobotAcquisition:
         self._started_threads: dict[str, threading.Thread] = {}
         self._started = False
         self._manage_connection = True
+        # State and wrench producers start independently.  Do not permanently
+        # stop the isolated wrench owner merely because its first good sample
+        # arrived before a fresh state/wrench pair was available.  Once the
+        # complete acquisition health gate has passed, freshness/skew failures
+        # are again latched immediately for the rest of the episode.
+        self._runtime_freshness_armed = False
 
     @property
     def running(self) -> bool:
@@ -269,11 +275,20 @@ class RealRobotAcquisition:
                 # stop the provider before doing any potentially blocking I/O.
                 before_stop = self.wrench_provider.last_good
                 self.wrench_provider.stop()
-                try:
-                    self._persist_wrench_frame(before_stop)
-                    self._persist_wrench_frame(self.wrench_provider.last_good)
-                except Exception as exc:
-                    wrench_log_error = exc
+                # If the caller already marked the episode failed, append is
+                # intentionally closed. Preserve that primary reason instead
+                # of replacing it with a predictable tail-write rejection.
+                logger_failure_event = getattr(self.logger, "failure_event", None)
+                logger_already_failed = bool(
+                    logger_failure_event is not None
+                    and logger_failure_event.is_set()
+                )
+                if not logger_already_failed:
+                    try:
+                        self._persist_wrench_frame(before_stop)
+                        self._persist_wrench_frame(self.wrench_provider.last_good)
+                    except Exception as exc:
+                        wrench_log_error = exc
             self._cleanup_adapter()
             if wrench_log_error is not None:
                 raise wrench_log_error
@@ -494,18 +509,20 @@ class RealRobotAcquisition:
             limits = self.wrench_provider.budgets
             if state_age is None or state_age > limits.state_age_s:
                 reasons.append("state_stale_or_unavailable")
-                # The robot is stationary during process startup.  Require a
-                # currently fresh state before motion, but latch only after the
-                # child has produced its first valid wrench sample.  This keeps
-                # Windows spawn latency from becoming a false motion fault.
-                if state_age is not None and provider_has_sample:
+                # Startup is an alignment phase: the independently started
+                # producers may not yet have a contemporaneous pair.  Keep the
+                # gate invalid, but do not kill the wrench owner before it has
+                # ever reached a fully healthy state.  Runtime remains strict.
+                if (self._runtime_freshness_armed and state_age is not None
+                        and provider_has_sample):
                     self.wrench_provider.fail("state_freshness_failure")
             if wrench_age is None or wrench_age > limits.sample_age_s:
                 stream_healthy = False
                 reasons.append("wrench_stale_or_unavailable")
             if skew is None or skew > limits.skew_s:
                 reasons.append("state_wrench_skew_unavailable_or_exceeded")
-                if skew is not None and provider_has_sample:
+                if (self._runtime_freshness_armed and skew is not None
+                        and provider_has_sample):
                     self.wrench_provider.fail("state_wrench_skew_failure")
         if not state_valid:
             reasons.append(state_error or (state.invalid_reason if state else "state_not_ready"))
@@ -528,6 +545,17 @@ class RealRobotAcquisition:
             if wrench is not None and wrench.cartesian_torque_raw_nm is not None
             else None
         )
+        valid = bool(
+            state_valid
+            and wrench_valid
+            and state_alive
+            and wrench_alive
+            and alignment_alive
+            and stream_healthy
+            and not reasons
+        )
+        if valid:
+            self._runtime_freshness_armed = True
         return AcquisitionHealth(
             host_time_s=now_s,
             state_time_s=state_time,
@@ -543,7 +571,7 @@ class RealRobotAcquisition:
             query_duration_ms=wrench.query_duration_ms if wrench else None,
             force_magnitude_n=force_magnitude,
             torque_magnitude_nm=torque_magnitude,
-            valid=bool(state_valid and wrench_valid and state_alive and wrench_alive and alignment_alive and stream_healthy and not reasons),
+            valid=valid,
             invalid_reason=";".join(unique_reasons),
             wrench_process_alive=bool(process_health.get("PROCESS_ALIVE")),
             wrench_stream_healthy=stream_healthy,

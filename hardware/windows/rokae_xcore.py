@@ -1240,6 +1240,24 @@ class RokaeRobot:
                 if self._disconnect_requested:
                     raise RuntimeError("disconnect requested during safety event registration")
                 monitor.registered(generation)
+                # The SDK documents queryEventInfo as returning the same data
+                # as the watcher.  Query only after registration: controllers
+                # may reject an unmonitored event, and a watcher is not
+                # guaranteed to publish an initial edge by itself.  Failure is
+                # diagnostic only; it must never be converted to clear/False,
+                # and a later real callback remains able to establish state.
+                try:
+                    info = self._call(
+                        "queryEventInfo(safety)",
+                        self._robot.queryEventInfo,
+                        self._sdk.Event.safety,
+                    )
+                    monitor.seed_from_query(generation, info)
+                except Exception as exc:
+                    monitor.note_initial_query_error(
+                        generation,
+                        f"{type(exc).__name__}:{exc}",
+                    )
             except Exception:
                 monitor.invalidate("safety_event_registration_failed")
                 raise

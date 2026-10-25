@@ -1,0 +1,38 @@
+{
+  "action": "release",
+  "status": "BLOCKED_OR_FAILED",
+  "steps": [
+    {
+      "name": "release",
+      "command": [
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "scripts.prepare_empty_load_commissioning_release",
+        "--output",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_141227_339481_release\\release.json",
+        "--review-request",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_preflight_20261018_173808_265\\review_request.json",
+        "--confirmation",
+        "我确认当前仅安装法兰夹具、无假腿、无人体；控制器活动负载1.085 kg、质心[0,0,0.100] m、惯量[0,0,0]与当前夹具一致；批准起点容差5 mm/3 deg、命令延迟20 ms、RT滤波50 Hz、网络容差20%；批准SHA256 892da699b9afd0f57b8e77a5fa1c9b8da6069599515f7e2c24fec6b064b3b945的132.335秒降速轨迹运行一周期；控制器碰撞保护开启、急停在手、运动范围无人；同意仅本次空载调试豁免SDK碰撞状态查询错误259，任何超限立即停止。",
+        "--valid-for-minutes",
+        "30",
+        "--reference",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\reference_commissioning\\formal_reference_temp_20261018\\commissioning_reference.csv",
+        "--anchor",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_preflight_20261018_173808_265\\reviewed_anchor.json",
+        "--safety-config",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\empty_load_commissioning_safety_20261018.json",
+        "--frame-config",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\rehab_frame_config.json",
+        "--wrench-config",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\empty_load_live_observation_20261018.json"
+      ],
+      "returncode": 1,
+      "log": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_141227_339481_release\\release.log"
+    }
+  ],
+  "motion_requested": false,
+  "reason": "RuntimeError:release failed (1); see C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_141227_339481_release\\release.log"
+}

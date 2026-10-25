@@ -1,0 +1,15 @@
+host_time_s,state_time_s,wrench_time_s,state_age_s,wrench_age_s,state_wrench_skew_s,state_valid,wrench_valid,state_thread_alive,wrench_thread_alive,query_duration_ms,valid,invalid_reason
+2654511.7213795,2654511.7207137,,0.0006657997146248817,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.7418318,2654511.7407911,,0.0010406998917460442,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.7615941,2654511.7609733,,0.000620800070464611,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.7822763,2654511.7807876,,0.0014886995777487755,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.8015772,2654511.8009358,,0.0006413999944925308,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.8215708,2654511.8209835,,0.000587299931794405,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.8425184,2654511.8410895,,0.001428899820894003,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.8619134,2654511.8607984,,0.0011149998754262924,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.8818081,2654511.8813375,,0.00047059962525963783,,,True,False,True,True,,False,wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready
+2654511.9017718,2654511.9009574,2654511.8964040503,0.0008144001476466656,0.005367749836295843,0.0045533496886491776,True,True,True,True,1.037099864333868,True,
+2654511.9215285,2654511.9210101,2654511.9166197497,0.0005184002220630646,0.004908750299364328,0.004390350077301264,True,True,True,True,0.10670023038983345,True,
+2654511.941715,2654511.9414275,2654511.9166197497,0.00028750021010637283,0.025095250457525253,0.02480775024741888,True,True,True,True,0.10670023038983345,True,
+2654511.9615624,2654511.9613226,2654511.9166197497,0.00023980019614100456,0.044942650478333235,0.04470285028219223,True,True,True,True,0.10670023038983345,True,
+2654511.9818912,2654511.9808065,2654511.9166197497,0.0010846997611224651,0.06527145020663738,0.06418675044551492,True,True,True,True,0.10670023038983345,True,

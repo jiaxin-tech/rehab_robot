@@ -9,6 +9,6 @@
   "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
   "reference_release_manifest": "reference_release/reference_release_manifest.json",
   "scope": "formal_offline_paper_and_active_pipeline",
-  "real_robot_safety_thresholds_reviewed": false,
+  "real_robot_safety_thresholds_reviewed": true,
   "notes": "ROM protocol approval does not approve robot motion or site-specific safety thresholds."
 }

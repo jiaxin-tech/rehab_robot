@@ -1,0 +1,43 @@
+{
+  "experiment_mode": "observation_only_acquire",
+  "git_commit": "86b9ddd39e861347f123c79b82ffe3f80e75323a",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 16.767545232610853,
+      "robot_state": 38.9598845110664,
+      "robot_wrench": 8.383772616305427,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 4.0554535,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:acquire_exception:RuntimeError:acquisition did not become ready: safety_event_initial_state_unknown;logger_backpressure;telemetry_failure:ValueError:duplicate_query_state;wrench_sample_stale_or_clock_invalid;child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed;worker_exited;worker_progress_missing;state_stale_or_unavailable;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 2654392902907900,
+    "finished_host_time_s": 2654392.9029079,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 2654392903117500,
+    "metadata_updated_host_time_s": 2654392.9031175,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 68,
+      "robot_state": 158,
+      "robot_wrench": 34,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 2654388847454400,
+    "started_host_time_s": 2654388.8474544,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "reviewed_observation_acquisition": true,
+  "robot_execution_approved": false,
+  "robot_ip": "192.168.50.103",
+  "timestamp_source": "time.perf_counter_ns",
+  "wrench_mode": "live"
+}

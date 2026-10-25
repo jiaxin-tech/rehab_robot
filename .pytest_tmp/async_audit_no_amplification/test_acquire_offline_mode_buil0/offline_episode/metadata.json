@@ -1,0 +1,47 @@
+{
+  "experiment_mode": "observation_only_acquire",
+  "git_commit": "86b9ddd39e861347f123c79b82ffe3f80e75323a",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 48.917935271788046,
+      "robot_state": 195.67174108715218,
+      "robot_wrench": 48.917935271788046,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 0.0204424,
+    "failed_stream": null,
+    "failure_reason": null,
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 2654273832401900,
+    "finished_host_time_s": 2654273.8324019,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 2654273832711600,
+    "metadata_updated_host_time_s": 2654273.8327116,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 1,
+      "robot_state": 4,
+      "robot_wrench": 1,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 2654273811959500,
+    "started_host_time_s": 2654273.8119595,
+    "status": "completed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "reviewed_observation_acquisition": false,
+  "robot_execution_approved": false,
+  "robot_ip": "192.0.2.1",
+  "robot_state_summary": {
+    "connected": true,
+    "xcore_sdk_version": "fake"
+  },
+  "timestamp_source": "time.perf_counter_ns",
+  "wrench_mode": "offline"
+}

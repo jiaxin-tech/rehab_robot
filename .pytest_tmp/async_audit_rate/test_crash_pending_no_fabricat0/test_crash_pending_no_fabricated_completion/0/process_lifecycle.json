@@ -1,0 +1,85 @@
+[
+  {
+    "version": 1,
+    "run_id": "c454237db0be46ce81d2bbf7f52e5628",
+    "session_id": "0b93a663de22424da9d20cb9fd0f1dfd",
+    "pid": 37796,
+    "event_id": 1,
+    "query_id": 0,
+    "type": "PROCESS_START",
+    "timestamp_ns": 2654081832621600,
+    "connection": {
+      "mode": "offline",
+      "rate_hz": 50,
+      "behavior": "crash",
+      "dispatch_ns": 2654081634518300
+    },
+    "dispatch_ns": 2654081634518300,
+    "parent_receive_ns": 2654081834435700,
+    "parent_accept_ns": 2654081834435700
+  },
+  {
+    "version": 1,
+    "run_id": "c454237db0be46ce81d2bbf7f52e5628",
+    "session_id": "0b93a663de22424da9d20cb9fd0f1dfd",
+    "pid": 37796,
+    "event_id": 2,
+    "query_id": 0,
+    "type": "PROCESS_READY",
+    "timestamp_ns": 2654081836320600,
+    "identity": {
+      "provider": "OFFLINE_STUB",
+      "NOT_SAFETY_THRESHOLDS": true
+    },
+    "parent_receive_ns": 2654081837017800,
+    "parent_accept_ns": 2654081837017800
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "c454237db0be46ce81d2bbf7f52e5628",
+    "session_id": "0b93a663de22424da9d20cb9fd0f1dfd",
+    "pid": 17520,
+    "query_id": 1,
+    "event_id": 6,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 2654081851575800,
+    "exitcode": 73,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "c454237db0be46ce81d2bbf7f52e5628",
+    "session_id": "0b93a663de22424da9d20cb9fd0f1dfd",
+    "pid": 17520,
+    "query_id": 1,
+    "event_id": 8,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 2654081852323900
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "c454237db0be46ce81d2bbf7f52e5628",
+    "session_id": "0b93a663de22424da9d20cb9fd0f1dfd",
+    "pid": 17520,
+    "query_id": 1,
+    "event_id": 9,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 2654081852444600,
+    "outcome": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 73,
+      "query_state": "IN_PROGRESS",
+      "failure_latch": [
+        "worker_exited"
+      ]
+    }
+  }
+]

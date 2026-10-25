@@ -1,0 +1,7 @@
+{
+  "gaps": [],
+  "failures": [
+    "invalid_supervisor_clock"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

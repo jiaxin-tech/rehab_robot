@@ -1,0 +1,43 @@
+{
+  "experiment_mode": "observation_only_acquire",
+  "git_commit": "86b9ddd39e861347f123c79b82ffe3f80e75323a",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 17.15375158638019,
+      "robot_state": 52.20707004550492,
+      "robot_wrench": 0.24860509545478535,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 4.0224437,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:acquire_exception:RuntimeError:acquisition did not become ready: safety_event_initial_state_unknown;wrench_sample_stale_or_clock_invalid;worker_exited;worker_progress_missing;state_stale_or_unavailable;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 2651665179452800,
+    "finished_host_time_s": 2651665.1794528,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 2651665179695800,
+    "metadata_updated_host_time_s": 2651665.1796958,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 69,
+      "robot_state": 210,
+      "robot_wrench": 1,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 2651661157009100,
+    "started_host_time_s": 2651661.1570091,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "reviewed_observation_acquisition": true,
+  "robot_execution_approved": false,
+  "robot_ip": "192.168.50.103",
+  "timestamp_source": "time.perf_counter_ns",
+  "wrench_mode": "live"
+}

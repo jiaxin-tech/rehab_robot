@@ -1,0 +1,1 @@
+{"version": 1, "origin": "supervisor", "run_id": "3114bfeb5ff2412e966c957782c785bc", "session_id": "f3f8b62da5cd4b4d9767b04b1b46b749", "pid": 46708, "query_id": 0, "event_id": 1, "type": "FAILURE_LATCH", "timestamp_ns": 2654508598693800, "reason": "telemetry_failure:ValueError:out_of_order_process_stopped", "log_write_ns": 2654508598807400}

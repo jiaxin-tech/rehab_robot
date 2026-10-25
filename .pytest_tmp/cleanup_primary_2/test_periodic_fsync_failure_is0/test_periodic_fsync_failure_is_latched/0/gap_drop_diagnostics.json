@@ -1,0 +1,10 @@
+{
+  "gaps": [],
+  "failures": [
+    "logger_failure:audit_fsync:OSError:offline fsync failure",
+    "logger_failure:RuntimeError:audit_fsync:OSError:offline fsync failure",
+    "forced_worker_termination",
+    "audit_cleanup_unconfirmed"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

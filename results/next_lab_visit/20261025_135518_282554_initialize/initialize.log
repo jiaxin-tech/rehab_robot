@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py", line 166, in <module>
+    main()
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py", line 161, in main
+    result = train(request, validate_only=args.validate_only)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\liumai\fjx\rehab_robot\scripts\train_robot_leg_round.py", line 48, in train
+    raise ValueError("public prior dependency changed: " + name)
+ValueError: public prior dependency changed: external_simulation/myoleg_reference_trajectory_replay_v1/build_and_replay.py

@@ -1,0 +1,81 @@
+[
+  {
+    "version": 1,
+    "run_id": "52c933a2323d4e6b8b2776c8873aad98",
+    "session_id": "5feb3189847c4f65b285ff404f74524b",
+    "pid": 50324,
+    "event_id": 1,
+    "query_id": 0,
+    "type": "PROCESS_START",
+    "timestamp_ns": 2654796452535000,
+    "connection": {
+      "mode": "offline",
+      "rate_hz": 50,
+      "startup_delay_s": 10,
+      "dispatch_ns": 2654796272634400
+    },
+    "dispatch_ns": 2654796272634400,
+    "parent_receive_ns": 2654796454503500,
+    "parent_accept_ns": 2654796454503500
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "52c933a2323d4e6b8b2776c8873aad98",
+    "session_id": "5feb3189847c4f65b285ff404f74524b",
+    "pid": 41492,
+    "query_id": 0,
+    "event_id": 1,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 2654796454554900
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "52c933a2323d4e6b8b2776c8873aad98",
+    "session_id": "5feb3189847c4f65b285ff404f74524b",
+    "pid": 41492,
+    "query_id": 0,
+    "event_id": 4,
+    "type": "FORCED_WORKER_TERMINATION",
+    "timestamp_ns": 2654796654959900,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "52c933a2323d4e6b8b2776c8873aad98",
+    "session_id": "5feb3189847c4f65b285ff404f74524b",
+    "pid": 41492,
+    "query_id": 0,
+    "event_id": 5,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 2654796657510600,
+    "exitcode": -15,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "52c933a2323d4e6b8b2776c8873aad98",
+    "session_id": "5feb3189847c4f65b285ff404f74524b",
+    "pid": 41492,
+    "query_id": 0,
+    "event_id": 7,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 2654796657550900,
+    "outcome": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": false,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": true,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": -15,
+      "query_state": "STARTING",
+      "failure_latch": [
+        "forced_worker_termination"
+      ]
+    }
+  }
+]

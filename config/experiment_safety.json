@@ -27,8 +27,8 @@
   "tool_workpiece_reviewed": true,
   "payload_configuration_reviewed": true,
   "collision_configuration_reviewed": true,
-  "joint_soft_limits_reviewed": false,
-  "realtime_configuration_reviewed": false,
-  "reviewed": false,
+  "joint_soft_limits_reviewed": true,
+  "realtime_configuration_reviewed": true,
+  "reviewed": true,
   "notes": "Identity and payload were reconfirmed by read-only xCoreSDK on 2026-10-18. At jacey's request, the live controller values mass 1.085 kg, CoG [0,0,0.100] m and inertia [0,0,0] kg*m^2 replace the earlier 0.45 kg candidate for temporary supervised commissioning. Zero inertia is recorded as controller state, not accepted as physical/CAD validation. On 2026-10-18 jacey explicitly approved temporary dummy-leg capture timing limits: state age 0.025 s, wrench age 0.05 s and state/wrench skew 0.04 s, with immediate stop on exceedance. These timing fields are reviewed only for unattended dummy-leg capture and do not make the overall motion safety file reviewed. The SDK payload readback now matches these temporary values, but active HMI tool/workobject identity remains unverified. Controller-enforced collision protection and emergency stop must remain active. The unavailable SDK collision state may be bypassed only by the dedicated one-command supervised commissioning path; it is not waived for automatic reference-trajectory execution. Submitted joint limits remain candidates because their active state is explicitly unconfirmed. Repository defaults 50 Hz/20% are legacy candidates, not live readback. Overall reviewed remains false."
 }

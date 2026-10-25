@@ -1,9 +1,11 @@
-"""Spawn-owned wrench queries with acknowledged, durable audit events.
+"""Spawn-owned wrench queries with acknowledged, asynchronous audit events.
 
 No native import occurs in the supervisor. Budgets have no production defaults.
-The audit mailbox is stop-and-wait: its writer cannot overwrite an unacknowledged
-record. Fixed-size shared byte slots avoid multiprocessing Queue feeder/join locks
-that can be corrupted when a native owner is terminated.
+The audit mailbox is stop-and-wait until the supervisor admits a record to a
+bounded queue.  Disk persistence is asynchronous and separately supervised so a
+50 Hz publisher never serially waits for one fsync per protocol event. Fixed-size
+shared byte slots avoid multiprocessing Queue feeder/join locks that can be
+corrupted when a native owner is terminated.
 """
 from __future__ import annotations
 
@@ -95,40 +97,76 @@ class Slot:
 
 
 class DurableAudit:
-    """Bounded asynchronous fsync. An ACK is issued only after done is set.
+    """Bounded batched writer with periodic and close-time fsync.
 
     A wedged filesystem writer is a daemon with explicit unresolved status;
     supervision never waits on its I/O lock and never spawns replacement writers.
+    Tickets acknowledge a successful write+flush, not disk durability. Any
+    periodic fsync failure is published globally and latched by the supervisor;
+    close succeeds only after a final fsync.
     """
-    def __init__(self, path, *, write_hook=None):
+    def __init__(self, path, *, write_hook=None, sync_interval_s=.25):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.work = queue.Queue(maxsize=64)
         self.failure = None
         self.closed = False
         self.write_hook = write_hook
+        if (isinstance(sync_interval_s, bool)
+                or not isinstance(sync_interval_s, (int, float))
+                or not math.isfinite(sync_interval_s)
+                or sync_interval_s <= 0):
+            raise ValueError("sync_interval_s must be finite and positive")
+        self.sync_interval_s = float(sync_interval_s)
+        self.fsync_count = 0
+        self.last_fsync_ns = None
+        self.written_count = 0
         self.thread = threading.Thread(target=self._run, daemon=True, name="wrench-audit-writer")
         self.thread.start()
 
     def submit(self, event):
         if self.failure or self.closed:
             raise RuntimeError(self.failure or "audit_closed")
-        ticket = {"done": threading.Event(), "error": None, "durable_ns": None}
+        ticket = {"done": threading.Event(), "error": None, "write_complete_ns": None}
         self.work.put_nowait((dict(event), ticket))
         return ticket
 
     def _run(self):
         try:
             with self.path.open("x", encoding="utf-8") as stream:
+                dirty = False
+                last_sync_s = time.perf_counter()
                 while True:
-                    item = self.work.get()
+                    timeout = max(0.0, self.sync_interval_s - (time.perf_counter() - last_sync_s)) if dirty else None
+                    try:
+                        item = self.work.get(timeout=timeout)
+                    except queue.Empty:
+                        try:
+                            stream.flush()
+                            os.fsync(stream.fileno())
+                            self.fsync_count += 1
+                            self.last_fsync_ns = time.perf_counter_ns()
+                            dirty = False
+                            last_sync_s = time.perf_counter()
+                        except BaseException as exc:
+                            self.failure = f"audit_fsync:{type(exc).__name__}:{exc}"
+                            return
+                        continue
                     if item is None:
+                        if dirty:
+                            try:
+                                stream.flush()
+                                os.fsync(stream.fileno())
+                                self.fsync_count += 1
+                                self.last_fsync_ns = time.perf_counter_ns()
+                            except BaseException as exc:
+                                self.failure = f"audit_fsync:{type(exc).__name__}:{exc}"
                         return
                     batch = [item]
                     closing = False
-                    # Group only records already queued; never wait to fill a
-                    # batch. Every ticket still waits for the shared fsync.
-                    while len(batch) < self.work.maxsize:
+                    # Absorb everything already queued. Records accumulated
+                    # during a periodic fsync therefore become one write batch.
+                    while not closing and len(batch) < self.work.maxsize:
                         try:
                             item = self.work.get_nowait()
                         except queue.Empty:
@@ -141,14 +179,14 @@ class DurableAudit:
                         for event, ticket in batch:
                             if self.write_hook:
                                 self.write_hook(event)
-                            # Write dispatch is NOT fsync completion.
                             event["log_write_ns"] = time.perf_counter_ns()
                             stream.write(json.dumps(event, allow_nan=False) + "\n")
                         stream.flush()
-                        os.fsync(stream.fileno())
-                        durable_ns = time.perf_counter_ns()
+                        write_complete_ns = time.perf_counter_ns()
                         for _, ticket in batch:
-                            ticket["durable_ns"] = durable_ns
+                            ticket["write_complete_ns"] = write_complete_ns
+                        self.written_count += len(batch)
+                        dirty = True
                     except BaseException as exc:
                         self.failure = f"audit_write:{type(exc).__name__}:{exc}"
                         for _, ticket in batch:
@@ -158,6 +196,13 @@ class DurableAudit:
                         for _, ticket in batch:
                             ticket["done"].set()
                     if closing:
+                        if dirty:
+                            try:
+                                os.fsync(stream.fileno())
+                                self.fsync_count += 1
+                                self.last_fsync_ns = time.perf_counter_ns()
+                            except BaseException as exc:
+                                self.failure = f"audit_fsync:{type(exc).__name__}:{exc}"
                         return
         except BaseException as exc:
             self.failure = f"audit_open:{type(exc).__name__}:{exc}"
@@ -214,16 +259,12 @@ def _child(config, budgets, run_id, session_id, audit, latest, ack, stop, fatal)
         next_tick = time.perf_counter()
         while not stop.value:
             query_id += 1
-            intent = emit("QUERY_START_INTENT", completion=None,
-                          scheduled_dispatch_ns=int(next_tick * 1e9),
-                          dispatch_lateness_ns=max(0, time.perf_counter_ns() - int(next_tick * 1e9)))
-            if stop.value:
-                break
-            # This is a confirmed PRE-CALL boundary, not proof that the CPU
-            # entered vendor code. The following ACK gap remains explicit.
-            boundary = emit("QUERY_NATIVE_ENTER", entry_semantics="PRE_CALL_BOUNDARY")
-            if stop.value:
-                break
+            intent_ns = time.perf_counter_ns()
+            scheduled_dispatch_ns = int(next_tick * 1e9)
+            dispatch_lateness_ns = max(0, intent_ns - scheduled_dispatch_ns)
+            # The in-progress marker is independent of the audit mailbox, so a
+            # native hang remains observable even though each successful query
+            # now needs only one cross-process audit admission.
             started = time.perf_counter_ns()
             latest.put(dict(query_id=query_id, run_id=run_id, pid=pid,
                             query_in_progress=True, completion=None, native_start_ns=started))
@@ -247,7 +288,9 @@ def _child(config, budgets, run_id, session_id, audit, latest, ack, stop, fatal)
                            pid=pid, frame=raw, error=error, completion_ns=ended)
             latest.put(payload)
             emit("QUERY_ERROR" if error else "QUERY_SUCCESS", honor_stop=False,
-                 intent_ns=intent["timestamp_ns"], boundary_ns=boundary["timestamp_ns"],
+                 intent_ns=intent_ns, boundary_ns=started,
+                 scheduled_dispatch_ns=scheduled_dispatch_ns,
+                 dispatch_lateness_ns=dispatch_lateness_ns,
                  native_start_ns=started, completion_ns=ended, frame=raw, error=error)
             if error:
                 break  # no retry after SDK failure
@@ -322,9 +365,7 @@ class WrenchProcessProvider:
         self.process = None
         self.expected_event = 1
         self.seen_slot_version = 0
-        self.pending_ticket = None
-        self.pending_event = None
-        self.pending_since = None
+        self.pending_audits = deque()
         self.last_good = None
         self.last_error = None
         self.query_id = 0
@@ -346,8 +387,16 @@ class WrenchProcessProvider:
         self.gaps = []
         self.cleanup = None
         self.supervisor_event_id = 0
+        self.audit_written_count = 0
+        self.audit_max_write_latency_ns = 0
+        self.audit_last_write_complete_ns = None
+        self.native_query_overrun_count = 0
+        self.max_native_query_duration_ns = 0
         self._health = {}
         self._poll_lock = threading.Lock()
+        self._record_lock = threading.RLock()
+        self._supervisor_stop = threading.Event()
+        self._supervisor_thread = None
 
     def start(self):
         if self.process is not None:
@@ -360,28 +409,55 @@ class WrenchProcessProvider:
             self.audit_slot, self.latest_slot, self.ack, self.stop_flag, self.fatal_slot),
             name="production-wrench-owner", daemon=False)
         self.process.start()
+        # Publish a complete initial health record before concurrent callers
+        # can lose the poll lock to the dedicated supervisor.
+        self.poll()
+        self._supervisor_stop.clear()
+        self._supervisor_thread = threading.Thread(
+            target=self._supervise,
+            name="production-wrench-supervisor",
+            daemon=True,
+        )
+        self._supervisor_thread.start()
         return self
 
+    def _supervise(self):
+        """Continuously service bounded IPC independently of acquisition I/O."""
+        while not self._supervisor_stop.is_set():
+            self.poll()
+            self._supervisor_stop.wait(.002)
+
+    def _cache_record(self, kind, **fields):
+        with self._record_lock:
+            self.supervisor_event_id += 1
+            event = dict(version=VERSION, origin="supervisor", run_id=self.run_id,
+                         session_id=self.session_id, pid=os.getpid(), query_id=self.query_id,
+                         event_id=self.supervisor_event_id, type=kind,
+                         timestamp_ns=time.perf_counter_ns(), **fields)
+            self.events.append(event)
+            return event
+
     def _record(self, kind, **fields):
-        self.supervisor_event_id += 1
-        event = dict(version=VERSION, origin="supervisor", run_id=self.run_id,
-                     session_id=self.session_id, pid=os.getpid(), query_id=self.query_id,
-                     event_id=self.supervisor_event_id, type=kind,
-                     timestamp_ns=time.perf_counter_ns(), **fields)
-        self.events.append(event)
+        event = self._cache_record(kind, **fields)
         if self.writer:
             try:
                 self.writer.submit(event)
-            except Exception:
-                if "telemetry_failure" not in self.failure_latch:
-                    self.failure_latch.append("telemetry_failure")
+            except queue.Full:
+                if "logger_backpressure" not in self.failure_latch:
+                    self.failure_latch.append("logger_backpressure")
+                self.stop_flag.value = 1
+            except Exception as exc:
+                reason = f"logger_failure:{type(exc).__name__}:{exc}"
+                if reason not in self.failure_latch:
+                    self.failure_latch.append(reason)
                 self.stop_flag.value = 1
 
     def fail(self, reason):
-        if reason not in self.failure_latch:
-            self.failure_latch.append(reason)
-            self.stop_flag.value = 1
-            self._record("FAILURE_LATCH", reason=reason)
+        with self._record_lock:
+            if reason not in self.failure_latch:
+                self.failure_latch.append(reason)
+                self.stop_flag.value = 1
+                self._record("FAILURE_LATCH", reason=reason)
 
     def _accept(self, event, now):
         for key, expected in (("version", VERSION), ("run_id", self.run_id),
@@ -398,16 +474,22 @@ class WrenchProcessProvider:
             raise ValueError("clock_regression")
         kind = event["type"]
         qid = event.get("query_id")
-        if kind == "QUERY_START_INTENT":
-            if qid != self.query_id + 1 or self.query_state not in ("IDLE", "SUCCEEDED") or self.failure_latch:
-                raise ValueError("duplicate_query_state")
-        elif kind == "QUERY_NATIVE_ENTER":
-            if qid != self.query_id or self.query_state != "START_INTENT":
-                raise ValueError("out_of_order_native_enter")
-        elif kind in ("QUERY_SUCCESS", "QUERY_ERROR"):
-            if qid != self.query_id or self.query_state not in ("IN_PROGRESS", "HUNG"):
+        if kind in ("QUERY_SUCCESS", "QUERY_ERROR"):
+            observed_in_progress = (
+                qid == self.query_id
+                and self.query_state in ("IN_PROGRESS", "HUNG")
+            )
+            completed_between_polls = (
+                qid == self.query_id + 1
+                and self.query_state in ("IDLE", "SUCCEEDED")
+            )
+            if not (observed_in_progress or completed_between_polls):
                 raise ValueError("out_of_order_completion")
-            if not self.query_start_ns <= event["native_start_ns"] <= event["completion_ns"] <= stamp:
+            query_start_ns = (
+                self.query_start_ns if observed_in_progress else event.get("intent_ns")
+            )
+            if (not isinstance(query_start_ns, int)
+                    or not query_start_ns <= event["native_start_ns"] <= event["completion_ns"] <= stamp):
                 raise ValueError("invalid_completion_clock")
             if kind == "QUERY_ERROR" and (event.get("frame") is not None or not event.get("error")):
                 raise ValueError("invalid_error_payload")
@@ -451,18 +533,30 @@ class WrenchProcessProvider:
             # A completed query can replace the in-flight IPC marker between
             # polls. Its measured duration must still enforce the same budget.
             duration_ns = event["completion_ns"] - event["native_start_ns"]
+            self.max_native_query_duration_ns = max(
+                self.max_native_query_duration_ns, duration_ns
+            )
             if duration_ns / 1e9 > self.budgets.query_s:
+                self.native_query_overrun_count += 1
                 self.fail("query_pending_too_long")
                 self._record("QUERY_BUDGET_EXCEEDED", native_start_ns=event["native_start_ns"],
                              completion_ns=event["completion_ns"], duration_ns=duration_ns,
                              budget_s=self.budgets.query_s)
-        event = dict(event, parent_receive_ns=now)
-        self.pending_ticket = self.writer.submit(event)
-        self.pending_event = event
-        self.pending_since = now
+        event = dict(event, parent_receive_ns=now, parent_accept_ns=now)
+        try:
+            ticket = self.writer.submit(event)
+        except queue.Full:
+            self.fail("logger_backpressure")
+            return
+        except Exception as exc:
+            self.fail(f"logger_failure:{type(exc).__name__}:{exc}")
+            return
+        self.pending_audits.append((event, ticket, now))
+        self._apply_accepted(event)
 
-    def _apply(self, event, durable_ns):
-        self.events.append(dict(event, durable_ns=durable_ns))
+    def _apply_accepted(self, event):
+        """Apply an event only after bounded audit admission, then release child."""
+        self.events.append(event)
         self.progress_ns = event["timestamp_ns"]
         kind = event["type"]
         if kind == "PROCESS_START":
@@ -475,16 +569,10 @@ class WrenchProcessProvider:
             self.lifecycle_state = "CONNECTING"
         elif kind == "CONNECT_COMPLETE":
             self.lifecycle_state = "CONNECTED"
-        elif kind == "QUERY_START_INTENT":
-            self.query_id = event["query_id"]
-            self.query_start_ns = event["timestamp_ns"]
-            self.native_boundary_ns = None
-            self.query_state = "START_INTENT"
-            self._record("QUERY_PENDING", completion=None, entry_unconfirmed=True)
-        elif kind == "QUERY_NATIVE_ENTER":
-            self.native_boundary_ns = event["timestamp_ns"]
-            self.query_state = "IN_PROGRESS"
         elif kind in ("QUERY_SUCCESS", "QUERY_ERROR"):
+            self.query_id = event["query_id"]
+            self.query_start_ns = event["native_start_ns"]
+            self.native_boundary_ns = event.get("boundary_ns", event["native_start_ns"])
             self.last_completed_ns = event["completion_ns"]
             self.query_state = "ERROR" if kind == "QUERY_ERROR" else "SUCCEEDED"
             if kind == "QUERY_ERROR":
@@ -500,11 +588,46 @@ class WrenchProcessProvider:
             self.offline_disconnect_completed = event["offline_disconnect_completed"]
         elif kind == "PROCESS_STOPPED":
             self.lifecycle_state = "STOPPED"
-        # Persist fsync-completion provenance in a subsequent record. The ACK
-        # timestamp is never mislabelled as the original query timestamp.
-        self._record("DURABLE_ACK", child_event_id=event["event_id"], durable_ns=durable_ns)
+        # The child ACK means bounded admission, never fsync completion. Actual
+        # write completion is supervised through pending_audits. Disk sync is
+        # periodic and its failures are reported through writer.failure.
         self.ack.value = event["event_id"]
         self.expected_event += 1
+
+    def _drain_audits(self, now, *, record_commits=True):
+        """Consume completed fsync tickets and latch any persistence failure."""
+        writes = {}
+        while self.pending_audits:
+            event, ticket, accepted_ns = self.pending_audits[0]
+            if not ticket["done"].is_set():
+                if (now - accepted_ns) / 1e9 > self.budgets.log_s:
+                    self.fail("logger_backpressure")
+                break
+            self.pending_audits.popleft()
+            if ticket["error"]:
+                self.fail("logger_failure:" + ticket["error"])
+                continue
+            write_complete_ns = ticket.get("write_complete_ns")
+            if not isinstance(write_complete_ns, int) or write_complete_ns < accepted_ns:
+                self.fail("logger_failure:invalid_write_timestamp")
+                continue
+            if (write_complete_ns - accepted_ns) / 1e9 > self.budgets.log_s:
+                self.fail("logger_backpressure")
+            latency_ns = write_complete_ns - accepted_ns
+            self.audit_written_count += 1
+            self.audit_max_write_latency_ns = max(self.audit_max_write_latency_ns, latency_ns)
+            self.audit_last_write_complete_ns = write_complete_ns
+            writes.setdefault(write_complete_ns, []).append(event["event_id"])
+        if record_commits:
+            for write_complete_ns, event_ids in writes.items():
+                # Runtime provenance only: feeding receipts back into the same
+                # persistent queue creates audit write amplification. A single
+                # close-time summary is persisted after all tickets settle.
+                self._cache_record(
+                    "AUDIT_BATCH_WRITTEN",
+                    child_event_ids=event_ids,
+                    write_complete_ns=write_complete_ns,
+                )
 
     def poll(self, now_ns=None):
         if self.cleanup is not None:
@@ -528,29 +651,12 @@ class WrenchProcessProvider:
             fatal = self.fatal_slot.read()
             if fatal:
                 self.fail(fatal["reason"])
-            if self.pending_ticket:
-                if self.audit_slot.version.value != self.seen_slot_version:
-                    raise ValueError("unacknowledged_mailbox_overwrite")
-                ticket = self.pending_ticket
-                if ticket["done"].is_set():
-                    if ticket["error"]:
-                        self.fail("logger_failure:" + ticket["error"])
-                    else:
-                        # Checking only unfinished writes misses an fsync that
-                        # finished late while the supervisor was descheduled.
-                        if (ticket["durable_ns"] - self.pending_since) / 1e9 > self.budgets.log_s:
-                            self.fail("logger_backpressure")
-                        self._apply(self.pending_event, ticket["durable_ns"])
-                    self.pending_ticket = None
-                    self.pending_event = None
-                elif (now - self.pending_since) / 1e9 > self.budgets.log_s:
-                    self.fail("logger_backpressure")
-            else:
-                packet = self.audit_slot.read_packet()
-                if packet and packet[0] != self.seen_slot_version:
-                    version, event = packet
-                    self.seen_slot_version = version
-                    self._accept(event, max(now, time.perf_counter_ns()))
+            self._drain_audits(now)
+            packet = self.audit_slot.read_packet()
+            if packet and packet[0] != self.seen_slot_version:
+                version, event = packet
+                self.seen_slot_version = version
+                self._accept(event, max(now, time.perf_counter_ns()))
         except Exception as exc:
             self.fail(f"telemetry_failure:{type(exc).__name__}:{exc}")
         if now_ns is None:
@@ -564,7 +670,7 @@ class WrenchProcessProvider:
                 isinstance(candidate_marker, dict)
                 and candidate_marker.get("run_id") == self.run_id
                 and candidate_marker.get("pid") == getattr(self.process, "pid", None)
-                and candidate_marker.get("query_id") == self.query_id
+                and candidate_marker.get("query_id") in (self.query_id, self.query_id + 1)
             ):
                 native_marker = candidate_marker
         except Exception as exc:
@@ -574,21 +680,25 @@ class WrenchProcessProvider:
             and native_marker.get("query_in_progress") is True
             and isinstance(native_marker.get("native_start_ns"), int)
         )
+        if (native_pending and native_marker["query_id"] == self.query_id + 1
+                and self.query_state in ("IDLE", "SUCCEEDED")):
+            self.query_id = native_marker["query_id"]
+            self.query_start_ns = native_marker["native_start_ns"]
+            self.native_boundary_ns = native_marker["native_start_ns"]
+            self.query_state = "IN_PROGRESS"
+            pending = True
         sample_time = self.last_good.host_monotonic_time_s if self.last_good else None
         age = None if sample_time is None else now / 1e9 - sample_time
         progress_age = None if self.progress_ns is None else (now - self.progress_ns) / 1e9
-        if not self.stopping:
+        if not self.stopping and not self.failure_latch:
             if not self.progress_ns and self.started_ns and (now - self.started_ns) / 1e9 > self.budgets.startup_s:
                 self.fail("missing_first_heartbeat")
             if self.query_state in ("STARTING", "NOT_STARTED"):
                 if self.started_ns and (now - self.started_ns) / 1e9 > self.budgets.startup_s:
                     self.fail("startup_timeout")
-            elif progress_age is not None and progress_age > self.budgets.progress_s:
-                self.fail("worker_progress_missing")
-            # query_s starts at the child-published native_start_ns marker,
-            # written only after the PRE_CALL audit boundary was durably
-            # acknowledged. Audit waiting remains governed by ack_s/log_s/
-            # progress_s and is not vendor query time.
+            # query_s starts at the child-published native_start_ns marker.
+            # The read-only query result is admitted as one bounded audit event;
+            # audit write/sync work is not counted as vendor query time.
             if (
                 native_pending
                 and (now - int(native_marker["native_start_ns"])) / 1e9
@@ -598,12 +708,19 @@ class WrenchProcessProvider:
                     self.query_state = "HUNG"
                     self._record("QUERY_HUNG", completion=None)
                 self.fail("query_pending_too_long")
-            if age is not None and (age < 0 or age > self.budgets.sample_age_s):
+            # A primary fault already requests child shutdown. Do not obscure
+            # its root cause with stale/progress cascade faults while the
+            # uninterruptible native call returns and disconnects.
+            if (not self.failure_latch and progress_age is not None
+                    and progress_age > self.budgets.progress_s):
+                self.fail("worker_progress_missing")
+            if (not self.failure_latch and age is not None
+                    and (age < 0 or age > self.budgets.sample_age_s)):
                 self.fail("wrench_sample_stale_or_clock_invalid")
         if self.process and not alive and not self.exit_seen:
             self.exit_seen = True
             self._record("PROCESS_EXIT", exitcode=self.process.exitcode, completion=None if pending else self.last_completed_ns)
-            if not self.stopping:
+            if not self.stopping and not self.failure_latch:
                 self.fail("worker_exited")
         self._health = dict(LATEST_GOOD_SAMPLE_VALID=bool(self.last_good and self.last_good.valid),
             CURRENT_QUERY_STATE=self.query_state, LAST_ERROR=self.last_error,
@@ -612,6 +729,9 @@ class WrenchProcessProvider:
             WORKER_HEARTBEAT_AGE=progress_age, PROCESS_ALIVE=alive,
             STREAM_HEALTH=bool(alive and self.last_good and not self.failure_latch and not self.stopping),
             FAILURE_LATCH=tuple(self.failure_latch), entry_unconfirmed=pending,
+            AUDIT_PENDING_COUNT=len(self.pending_audits),
+            NATIVE_QUERY_OVERRUN_COUNT=self.native_query_overrun_count,
+            MAX_NATIVE_QUERY_DURATION_MS=self.max_native_query_duration_ns / 1e6,
             host_ns=now, query_id=self.query_id, completion=None if pending else self.last_completed_ns)
         # Explicit caller-owned collection; avoid unbounded 900 s in-memory history.
         return dict(self._health)
@@ -646,11 +766,29 @@ class WrenchProcessProvider:
                 self.process.join(self.budgets.terminate_s)
             self.disconnect_confirmed = False
             # Do not read child-owned memory after forced termination.
+        self._supervisor_stop.set()
+        supervisor = self._supervisor_thread
+        if supervisor is not None and supervisor is not threading.current_thread():
+            supervisor.join(self.budgets.shutdown_s)
+            if supervisor.is_alive():
+                self.fail("supervisor_thread_stop_unconfirmed")
+            else:
+                self._supervisor_thread = None
         exited = bool(self.process and not self.process.is_alive())
         if exited and not self.exit_seen:
             self.exit_seen = True
             self._record("PROCESS_EXIT", exitcode=self.process.exitcode,
                          completion=None if self.query_state in ("HUNG", "IN_PROGRESS", "START_INTENT") else self.last_completed_ns)
+        # Child ACKs mean bounded admission. Before declaring cleanup, settle
+        # every admitted write ticket within the reviewed logging budget. The
+        # writer close below performs the final fsync for all records.
+        audit_deadline = time.perf_counter() + self.budgets.log_s
+        while self.pending_audits and time.perf_counter() < audit_deadline:
+            self._drain_audits(time.perf_counter_ns())
+            if self.pending_audits:
+                time.sleep(.001)
+        if self.pending_audits:
+            self.fail("logger_backpressure")
         disconnect_complete = (
             self.disconnect_confirmed is True if self.config["mode"] == "live"
             else self.offline_disconnect_completed
@@ -662,10 +800,21 @@ class WrenchProcessProvider:
                             FORCED_WORKER_TERMINATION=forced, CONTROLLER_SESSION_RECOVERY=None,
                             process_exited=exited, exitcode=self.process.exitcode if self.process else None,
                             query_state=self.query_state, failure_latch=list(self.failure_latch))
+        self._record(
+            "AUDIT_WRITE_SUMMARY",
+            written_child_event_count=self.audit_written_count,
+            pending_child_event_count=len(self.pending_audits),
+            max_child_write_latency_ns=self.audit_max_write_latency_ns,
+            last_child_write_complete_ns=self.audit_last_write_complete_ns,
+            periodic_fsync_count=getattr(self.writer, "fsync_count", None),
+            last_periodic_fsync_ns=getattr(self.writer, "last_fsync_ns", None),
+            native_query_overrun_count=self.native_query_overrun_count,
+            max_native_query_duration_ns=self.max_native_query_duration_ns,
+        )
         # Snapshot before queueing: the writer must not race later mutations.
         # audit_closed is confirmed only by close() and the returned outcome.
         self._record("CLEANUP_OUTCOME", outcome=dict(self.cleanup))
-        durable = self.writer.close(self.budgets.log_s) if self.writer else False
+        durable = self.writer.close(self.budgets.shutdown_s) if self.writer else False
         self.cleanup["audit_closed"] = durable
         if not durable:
             self.fail("audit_cleanup_unconfirmed")

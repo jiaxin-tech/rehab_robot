@@ -24,6 +24,8 @@ class Native:
         self.fail_registration = False
         self.fail_disconnect = False
         self.initial_event = None
+        self.initial_query = None
+        self.initial_query_error = None
         self.calls = []
 
     def connectToRobot(self, *args):
@@ -53,8 +55,13 @@ class Native:
         if self.fail_disconnect:
             ec.update(ec=42, message="synthetic disconnect failure")
 
-    def queryEventInfo(self, *_args):
-        raise AssertionError("event mode must not call the failing active query")
+    def queryEventInfo(self, event, ec):
+        assert event == "safety"
+        self.calls.append("query")
+        if self.initial_query_error is not None:
+            ec.update(ec=259, message=self.initial_query_error)
+            return {}
+        return self.initial_query if self.initial_query is not None else {}
 
 
 @pytest.fixture
@@ -76,12 +83,39 @@ def rig(monkeypatch):
 def test_subscription_without_initial_event_is_unknown(rig):
     robot, native, _ = rig
     robot.connect()
-    assert native.calls == ["connect", "subscribe"]
+    assert native.calls == ["connect", "subscribe", "query"]
     assert robot.get_collision_state() is None
     status = robot.get_safety_event_status()
     assert status["registered"]
     assert not status["valid"]
     assert status["invalid_reason"] == "safety_event_initial_state_unknown"
+    assert status["initial_query_attempted"]
+    assert not status["initial_query_succeeded"]
+    assert status["initial_query_error"] == "safety_initial_query_invalid_collided_boolean"
+
+
+def test_registered_active_query_can_supply_truthful_initial_clear(rig):
+    robot, native, _ = rig
+    native.initial_query = {"collided": False}
+    robot.connect()
+    status = robot.get_safety_event_status()
+    assert status["valid"]
+    assert status["collision_state"] is False
+    assert status["sequence"] == 0
+    assert status["initial_query_succeeded"]
+    assert status["timestamp_source"].startswith("host_active_query")
+
+
+def test_failed_initial_query_keeps_unknown_but_callback_can_recover(rig):
+    robot, native, _ = rig
+    native.initial_query_error = "unsupported"
+    robot.connect()
+    status = robot.get_safety_event_status()
+    assert not status["valid"]
+    assert "259" in status["initial_query_error"]
+    native.callbacks[-1]({"collided": False})
+    status = robot.get_safety_event_status()
+    assert status["valid"] and status["collision_state"] is False
 
 
 def test_actual_boolean_false_makes_event_source_valid(rig):

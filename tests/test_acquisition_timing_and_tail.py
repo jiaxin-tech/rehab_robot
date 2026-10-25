@@ -265,6 +265,92 @@ class NoBlockingEvent:
         return True
 
 
+class AlwaysAliveThread:
+    def is_alive(self):
+        return True
+
+
+class StartupHealthProvider:
+    def __init__(self, stamp):
+        self.config = {"mode": "offline", "rate_hz": 50.0}
+        self.budgets = SimpleNamespace(
+            state_age_s=.025,
+            sample_age_s=.05,
+            skew_s=.04,
+        )
+        self.last_good = frame(1)
+        object.__setattr__(self.last_good, "host_monotonic_time_s", stamp)
+        self.failures = []
+
+    def poll(self):
+        return dict(
+            STREAM_HEALTH=not self.failures,
+            LATEST_GOOD_SAMPLE_VALID=True,
+            PROCESS_ALIVE=True,
+            CURRENT_QUERY_STATE="SUCCEEDED",
+            FAILURE_LATCH=tuple(self.failures),
+        )
+
+    def fail(self, reason):
+        if reason not in self.failures:
+            self.failures.append(reason)
+
+
+def state_frame(sequence, stamp):
+    return KinematicStateFrame(
+        sequence_id=sequence,
+        host_monotonic_time_s=stamp,
+        wall_time_iso=None,
+        robot_device_time_s=None,
+        valid=True,
+        invalid_reason="",
+        tcp_position_m=(0., 0., 0.),
+        tcp_orientation_rad=(0., 0., 0.),
+        tcp_linear_velocity_mps=None,
+        tcp_angular_velocity_radps=None,
+        velocity_source="unavailable",
+        joint_position_rad=(0.,) * 6,
+        joint_velocity_radps=None,
+        pose_time_s=stamp,
+        joint_time_s=stamp,
+        velocity_time_s=None,
+        operation_state="IDLE",
+        collision_state=None,
+        controller_error=None,
+    )
+
+
+def test_startup_misalignment_does_not_kill_wrench_before_first_healthy_pair():
+    clock = FakeClock()
+    provider = StartupHealthProvider(clock.now_s())
+    acquisition = RealRobotAcquisition(
+        SimpleNamespace(), RecordingLogger(), wrench_provider=provider, clock=clock,
+    )
+    acquisition._threads = {
+        name: AlwaysAliveThread() for name in ("state", "wrench", "alignment")
+    }
+    acquisition._latest_wrench = provider.last_good
+    acquisition._latest_state = state_frame(1, clock.now_s() - .2)
+
+    startup = acquisition.latest_health()
+    assert not startup.valid
+    assert "state_stale_or_unavailable" in startup.invalid_reason
+    assert "state_wrench_skew_unavailable_or_exceeded" in startup.invalid_reason
+    assert provider.failures == []
+
+    acquisition._latest_state = state_frame(2, clock.now_s())
+    assert acquisition.latest_health().valid
+    assert acquisition._runtime_freshness_armed is True
+
+    acquisition._latest_state = state_frame(3, clock.now_s() - .2)
+    runtime = acquisition.latest_health()
+    assert not runtime.valid
+    assert provider.failures == [
+        "state_freshness_failure",
+        "state_wrench_skew_failure",
+    ]
+
+
 @pytest.mark.parametrize("interrupt", [False, True])
 def test_deadline_wait_uses_short_sleep_slices_and_observes_stop(monkeypatch, interrupt):
     clock = FakeClock()
@@ -320,7 +406,7 @@ def wait_for(predicate, timeout=5.):
     raise AssertionError("offline test condition was not observed before its deadline")
 
 
-def test_real_provider_preserves_success_whose_durable_ack_finishes_during_stop(tmp_path):
+def test_real_provider_publishes_before_fsync_and_settles_audit_during_stop(tmp_path):
     success_waiting = threading.Event()
     release_write = threading.Event()
     real_stop_observed = threading.Event()
@@ -355,8 +441,10 @@ def test_real_provider_preserves_success_whose_durable_ack_finishes_during_stop(
     try:
         acquisition.start()
         assert success_waiting.wait(5.), "second success did not reach the audit writer"
-        wait_for(lambda: logger.row_counts["robot_wrench"] == 1)
-        assert provider.last_good.sequence_id == 1
+        # QUERY_SUCCESS 2 is usable after bounded admission even while its
+        # fsync is deliberately blocked.
+        wait_for(lambda: logger.row_counts["robot_wrench"] >= 2)
+        assert provider.last_good.sequence_id >= 2
         assert not release_write.is_set()
         released = threading.Thread(target=release_only_after_actual_provider_stop, daemon=True)
         released.start()
@@ -368,18 +456,21 @@ def test_real_provider_preserves_success_whose_durable_ack_finishes_during_stop(
         assert provider.cleanup["NORMAL_CLEANUP"], provider.cleanup
         assert provider.cleanup["process_exited"]
         assert not provider.cleanup["FORCED_WORKER_TERMINATION"]
-        assert provider.last_good.sequence_id == 2
-        assert logger.row_counts["robot_wrench"] == 2
+        assert provider.last_good.sequence_id >= 2
+        assert logger.row_counts["robot_wrench"] >= 2
         logger.close(completed=False, stop_reason="OFFLINE_REGRESSION_TEST")
         with (tmp_path / "episode/robot_wrench.csv").open(newline="", encoding="utf-8") as stream:
             recorded = list(csv.DictReader(stream))
         events = [json.loads(line) for line in audit_path.read_text(encoding="utf-8").splitlines()]
         successful = [row for row in events if row["type"] == "QUERY_SUCCESS"]
-        assert [row["query_id"] for row in successful] == [1, 2]
-        assert [float(row["query_start_s"]) for row in recorded] == [row["frame"]["host_query_start_s"] for row in successful]
+        assert [row["query_id"] for row in successful[:2]] == [1, 2]
+        audited_starts = {row["frame"]["host_query_start_s"] for row in successful}
+        assert {float(row["query_start_s"]) for row in recorded}.issubset(audited_starts)
         # A second stop after logger closure must not append the final row again.
+        recorded_count = len(recorded)
         acquisition.stop()
-        assert len(recorded) == 2
+        with (tmp_path / "episode/robot_wrench.csv").open(newline="", encoding="utf-8") as stream:
+            assert len(list(csv.DictReader(stream))) == recorded_count
     finally:
         release_write.set()
         if released is not None:

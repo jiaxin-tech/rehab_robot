@@ -222,6 +222,7 @@ class EpisodeLogger:
         self._finished_ns: int | None = None
         self._handles: dict[str, TextIO] = {}
         self._writers: dict[str, csv.DictWriter] = {}
+        self._stream_locks = {name: threading.Lock() for name in STREAM_FIELDS}
         self._row_counts = {name: 0 for name in STREAM_FIELDS}
 
     @property
@@ -559,19 +560,29 @@ class EpisodeLogger:
                     or f"logger status is {self._state}"
                 )
                 raise EpisodeLoggerError(f"cannot append {stream_name}: {detail}")
-            allowed = set(STREAM_FIELDS[stream_name])
-            unexpected = sorted(set(row) - allowed)
-            try:
-                if unexpected:
-                    raise ValueError(
-                        f"unexpected {stream_name} fields: {', '.join(unexpected)}"
+        allowed = set(STREAM_FIELDS[stream_name])
+        unexpected = sorted(set(row) - allowed)
+        try:
+            if unexpected:
+                raise ValueError(
+                    f"unexpected {stream_name} fields: {', '.join(unexpected)}"
+                )
+            # Supplying every field explicitly guarantees that missing values
+            # use csv's empty-cell representation rather than a numeric fill.
+            sparse_row = {
+                field: row[field] if field in row else None
+                for field in STREAM_FIELDS[stream_name]
+            }
+            # Each stream owns a different file. Independent locks prevent a
+            # state/alignment flush from starving the 50 Hz wrench consumer.
+            with self._stream_locks[stream_name]:
+                if self._failure_event.is_set() or self._state != "ready":
+                    detail = (
+                        self._signaled_failure_reason
+                        or self._failure_reason
+                        or f"logger status is {self._state}"
                     )
-                # Supplying every field explicitly guarantees that missing values
-                # use csv's empty-cell representation rather than a numeric fill.
-                sparse_row = {
-                    field: row[field] if field in row else None
-                    for field in STREAM_FIELDS[stream_name]
-                }
+                    raise EpisodeLoggerError(f"cannot append {stream_name}: {detail}")
                 self._writers[stream_name].writerow(sparse_row)
                 handle = self._handles[stream_name]
                 handle.flush()
@@ -580,12 +591,15 @@ class EpisodeLogger:
                     # has accepted an explicit file synchronization request.
                     os.fsync(handle.fileno())
                 self._row_counts[stream_name] += 1
-            except BaseException as exc:
+        except BaseException as exc:
+            if isinstance(exc, EpisodeLoggerError):
+                raise
+            with self._condition:
                 self._record_failure_locked(stream_name, exc)
                 self._condition.notify_all()
-                raise EpisodeLoggerError(
-                    f"append to {stream_name} failed: {type(exc).__name__}: {exc}"
-                ) from exc
+            raise EpisodeLoggerError(
+                f"append to {stream_name} failed: {type(exc).__name__}: {exc}"
+            ) from exc
 
     def update_metadata(self, updates: Mapping[str, Any]) -> None:
         """Merge caller metadata and atomically publish the complete JSON file."""
@@ -738,15 +752,22 @@ class EpisodeLogger:
         self._finished_ns = self._finished_ns or self._clock.now_ns()
 
     def _close_streams_locked(self) -> None:
-        for handle in self._handles.values():
-            try:
-                handle.flush()
-            except (OSError, ValueError):
-                pass
-            try:
-                handle.close()
-            except OSError:
-                pass
+        locks = [self._stream_locks[name] for name in STREAM_FIELDS]
+        for lock in locks:
+            lock.acquire()
+        try:
+            for handle in self._handles.values():
+                try:
+                    handle.flush()
+                except (OSError, ValueError):
+                    pass
+                try:
+                    handle.close()
+                except OSError:
+                    pass
+        finally:
+            for lock in reversed(locks):
+                lock.release()
         self._handles.clear()
         self._writers.clear()
 

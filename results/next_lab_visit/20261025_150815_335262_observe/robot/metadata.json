@@ -1,0 +1,43 @@
+{
+  "experiment_mode": "observation_only_acquire",
+  "git_commit": "86b9ddd39e861347f123c79b82ffe3f80e75323a",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 30.0680027572118,
+      "robot_state": 98.38250502159701,
+      "robot_wrench": 26.940930470461772,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 4.1572432,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:acquire_exception:RuntimeError:acquisition did not become ready: safety_event_expired_or_clock_invalid",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 2656863004153900,
+    "finished_host_time_s": 2656863.0041539,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 2656863004381000,
+    "metadata_updated_host_time_s": 2656863.004381,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 125,
+      "robot_state": 409,
+      "robot_wrench": 112,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 2656858846910700,
+    "started_host_time_s": 2656858.8469107,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "reviewed_observation_acquisition": true,
+  "robot_execution_approved": false,
+  "robot_ip": "192.168.50.103",
+  "timestamp_source": "time.perf_counter_ns",
+  "wrench_mode": "live"
+}

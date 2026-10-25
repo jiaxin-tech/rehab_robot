@@ -1,0 +1,24 @@
+{
+  "action": "initialize",
+  "status": "BLOCKED_OR_FAILED",
+  "steps": [
+    {
+      "name": "initialize",
+      "command": [
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\.venv\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "scripts.train_robot_leg_round",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_135518_282554_initialize\\initialization_request.json",
+        "--validate-only",
+        "--output",
+        "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_135518_282554_initialize\\algorithm_ready.json"
+      ],
+      "returncode": 1,
+      "log": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_135518_282554_initialize\\initialize.log"
+    }
+  ],
+  "motion_requested": false,
+  "reason": "RuntimeError:initialize failed (1); see C:\\Users\\liumai\\fjx\\rehab_robot\\results\\next_lab_visit\\20261025_135518_282554_initialize\\initialize.log"
+}

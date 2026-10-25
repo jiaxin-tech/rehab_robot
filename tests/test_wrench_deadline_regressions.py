@@ -23,7 +23,7 @@ class AuditDouble:
         done = threading.Event()
         done.set()
         return dict(done=done, error=None,
-                    durable_ns=event.get("parent_receive_ns", event["timestamp_ns"]) + self.delay_ns)
+                    write_complete_ns=event.get("parent_receive_ns", event["timestamp_ns"]) + self.delay_ns)
 
     def close(self, budget):
         return self.closed_ok
@@ -60,13 +60,14 @@ def test_completed_query_cannot_hide_overrun_between_polls(tmp_path, kind, durat
         error={"code": 263, "message": "offline"} if kind == "QUERY_ERROR" else None)
     p._accept(event, end + 1_000_000)
     assert ("query_pending_too_long" in p.failure_latch) is exceeded
-    assert p.pending_event["completion_ns"] == end
+    assert p.events[-1]["completion_ns"] == end
+    assert p.pending_audits[0][0]["completion_ns"] == end
     if kind == "QUERY_ERROR":
         assert "sdk_error" in p.failure_latch
 
 
 @pytest.mark.parametrize("delay_ns,exceeded", [(30_000_000, False), (110_000_000, True)])
-def test_finished_fsync_uses_actual_completion_deadline(tmp_path, delay_ns, exceeded):
+def test_finished_audit_write_uses_actual_completion_deadline(tmp_path, delay_ns, exceeded):
     p = provider(tmp_path)
     p.writer = AuditDouble(delay_ns)
     event = dict(version=1, run_id=p.run_id, session_id=p.session_id, pid=123,
@@ -134,7 +135,7 @@ def test_startup_wait_returns_immediately_after_latched_failure():
 
 
 @pytest.mark.parametrize("write_fails", [False, True])
-def test_queued_audit_batch_is_ordered_and_confirmed_only_after_fsync(tmp_path, monkeypatch, write_fails):
+def test_queued_audit_batch_is_ordered_and_finally_fsynced(tmp_path, monkeypatch, write_fails):
     import collection.wrench_process as module
     entered = threading.Event()
     release = threading.Event()
@@ -169,9 +170,9 @@ def test_queued_audit_batch_is_ordered_and_confirmed_only_after_fsync(tmp_path, 
     assert closed is (not write_fails)
     assert tickets[0]["error"] is None
     if write_fails:
-        assert all(t["error"] and t["durable_ns"] is None for t in tickets[1:])
-        assert len(fsync_calls) == 1
+        assert all(t["error"] and t["write_complete_ns"] is None for t in tickets[1:])
+        assert len(fsync_calls) == 0
     else:
         assert [e["index"] for e in map(json.loads, path.read_text().splitlines())] == list(range(6))
-        assert len(fsync_calls) == 2
-        assert len({t["durable_ns"] for t in tickets[1:]}) == 1
+        assert len(fsync_calls) == 1
+        assert len({t["write_complete_ns"] for t in tickets[1:]}) == 1

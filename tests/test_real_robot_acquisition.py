@@ -250,6 +250,9 @@ def test_independent_streams_publish_and_health_is_visible(tmp_path):
         assert health.state_wrench_skew_s is not None
         assert logger.row_counts["robot_state"] > 0
         assert logger.row_counts["robot_wrench"] > 0
+        deadline = time.perf_counter() + 1.0
+        while logger.row_counts["aligned_snapshot"] == 0 and time.perf_counter() < deadline:
+            time.sleep(.001)
         assert logger.row_counts["aligned_snapshot"] > 0
     finally:
         acquisition.stop()

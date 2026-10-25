@@ -1,0 +1,1 @@
+{"version": 1, "origin": "supervisor", "run_id": "e1e16dacbeb145de9a3ddc4f1b4957e6", "session_id": "d410f9d69d664d30a4c69f5e9e065914", "pid": 45144, "query_id": 0, "event_id": 1, "type": "FAILURE_LATCH", "timestamp_ns": 2654053635116700, "reason": "audit_overflow", "log_write_ns": 2654053635170500}

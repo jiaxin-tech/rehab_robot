@@ -1,0 +1,7 @@
+{
+  "gaps": [],
+  "failures": [
+    "worker_exited"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

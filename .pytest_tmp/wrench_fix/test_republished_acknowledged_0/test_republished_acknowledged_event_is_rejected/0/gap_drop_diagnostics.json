@@ -1,0 +1,12 @@
+{
+  "gaps": [
+    {
+      "expected": 5,
+      "observed": 4
+    }
+  ],
+  "failures": [
+    "telemetry_failure:ValueError:event_sequence_gap_duplicate_or_reorder"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}
