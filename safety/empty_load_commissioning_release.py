@@ -8,6 +8,7 @@ import json
 import math
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path
 from typing import Any, Mapping
 
 import pandas as pd
@@ -30,6 +31,7 @@ EXPECTED_COLLISION_ERROR_CODE = 259
 _VALIDATED = object()
 _ROOT = Path(__file__).resolve().parents[1]
 CODE_FILES = (
+    "config/bundle.py", "utils/evidence.py",
     "safety/empty_load_commissioning_release.py",
     "control/execution_preflight.py",
     "control/robot_trajectory_executor.py",
@@ -46,11 +48,11 @@ CODE_FILES = (
 
 
 def sha256_file(path: str | Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return hashlib.sha256(resolve_config_path(path).read_bytes()).hexdigest()
 
 
 def _read_json(path: str | Path) -> dict[str, Any]:
-    value = json.loads(Path(path).read_text(encoding="utf-8"))
+    value = json.loads(resolve_config_path(path).read_text(encoding="utf-8"))
     if not isinstance(value, dict):
         raise ValueError("JSON object required")
     return value
@@ -318,11 +320,11 @@ def load_and_validate_empty_load_commissioning_release(
         raise PermissionError("review request collision waiver mismatch")
 
     paths = {
-        "reference": Path(reference_path).resolve(),
-        "safety": Path(safety_config_path).resolve(),
-        "frame": Path(frame_config_path).resolve(),
+        "reference": resolve_config_path(reference_path),
+        "safety": resolve_config_path(safety_config_path, section="experiment_safety"),
+        "frame": resolve_config_path(frame_config_path, section="rehab_frame_config"),
         "anchor": Path(anchor_path).resolve(),
-        "wrench": Path(wrench_config_path).resolve(),
+        "wrench": resolve_config_path(wrench_config_path, section="live_observation_acquisition_20261018"),
     }
     hashes = {name: sha256_file(value) for name, value in paths.items()}
     if hashes != payload["bindings"]:

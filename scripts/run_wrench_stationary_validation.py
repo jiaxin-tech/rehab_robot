@@ -505,7 +505,15 @@ def run_case(request, case, output_root, *, mode="OFFLINE_DRY_RUN", authorizatio
     samples = [dict(r["frame"], run_id=run_id, session_id=r["session_id"], query_id=r["query_id"],
                     parent_receive_ns=r.get("parent_receive_ns")) for r in success]
     csv_export(out / "wrench_samples.csv", samples, list(samples[0]) if samples else ["sequence_id", "host_monotonic_time_s", "cartesian_force_raw_n", "cartesian_torque_raw_nm"])
-    intents = {r["query_id"] for r in queries if r.get("type") == "QUERY_START_INTENT"}
+    # Current workers persist the start boundary with each completion, while a
+    # hung call is observable only through the persisted native-start snapshot.
+    # Retain legacy intent support when reviewing older recordings.
+    intents = {r["query_id"] for r in queries if r.get("type") in
+               ("QUERY_START_INTENT", "QUERY_SUCCESS", "QUERY_ERROR")}
+    for record in health_rows:
+        observed = record.get("provider", {})
+        if observed.get("QUERY_IN_PROGRESS") and observed.get("QUERY_START_TIME"):
+            intents.add(observed["query_id"])
     completed = {r["query_id"] for r in success + errors}
     if case == "B" and not success: failures.append("no_successful_wrench_sample")
     if not state_rows: failures.append("no_state_samples")
@@ -536,7 +544,7 @@ def run_case(request, case, output_root, *, mode="OFFLINE_DRY_RUN", authorizatio
         intended_wrench_rate_hz=request["intended_wrench_hz"], wrench_status="N/A_INTENTIONALLY_DISABLED" if case == "A" else "ENABLED",
         rt_sample_count=len(state_rows), wrench_planned_queries=0 if case == "A" else math.floor(900 * request["intended_wrench_hz"]),
         wrench_started_queries=len(intents), wrench_completed_queries=len(completed),
-        query_count_semantics="started=start intent; pre-call boundary does not prove native entry",
+        query_count_semantics="started=persisted intent, completion, or native-start snapshot; pre-call boundary does not prove native entry",
         wrench_successful_queries=len(success), wrench_error_queries=len(errors), pending_queries=sorted(intents - completed),
         sdk_error_histogram=dict(Counter(str(r["error"].get("code")) for r in errors)), distributions=metrics,
         rt_device_source_timing="UNAVAILABLE_NO_DEVICE_TIMESTAMP", criteria=request.get("criteria"),

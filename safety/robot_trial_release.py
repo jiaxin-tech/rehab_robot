@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+from config.bundle import resolve_config_path
 from typing import Any, Mapping
 from uuid import uuid4
 import math
@@ -27,7 +28,7 @@ EVIDENCE_KINDS = ("controller_safety", "acquisition_stability", "wrench_semantic
 INPUT_KEYS = ("reference", "safety_config", "frame_config", "anchor", "wrench_config")
 _ROOT = Path(__file__).resolve().parents[1]
 _SOURCES = (
-    "safety/robot_trial_release.py", "safety/experiment_safety.py",
+    "config/bundle.py", "utils/evidence.py", "safety/robot_trial_release.py", "safety/experiment_safety.py",
     "scripts/run_rehab_experiment.py", "scripts/acquire_robot_data.py",
     "control/execution_preflight.py", "control/robot_trajectory_executor.py",
     "control/start_anchor.py", "control/start_anchored_relative_trajectory.py",
@@ -50,7 +51,15 @@ _KEYS = {
 
 
 def sha256_file(path: str | Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return hashlib.sha256(resolve_config_path(path).read_bytes()).hexdigest()
+
+
+def _input_paths(reference, safety, frame, anchor, wrench):
+    return dict(reference=resolve_config_path(reference),
+                safety_config=resolve_config_path(safety, section="experiment_safety"),
+                frame_config=resolve_config_path(frame, section="rehab_frame_config"),
+                anchor=resolve_config_path(anchor),
+                wrench_config=resolve_config_path(wrench, section="live_observation_acquisition_20261018"))
 
 
 def object_digest(value: Any) -> str:
@@ -68,7 +77,7 @@ def _pairs(pairs):
 
 
 def read_json(path: str | Path) -> dict:
-    payload = json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=_pairs,
+    payload = json.loads(resolve_config_path(path).read_text(encoding="utf-8"), object_pairs_hook=_pairs,
                          parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)))
     if not isinstance(payload, dict):
         raise ValueError("JSON object required")
@@ -181,7 +190,7 @@ def build_robot_trial_release_approval(
     if set(robot_identity) != set(IDENTITY_KEYS):
         raise ValueError("robot_identity schema mismatch")
     identity = {key: _text(robot_identity[key], key) for key in IDENTITY_KEYS}
-    paths = dict(zip(INPUT_KEYS, map(Path, (reference_path, safety_config_path, frame_config_path, anchor_path, wrench_config_path))))
+    paths = _input_paths(reference_path, safety_config_path, frame_config_path, anchor_path, wrench_config_path)
     hashes = {key: sha256_file(path) for key, path in paths.items()}
     *_, objects = _objects(paths)
     if hashes != {key: sha256_file(path) for key, path in paths.items()}:
@@ -230,7 +239,7 @@ def _validate_site_review(payload, artifact_dir: Path, now: datetime) -> tuple[t
     for kind, record in records.items():
         if not isinstance(record, dict) or record.get("passed") is not True:
             raise PermissionError(f"site evidence not passed: {kind}")
-        evidence = (path.parent / _text(record.get("path"), "evidence path")).resolve()
+        evidence = resolve_config_path(path.parent / _text(record.get("path"), "evidence path"))
         if not evidence.is_file() or evidence.stat().st_size == 0 or sha256_file(evidence) != record.get("sha256"):
             raise PermissionError(f"site evidence missing/empty/changed: {kind}")
         files.append((str(evidence), record["sha256"]))
@@ -340,7 +349,7 @@ def validate_robot_trial_release_payload(
         raise ValueError("finite positive wrench_hz required")
     if payload["code_sha256"] != _code_hashes() or payload["bundle_sha256"] != _bundle(payload):
         raise PermissionError("release code or bundle binding mismatch")
-    paths = dict(zip(INPUT_KEYS, map(Path, (reference_path, safety_config_path, frame_config_path, anchor_path, wrench_config_path))))
+    paths = _input_paths(reference_path, safety_config_path, frame_config_path, anchor_path, wrench_config_path)
     current_hashes = {key: sha256_file(p) for key, p in paths.items()}
     if payload["bindings"] != current_hashes:
         raise PermissionError("robot trial release input binding mismatch")

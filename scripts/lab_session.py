@@ -7,6 +7,7 @@ import importlib.util
 import json
 import math
 from pathlib import Path
+from config.bundle import resolve_config_path
 import subprocess
 import sys
 
@@ -15,13 +16,13 @@ ACTIONS = ("check", "initialize", "diagnostics", "events", "capture", "observe",
 
 
 def load(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    return json.loads(resolve_config_path(path, section="lab_next_visit").read_text(encoding="utf-8"))
 
 
 def path(value):
     if not isinstance(value, str) or not value:
         raise ValueError("required path is missing")
-    return (ROOT / value).resolve()
+    return resolve_config_path(ROOT / value)
 
 
 def write(filename, value):

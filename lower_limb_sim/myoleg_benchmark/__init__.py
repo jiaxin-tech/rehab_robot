@@ -1,1 +1,1 @@
-"""Versioned MyoLeg algorithm development experiments, separate from frozen studies."""
+"""Public model assets used by the six-parameter rigid dynamics prior."""

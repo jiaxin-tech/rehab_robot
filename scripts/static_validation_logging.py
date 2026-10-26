@@ -15,6 +15,7 @@ import json
 import math
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path, section_path
 from typing import Any, Mapping, TextIO
 
 
@@ -23,7 +24,7 @@ DEFAULT_ENABLED = False
 PHASES = ("PRE", "LOAD", "POST")
 PHASE_ORDER = {phase: index for index, phase in enumerate(PHASES)}
 DEFAULT_CONFIG_PATH = Path(__file__).resolve().parents[1] / "config/static_validation_logging.json"
-DEFAULT_SCHEMA_PATH = Path(__file__).with_name("static_validation_record_schema_v1.json")
+DEFAULT_SCHEMA_PATH = section_path("static_validation_record_schema_v1")
 LABEL_FILENAME = "static_validation_labels.csv"
 METADATA_FILENAME = "static_validation_logging_metadata.json"
 
@@ -163,6 +164,7 @@ def _sha256_file(path: Path) -> str:
 
 def load_static_validation_logging_config(path: Path = DEFAULT_CONFIG_PATH) -> dict[str, Any]:
     """Load the explicit default-off identity without mutating global settings."""
+    path = resolve_config_path(path, section="static_validation_logging")
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise StaticValidationLoggingError("static validation logging config must be an object")

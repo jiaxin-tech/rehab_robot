@@ -15,8 +15,46 @@ import numpy as np
 import pandas as pd
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+ALGORITHM_ROOT = REPO_ROOT / "experiment_algorithm"
+ALGORITHM_FILES = {"config.py", "surrogate.py", "policy.py"}
+PACKAGE_DEPENDENCIES = ("__init__.py", "coupled_model.py",
+                        "coordinate_consistent_model.py", "coordinates.py")
+
+
+def repo_path(value):
+    """Request-relative paths are always relative to this repository, not cwd."""
+    path = Path(value)
+    return (path if path.is_absolute() else REPO_ROOT / path).resolve(strict=True)
+
+
 def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def validate_public_prior(provenance, dependency_hashes):
+    """Bind the loaded XML and actual asset locations to the verified request."""
+    model_path = repo_path(provenance["model_path"])
+    asset_root = repo_path(provenance["asset_root"])
+    asset_files = provenance["asset_files"]
+    if not asset_root.is_dir() or not isinstance(asset_files, list) or not asset_files:
+        raise ValueError("public prior requires an asset directory and complete asset provenance")
+    used = {model_path}
+    for name in asset_files:
+        relative = Path(name)
+        if relative.is_absolute() or relative.drive or ".." in relative.parts:
+            raise ValueError("invalid public prior asset path: " + name)
+        path = (asset_root / relative).resolve(strict=True)
+        if not path.is_relative_to(asset_root):
+            raise ValueError("public prior asset escapes its root: " + name)
+        used.add(path)
+    for path in used:
+        if path not in dependency_hashes:
+            raise ValueError("public prior actually used an unhashed dependency: " + str(path))
+        if sha256_file(path) != dependency_hashes[path]:
+            raise ValueError("public prior dependency changed after loading: " + str(path))
+    if provenance["source_sha256"] != dependency_hashes[model_path]:
+        raise ValueError("loaded public prior model does not match its verified hash")
 
 
 def finite_json(value):
@@ -34,30 +72,39 @@ def finite_json(value):
 
 
 def train(request, *, validate_only=False):
-    # The subprocess keeps the frozen standalone module named 'config' isolated
-    # from the robot application's config package.
-    root = Path(request["algorithm_root"]).resolve(strict=True)
-    sys.path.insert(0, str(root))
-    if set(request["algorithm_sha256"]) != {"config.py", "surrogate.py", "policy.py"} or not request["algorithm_dependencies"]:
+    root = repo_path(request["algorithm_root"])
+    if root != ALGORITHM_ROOT.resolve():
+        raise ValueError("algorithm_root must identify this repository's experiment_algorithm package")
+    if set(request["algorithm_sha256"]) != ALGORITHM_FILES or not request["algorithm_dependencies"]:
         raise ValueError("complete frozen algorithm and dependency hashes required")
     for name, expected in request["algorithm_sha256"].items():
         if sha256_file(root / name) != expected:
             raise ValueError("frozen algorithm source changed: " + name)
+    dependency_hashes = {}
     for name, expected in request["algorithm_dependencies"].items():
-        if sha256_file(name) != expected:
+        path = repo_path(name)
+        if sha256_file(path) != expected:
             raise ValueError("public prior dependency changed: " + name)
-    frozen_config = importlib.import_module("config")
-    if Path(frozen_config.__file__).resolve() != root / "config.py":
-        raise ImportError("training must run in its isolated subprocess")
-    frozen = importlib.import_module("surrogate")
-    policy_module = importlib.import_module("policy")
+        dependency_hashes[path] = expected
+    if not {root / name for name in PACKAGE_DEPENDENCIES} <= dependency_hashes.keys():
+        raise ValueError("complete experiment_algorithm package dependency hashes required")
+    # Check hashes before importing the learner or loading its XML.
+    modules = {}
+    for name in ("", "config", "coupled_model", "coordinates", "coordinate_consistent_model", "surrogate", "policy"):
+        module = importlib.import_module("experiment_algorithm" + ("." + name if name else ""))
+        expected = root / (name + ".py" if name else "__init__.py")
+        if Path(module.__file__).resolve() != expected:
+            raise ImportError("algorithm import does not match verified source: " + name)
+        modules[name] = module
+    frozen = modules["surrogate"]
+    policy_module = modules["policy"]
     from lower_limb_sim.config import L1, L2
     if request["geometry_m"] != [L1, L2]:
         raise ValueError("reviewed rig geometry must match this public prior; no silent rescaling")
     catalog = request["candidates"]
     points, frames = [], {}
     for item in catalog:
-        path = Path(item["path"])
+        path = repo_path(item["path"])
         if sha256_file(path) != item["sha256"]:
             raise ValueError("candidate trajectory hash changed")
         f = pd.read_csv(path)
@@ -92,38 +139,17 @@ def train(request, *, validate_only=False):
             return len(points)
         def by_id(self, name):
             return next(p for p in points if p.candidate_id == name)
+    basis = frozen.mechanical.public_basis()
+    validate_public_prior(basis.provenance, dependency_hashes)
     context = frozen.ModelContext(Domain())
-    class DirectTorqueSurrogate(frozen.Surrogate):
-        def _accepted(self, measurements):
-            accepted, episodes, candidates = [], set(), set()
-            for m in measurements:
-                o = m.observation
-                if not o.valid:
-                    raise ValueError("invalid observation excluded from model")
-                if o.episode_id in episodes or o.candidate_id in candidates:
-                    raise ValueError("duplicate episode/candidate")
-                episodes.add(o.episode_id)
-                candidates.add(o.candidate_id)
-                f = m.frame
-                state = f.loc[:, frozen.STATE_COLUMNS].to_numpy(float)
-                tau = f[["tau_hip_nm", "tau_knee_nm"]].to_numpy(float)
-                scalar = np.array([o.endpoint_value, m.E2, m.peak_ratio], float)
-                if not np.isfinite(state).all() or not np.isfinite(tau).all() or not np.isfinite(scalar).all():
-                    raise ValueError("nonfinite direct measurement")
-                index = context.index_by_id[o.candidate_id]
-                matrix = frozen.mechanical.design_matrix(f, context.template)[0]
-                accepted.append((m, index, scalar, f, matrix, tau))
-            if not accepted:
-                raise ValueError("valid direct joint-torque observation required")
-            return accepted
-    model = DirectTorqueSurrogate(context)
+    model = frozen.Surrogate(context)
     if validate_only:
         return dict(status="ALGORITHM_INITIALIZED", method="FROZEN_RESIDUAL_GP_MEAN_GREEDY",
             reference_candidate_id=ref_id, source_hashes_checked=True,
             public_prior=finite_json(frozen.mechanical.public_basis().provenance))
     measurements = []
     for index, item in enumerate(request["history"], 1):
-        path = Path(item["measured_path"])
+        path = repo_path(item["measured_path"])
         if sha256_file(path) != item["measured_sha256"]:
             raise ValueError("measured training frame changed")
         f = pd.read_csv(path)

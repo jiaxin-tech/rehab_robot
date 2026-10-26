@@ -12,17 +12,16 @@ import json
 import math
 from pathlib import Path
 from typing import Any
+from config.bundle import section_path
+from utils.evidence import artifact_path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FORMAL_EXPERIMENT_MANIFEST_PATH = (
-    PROJECT_ROOT / "config" / "formal_experiment_manifest.json"
+    section_path("formal_experiment_manifest")
 )
 SOURCE_ACTIVE_REFERENCE_PATH = (
-    Path(__file__).resolve().parent
-    / "data"
-    / "reference_candidates"
-    / "reference_measured_asymmetric_closed_slow.csv"
+    artifact_path("lower_limb_sim/data/reference_candidates/reference_measured_asymmetric_closed_slow.csv")
 )
 
 

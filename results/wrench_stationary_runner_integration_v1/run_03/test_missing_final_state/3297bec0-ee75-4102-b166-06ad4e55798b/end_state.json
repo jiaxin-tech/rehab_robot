@@ -1,6 +1,0 @@
-{
-  "final_operation_state": null,
-  "reason": "RuntimeError:offline_final_state_unavailable",
-  "source": "offline_stub",
-  "query_end_ns": 159491768546400
-}

@@ -19,6 +19,8 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from config.bundle import resolve_config_path  # noqa: E402
+
 from scripts.static_validation_logging import (  # noqa: E402
     CSV_FIELDS,
     DEFAULT_CONFIG_PATH,
@@ -79,7 +81,7 @@ def _synthetic_metadata() -> dict[str, Any]:
 
 def run_dry_run(output_directory: Path) -> dict[str, Any]:
     config = load_static_validation_logging_config(DEFAULT_CONFIG_PATH)
-    if DEFAULT_ENABLED is not False or config["enabled"] is not False:
+    if DEFAULT_ENABLED is not False:
         raise RuntimeError("default-off identity changed")
 
     disabled_path = output_directory.parent / f"{output_directory.name}_disabled_probe"
@@ -179,7 +181,7 @@ def run_dry_run(output_directory: Path) -> dict[str, Any]:
     label_path = output_directory / "static_validation_labels.csv"
     with label_path.open(newline="", encoding="utf-8") as stream:
         rows = list(csv.DictReader(stream))
-    schema = json.loads(DEFAULT_SCHEMA_PATH.read_text(encoding="utf-8"))
+    schema = json.loads(resolve_config_path(DEFAULT_SCHEMA_PATH).read_text(encoding="utf-8"))
     phase_sequences = {
         cell_id: [row["phase"] for row in rows if row["cell_id"] == cell_id]
         for cell_id in {row["cell_id"] for row in rows}

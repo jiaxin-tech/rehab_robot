@@ -14,6 +14,7 @@ import json
 import math
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path
 import tempfile
 from typing import Any, Mapping, Sequence
 
@@ -71,6 +72,7 @@ def _finite(value: Any, name: str) -> float:
 
 
 def _load_reviewed_config(path: Path) -> tuple[dict[str, Any], BaselineSubjectTemplate, np.ndarray]:
+    path = resolve_config_path(path, section="real_identification_config")
     if not path.is_file():
         raise FileNotFoundError(
             f"reviewed real identification config not found: {path}; copy and review "
@@ -337,7 +339,7 @@ def identify_real_episode(
     metrics_path = episode / METRICS_FILENAME
     if parameters_path.exists() or metrics_path.exists():
         raise FileExistsError("identification outputs already exist; refusing to overwrite")
-    config_source = Path(config_path).expanduser().resolve() if config_path else episode / CONFIG_FILENAME
+    config_source = resolve_config_path(config_path, section="real_identification_config") if config_path else episode / CONFIG_FILENAME
     config, baseline, wrench_rotation = _load_reviewed_config(config_source)
     metadata, state, wrench = _load_episode(episode)
     rotation, anchor_pose, q_hip_start, q_knee_start = _reviewed_geometry(metadata)

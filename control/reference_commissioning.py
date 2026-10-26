@@ -13,6 +13,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from config.bundle import resolve_config_path
 from typing import Any, Mapping
 
 import numpy as np
@@ -76,7 +77,7 @@ class ReferenceCommissioningPolicy:
 
 
 def load_reference_commissioning_policy(path: str | Path) -> ReferenceCommissioningPolicy:
-    config_path = Path(path).resolve()
+    config_path = resolve_config_path(path, section="reference_commissioning")
     payload = json.loads(config_path.read_text(encoding="utf-8"))
     expected = {
         "schema_version", "mode", "enabled", "execution_enabled", "trajectory",

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from config.bundle import resolve_config_path
 import time
 
 from collection.twincat_leg import LegCaptureProcess, atomic_json, positive
@@ -14,7 +15,7 @@ def record(config, directory, duration_s, *, factory=LegCaptureProcess):
     duration_s = positive(duration_s, "duration_s")
     if duration_s > 3600:
         raise ValueError("one segment must not exceed 3600 seconds")
-    config, directory = Path(config).resolve(strict=True), Path(directory).resolve()
+    config, directory = resolve_config_path(config, section="twincat_leg_capture").resolve(strict=True), Path(directory).resolve()
     worker = factory(config, directory)
     directory.mkdir(parents=True, exist_ok=False)
     state = dict(status="STARTING", motion_commanded=False, duration_requested_s=duration_s,

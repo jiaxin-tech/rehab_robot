@@ -1,7 +1,0 @@
-{
-  "rows": [],
-  "summary": {
-    "diagnostic": "rt_state_timing",
-    "fatal_error": "UnicodeDecodeError:'utf-8' codec can't decode byte 0xcc in position 48: invalid continuation byte"
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "rows": [],
-  "summary": {
-    "diagnostic": "rt_state_timing",
-    "fatal_error": "RuntimeError:网络异常: 网络连接错误"
-  }
-}

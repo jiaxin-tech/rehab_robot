@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path
 import subprocess
 import sys
 import time
@@ -40,7 +41,7 @@ def resolve(base, value):
 
 
 def paths(config_path):
-    p = Path(config_path).resolve()
+    p = resolve_config_path(config_path, section="robot_leg_round")
     c = read_json(p)
     base = p.parent
     for key in ("leg_config", "calibration", "analysis", "safety_config", "frame_config", "wrench_config"):
@@ -244,6 +245,7 @@ def report(directory, state):
 def prepare(config_path, directory, *, capture_fn=run_capture):
     directory = Path(directory).resolve()
     directory.mkdir(parents=True, exist_ok=False)
+    config_path = resolve_config_path(config_path, section="robot_leg_round")
     blockers = check_config(config_path)
     state = dict(status="CHECKING", training_status="NOT_STARTED",
                  config_path=str(Path(config_path).resolve()), config_sha256=sha256_file(config_path))

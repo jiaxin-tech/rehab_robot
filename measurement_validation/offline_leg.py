@@ -252,7 +252,8 @@ def main(argv: list[str] | None = None) -> int:
     c = commands.add_parser("calibrate")
     c.add_argument("manifest", type=Path)
     c.add_argument("--data-dir", type=Path, required=True)
-    c.add_argument("--candidate", type=Path, default=Path(__file__).parent / "calibration/hip_candidate.json")
+    from utils.evidence import artifact_path
+    c.add_argument("--candidate", type=Path, default=artifact_path("measurement_validation/calibration/hip_candidate.json"))
     c.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.command == "calibrate":

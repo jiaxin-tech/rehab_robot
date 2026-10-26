@@ -12,6 +12,7 @@ import json
 import math
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path
 import tempfile
 from typing import Mapping, Sequence
 
@@ -422,7 +423,7 @@ class ExperimentSafetyConfig:
 
     @classmethod
     def load_json(cls, path: str | Path) -> "ExperimentSafetyConfig":
-        source = Path(path).expanduser()
+        source = resolve_config_path(path, section="experiment_safety")
         if not source.is_file():
             raise FileNotFoundError(f"experiment safety JSON not found: {source}")
         try:

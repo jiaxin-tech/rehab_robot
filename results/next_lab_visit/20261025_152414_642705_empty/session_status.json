@@ -1,7 +1,0 @@
-{
-  "action": "empty",
-  "status": "BLOCKED_OR_FAILED",
-  "steps": [],
-  "motion_requested": true,
-  "reason": "PermissionError:commissioning execution code changed after review"
-}

@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from config.bundle import resolve_config_path
 import time
 from typing import Any, Callable, Sequence
 
@@ -113,7 +114,7 @@ def load_live_wrench_config(path: str | Path) -> dict[str, Any]:
     ``reviewed`` flag records that the review happened outside this process.
     """
 
-    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    payload = json.loads(resolve_config_path(path, section="live_observation_acquisition_20261018").read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("live wrench configuration must be a JSON object")
     missing = [key for key in LIVE_WRENCH_CONFIG_KEYS if key not in payload]

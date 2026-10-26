@@ -1,1 +1,0 @@
-{"version": 1, "origin": "supervisor", "run_id": "1568c9c067b347d791f8c23d2ce35a96", "session_id": "44c739a7e72b47bcbc17f62521cd2929", "pid": 50856, "query_id": 0, "event_id": 1, "type": "FAILURE_LATCH", "timestamp_ns": 2654194548980700, "reason": "telemetry_failure:ValueError:pid_mismatch", "log_write_ns": 2654194549101000}

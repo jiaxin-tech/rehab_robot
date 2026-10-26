@@ -1,3 +1,0 @@
-adapter_query_finished_s,adapter_query_started_s,deadline_miss,finished_perf_ns,invalid_reason,query_duration_ms,raw_force_frame,sample_index,scheduled_perf_ns,start_lateness_ms,started_perf_ns,valid
-2060102.6498344,2060102.3379259,True,2060102649894600,,311.9857,world,527,2060102329952900,7.956,2060102337908900,True
-2060119.570009,2060119.3302708,True,2060119570049300,,239.8442,world,1338,2060119318066400,12.1387,2060119330205100,True

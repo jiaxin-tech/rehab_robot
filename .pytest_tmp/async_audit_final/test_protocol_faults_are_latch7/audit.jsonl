@@ -1,1 +1,0 @@
-{"version": 1, "origin": "supervisor", "run_id": "254e416e368d49588d9ebb30a064231d", "session_id": "7269807982db4c0eb700617994bcc9da", "pid": 41492, "query_id": 0, "event_id": 1, "type": "FAILURE_LATCH", "timestamp_ns": 2654800028423700, "reason": "telemetry_failure:ValueError:out_of_order_disconnect_complete", "log_write_ns": 2654800028558600}

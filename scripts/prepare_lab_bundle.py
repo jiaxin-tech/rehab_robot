@@ -6,20 +6,21 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path
 import shutil
 
 from scripts.lab_session import ROOT, load, write
 
 
 def sha(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    return hashlib.sha256(resolve_config_path(path).read_bytes()).hexdigest()
 
 
 def build(output):
     output = Path(output).resolve()
     if not output.is_relative_to(ROOT):
         raise ValueError("bundle must be within this checkout for portable repository-relative dependencies")
-    config_path = ROOT / "config/robot_leg_round.json"
+    config_path = resolve_config_path(ROOT / "config/robot_leg_round.json")
     config = load(config_path)
     copies = []
     dependencies = {}
@@ -33,7 +34,9 @@ def build(output):
     for name, digest in config["algorithm_dependencies"].items():
         source = Path(name)
         suffix = name.replace("\\", "/").split("/rehab_robot/", 1)
-        if len(suffix) == 2:
+        if source.is_relative_to(ROOT) and not source.is_relative_to(algorithm_root):
+            target = source
+        elif len(suffix) == 2 and not source.is_file():
             source = ROOT / suffix[1]
             target = source
         else:
@@ -52,7 +55,7 @@ def build(output):
     for item in config["candidates"]:
         source = Path(item["path"])
         suffix = item["path"].replace("\\", "/").split("/rehab_robot/", 1)
-        if len(suffix) == 2:
+        if len(suffix) == 2 and not source.is_file():
             source = ROOT / suffix[1]
         if sha(source) != item["sha256"]:
             raise ValueError("candidate source mismatch")

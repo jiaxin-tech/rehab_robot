@@ -13,6 +13,7 @@ import argparse
 from dataclasses import asdict
 import json
 from pathlib import Path
+from config.bundle import resolve_config_path
 from typing import Any, Callable, Sequence
 
 from collection.episode_logger import EpisodeLogger
@@ -78,7 +79,7 @@ def _reference_path(trajectory_id: str) -> Path:
         / "reference_measured_asymmetric_closed_nominal.csv",
     }
     try:
-        return paths[trajectory_id]
+        return resolve_config_path(paths[trajectory_id])
     except KeyError as exc:
         raise ValueError(
             f"unknown measured-asymmetric trajectory: {trajectory_id}"
@@ -207,6 +208,10 @@ def run_execute(
     prepare_realtime: bool = False,
 ) -> dict[str, Any]:
     """Run one real episode only after static and live gates both pass."""
+    frame_config_path = resolve_config_path(frame_config_path, section="rehab_frame_config")
+    safety_config_path = resolve_config_path(safety_config_path, section="experiment_safety")
+    if wrench_config_path is not None:
+        wrench_config_path = resolve_config_path(wrench_config_path, section="live_observation_acquisition_20261018")
     validate_collision_source(collision_source, collision_event_max_age_s)
     anchor = load_start_anchor(anchor_path)
     frame = load_rehab_frame_config(frame_config_path)

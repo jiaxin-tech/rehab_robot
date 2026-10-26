@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from config.bundle import resolve_config_path
 import platform
 import statistics
 import subprocess
@@ -179,8 +180,8 @@ def git_metadata(repo: Path) -> dict[str, Any]:
 
 
 def load_formal_context(repo: Path) -> dict[str, Any]:
-    manifest_path = repo / "config" / "formal_experiment_manifest.json"
-    safety_path = repo / "config" / "experiment_safety.json"
+    manifest_path = resolve_config_path(repo / "config" / "formal_experiment_manifest.json")
+    safety_path = resolve_config_path(repo / "config" / "experiment_safety.json")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     safety = json.loads(safety_path.read_text(encoding="utf-8"))
     return {

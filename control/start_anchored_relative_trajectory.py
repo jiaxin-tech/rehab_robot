@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass
 import json
 import math
 from pathlib import Path
+from config.bundle import resolve_config_path
 from typing import Mapping, Sequence
 
 import numpy as np
@@ -142,7 +143,7 @@ class RehabFrameConfig:
 
 
 def load_rehab_frame_config(path: str | Path) -> RehabFrameConfig:
-    source = Path(path).expanduser().resolve()
+    source = resolve_config_path(path, section="rehab_frame_config")
     if not source.is_file():
         raise FileNotFoundError(f"rehab frame config not found: {source}")
     payload = json.loads(source.read_text(encoding="utf-8"))

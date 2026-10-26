@@ -15,6 +15,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 import mujoco
+from utils.evidence import artifact_path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -29,8 +30,7 @@ ASSET_SOURCE_URL = (
     "myosuite-2.12.2-py3-none-any.whl"
 )
 DEFAULT_ASSET_ROOT = (
-    PROJECT_ROOT / ".cache/myosuite-assets" / ASSET_VERSION
-    / "myosuite/simhive/myo_sim"
+    artifact_path(f".cache/myosuite-assets/{ASSET_VERSION}/myosuite/simhive/myo_sim")
 )
 _ASSET_MARKER = "/myosuite/simhive/myo_sim/"
 
