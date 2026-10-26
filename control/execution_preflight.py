@@ -393,14 +393,14 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
 
 
 def evaluate_execution_preflight(*, acquisition_health, logger, robot_adapter, current_tcp_pose_base, **request):
-    from hardware.safety_events import safety_event_block_reason
+    from hardware.safety_events import safety_event_block_reason, collision_feedback_allows_motion
     result = evaluate_offline_execution_request(**request)
     reasons = list(result.reasons)
     safety, anchor = request["safety"], request["anchor"]
     if not _connected(robot_adapter) or not logger.ready or not logger.healthy:
         reasons.append("robot or logger not ready")
     summary = robot_adapter.get_robot_state_summary()
-    if summary.get("collision_state_query_valid") is not True or summary.get("collision_state") is not False:
+    if not collision_feedback_allows_motion(summary):
         reasons.append("collision state is unavailable or active")
     event_reason = safety_event_block_reason(robot_adapter)
     if event_reason:

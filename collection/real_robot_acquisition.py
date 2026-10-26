@@ -386,7 +386,8 @@ class RealRobotAcquisition:
                 if frames and frames[-1].sequence_id > frame.sequence_id:
                     frame = frames[-1]
                 with self._state_lock:
-                    self._latest_state = frame
+                    if self._latest_state is None or frame.sequence_id >= self._latest_state.sequence_id:
+                        self._latest_state = frame
                     self._state_error = None
                 for captured in frames:
                     self._persist_state_frame(captured)
@@ -472,9 +473,10 @@ class RealRobotAcquisition:
                 next_tick = now_s
 
     def latest_health(self) -> AcquisitionHealth:
+        live_state = self.latest_state_frame()
         now_s = self.clock.now_s()
         with self._state_lock:
-            state = self._latest_state
+            state = live_state
             state_error = self._state_error
         with self._wrench_lock:
             wrench = self._latest_wrench
@@ -581,6 +583,20 @@ class RealRobotAcquisition:
 
     def latest_state_frame(self) -> KinematicStateFrame | None:
         """Return the immutable latest cached state without an SDK query."""
+        # The capture consumer can be writing CSV. The adapter cache advances
+        # independently; history persistence must not determine live freshness.
+        if self._state_capture_enabled and not self._stop_event.is_set():
+            try:
+                frame = self.adapter.read_state_frame()
+                if not isinstance(frame, KinematicStateFrame):
+                    raise TypeError("read_state_frame must return KinematicStateFrame")
+                with self._state_lock:
+                    if self._latest_state is None or frame.sequence_id >= self._latest_state.sequence_id:
+                        self._latest_state = frame
+            except Exception as exc:
+                with self._state_lock:
+                    self._state_error = f"state_read:{type(exc).__name__}:{exc}"
+                return None
         with self._state_lock:
             return self._latest_state
 

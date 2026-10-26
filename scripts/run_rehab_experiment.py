@@ -43,7 +43,7 @@ from scripts.acquire_robot_data import (
 from scripts.preview_rehab_trajectory import preview_trajectory
 from utils.clock import TIMESTAMP_SOURCE
 from utils.provenance import current_git_commit
-from hardware.safety_events import validate_collision_source
+from hardware.safety_events import validate_collision_source, collision_feedback_allows_motion
 
 
 AdapterFactory = Callable[[str], Any]
@@ -117,8 +117,7 @@ def _prepare_realtime_session(adapter: Any, *,
         raise ValueError("reviewed RT network tolerance must be an integer percent")
     adapter.connect()
     summary = adapter.get_robot_state_summary()
-    if (summary.get("collision_state_query_valid") is not True
-            or summary.get("collision_state") is not False):
+    if not collision_feedback_allows_motion(summary):
         raise PermissionError("loaded RT preparation requires valid clear collision state")
     native = getattr(adapter, "native_robot", None)
     if native is None or not callable(getattr(native, "enable_realtime", None)):

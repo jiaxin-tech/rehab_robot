@@ -25,7 +25,7 @@ from control.execution_preflight import (
 )
 from safety.experiment_safety import ExperimentSafetyConfig
 from utils.clock import MonotonicClock, SYSTEM_CLOCK
-from hardware.safety_events import safety_event_block_reason
+from hardware.safety_events import safety_event_block_reason, collision_feedback_allows_motion
 
 
 @dataclass(frozen=True)
@@ -256,7 +256,7 @@ class RokaeMotionExecutor:
         summary = adapter.get_robot_state_summary()
         if not isinstance(summary, dict) or summary.get("connected") is not True or summary.get("state_valid") is not True or summary.get("operation_state") != "RT_CONTROLLING":
             raise RuntimeError("robot is not ready for realtime commands")
-        if summary.get("collision_state_query_valid") is not True or summary.get("collision_state") is not False:
+        if not collision_feedback_allows_motion(summary):
             raise RuntimeError("collision protection state unavailable or active")
         limits = summary.get("robot_metadata", {}).get("joint_soft_limits_rad")
         if not self._joints_inside_reviewed_limits(summary.get("joint_position_rad"), limits):

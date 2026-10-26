@@ -15,14 +15,24 @@ from typing import Callable
 
 
 def validate_collision_source(source: str, max_age_s: float | None) -> None:
-    if source not in ("query", "events"):
-        raise ValueError("collision_source must be query or events")
+    if source not in ("query", "events", "controller"):
+        raise ValueError("collision_source must be query, events or controller")
     if source == "events":
         if (isinstance(max_age_s, bool) or not isinstance(max_age_s, (int, float))
                 or not math.isfinite(max_age_s) or max_age_s <= 0):
             raise ValueError("events requires an explicit finite positive collision_event_max_age_s")
     elif max_age_s is not None:
         raise ValueError("collision_event_max_age_s requires collision_source=events")
+
+
+def collision_feedback_allows_motion(summary: dict) -> bool:
+    """Controller mode delegates collision detection, never invents clearance."""
+    if summary.get("collision_state") is True:
+        return False
+    if summary.get("collision_state_source") == "controller":
+        return True
+    return (summary.get("collision_state_query_valid") is True
+            and summary.get("collision_state") is False)
 
 
 @dataclass(frozen=True)

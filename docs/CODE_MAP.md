@@ -2,18 +2,63 @@
 
 唯一配置：[experiment.json](../config/experiment.json)。操作和当前进展见[实验指南](EXPERIMENT.md)。
 
+## 真机操作与依赖
+
+箭头表示调用、数据传递或停止信号；框内标明进程边界。所有路径相对仓库根目录。
+
 ~~~mermaid
-flowchart LR
-    C[统一配置] --> O[observe：只采集]
-    C --> P[prepare：起点与预览]
-    P --> R[run：运动与采集]
-    O --> Q[质量与本轮报告]
-    R --> Q
-    R --> T[train：对齐与六参数辨识]
-    T --> G[残差 GP 与 Greedy 建议]
+flowchart TD
+    C["config/experiment.json"] --> L["scripts/lab_session.py"]
+    L -->|prepare| P["capture_start_anchor.py + preview_rehab_trajectory.py<br/>读取起点、生成轨迹预览"]
+    P -->|anchor.json + preview/| R["scripts/run_rehab_experiment.py"]
+    L -->|run --live| R
+    L -->|observe：不运动| O["scripts/acquire_robot_data.py"]
+    subgraph HOST["主机主进程"]
+        R --> PF["control/execution_preflight.py<br/>起点、轨迹、物理限值"]
+        PF --> EX["control/robot_trajectory_executor.py<br/>定时发送、过期停止"]
+        R --> A["collection/real_robot_acquisition.py<br/>状态、力消费、对齐线程"]
+        O --> A
+        A --> AD["hardware/rokae_adapter.py<br/>hardware/windows/rokae_xcore.py<br/>SDK 状态线程 → 最新缓存"]
+        AD -->|缓存直读，不等待 CSV 写盘| A
+        EX --> M["hardware/rokae_motion.py<br/>xcore 实时目标缓存与 SDK 回调"]
+        A -->|状态、力、对齐 CSV| LOG["collection/episode_logger.py"]
+        EX -->|命令意图| LOG
+        EX -->|实际发送时刻| D["dispatch.csv"]
+        A -->|时龄、时差、力限值| EX
+    end
+    ROB["机械臂控制器<br/>自身碰撞检测与保护停止"]
+    subgraph FORCE["独立力查询进程 + 主机监督器"]
+        W["collection/wrench_process.py<br/>hardware/wrench_session.py"]
+    end
+    W -->|SDK getEndTorque| ROB
+    W -->|最新样本、查询起止时间| A
+    W -->|异步查询日志| LOG
+    AD -->|SDK 状态订阅| ROB
+    M -->|实时笛卡尔目标| ROB
+    ROB -->|RT 故障标志 → 状态失效| AD
+    L --> LEG["collection/twincat_leg.py<br/>独立 ADS 采集进程"]
+    LEG --> ADS["TcAdsDll → TwinCAT 假腿"]
+    LEG -->|原始数据| CSV["leg/leg.csv"]
+    LEG -->|采集故障停止信号| EX
 ~~~
 
-调用：lab_session → run_rehab_experiment / acquire_robot_data → control、collection、hardware。训练在独立进程中运行，不自动发送机器人运动。
+prepare 只读取起点和生成预览；observe 同时记录机器人与假腿；run 才发送运动。状态缓存和原始历史分别读取，保存历史不会决定实时状态的新旧。力查询即使卡住，也不占用主进程的状态和目标发送锁；查询超时、样本过期或状态过期会结束本轮，旧样本不会被重新标时。
+
+默认 robot.collision_source=controller：软件不查询碰撞初始值，不等待事件心跳；反馈保持未知，控制器自身负责碰撞保护。状态线程在 RT 运行时检查 SDK 运动故障，故障使状态失效并触发软件停止。主机仍执行力、位置、速度、数据时效限值；软件不修改控制器碰撞阈值。query、events 仍可用于诊断，不能把其未知状态当作通过。
+
+## 采集后处理
+
+~~~mermaid
+flowchart LR
+    L["scripts/lab_session.py train"] --> ALIGN["measurement_validation/robot_leg_round.py"]
+    RAW["dispatch.csv + leg/leg.csv"] --> ALIGN
+    ALIGN --> DATA["measured.csv<br/>按实际发送时间对齐、计算端点"]
+    DATA --> WORK["scripts/train_robot_leg_round.py<br/>独立无硬件进程"]
+    WORK --> ALG["experiment_algorithm/<br/>六参数辨识 → 残差 GP → Greedy"]
+    ALG --> REPORT["report.md + round_status.json"]
+~~~
+
+辨识使用标定后的假腿数据，机器人力保留为采集和限值数据。训练建议不自动驱动机器人；observe 没有 dispatch.csv，不能当作动态训练轮次。
 
 | 目录 | 用途 |
 | --- | --- |

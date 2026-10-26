@@ -128,6 +128,7 @@ class RokaeRobot:
         self._last_state_time: float | None = None
         self._state_sequence_id = 0
         self._state_error: str | None = None
+        self._controller_motion_fault = False
         self._state_capture_buffer: StateFrameBuffer | None = None
         self._state_keypads: tuple[bool, ...] | None = None
         self._state_wall_time_iso: str | None = None
@@ -418,10 +419,17 @@ class RokaeRobot:
                     tcp_native = list(tcp.content())
                     joints_native = list(joints.content())
                     keypad_native = tuple(bool(value) for value in keypads.content())
+                received_s = time.perf_counter_ns() / 1_000_000_000.0
+                # Poll away from target dispatch. A controller stop/error must
+                # invalidate state even when collision feedback is unavailable.
+                if self.collision_source == "controller" and self._rt_active:
+                    self._controller_motion_fault |= self.realtime_motion_error()
+                if self._controller_motion_fault:
+                    raise RuntimeError("controller_realtime_motion_error")
                 self._accept_state(
                     tcp_native,
                     joints_native,
-                    time.perf_counter_ns() / 1_000_000_000.0,
+                    received_s,
                     keypad_native,
                 )
             except Exception as exc:
@@ -1277,6 +1285,9 @@ class RokaeRobot:
         synchronized timestamp in v0.7.0.  ``None`` means unavailable rather
         than a safe/false collision state.
         """
+        if self.collision_source == "controller":
+            self._collision_error = "delegated_to_controller_no_host_feedback"
+            return None
         if self._safety_events is not None:
             status = self.get_safety_event_status()
             self._collision_error = status["invalid_reason"] or None

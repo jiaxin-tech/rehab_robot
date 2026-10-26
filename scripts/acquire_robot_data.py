@@ -75,7 +75,7 @@ def _configured_adapter_factory(
             kwargs["robot_class"] = robot_class
         if state_interval_ms is not None:
             kwargs["state_interval_ms"] = state_interval_ms
-        if collision_source == "events":
+        if collision_source != "query":
             kwargs["collision_source"] = collision_source
             kwargs["collision_event_max_age_s"] = collision_event_max_age_s
         return RokaeRobotAdapter(robot_ip, **kwargs)
@@ -438,7 +438,7 @@ def main(
     )
     parser.add_argument("--robot-class", default=None, help="override ROBOT_CLASS")
     parser.add_argument("--state-interval-ms", type=int, default=None, help="override ROBOT_STATE_MS")
-    parser.add_argument("--collision-source", choices=("query", "events"), default="query")
+    parser.add_argument("--collision-source", choices=("query", "events", "controller"), default="query")
     parser.add_argument("--collision-event-max-age-s", type=float, default=None,
                         help="required reviewed event freshness budget for events mode")
     args = parser.parse_args(argv)
@@ -450,7 +450,7 @@ def main(
     if args.mode == "live" and live_wrench_config is None:
         parser.error("--wrench-config is required when --mode live")
     if args.mode == "offline" and (args.local_ip or args.robot_class or args.state_interval_ms
-                                   or args.collision_source == "events"):
+                                   or args.collision_source != "query"):
         parser.error("live connection and safety event options are incompatible with offline wrench mode")
     if adapter_factory is None:
         adapter_factory = _configured_adapter_factory(

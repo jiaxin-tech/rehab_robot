@@ -4244,6 +4244,12 @@ def test_state_frame_capture__consumer_pause_preserves_all_published_frames_and_
             source.publish(sequence)
         assert source.read_state_frame().sequence_id == 12
         assert source.read_state_frame().sequence_id == 12
+        # Live health must advance while the history consumer is still paused.
+        assert acquisition.latest_state_frame().sequence_id == 12
+        assert acquisition.latest_health().state_time_s == source.latest.host_monotonic_time_s
+        source.source_error = "controller_stream_fault"
+        assert not acquisition.latest_health().state_valid
+        source.source_error = None
         source.resume_drain.set()
         state_frame_capture__wait_for(lambda: logger.row_counts["robot_state"] == 12)
         assert acquisition.latest_state_frame().sequence_id == 12
@@ -5262,12 +5268,14 @@ def test_personal_run_requires_live_before_io(tmp_path):
 
 
 @pytest.mark.parametrize("fails", [False, True])
-def test_personal_round_capture_and_cleanup(tmp_path, monkeypatch, personal_context, fails):
+@pytest.mark.parametrize("collision_source", ["events", "controller"])
+def test_personal_round_capture_and_cleanup(tmp_path, monkeypatch, personal_context, fails, collision_source):
     c = personal_context
     config = personal_round.configuration()
     config["acquisition"].update(pre_roll_s=.0001, post_roll_s=.0001, max_leg_start_age_s=1., max_start_angle_error_deg=1.)
     config["training"]["enabled"] = False
-    config["robot"]["collision_event_max_age_s"] = .2
+    config["robot"].update(collision_source=collision_source,
+        collision_event_max_age_s=.2 if collision_source == "events" else None)
     state = dict(status="PREPARED", config_path=str(BUNDLE_PATH))
     personal_round.report(tmp_path, state)
     c.anchor.save_json(tmp_path / "anchor.json")
@@ -5553,3 +5561,87 @@ def test_observe_invalid_duration_does_not_create_session(tmp_path, duration):
     with pytest.raises(ValueError, match="duration_s"):
         personal_round.observe(personal_round.BUNDLE_PATH, tmp_path / "unused", duration_s=duration)
     assert not (tmp_path / "unused").exists()
+
+
+@pytest.mark.parametrize("source,valid,state,allowed", [
+    ("controller", False, None, True), ("controller", False, True, False),
+    ("query", False, None, False), ("events", False, None, False),
+    ("query", True, False, True), ("events", True, True, False),
+])
+def test_collision_mode_keeps_unknown_explicit_and_never_ignores_collision(source, valid, state, allowed):
+    from hardware.safety_events import collision_feedback_allows_motion
+    assert collision_feedback_allows_motion(dict(collision_state_source=source,
+        collision_state_query_valid=valid, collision_state=state)) is allowed
+
+
+def test_controller_mode_summary_never_queries_or_invents_collision_clearance():
+    from hardware.safety_events import collision_feedback_allows_motion
+    native = rokae_adapter__FakeReadOnlyNative()
+    def forbidden():
+        raise AssertionError("controller mode must not call queryEventInfo")
+    native.get_collision_state = forbidden
+    adapter = rokae_adapter__RokaeRobotAdapter(native_robot=native, collision_source="controller")
+    summary = adapter.get_robot_state_summary()
+    assert summary["collision_state_source"] == "controller"
+    assert summary["collision_state"] is None
+    assert summary["collision_state_query_valid"] is False
+    assert collision_feedback_allows_motion(summary)
+    adapter._collision_latched = True
+    assert not collision_feedback_allows_motion(adapter.get_robot_state_summary())
+
+
+def test_controller_motion_fault_invalidates_stream_and_stays_latched(monkeypatch):
+    import sys
+    from types import SimpleNamespace
+    from hardware.windows.rokae_xcore import RokaeRobot
+    native = RokaeRobot("192.0.2.1", collision_source="controller")
+    native.is_connected = True
+    native._rt_active = True
+    native._state_running = True
+    class Vector:
+        def content(self): return [0.] * 6
+    native._sdk = SimpleNamespace(PyTypeVectorDouble=Vector, PyTypeVectorBool=Vector)
+    updates = iter((True, False))
+    native._robot = SimpleNamespace(updateRobotState=lambda timeout: next(updates),
+        getStateData=lambda *args: None)
+    native.realtime_motion_error = lambda: True
+    monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
+        RtSupportedFields=SimpleNamespace(tcpPoseAbc_m=1, jointPos_m=2, keypads=3)))
+    import hardware.windows.rokae_xcore as module
+    monkeypatch.setattr(module.time, "sleep", lambda seconds: setattr(native, "_state_running", False))
+    native._state_loop()
+    assert native._controller_motion_fault
+    assert "controller_realtime_motion_error" in native.get_state_frame().invalid_reason
+    assert not native.get_state_frame().valid
+
+
+def test_slow_controller_fault_poll_does_not_refresh_old_state_timestamp(monkeypatch):
+    import sys
+    from types import SimpleNamespace
+    import hardware.windows.rokae_xcore as module
+    native = module.RokaeRobot("192.0.2.1", collision_source="controller")
+    native.is_connected = True
+    native._rt_active = True
+    native._state_running = True
+    class Vector:
+        def content(self): return [0.] * 6
+    native._sdk = SimpleNamespace(PyTypeVectorDouble=Vector, PyTypeVectorBool=Vector)
+    updates = iter((True, False))
+    native._robot = SimpleNamespace(updateRobotState=lambda timeout: next(updates),
+        getStateData=lambda *args: None)
+    clock = [1_000_000_000]
+    monkeypatch.setattr(module.time, "perf_counter_ns", lambda: clock[0])
+    def poll():
+        clock[0] += 300_000_000
+        return False
+    native.realtime_motion_error = poll
+    monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
+        RtSupportedFields=SimpleNamespace(tcpPoseAbc_m=1, jointPos_m=2, keypads=3)))
+    accept = native._accept_state
+    def accept_once(*args):
+        accept(*args)
+        native._state_running = False
+    native._accept_state = accept_once
+    native._state_loop()
+    assert native.get_state_frame().host_monotonic_time_s == 1.
+    assert clock[0] == 1_300_000_000

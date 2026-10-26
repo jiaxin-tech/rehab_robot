@@ -89,6 +89,7 @@ class RokaeRobotAdapter:
                 collision_event_max_age_s=collision_event_max_age_s,
             )
         self._robot = native_robot
+        self.collision_source = collision_source
         self._wrench_sequence_id = 0
         # A safety event observed by an earlier summary in the same adapter
         # lifetime must not disappear if a later event query is edge-triggered.
@@ -256,6 +257,9 @@ class RokaeRobotAdapter:
             collision_state = (True if self._collision_latched else
                                (collision_value if collision_state_query_valid else None))
             collision_state_invalid_reason = str(event_status.get("invalid_reason") or "")
+        elif self.collision_source == "controller":
+            collision_state = True if self._collision_latched else None
+            collision_state_invalid_reason = "delegated_to_controller_no_host_feedback"
         elif callable(collision_reader):
             try:
                 collision_value = collision_reader()
@@ -320,9 +324,10 @@ class RokaeRobotAdapter:
             "collision_state_invalid_reason": collision_state_invalid_reason,
             "collision_state_timestamp_source": (
                 event_status["timestamp_source"] if event_status is not None
+                else "unavailable_controller_owned_protection" if self.collision_source == "controller"
                 else "host_query_unsynchronized_xcoresdk_safety_event"
             ),
-            "collision_state_source": "events" if event_status is not None else "query",
+            "collision_state_source": "events" if event_status is not None else self.collision_source,
             "safety_event_status": event_status,
             "joint_soft_limits_valid": joint_soft_limits_valid,
             "sdk_tool_payload_read_valid": sdk_tool_payload_read_valid,

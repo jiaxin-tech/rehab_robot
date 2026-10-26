@@ -106,7 +106,9 @@ def observe(config_path, directory, *, duration_s=10., capture_factory=LegCaptur
             duration_s=duration_s, mode="live", live_wrench_config=wrench,
             wrench_hz=c["acquisition"]["wrench_hz"],
             adapter_factory=_configured_adapter_factory(local_ip=robot["local_ip"],
-                robot_class=robot["robot_class"], state_interval_ms=None),
+                robot_class=robot["robot_class"], state_interval_ms=None,
+                collision_source=robot["collision_source"],
+                collision_event_max_age_s=robot["collision_event_max_age_s"]),
             observation_guard=capture.health_reason)
         if result.get("completed") is not True:
             raise RuntimeError("robot observation incomplete")
@@ -147,7 +149,8 @@ def prepare(config_path, directory, *, capture_fn=run_capture):
     try:
         r = c["robot"]
         capture_fn(robot_ip=r["ip"], output_path=directory / "anchor.json",
-                   adapter_factory=_configured_adapter_factory(local_ip=r["local_ip"], robot_class=r["robot_class"], state_interval_ms=None))
+                   adapter_factory=_configured_adapter_factory(local_ip=r["local_ip"], robot_class=r["robot_class"], state_interval_ms=None,
+                       collision_source=r["collision_source"], collision_event_max_age_s=r["collision_event_max_age_s"]))
         preview_trajectory(anchor=directory / "anchor.json", frame_config=config_path,
                            output_dir=directory / "preview")
         state.update(status="PREPARED", blockers=check_config(config_path))
