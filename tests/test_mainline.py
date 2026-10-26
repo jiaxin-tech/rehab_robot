@@ -913,15 +913,15 @@ class episode_logger__EpisodeLoggerTests(episode_logger__unittest.TestCase):
         with episode_logger__tempfile.TemporaryDirectory() as root:
             episode = episode_logger__Path(root) / "episode_bounded_timeout"
             logger = episode_logger__EpisodeLogger(episode, clock=episode_logger___DeterministicClock()).start()
-            fsync_entered = episode_logger__threading.Event()
-            release_fsync = episode_logger__threading.Event()
+            flush_entered = episode_logger__threading.Event()
+            release_flush = episode_logger__threading.Event()
             caller_done = episode_logger__threading.Event()
             errors: list[BaseException] = []
 
-            def blocking_fsync(_descriptor: int) -> None:
-                fsync_entered.set()
-                if not release_fsync.wait(timeout=2.0):
-                    raise TimeoutError("test did not release fsync")
+            def blocking_flush() -> None:
+                flush_entered.set()
+                if not release_flush.wait(timeout=2.0):
+                    raise TimeoutError("test did not release flush")
 
             def append_bounded() -> None:
                 try:
@@ -936,10 +936,10 @@ class episode_logger__EpisodeLoggerTests(episode_logger__unittest.TestCase):
                 finally:
                     caller_done.set()
 
-            with episode_logger__patch("collection.episode_logger.os.fsync", side_effect=blocking_fsync):
+            with episode_logger__patch.object(logger._handles["trajectory_command"], "flush", side_effect=blocking_flush):
                 caller = episode_logger__threading.Thread(target=append_bounded, name="bounded-caller")
                 caller.start()
-                self.assertTrue(fsync_entered.wait(timeout=1.0))
+                self.assertTrue(flush_entered.wait(timeout=1.0))
                 self.assertTrue(caller_done.wait(timeout=1.0))
                 self.assertEqual(len(errors), 1)
                 self.assertIsInstance(errors[0], episode_logger__EpisodeLoggerError)
@@ -960,12 +960,12 @@ class episode_logger__EpisodeLoggerTests(episode_logger__unittest.TestCase):
 
                 later = episode_logger__threading.Thread(target=append_after_timeout)
                 later.start()
-                # This must finish while fsync still owns the logger I/O lock.
+                # This must finish while flush still owns the logger I/O lock.
                 self.assertTrue(later_done.wait(timeout=0.2))
                 self.assertEqual(len(later_errors), 1)
                 self.assertIsInstance(later_errors[0], episode_logger__EpisodeLoggerError)
 
-                release_fsync.set()
+                release_flush.set()
                 caller.join(timeout=1.0)
                 later.join(timeout=1.0)
                 self.assertTrue(logger.wait_for_pending_writes(1.0))
@@ -976,19 +976,19 @@ class episode_logger__EpisodeLoggerTests(episode_logger__unittest.TestCase):
             self.assertEqual(metadata["logger"]["status"], "failed")
             self.assertEqual(metadata["logger"]["failed_stream"], "trajectory_command")
 
-    def test_signal_failure_returns_while_fsync_holds_logger_lock(self) -> None:
+    def test_signal_failure_returns_while_flush_holds_logger_lock(self) -> None:
         with episode_logger__tempfile.TemporaryDirectory() as root:
             episode = episode_logger__Path(root) / "episode_signal_failure"
             logger = episode_logger__EpisodeLogger(episode, clock=episode_logger___DeterministicClock()).start()
-            fsync_entered = episode_logger__threading.Event()
-            release_fsync = episode_logger__threading.Event()
+            flush_entered = episode_logger__threading.Event()
+            release_flush = episode_logger__threading.Event()
             append_done = episode_logger__threading.Event()
             signal_done = episode_logger__threading.Event()
 
-            def blocking_fsync(_descriptor: int) -> None:
-                fsync_entered.set()
-                if not release_fsync.wait(timeout=2.0):
-                    raise TimeoutError("test did not release fsync")
+            def blocking_flush() -> None:
+                flush_entered.set()
+                if not release_flush.wait(timeout=2.0):
+                    raise TimeoutError("test did not release flush")
 
             def append_command() -> None:
                 try:
@@ -1004,16 +1004,16 @@ class episode_logger__EpisodeLoggerTests(episode_logger__unittest.TestCase):
                 logger.signal_failure("sensor_dead", stream="wrench")
                 signal_done.set()
 
-            with episode_logger__patch("collection.episode_logger.os.fsync", side_effect=blocking_fsync):
+            with episode_logger__patch.object(logger._handles["trajectory_command"], "flush", side_effect=blocking_flush):
                 writer = episode_logger__threading.Thread(target=append_command)
                 writer.start()
-                self.assertTrue(fsync_entered.wait(timeout=1.0))
+                self.assertTrue(flush_entered.wait(timeout=1.0))
                 signaler = episode_logger__threading.Thread(target=publish_failure)
                 signaler.start()
                 self.assertTrue(signal_done.wait(timeout=0.2))
                 self.assertTrue(logger.failure_event.is_set())
                 self.assertFalse(logger.healthy_signal)
-                release_fsync.set()
+                release_flush.set()
                 writer.join(timeout=1.0)
                 signaler.join(timeout=1.0)
                 self.assertTrue(append_done.is_set())
@@ -5754,3 +5754,79 @@ def test_unreadable_timing_never_masks_session_failure(tmp_path, content):
     state = dict(status="FAILED", reason="original failure")
     personal_round.report(tmp_path, state)
     assert json.loads((tmp_path / "round_status.json").read_text(encoding="utf-8"))["reason"] == "original failure"
+
+
+def test_current_origin_translates_path_and_preserves_captured_orientation(personal_context):
+    c = personal_context
+    pose = (.6, .1, .7, .1, -.2, .3)
+    trajectory, audit, _ = build_start_anchored_relative_trajectory(
+        current_tcp_start_pose=pose, rehab_frame=c.frame)
+    columns = ["tcp_x_base", "tcp_y_base", "tcp_z_base"]
+    assert audit.trajectory_valid
+    assert np.allclose(trajectory[columns].to_numpy() - c.trajectory[columns].to_numpy(),
+                       np.array(pose[:3]) - c.anchor.tcp_position_base_m)
+    assert np.allclose(trajectory[columns].iloc[0], pose[:3])
+    assert np.allclose(trajectory[columns].iloc[-1], pose[:3])
+    orientations = ["tcp_rx", "tcp_ry", "tcp_rz"]
+    assert np.allclose(trajectory[orientations].to_numpy(), pose[3:])
+    assert np.allclose(trajectory[["q_hip_ref", "q_knee_ref"]], c.trajectory[["q_hip_ref", "q_knee_ref"]])
+
+
+def test_from_current_captures_fresh_pose_before_running(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(personal_round, "check_config", lambda config: [])
+    monkeypatch.setattr(personal_round, "prepare", lambda config, directory: calls.append(("prepare", config, directory)))
+    def run(directory, *, live):
+        calls.append(("run", directory, live))
+        return dict(status="CAPTURE_COMPLETE")
+    monkeypatch.setattr(personal_round, "run", run)
+    config, directory = tmp_path / "config.json", tmp_path / "new_session"
+    assert personal_round.run_from_current(config, directory, live=True)["status"] == "CAPTURE_COMPLETE"
+    assert calls == [("prepare", config, directory), ("run", directory, True)]
+
+
+@pytest.mark.parametrize("live", [False, True])
+def test_from_current_checks_confirmation_and_config_before_device_io(tmp_path, monkeypatch, live):
+    calls = []
+    monkeypatch.setattr(personal_round, "check_config", lambda config: ["missing physical limits"])
+    monkeypatch.setattr(personal_round, "prepare", lambda *args: calls.append("prepare"))
+    monkeypatch.setattr(personal_round, "run", lambda *args, **kwargs: calls.append("run"))
+    with pytest.raises(ValueError if live else PermissionError):
+        personal_round.run_from_current(BUNDLE_PATH, tmp_path / "new_session", live=live)
+    assert not calls and not (tmp_path / "new_session").exists()
+
+
+def test_from_current_does_not_reuse_existing_session(tmp_path, monkeypatch):
+    monkeypatch.setattr(personal_round, "check_config", lambda config: [])
+    saved = tmp_path / "raw.csv"
+    saved.write_text("original raw data", encoding="ascii")
+    with pytest.raises(FileExistsError):
+        personal_round.run_from_current(BUNDLE_PATH, tmp_path, live=True)
+    assert saved.read_text(encoding="ascii") == "original raw data"
+
+
+def test_from_current_cli_routes_config_and_explicit_live(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(personal_round, "run_from_current", lambda config, directory, **kwargs:
+        calls.append((config, directory, kwargs)) or dict(status="CAPTURE_COMPLETE"))
+    config, session = tmp_path / "config.json", tmp_path / "new_session"
+    assert personal_round.main(["run", "--config", str(config), "--session", str(session),
+        "--from-current", "--live"]) == 0
+    assert calls == [(config, session, dict(live=True))]
+    with pytest.raises(SystemExit):
+        personal_round.main(["observe", "--session", str(session), "--from-current"])
+
+
+def test_command_logging_flushes_before_dispatch_and_syncs_only_on_close(tmp_path):
+    from collection.episode_logger import EpisodeLogger
+    from unittest.mock import patch, call
+    logger = EpisodeLogger(tmp_path / "episode").start()
+    command_fd = logger._handles["trajectory_command"].fileno()
+    with patch("collection.episode_logger.os.fsync") as sync:
+        logger.append_trajectory_command_bounded(timeout_s=.5, host_time_s=1.,
+            command_valid=True, invalid_reason="")
+        sync.assert_not_called()
+        with (tmp_path / "episode/trajectory_command.csv").open(encoding="utf-8") as stream:
+            assert len(stream.readlines()) == 2
+        logger.close(completed=True)
+        assert call(command_fd) in sync.call_args_list

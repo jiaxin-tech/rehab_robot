@@ -417,7 +417,7 @@ class EpisodeLogger:
         timeout_s: float,
         **values: Any,
     ) -> None:
-        """Wait at most ``timeout_s`` for durable command-intent logging.
+        """Wait at most ``timeout_s`` for flushed command-intent logging.
 
         The write runs outside the trajectory scheduler.  A missed deadline is
         permanently fail-closed even if the OS write later returns: the caller
@@ -586,10 +586,8 @@ class EpisodeLogger:
                 self._writers[stream_name].writerow(sparse_row)
                 handle = self._handles[stream_name]
                 handle.flush()
-                if stream_name == "trajectory_command":
-                    # Each motion target is acknowledged only after the host OS
-                    # has accepted an explicit file synchronization request.
-                    os.fsync(handle.fileno())
+                # Per-target fsync can stall dispatch on storage latency.
+                # Flush each row now; synchronize files once during close.
                 self._row_counts[stream_name] += 1
         except BaseException as exc:
             if isinstance(exc, EpisodeLoggerError):
@@ -759,6 +757,7 @@ class EpisodeLogger:
             for handle in self._handles.values():
                 try:
                     handle.flush()
+                    os.fsync(handle.fileno())
                 except (OSError, ValueError):
                     pass
                 try:

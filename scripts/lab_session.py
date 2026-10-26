@@ -332,14 +332,28 @@ def run(directory, *, live=False, capture_factory=LegCaptureProcess, execute_fn=
         lock.unlink(missing_ok=True)
 
 
+def run_from_current(config_path, directory, *, live=False):
+    """Capture this run's current pose, then execute its relative trajectory."""
+    if live is not True:
+        raise PermissionError("run --from-current --live explicitly starts robot motion")
+    blockers = check_config(config_path)
+    if blockers:
+        raise ValueError("complete physical parameters: " + "; ".join(blockers))
+    prepare(config_path, directory)
+    return run(directory, live=True)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("check", "observe", "prepare", "run", "train"))
     parser.add_argument("--config", type=Path, default=BUNDLE_PATH)
     parser.add_argument("--session", type=Path)
     parser.add_argument("--live", action="store_true")
+    parser.add_argument("--from-current", action="store_true", help="run from a newly captured current pose in a new session")
     parser.add_argument("--duration", type=float, default=10., help="observation duration in seconds")
     args = parser.parse_args(argv)
+    if args.from_current and args.action != "run":
+        parser.error("--from-current requires run")
     if args.action == "check":
         problems = check_config(args.config)
         print("\n".join(problems) if problems else "READY")
@@ -351,7 +365,8 @@ def main(argv=None):
     elif args.action == "prepare":
         state = prepare(args.config, args.session)
     elif args.action == "run":
-        state = run(args.session, live=args.live)
+        state = (run_from_current(args.config, args.session, live=args.live)
+                 if args.from_current else run(args.session, live=args.live))
     else:
         state = analyze(args.session)
     print(state["status"])
