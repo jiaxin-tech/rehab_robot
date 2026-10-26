@@ -1,8 +1,8 @@
-# 最短实验操作
+# 实验指南
 
-## 安装
+## 安装与参数
 
-Windows x64 / Python 3.12，在仓库根目录运行：
+Windows x64、Python 3.12，在仓库根目录运行：
 
 ~~~powershell
 py -3.12 -m venv .venv
@@ -10,82 +10,64 @@ py -3.12 -m venv .venv
 $env:PYTHONUTF8 = '1'
 ~~~
 
-机器人 SDK 随仓库保存。TwinCAT ADS DLL 按本机安装位置填写 leg.ads_dll_path。MuJoCo 公共模型资产随 data/experiment_data.zip 保存，使用时自动还原到 .cache/data，不需单独下载。
+只改 [experiment.json](../config/experiment.json)。机器人 SDK 已随仓库保存；leg.ads_dll_path 填实验电脑的真实 TwinCAT DLL 路径，确认 ADS 路由可读。
 
-## 一份参数文件
-
-编辑 [config/experiment.json](../config/experiment.json)，无需签名、审批、到期时间、源码哈希或证据文件。
-
-| 参数组 | 何时需要调整 |
+| 参数组 | 内容 |
 | --- | --- |
-| robot | 机器人和本机 IP、机器人类型、碰撞反馈方式及时效 |
-| motion | 速度、加速度、工作空间、力/力矩、起点误差、发送时效、RT 参数 |
-| leg | ADS 地址、映像布局、采集频率、超时和假腿力矩保护 |
-| calibration | 髋/膝编码器换算、零位、角度范围与力矩方向 |
-| frame | 床面 X/Z 轴在机器人 Base 下的方向 |
-| acquisition | 力采样频率、运动前后记录长度、假腿数据时效和起始角容差 |
-| analysis | 只在分析/训练时使用：时延、数据间隔、导数窗口和跟踪误差 |
-| training | 自动训练开关、训练超时、候选轨迹列表 |
+| robot、leg | 网络、设备与假腿采集；observe 首先需要这些参数 |
+| calibration、frame | 编码器零位、角度方向、范围和安装坐标 |
+| motion、acquisition | 运动限值、采集频率、时间预算与起始角容差 |
+| analysis | 训练时使用的时延、导数窗口、数据间隔和跟踪误差 |
+| training | 默认关闭自动训练；候选轨迹和训练超时 |
 
-null 表示尚无实际参数，不能当成零或自动放行。代码不会为未测量的物理限制猜数值。analysis 未填写不影响只采集；开启训练前再填写。calibration 中已有数值来自既有假腿标定，安装或零位改变后需更新。
+null 是待填写参数。observe 不要求填写运动参数；run 需要完整物理限值；analysis 可在拿到数据后、训练前填写。安装或零位改变后更新标定。没有签认、发布审批或 SHA/hash 检查。
 
-## 四个动作
+## 最短操作
 
-**1. 离线检查**，列出参数缺项，不连接设备：
+**先拿联调数据**：同步读取机器人状态、力与假腿，不发送上电、模式切换或运动命令。厂商连接/断开仍可能影响控制器会话。保持现场装置静止，假腿状态与 leg.guards 一致。
+
+~~~powershell
+.\.venv\Scripts\python.exe -m scripts.lab_session observe --session results/observe_001 --duration 10
+~~~
+
+observe 的完成只表示观测结束；它没有轨迹发送记录，不能直接作为运动辨识回合训练。故障会中止采集并记录原因。
+
+**运动实验**：检查参数，读取起点并查看预览，核对现场负载、安装和假腿起始角，然后显式启动。
 
 ~~~powershell
 .\.venv\Scripts\python.exe -m scripts.lab_session check
-~~~
-
-**2. 准备与预览**，读取机器人起点，生成 preview/ 中的轨迹 CSV 和图片，不发送轨迹：
-
-~~~powershell
 .\.venv\Scripts\python.exe -m scripts.lab_session prepare --session results/round_001
-~~~
-
-查看预览，核对实际安装、负载、机器人起点与假腿起始角。控制器中的工具、负载及保护设置由现场操作者直接配置，不再要求填写签认表。修改配置后应重新查看预览。
-
-**3. 运行**，显式 --live 才启动运动：
-
-~~~powershell
 .\.venv\Scripts\python.exe -m scripts.lab_session run --session results/round_001 --live
-~~~
-
-每轮使用新会话名。失败时先查 report.md；避免直接重复发送运动。Ctrl+C、数据失效、超限或设备故障会进入停止与清理路径。控制器碰撞保护和急停继续保留。
-
-**4. 离线辨识与训练**，对已经完整结束的采集执行：
-
-~~~powershell
 .\.venv\Scripts\python.exe -m scripts.lab_session train --session results/round_001
 ~~~
 
-training.enabled=false 为默认值；改为 true 会在采集结束后自动运行同样的分析和训练。分析失败不会删除原始记录。模型建议不会自动发送给机器人；单参考候选只用于初始化，不能证明优化收益。
+每轮换新会话名。run 会运动；Ctrl+C、数据过期、超限或故障进入停止与清理。模型建议不自动驱动机器人。training.enabled=true 时采集后自动训练，默认先保留原始数据。
 
-## 看结果和保存
+## 结果与诊断
 
-| 本轮文件 | 含义 |
+| 文件 | 用途 |
 | --- | --- |
-| report.md | 简明状态、失败原因和模型建议 |
-| round_status.json | 集中保存状态、采集质量、分析指标及模型结果 |
-| anchor.json | 实际起点；不需要签认版本 |
-| preview/ | 执行前轨迹和图片 |
-| leg/leg.csv | 假腿原始采集 |
-| robot/ | 四路机器人 CSV 和采集元数据，不同频率的数据分别保存 |
-| dispatch.csv | 实际发送时刻，用于与假腿时间对齐 |
-| measured.csv | 分析后重建的关节状态与力矩 |
-| training.log | 无硬件训练子进程日志 |
+| report.md、round_status.json | 一份简报与一份完整状态；含失败原因、质量和训练结果 |
+| leg/leg.csv、robot/ | 不同频率的原始数据分别保存 |
+| anchor.json、preview/、dispatch.csv | 运动起点、预览和实际发送时刻；observe 不生成 |
+| measured.csv、training.log | 对齐后的辨识数据与训练日志 |
 
-长期只保留一张汇总表和一份普通 ZIP。完成后按需归档，不是执行前置步骤：
+时序问题用一个诊断命令，kind 可选 state、wrench、alignment：
 
 ~~~powershell
-.\.venv\Scripts\python.exe -m utils.assets archive-session --session results/round_001
-.\.venv\Scripts\python.exe -m utils.assets list --prefix raw/
+.\.venv\Scripts\python.exe -m scripts.diagnose_robot state --duration 10
 ~~~
 
-压缩包按普通路径存储数据，没有 SHA 清单或证据索引。归档保留本地原始日志；相同会话名不能重复追加。
+诊断只输出样本 CSV 和摘要 JSON，不在 JSON 中重复样本。静载、重复性和轨迹敏感性验证保留 scripts.run_real_measurement_validation_analysis，输出 validation_summary.json 和 validation_metrics.csv 两份文件。
 
-代码架构与逐文件用途见 [代码地图](CODE_MAP.md)。修改代码后执行离线回归：
+完成的观测或运动会话可用 python -m utils.assets archive-session --session results/会话名 汇总到现有 data/ 数据包。原始日志保留。本机旧报告集中在 results/history.zip；不要使用历史报告中的旧命令和签认要求。
 
-~~~powershell
-.\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q
-~~~
+## 当前进展与下一步
+
+截至2026年10月26日：真实假腿静止采集和机器人状态/力读取已完成基础验证。10月18日四次空载尝试未形成完整轨迹命令记录；仍缺完整真机轨迹、同步动态数据及实测辨识/优化结果。
+
+当前 check 仍有8项物理参数待填，且本机配置的 ADS DLL 不存在。碰撞初始状态、偶发约240～312毫秒力查询阻塞和整链数据时效仍需现场复测。旧静止采集约487～488 Hz，最大接收间隔约39毫秒；不等于稳定无缺口的500 Hz。
+
+下一次依次完成：短时同步观测 → 慢速空载轨迹 → 假腿联动与重复采集 → 时间对齐、辨识与候选比较。单参考自身归一化为1、单候选 DOMAIN_EXHAUSTED 和离线测试通过，均不能作为优化有效的结论。
+
+修改代码后的统一验证：python -m pytest -c pytest-core.ini -q。架构和文件职责见[代码地图](CODE_MAP.md)。

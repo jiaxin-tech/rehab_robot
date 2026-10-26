@@ -528,7 +528,9 @@ def quality_report(
 
 
 def _calibration_from_json(path: str | Path) -> dict[str, JointCalibration]:
-    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    from config.bundle import read_config
+    payload = read_config(path, section="calibration")
+    payload = payload.get("joints", payload)
     if not isinstance(payload, dict) or not payload:
         raise CalibrationError("calibration file must be a non-empty JSON object")
     calibration: dict[str, JointCalibration] = {}

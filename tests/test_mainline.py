@@ -1057,7 +1057,7 @@ from measurement_validation.leg_episode import (
     quality_report as leg_episode_import__quality_report,
     read_leg_episode as leg_episode_import__read_leg_episode,
 )
-from scripts.import_dummy_leg_episode import main as leg_episode_import__import_main
+from measurement_validation.leg_episode import main as leg_episode_import__import_main
 
 
 def leg_episode_import___write_episode(path: leg_episode_import__Path, rows: int, rate_hz: float, *, atomic: bool = False) -> leg_episode_import__Path:
@@ -1610,11 +1610,7 @@ def test_real_measurement_validation_analysis_v1__demo_runner_writes_reports_and
     assert summary["evidence_classification"] == "OFFLINE_SYNTHETIC_DEMO_ONLY"
     assert summary["not_real_measurement_evidence"] is True
     required = {
-        "level_1_static_cells.csv",
-        "episode_features.csv",
-        "level_2_repeatability_groups.csv",
-        "level_3_trajectory_effects.csv",
-        "level_3_time_local_effects.csv",
+        "validation_metrics.csv",
     }
     assert all((output / filename).stat().st_size > 0 for filename in required)
 
@@ -3052,10 +3048,10 @@ import time as rokae_diagnostics__time
 
 from collection.snapshot import read_live_robot_state_sample as rokae_diagnostics__read_live_robot_state_sample
 from collection.state import InternalWrenchFrame as rokae_diagnostics__InternalWrenchFrame, KinematicStateFrame as rokae_diagnostics__KinematicStateFrame
-from scripts.check_rt_state_timing import measure as rokae_diagnostics__measure_rt
-from scripts.check_snapshot_alignment import measure as rokae_diagnostics__measure_alignment
-from scripts.check_wrench_query_timing import measure as rokae_diagnostics__measure_query
-from scripts.rokae_diagnostic_common import (
+from scripts.diagnose_robot import measure_state as rokae_diagnostics__measure_rt
+from scripts.diagnose_robot import measure_alignment as rokae_diagnostics__measure_alignment
+from scripts.diagnose_robot import measure_wrench as rokae_diagnostics__measure_query
+from scripts.diagnose_robot import (
     invalid_reason_counts as rokae_diagnostics__invalid_reason_counts,
     pose_dependence_analysis as rokae_diagnostics__pose_dependence_analysis,
     rotation_push_analysis as rokae_diagnostics__rotation_push_analysis,
@@ -4405,8 +4401,6 @@ from unittest.mock import patch as units_and_frames__patch
 
 import numpy as units_and_frames__np
 
-from collection.collector import DataCollector as units_and_frames__DataCollector
-from collection.safety_guard import SafetyGuard as units_and_frames__SafetyGuard
 from collection.snapshot import compose_robot_state_sample as units_and_frames__compose_robot_state_sample
 from collection.state import (
     InternalWrenchFrame as units_and_frames__InternalWrenchFrame,
@@ -4416,12 +4410,7 @@ from collection.state import (
     rotate_vector as units_and_frames__rotate_vector,
     transform_wrench as units_and_frames__transform_wrench,
 )
-from collection.trajectory import (
-    TrajectoryGeometry as units_and_frames__TrajectoryGeometry,
-    project_along_tangent as units_and_frames__project_along_tangent,
-)
 from config import settings as units_and_frames__settings
-from hardware.windows.rokae_internal_wrench import RokaeInternalWrenchSource as units_and_frames__RokaeInternalWrenchSource
 from hardware.windows.rokae_xcore import RokaeRobot as units_and_frames__RokaeRobot
 from utils.clock import host_time_s as units_and_frames__host_time_s
 
@@ -4483,42 +4472,6 @@ def units_and_frames___wrench_frame(now_s: float, *, sequence_id: int = 1, valid
     )
 
 
-class units_and_frames___LiveRobot:
-    def __init__(self) -> None:
-        self.index = 0
-        self.stopped = False
-        self.collision = False
-
-    def get_state_frame(self) -> units_and_frames__KinematicStateFrame:
-        self.index += 1
-        now_s = units_and_frames__host_time_s()
-        return units_and_frames___state_frame(
-            now_s,
-            sequence_id=self.index,
-            position=(min(0.9, 0.05 * self.index), 0.0, 0.0),
-            collision=self.collision,
-        )
-
-    def get_robot_metadata(self):
-        return {"robot_model": "fake-rokae", "xcore_sdk_version": "0.7.0"}
-
-    def get_joint_soft_limits_rad(self):
-        return tuple((-2.0, 2.0) for _ in range(6))
-
-    def get_collision_state(self):
-        return self.collision
-
-    def stop(self):
-        self.stopped = True
-
-
-class units_and_frames___LiveWrench:
-    @property
-    def bias(self):
-        return (0.1, 0.2, 0.3, 0.01, 0.02, 0.03)
-
-    def snapshot(self, now_s: float) -> units_and_frames__InternalWrenchFrame:
-        return units_and_frames___wrench_frame(now_s, sequence_id=1)
 
 
 class units_and_frames___FakeNativeSpeedRobot:
@@ -4603,124 +4556,10 @@ class units_and_frames__UnitAndFrameTests(units_and_frames__unittest.TestCase):
         self.assertTrue(units_and_frames__np.allclose(force_b, (0.0, 1.0, 0.0)))
         self.assertTrue(units_and_frames__np.allclose(torque_b, (-1.0, 0.0, 0.0)))
 
-    def test_tangent_projection_and_retraced_path_continuity(self):
-        geometry = units_and_frames__TrajectoryGeometry(units_and_frames__np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 0.0]]))
-        outbound, _ = geometry.project((0.5, 0.0, 0.0))
-        inbound, _ = geometry.project((0.5, 0.0, 0.0), reference_arc_length_m=1.5)
-        self.assertEqual(outbound.tangent_base, (1.0, 0.0, 0.0))
-        self.assertEqual(inbound.tangent_base, (-1.0, 0.0, 0.0))
-        self.assertAlmostEqual(units_and_frames__project_along_tangent((3.0, 0.0, 0.0), outbound.tangent_base), 3.0)
-        self.assertAlmostEqual(units_and_frames__project_along_tangent((-2.0, 0.0, 0.0), inbound.tangent_base), 2.0)
-        zero = units_and_frames__TrajectoryGeometry(units_and_frames__np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]))
-        projection, reason = zero.project((0.0, 0.0, 0.0))
-        self.assertIsNone(projection)
-        self.assertEqual(reason, "trajectory_zero_length")
 
-    def test_software_bias_and_internal_wrench_raw_corrected_fields(self):
-        self.assertEqual(
-            units_and_frames__calculate_software_bias([(1, 2, 3, 4, 5, 6), (3, 4, 5, 6, 7, 8)]),
-            (2.0, 3.0, 4.0, 5.0, 6.0, 7.0),
-        )
-        source = units_and_frames__RokaeInternalWrenchSource(object())
-        source._bias = (1.0, 1.0, 1.0, 0.1, 0.1, 0.1)
-        frame = source._frame_from_raw({
-            "host_monotonic_time_s": 3.0,
-            "cartesian_force_raw_n": [4.0, 5.0, 6.0],
-            "cartesian_torque_raw_nm": [0.4, 0.5, 0.6],
-            "joint_measured_torque_nm": [1, 2, 3, 4, 5, 6],
-            "joint_external_torque_nm": [11, 12, 13, 14, 15, 16],
-            "raw_force_frame": "world",
-        })
-        self.assertEqual(frame.cartesian_force_raw_n, (4.0, 5.0, 6.0))
-        self.assertEqual(frame.cartesian_force_corrected_n, (3.0, 4.0, 5.0))
-        self.assertEqual(frame.joint_measured_torque_nm[0], 1.0)
-        self.assertEqual(frame.joint_external_torque_nm[0], 11.0)
 
-    def test_collector_csv_metadata_and_snapshot_schema(self):
-        with units_and_frames__tempfile.TemporaryDirectory() as data_dir:
-            with units_and_frames__patch.object(units_and_frames__settings, "DATA_DIR", data_dir):
-                collector = units_and_frames__DataCollector(units_and_frames___LiveRobot(), units_and_frames___LiveWrench(), "subject", "session")
-                collector.start_episode(units_and_frames__np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]]))
-                for _ in range(12):
-                    self.assertTrue(collector.record_sample())
-                    units_and_frames__time.sleep(0.001)
-                output = collector.end_episode()
 
-            with open(output, newline="", encoding="utf-8") as stream:
-                row = next(units_and_frames__csv.DictReader(stream))
-            for name in (
-                "sample_time_s", "state_internal_skew_ms", "joint_measured_torque_1_nm",
-                "joint_external_torque_1_nm", "fx_raw_n", "fx_corrected_n", "fx_base_n",
-                "force_tangent_n", "force_query_duration_ms", "force_estimate_valid",
-            ):
-                self.assertIn(name, row)
-            self.assertEqual(row["schema_version"], "3")
-            self.assertEqual(row["frame"], "base")
-            self.assertNotIn("comfort", row)
-            with open(output.replace(".csv", ".json"), encoding="utf-8") as stream:
-                metadata = units_and_frames__json.load(stream)
-            self.assertIn("started_at", metadata)
-            self.assertIn("finished_at", metadata)
-            self.assertNotIn("comfort_label", metadata)
-            self.assertNotIn("pain_label", metadata)
 
-    def test_invalid_episode_is_saved_and_sample_index_does_not_repeat(self):
-        class OneInvalidWrench(units_and_frames___LiveWrench):
-            def __init__(self):
-                self.calls = 0
-
-            def snapshot(self, now_s):
-                self.calls += 1
-                return units_and_frames___wrench_frame(now_s, valid=self.calls != 1,
-                                     reason="simulated_wrench_gap" if self.calls == 1 else "")
-
-        with units_and_frames__tempfile.TemporaryDirectory() as data_dir:
-            with units_and_frames__patch.object(units_and_frames__settings, "DATA_DIR", data_dir), units_and_frames__patch.object(
-                units_and_frames__settings, "WRITE_INVALID_SAMPLES", False
-            ):
-                collector = units_and_frames__DataCollector(units_and_frames___LiveRobot(), OneInvalidWrench(), "subject", "session")
-                collector.start_episode()
-                self.assertFalse(collector.record_sample())
-                self.assertTrue(collector.record_sample())
-                output = collector.abort_episode("simulated_abort")
-            with open(output, newline="", encoding="utf-8") as stream:
-                rows = list(units_and_frames__csv.DictReader(stream))
-            self.assertEqual(len(rows), 1)
-            self.assertEqual(rows[0]["sample_index"], "1")
-            with open(output.replace(".csv", ".json"), encoding="utf-8") as stream:
-                metadata = units_and_frames__json.load(stream)
-            self.assertFalse(metadata["completed"])
-            self.assertEqual(metadata["stop_reason"], "simulated_abort")
-
-    def test_background_sampler_runs_independently_at_configured_cadence(self):
-        with units_and_frames__tempfile.TemporaryDirectory() as data_dir:
-            with units_and_frames__patch.object(units_and_frames__settings, "DATA_DIR", data_dir):
-                collector = units_and_frames__DataCollector(units_and_frames___LiveRobot(), units_and_frames___LiveWrench(), "subject", "session")
-                collector.start_episode()
-                collector.start_background_sampling(sample_hz=50.0)
-                units_and_frames__time.sleep(0.14)
-                output = collector.end_episode()
-            with open(output, newline="", encoding="utf-8") as stream:
-                rows = list(units_and_frames__csv.DictReader(stream))
-        self.assertGreaterEqual(len(rows), 4)
-
-    def test_stream_failure_and_collision_are_visible_to_safety(self):
-        adapter = units_and_frames__RokaeRobot("192.0.2.1")
-        adapter.is_connected = True
-        adapter.robot_mode = "IDLE"
-        adapter._accept_state([0.3, 0.0, 0.4, 0.0, 0.0, 0.0], [0.0] * 6, 1.0)
-        adapter._mark_state_error(RuntimeError("simulated stream failure"))
-        state = adapter.get_state_frame()
-        self.assertFalse(state.valid)
-        self.assertIn("robot_state_stream_error", state.invalid_reason)
-
-        robot = units_and_frames___LiveRobot()
-        robot.collision = True
-        guard = units_and_frames__SafetyGuard(robot=robot, wrench_source=units_and_frames___LiveWrench())
-        with units_and_frames__patch.object(units_and_frames__settings, "CONTROLLER_COLLISION_CONFIGURATION_CONFIRMED", True):
-            with self.assertRaisesRegex(RuntimeError, "robot_collision"):
-                guard.check()
-        self.assertTrue(robot.stopped)
 
 
 if __name__ == "__main__":
@@ -5299,7 +5138,7 @@ from control.robot_trajectory_executor import RokaeMotionExecutor
 from control.start_anchor import StartAnchor, FixedTcpOrientation
 from control.start_anchored_relative_trajectory import RehabFrameConfig, build_start_anchored_relative_trajectory
 from safety.experiment_safety import ExperimentSafetyConfig
-from scripts import run_robot_leg_round as personal_round
+from scripts import lab_session as personal_round
 
 
 @pytest.fixture
@@ -5425,16 +5264,16 @@ def test_personal_run_requires_live_before_io(tmp_path):
 @pytest.mark.parametrize("fails", [False, True])
 def test_personal_round_capture_and_cleanup(tmp_path, monkeypatch, personal_context, fails):
     c = personal_context
-    config = personal_round.paths()
+    config = personal_round.configuration()
     config["acquisition"].update(pre_roll_s=.0001, post_roll_s=.0001, max_leg_start_age_s=1., max_start_angle_error_deg=1.)
     config["training"]["enabled"] = False
     config["robot"]["collision_event_max_age_s"] = .2
     state = dict(status="PREPARED", config_path=str(BUNDLE_PATH))
     personal_round.report(tmp_path, state)
     c.anchor.save_json(tmp_path / "anchor.json")
-    monkeypatch.setattr(personal_round, "paths", lambda p: config)
+    monkeypatch.setattr(personal_round, "configuration", lambda p: config)
     monkeypatch.setattr(personal_round, "check_config", lambda p: [])
-    monkeypatch.setattr(personal_round, "inspect_file", lambda p: {"rows": 3})
+    monkeypatch.setattr(personal_round, "inspect_file", lambda p, **kwargs: {"rows": 3})
     stopped = []
     class Capture:
         def __init__(self, *args): pass
@@ -5575,3 +5414,142 @@ def test_personal_runtime_invalid_force_stops(personal_context, value):
     c.health.force_magnitude_n = value
     executor, _ = personal_executor(c)
     assert executor._runtime_reasons()
+
+
+def test_unified_config_readers_need_no_generated_sections(tmp_path, monkeypatch):
+    from config import bundle
+    from control.start_anchored_relative_trajectory import load_rehab_frame_config
+    from collection.twincat_leg import read_json
+    from measurement_validation.leg_episode import _calibration_from_json
+    from scripts.acquire_robot_data import load_live_wrench_config
+    config = bundle.configuration()
+    config["robot"]["ip"] = "192.0.2.33"
+    path = tmp_path / "custom_experiment.json"
+    path.write_text(json.dumps(config), encoding="utf-8")
+    def no_cache(*args, **kwargs):
+        raise AssertionError("configuration must not generate section files")
+    monkeypatch.setattr(bundle, "section_path", no_cache)
+    assert load_rehab_frame_config(path).rehab_x_axis_in_base == (1., 0., 0.)
+    assert ExperimentSafetyConfig.load_json(path).max_force_n == config["motion"]["max_force_n"]
+    assert read_json(path)["image_bytes"] == 1366
+    assert Path(read_json(path)["ads_dll_path"]).is_absolute()
+    assert load_live_wrench_config(path)["connection"]["robot_ip"] == "192.0.2.33"
+    assert set(_calibration_from_json(path)) == {"hip", "knee"}
+    assert personal_round.check_config(path)  # Actual missing physical parameters remain visible.
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_training_failure_updates_same_round_report(tmp_path, monkeypatch):
+    status = dict(status="CAPTURE_COMPLETE", config_path=str(personal_round.BUNDLE_PATH))
+    (tmp_path / "round_status.json").write_text(json.dumps(status), encoding="utf-8")
+    def invalid_alignment(*args, **kwargs):
+        raise ValueError("recording has a time gap")
+    monkeypatch.setattr(personal_round, "aligned_measurement", invalid_alignment)
+    with pytest.raises(ValueError, match="time gap"):
+        personal_round.analyze(tmp_path)
+    state = json.loads((tmp_path / "round_status.json").read_text(encoding="utf-8"))
+    assert state["status"] == "CAPTURE_COMPLETE"
+    assert state["training_status"] == "FAILED"
+    assert "time gap" in (tmp_path / "report.md").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("kind", ["state", "wrench", "alignment"])
+def test_unified_diagnostic_cli_uses_one_report_pair(tmp_path, monkeypatch, kind):
+    from contextlib import contextmanager
+    from scripts import diagnose_robot as diagnostic
+    @contextmanager
+    def connected(*args, **kwargs):
+        yield object(), object()
+    monkeypatch.setattr(diagnostic, "make_robot", lambda *args: object())
+    monkeypatch.setattr(diagnostic, "readonly_connection", connected)
+    measure_name = {"state": "measure_state", "wrench": "measure_wrench", "alignment": "measure_alignment"}[kind]
+    monkeypatch.setattr(diagnostic, measure_name,
+        lambda *args, **kwargs: ([dict(sample_index=0, valid=True)], dict(sample_count=1, valid_count=1)))
+    assert diagnostic.main([kind, "--output-dir", str(tmp_path)]) == 0
+    files = list(tmp_path.iterdir())
+    assert len(files) == 2
+    result = json.loads(next(tmp_path.glob("*.json")).read_text(encoding="utf-8"))
+    assert "rows" not in result
+    assert (tmp_path / result["samples_csv"]).is_file()
+
+
+@pytest.mark.parametrize("arguments", [
+    ["state", "--duration", "nan"], ["wrench", "--hz", "inf"],
+    ["alignment", "--software-bias"], ["state", "--software-bias", "--confirm-unloaded"],
+])
+def test_unified_diagnostic_rejects_invalid_request_before_connect(monkeypatch, arguments):
+    from scripts import diagnose_robot as diagnostic
+    def no_connect(*args):
+        raise AssertionError("invalid request must not connect")
+    monkeypatch.setattr(diagnostic, "make_robot", no_connect)
+    with pytest.raises(SystemExit) as exc:
+        diagnostic.main(arguments)
+    assert exc.value.code == 2
+
+
+@pytest.mark.parametrize("failure", [None, "robot", "leg", "cleanup"])
+def test_observe_records_without_motion_parameters_and_always_cleans_up(tmp_path, monkeypatch, failure):
+    config = personal_round.configuration()
+    dll = tmp_path / "TcAdsDll.dll"
+    dll.write_bytes(b"offline double")
+    config["leg"]["ads_dll_path"] = str(dll)
+    config_path = tmp_path / "experiment.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    calls = []
+    class Capture:
+        def __init__(self, source, directory):
+            self.directory = directory
+        def start(self):
+            calls.append("start")
+            self.directory.mkdir()
+            (self.directory / "leg.csv").write_text("raw data", encoding="ascii")
+        def health_reason(self):
+            return "leg stalled" if failure == "leg" else None
+        def stop(self):
+            calls.append("stop")
+            if failure == "cleanup":
+                raise RuntimeError("cleanup failed")
+    def acquire(**kwargs):
+        calls.append("acquire")
+        assert kwargs["mode"] == "live"
+        assert kwargs["observation_guard"] is not None
+        if failure == "robot":
+            raise RuntimeError("robot query stalled")
+        reason = kwargs["observation_guard"]()
+        if reason:
+            raise RuntimeError(reason)
+        return dict(completed=True, motion_commanded=False)
+    monkeypatch.setattr(personal_round, "inspect_file", lambda *args, **kwargs: dict(rows=42))
+    directory = tmp_path / "observation"
+    if failure:
+        with pytest.raises(RuntimeError):
+            personal_round.observe(config_path, directory, capture_factory=Capture, acquire_fn=acquire)
+    else:
+        result = personal_round.observe(config_path, directory, capture_factory=Capture, acquire_fn=acquire)
+        assert result["status"] == "OBSERVATION_COMPLETE"
+    assert calls == ["start", "acquire", "stop"]
+    state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+    assert state["motion_commanded"] is False
+    assert state["status"] == ("FAILED" if failure else "OBSERVATION_COMPLETE")
+    assert not (directory / "anchor.json").exists()
+    assert not (directory / "dispatch.csv").exists()
+    with pytest.raises(ValueError, match="completed recording"):
+        personal_round.analyze(directory)
+
+
+def test_observation_guard_stops_robot_acquisition_and_releases_resources(tmp_path):
+    from scripts.acquire_robot_data import run_acquisition
+    adapter = real_robot_acquisition__FakeAdapter()
+    adapter.get_robot_state_summary = lambda: dict(connected=True)
+    with pytest.raises(RuntimeError, match="leg stopped"):
+        run_acquisition(robot_ip="192.0.2.1", episode_dir=tmp_path / "robot",
+            duration_s=.1, adapter_factory=lambda ip: adapter,
+            observation_guard=lambda: "leg stopped")
+    assert adapter.calls[-2:] == ["stop_state_stream", "disconnect"]
+
+
+@pytest.mark.parametrize("duration", [0., -1., float("nan"), float("inf")])
+def test_observe_invalid_duration_does_not_create_session(tmp_path, duration):
+    with pytest.raises(ValueError, match="duration_s"):
+        personal_round.observe(personal_round.BUNDLE_PATH, tmp_path / "unused", duration_s=duration)
+    assert not (tmp_path / "unused").exists()

@@ -44,10 +44,20 @@ def section_path(name, *, config_path=BUNDLE_PATH):
     return path
 
 
+def read_config(path, *, section):
+    """Read a section directly, also accepting standalone diagnostic configs."""
+    source = resolve_config_path(path)
+    value = configuration(source)
+    key = ALIASES.get(section, section)
+    if "robot" in value and key in value:
+        return load_section(section, config_path=source)
+    return value
+
+
 def resolve_config_path(path, *, section=None):
     source = Path(path).expanduser().resolve()
-    if source == BUNDLE_PATH or (source.parent == ROOT / "config" and source.stem in ALIASES):
-        return section_path(section or source.stem)
+    if source.parent == ROOT / "config" and source.stem in ALIASES and not source.exists():
+        return BUNDLE_PATH
     if source.is_relative_to(ROOT):
         relative = source.relative_to(ROOT).as_posix()
         if relative.startswith(("reference_release/", "lower_limb_sim/data/", "external_simulation/calibration/")):

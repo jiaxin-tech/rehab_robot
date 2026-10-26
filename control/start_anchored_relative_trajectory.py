@@ -9,10 +9,9 @@ participates in this mode.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-import json
 import math
 from pathlib import Path
-from config.bundle import resolve_config_path
+from config.bundle import read_config
 from typing import Mapping, Sequence
 
 import numpy as np
@@ -138,10 +137,7 @@ class RehabFrameConfig:
 
 
 def load_rehab_frame_config(path: str | Path) -> RehabFrameConfig:
-    source = resolve_config_path(path, section="rehab_frame_config")
-    if not source.is_file():
-        raise FileNotFoundError(f"rehab frame config not found: {source}")
-    payload = json.loads(source.read_text(encoding="utf-8"))
+    payload = read_config(path, section="frame")
     if not isinstance(payload, Mapping):
         raise ValueError("rehab frame config must be a JSON object")
     required = {"rehab_x_axis_in_base", "rehab_z_axis_in_base"}

@@ -1233,7 +1233,7 @@ def _write_csv(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:
 
 
 def write_analysis_outputs(result: Mapping[str, Any], output_directory: str | Path) -> dict[str, str]:
-    """Write one JSON summary plus compact tables; never modify source logs."""
+    """Write one result JSON and one metrics table; retain source logs."""
 
     output = Path(output_directory)
     output.mkdir(parents=True, exist_ok=True)
@@ -1301,25 +1301,18 @@ def write_analysis_outputs(result: Mapping[str, Any], output_directory: str | Pa
         for context in result["level_3"]["contexts"]
         for effect in context["time_local_effects"]
     ]
-    table_paths = {
-        "static_cells": output / "level_1_static_cells.csv",
-        "episode_features": output / "episode_features.csv",
-        "repeatability_groups": output / "level_2_repeatability_groups.csv",
-        "trajectory_effects": output / "level_3_trajectory_effects.csv",
-        "time_local_effects": output / "level_3_time_local_effects.csv",
-    }
-    for name, rows in (
-        ("static_cells", static_rows),
-        ("episode_features", episode_rows),
-        ("repeatability_groups", repeatability_rows),
-        ("trajectory_effects", effect_rows),
-        ("time_local_effects", local_rows),
+    table_path = output / "validation_metrics.csv"
+    rows = []
+    for section, records in (
+        ("static", static_rows), ("episodes", episode_rows),
+        ("repeatability", repeatability_rows), ("trajectory", effect_rows),
+        ("time_local", local_rows),
     ):
-        _write_csv(table_paths[name], rows)
-    return {
-        "summary": str(summary_path),
-        **{name: str(path) for name, path in table_paths.items() if path.exists()},
-    }
+        for index, record in enumerate(records):
+            rows.extend(dict(section=section, record=index, metric=key, value=value)
+                        for key, value in record.items())
+    _write_csv(table_path, rows)
+    return {"summary": str(summary_path), "metrics": str(table_path)}
 
 
 def build_demo_input() -> dict[str, Any]:

@@ -15,7 +15,8 @@ import threading
 import time
 
 def read_json(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    from config.bundle import read_config
+    return read_config(path, section="leg")
 
 
 def atomic_json(path, value):

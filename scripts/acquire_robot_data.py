@@ -9,7 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from config.bundle import resolve_config_path
+from config.bundle import read_config
 import time
 from typing import Any, Callable, Sequence
 
@@ -38,17 +38,7 @@ OFFLINE_WRENCH_BUDGETS = {
     "state_age_s": 2.0,
     "skew_s": 2.0,
 }
-LIVE_WRENCH_CONFIG_KEYS = (
-    "schema_version",
-    "scope",
-    "reviewed",
-    "connection",
-    "expected_identity",
-    "allowed_power_states",
-    "budgets",
-)
 LIVE_CONNECTION_KEYS = ("robot_ip", "local_ip", "robot_class")
-LIVE_IDENTITY_KEYS = ("robot_model", "robot_serial", "controller_version", "sdk_version")
 
 
 def _default_adapter_factory(robot_ip: str):
@@ -108,8 +98,7 @@ def build_offline_wrench_provider(episode_dir: Path, *, wrench_hz: float) -> Any
 
 def load_live_wrench_config(path):
     from collection.wrench_process import WrenchBudgets
-    source = resolve_config_path(path, section="live_observation_acquisition_20261018")
-    value = json.loads(source.read_text(encoding="utf-8"))
+    value = read_config(path, section="acquisition")
     if not all(isinstance(value["connection"].get(k), str) and value["connection"][k].strip() for k in LIVE_CONNECTION_KEYS):
         raise ValueError("robot connection parameters are incomplete")
     WrenchBudgets(**value["budgets"])
@@ -223,6 +212,7 @@ def run_acquisition(
     wrench_provider_factory: WrenchProviderFactory | None = None,
     live_wrench_config: dict[str, Any] | None = None,
     wrench_hz: float | None = None,
+    observation_guard: Callable[[], str | None] | None = None,
 ) -> dict[str, Any]:
     """Acquire one observation-only episode.
 
@@ -322,6 +312,10 @@ def run_acquisition(
         logger.update_metadata({"robot_state_summary": adapter.get_robot_state_summary()})
         deadline = time.perf_counter() + duration_s
         while time.perf_counter() < deadline:
+            if observation_guard is not None:
+                reason = observation_guard()
+                if reason:
+                    raise RuntimeError(reason)
             if acquisition.background_error:
                 raise RuntimeError(acquisition.background_error)
             time.sleep(min(0.02, max(0.0, deadline - time.perf_counter())))

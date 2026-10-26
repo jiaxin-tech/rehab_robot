@@ -1,10 +1,8 @@
 """Physical limits required for robot execution; no approval workflow."""
 from __future__ import annotations
 from dataclasses import asdict, dataclass
-import json
 import math
-from pathlib import Path
-from config.bundle import resolve_config_path
+from config.bundle import read_config
 
 SCALAR_LIMITS = (
     "max_tcp_speed_m_s", "max_tcp_acceleration_m_s2",
@@ -65,8 +63,7 @@ class ExperimentSafetyConfig:
 
     @classmethod
     def load_json(cls, path):
-        source = resolve_config_path(path, section="experiment_safety")
-        return cls(**json.loads(source.read_text(encoding="utf-8")))
+        return cls(**read_config(path, section="motion"))
 
 
 def load_experiment_safety_config(path):

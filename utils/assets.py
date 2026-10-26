@@ -48,7 +48,7 @@ def archive_session(session):
     """Store a closed experiment once; retain local raw streams."""
     session = Path(session).resolve()
     state = json.loads((session / "round_status.json").read_text(encoding="utf-8"))
-    if state.get("status") not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE"):
+    if state.get("status") not in ("OBSERVATION_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE"):
         raise ValueError("only a completed experiment can be archived")
     name = "sessions/" + session.name + "/"
     files = [p for p in session.rglob("*") if p.is_file()]
