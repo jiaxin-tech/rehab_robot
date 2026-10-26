@@ -106,57 +106,14 @@ def build_offline_wrench_provider(episode_dir: Path, *, wrench_hz: float) -> Any
     )
 
 
-def load_live_wrench_config(path: str | Path) -> dict[str, Any]:
-    """Read and validate a reviewed live observation configuration.
-
-    This validates structure and provenance only.  It is not an approval
-    service: the values still have to come from a site review, and the
-    ``reviewed`` flag records that the review happened outside this process.
-    """
-
-    payload = json.loads(resolve_config_path(path, section="live_observation_acquisition_20261018").read_text(encoding="utf-8"))
-    if not isinstance(payload, dict):
-        raise ValueError("live wrench configuration must be a JSON object")
-    missing = [key for key in LIVE_WRENCH_CONFIG_KEYS if key not in payload]
-    if missing:
-        raise ValueError("missing live wrench configuration keys: " + ",".join(missing))
-    if payload["schema_version"] != 1:
-        raise ValueError("unsupported live wrench configuration schema_version")
-    if payload["scope"] != "LIVE_OBSERVATION_ACQUISITION":
-        raise ValueError("live wrench configuration scope must be LIVE_OBSERVATION_ACQUISITION")
-    if payload["reviewed"] is not True:
-        raise ValueError("live wrench configuration must record reviewed=true")
-    connection = payload["connection"]
-    if not isinstance(connection, dict) or set(connection) != set(LIVE_CONNECTION_KEYS):
-        raise ValueError("live wrench connection must contain exactly " + ",".join(LIVE_CONNECTION_KEYS))
-    if any(not isinstance(connection[key], str) or not connection[key].strip() for key in LIVE_CONNECTION_KEYS):
-        raise ValueError("live wrench connection fields must be non-empty strings")
-    identity = payload["expected_identity"]
-    if not isinstance(identity, dict) or set(identity) != set(LIVE_IDENTITY_KEYS):
-        raise ValueError("live wrench expected_identity must contain exactly " + ",".join(LIVE_IDENTITY_KEYS))
-    if any(not isinstance(identity[key], str) or not identity[key].strip() for key in LIVE_IDENTITY_KEYS):
-        raise ValueError("live wrench identity fields must be non-empty strings")
-    power_states = payload["allowed_power_states"]
-    if not isinstance(power_states, list) or not power_states or any(
-        state not in ("on", "off") for state in power_states
-    ):
-        raise ValueError("live wrench allowed_power_states must be a non-empty subset of on/off")
-    operation_states = payload.get("allowed_operation_states", ["idle"])
-    if (
-        not isinstance(operation_states, list)
-        or not operation_states
-        or any(state not in ("idle", "rtcontrolling") for state in operation_states)
-    ):
-        raise ValueError(
-            "live wrench allowed_operation_states must be a non-empty subset "
-            "of idle/rtcontrolling"
-        )
-    budgets = payload["budgets"]
-    if not isinstance(budgets, dict):
-        raise ValueError("live wrench budgets must be an object")
-    if budgets.get("provenance") == "NOT_SAFETY_THRESHOLDS":
-        raise ValueError("offline budgets are forbidden for a live observation session")
-    return payload
+def load_live_wrench_config(path):
+    from collection.wrench_process import WrenchBudgets
+    source = resolve_config_path(path, section="live_observation_acquisition_20261018")
+    value = json.loads(source.read_text(encoding="utf-8"))
+    if not all(isinstance(value["connection"].get(k), str) and value["connection"][k].strip() for k in LIVE_CONNECTION_KEYS):
+        raise ValueError("robot connection parameters are incomplete")
+    WrenchBudgets(**value["budgets"])
+    return value
 
 
 def build_live_wrench_provider(
@@ -170,13 +127,10 @@ def build_live_wrench_provider(
     from collection.wrench_process import WrenchBudgets, WrenchProcessProvider
 
     budgets = WrenchBudgets(**config["budgets"])
-    if budgets.provenance == "NOT_SAFETY_THRESHOLDS":
-        raise ValueError("offline budgets are forbidden for a live observation session")
     provider_config = dict(config["connection"])
     provider_config.update(
         mode="live",
         rate_hz=wrench_hz,
-        expected_identity=dict(config["expected_identity"]),
         allowed_power_states=list(config["allowed_power_states"]),
         allowed_operation_states=list(
             config.get("allowed_operation_states", ["idle"])

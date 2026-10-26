@@ -15,7 +15,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 
 import mujoco
-from utils.evidence import artifact_path
+from utils.assets import artifact_path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]

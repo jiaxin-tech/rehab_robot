@@ -1,990 +1,141 @@
 {
-  "schema_version": 1,
-  "sections": {
-    "site_evidence_records": {
-      "twincat_mapping_2026-10-16.md": "# TwinCAT mapping evidence — 2026-10-16\r\n\r\nStatus: file-level evidence plus a live read-only ADS diagnostic collected; **not yet accepted as an on-site human review**.\r\n\r\n## Sources\r\n\r\n- Active boot configuration: `C:/TwinCAT/3.1/Boot/CurrentConfig.xml`\r\n  - modified: 2026-09-29 18:53:20 local time\r\n  - SHA-256: `C5D10C97C6D4C131A3FF6871A509BC71A7A559DFFF585A44DFF70F89A2F5934C`\r\n- Newer project file: `C:/Users/liumai/Documents/TcXaeShell/TwinCAT 机器腿/TwinCAT 机器腿/TwinCAT 机器腿.tsproj`\r\n  - modified: 2026-09-29 18:59:02 local time\r\n  - SHA-256: `117F192C5D66BEF7FFB8F9F30378FE7FB918C3B28EA2A6B9D1CE973439685250`\r\n\r\nBecause the project file is newer than the active boot configuration, the project must still be compared with the currently active runtime in TwinCAT before `mapping_reviewed` can be set to `true`.\r\n\r\n## Facts present in both files\r\n\r\n- Four EtherCAT drives are configured.\r\n- ADS port: `11`.\r\n- Index group: `50593808` (`0x03040210`).\r\n- Each selected transmit PDO contains, in order:\r\n  - `0x6041` Statusword, UINT16\r\n  - `0x6064` Position Actual Value, DINT32\r\n  - `0x606C` Velocity Actual Value, DINT32\r\n  - `0x6077` Torque Actual Value, INT16\r\n  - `0x60F4` Following Error Actual Value, DINT32\r\n  - `0x603F` Error Code, UINT16\r\n  - `0x6061` Mode of Operation Display, SINT8\r\n  - `0x3C1A` Actual TorqueClose Value, REAL32\r\n- Selected transmit PDO size per axis is 23 bytes.\r\n- Axis statusword offsets are:\r\n  - axis 1: `0x8000009F` (`2147483807`)\r\n  - axis 2: `0x800000B6` (`+23`)\r\n  - axis 3: `0x800000CD` (`+46`)\r\n  - axis 4: `0x800000E4` (`+69`)\r\n- `0x3C1A` offsets are:\r\n  - axis 1: `0x800000B2`\r\n  - axis 2: `0x800000C9`\r\n  - axis 3: `0x800000E0`\r\n  - axis 4: `0x800000F7`\r\n- The project links the EtherCAT `WcState/InputToggle` bit to each NC axis state input.\r\n- NC SAF task cycle time is `20000` in TwinCAT units, consistent with the historical 2 ms / 500 Hz task setting.\r\n\r\n## Items requiring live review\r\n\r\n- The Windows TwinCAT registry records the local AMS Router Net ID as `10.20.4.89.1.1`; this is the ADS target used with port `11` in `config/twincat_leg_capture.json`.\r\n- The project and active boot file identify the EtherCAT device as `10.20.4.89.3.1`. This is a separate EtherCAT-device AMS address, so it is not a conflict with the local AMS Router target.\r\n- The remaining technical item is the physical signedness/semantics of `0x6077`; the static live snapshot returned raw zero for all four axes, so it cannot establish the sign convention. Do not set `mapping_reviewed=true` until a responsible reviewer accepts the live evidence and the signedness check.\r\n\r\n## Live read-only ADS evidence\r\n\r\nSource report: `results/lab_visit/twincat_readonly_mapping_20261016.json`.\r\n\r\n- Target `10.20.4.89.1.1:11`, index group `50593808`, index offset `2147483807`.\r\n- 200/200 reads succeeded; every read returned exactly 1366 bytes.\r\n- All four 23-byte axis records decoded at offsets `0/23/46/69`.\r\n- Byte 1365 bit 4 produced both values 0 and 1, with 92 observed transitions; byte 1365 changed in the live process image.\r\n- Query duration: mean 1.165 ms, p95 2.053 ms, maximum 2.193 ms.\r\n- Last snapshot showed all four axes `operation_enabled=false`, `fault=false`, error `0x0000`, mode display 8.\r\n- Last `0x3C1A` values were axis1 `-22.6305`, axis2 `-2.2704`, axis3 `0.2777`, axis4 `-1.7455` N·m. These are observations, not zero offsets or approved limits.\r\n- `0x6077` raw bits were zero in the snapshot; signedness therefore remains unverified.\r\n\r\n## Actions deliberately not taken\r\n\r\n- No TwinCAT activation, download, mode switch, online write, CoE write, or PLC write.\r\n- No robot or dummy-leg enable, reset, brake release, or motion command.\r\n- TwinCAT GUI automation was attempted only to inspect the live mapping, but the Windows computer-control helper failed to initialize (`trusted Node process exited unexpectedly`). No GUI action was issued. The later ADS diagnostic confirmed the live read span and toggle location; human review and `0x6077` sign semantics remain pending.\r\n- The later live diagnostic used only `AdsPortOpenEx`, `AdsSyncSetTimeoutEx`, `AdsSyncReadReqEx2`, and `AdsPortCloseEx`; no ADS write symbol was exposed by the diagnostic.\r\n",
-      "robot_network_2026-10-16.md": "# 机器人网络与 SDK 只读诊断（2026-10-16）\r\n\r\n## 结论\r\n\r\n机器人基础网络和 xCoreSDK 通信已经恢复。旧的 TCP 8055 是仓库中的未验证探测假设，不是这台控制器实际使用的 SDK 服务端口。\r\n\r\n## 网络事实\r\n\r\n- 机器人地址：`192.168.50.103`\r\n- 本机接口：`192.168.50.209`\r\n- 路由接口：`以太网 3`（ASIX USB to Gigabit Ethernet Family Adapter #2），Private 网络\r\n- 机器人 MAC：`34-df-20-0a-63-ff`\r\n- ICMP：可达，局域网延迟小于 1 ms\r\n- 直接 TCP 探测：\r\n  - 6666：开放\r\n  - 7777：开放\r\n  - 8055：关闭\r\n  - 1337：SDK 未连接时关闭\r\n- SDK 会话期间由 Windows `netstat` 观察到：\r\n  - `192.168.50.103:6666`：ESTABLISHED\r\n  - `192.168.50.103:7777`：ESTABLISHED\r\n  - `192.168.50.103:1337`：ESTABLISHED\r\n\r\n## xCoreSDK 0.7.0 只读自检\r\n\r\n- `connectToRobot`：成功\r\n- 控制器版本：`3.2.1`\r\n- 型号：`XMC12-R1300-W7G3B4`\r\n- 序列号：`0f98879e-e936-47a2-9c0d-f7b748a7eb86`\r\n- 操作状态：`IDLE`\r\n- 实时状态流：有效，配置周期 8 ms\r\n- 关节位置、TCP 位姿、关节软限位：读取成功\r\n- 内置笛卡尔/关节力矩：读取成功\r\n- 工具/工件候选列表与当前零负载数据：读取成功，但 SDK 不提供足够证据确认当前 HMI 激活名称，因此不能自动完成工具/负载评审\r\n- 断开：成功\r\n- `motion_commanded=false`\r\n- `power_commanded=false`\r\n\r\n## 只读时序诊断\r\n\r\n- 内置力/力矩查询：10 秒内 498 次有效查询，50 Hz、0 次 deadline miss；查询耗时平均 0.995 ms，p99 1.731 ms，最大 1.894 ms。因此本轮 `wrench_hz` 已客观填写为 50 Hz，但安全超时预算仍待评审。\r\n- 实时状态：修复诊断脚本的 Windows 主机时钟混用后，3 秒内 150/150 次读取有效，状态年龄平均 7.98 ms、p99 8.68 ms、最大 9.36 ms。\r\n- 50/100 Hz 的 Python 轮询会跳过部分 8 ms 源帧；这里的 sequence gap 表示观察端没有读取每个源帧，不应直接解释为控制器网络丢包。\r\n\r\n## 尚未通过的安全事件语义\r\n\r\n- `queryEventInfo(Event.safety)` 返回错误 259：参数错误/参数类型或个数错误。当前控制器/绑定组合不能用这个主动查询证明“未碰撞”。\r\n- `setEventWatcher(Event.safety, ...)` 能注册，但在无新事件时初始状态保持 unknown，不能证明“未碰撞”。\r\n- 已修复断开前未调用 `setNoneEventWatcher` 的回调生命周期问题；50 项相关单测通过，真机复测能够正常注销、断开和退出，不再出现 Python callback/GIL 终止错误。\r\n- 事件源仍须通过受控现场事件验证初始值/触发/恢复语义；在此之前不能标记为有效，也不能进入运动流程。\r\n\r\n## 未执行\r\n\r\n未上电、使能、复位、松刹车、切换模式、改变碰撞配置或发送运动命令。\r\n",
-      "reference_commissioning_gate_attempt_2026-10-18.md": "# 正式参考轨迹临时调试门禁尝试（2026-10-18）\r\n\r\n## 结论\r\n\r\n本次只读核对未通过通信门禁，未连接机器人、未上电、未发运动。\r\n\r\n- 本机机器人网卡：`192.168.50.209`，接口“以太网 3”，Private网络。\r\n- 机器人：`192.168.50.103`，ICMP ping成功，往返时间约0 ms。\r\n- TCP `6666`：未监听。\r\n- TCP `7777`：未监听。\r\n- TCP `1337`：未监听。\r\n- 机器人状态诊断：SDK建连返回错误256，0条状态样本。\r\n- 力查询诊断：SDK建连返回错误256，0条力样本。\r\n- 失败原始结果：\r\n  - `diagnostics/rt_state_timing_20261018T090004Z.json`\r\n  - `diagnostics/rt_state_timing_20261018T090004Z.csv`\r\n  - `diagnostics/wrench_query_timing_20261018T090004Z.json`\r\n  - `diagnostics/wrench_query_timing_20261018T090004Z.csv`\r\n\r\n## 门禁处理\r\n\r\n不能从0条样本生成状态年龄、力数据年龄、状态/力时间差、查询耗时或命令延迟预算，相关门禁继续保持未通过。临时调试模式允许讨论的唯一豁免是SDK碰撞状态不可观测；该豁免不覆盖SDK完全无法连接、状态流缺失或力数据缺失。\r\n\r\n下一次重试前，机器人控制柜/通信服务必须恢复TCP 6666和7777监听。恢复后先单路执行状态诊断，再单路执行力诊断，最后执行状态与力并行对齐诊断；三项均取得非零有效样本后才能据实填写预算。\r\n\r\n## 17:05 恢复后复核\r\n\r\n操作员报告通信已恢复后再次核对：\r\n\r\n- 连续4次、间隔5秒探测TCP 6666、7777和1337，三端口始终均为关闭。\r\n- 单路SDK状态诊断仍返回错误256，取得0条状态样本；原始结果为 `diagnostics/rt_state_timing_20261018T090503Z.json`。\r\n- ARP能够解析机器人IP为MAC `34-df-20-0a-63-ff`，说明本机到机器人二层链路存在；故障位于机器人通信服务/监听状态或控制器侧接口状态，而不是网线完全断开。\r\n- 本机没有发现名称包含ROKAE、xCore、Robot或通信的Windows服务；需要恢复的是控制柜侧服务，而不是在实验电脑本地启动一个替代监听端口。\r\n\r\n## 17:09--17:12 正常 Windows 网络权限复核\r\n\r\n后续复核发现，前两次端口和SDK失败发生在受限命令环境内。改用正常Windows网络权限后，无需重启控制柜或修改机器人模式，xCoreSDK立即成功连接。因此，上述“控制柜通信服务未监听/故障”的判断撤回；错误256和端口关闭属于本机执行环境造成的假阴性。\r\n\r\n- 状态流：10秒内取得449条有效读取，0次读取错误；状态年龄均值7.959 ms、P95 8.173 ms、最大8.745 ms。原始结果：`diagnostics/rt_state_timing_20261018T090859Z.json`及同名CSV。\r\n- 力查询：10秒内取得484条有效查询；查询耗时均值0.956 ms、P95 1.060 ms、最大27.273 ms，有1次20 ms期限违约，故当前证据不支持稳定50 Hz预算。原始结果：`diagnostics/wrench_query_timing_20261018T090922Z.json`及同名CSV。\r\n- 快照对齐：发现项目将`perf_counter`时间戳与`monotonic`检查时钟混用，约有2.3秒固定偏差，导致全部样本误报“来自未来”。代码统一到项目主机时钟后，10秒内取得473组状态/力快照；状态年龄均值8.232 ms、P95 9.025 ms、最大10.583 ms，且不再出现future时间戳。原始结果：`diagnostics/snapshot_alignment_20261018T091108Z.json`及同名CSV。\r\n- 控制器/SDK：控制器版本3.2.1，xCoreSDK 0.7.0，机器人型号`XMC12-R1300-W7G3B4`；关节软限位成功读回，状态为`IDLE`。\r\n- 控制器负载读回：质量1.085 kg，质心`[0,0,0.100] m`，惯量`[0,0,0] kg·m²`；SDK仍不能证明当前HMI活动工具/工件身份。\r\n- 碰撞状态：主动查询`queryEventInfo(safety)`仍返回SDK错误259。事件回调通道可以成功注册，但没有初始事件，状态为`safety_event_initial_state_unknown`；这说明剩余阻断是碰撞状态可观测性，不是通信连接。\r\n- 全部操作均为只读；未上电、未切换模式、未下发运动。\r\n\r\n因此，通信、状态读取、TCP位姿/关节和内部力读取已经恢复并被实测确认。自动参考轨迹仍不能仅凭本次连接成功而放行：还需确定碰撞状态临时豁免的受控执行路径，并完成会话软件力偏置及正式采集链的时序预算。\r\n\r\n## 17:15 会话软件力偏置\r\n\r\n操作员明确确认“工具和假腿已静止、无人接触，允许做会话软件力偏置”后，执行1秒软件偏置并立即进行10秒、50 Hz状态/力快照诊断。\r\n\r\n- 软件偏置成功，`software_bias_used=true`；该偏置仅属于本次诊断进程，断开后不写入也不保留在控制器中。\r\n- 共记录465组快照；力估计本身465/465可用，力查询耗时均值0.842 ms、P95 1.168 ms、P99 1.322 ms、最大1.642 ms。\r\n- 状态年龄均值8.358 ms、P95 9.150 ms、P99 9.826 ms、最大23.489 ms。\r\n- 状态/力内部时间差均值10.512 ms、P95 23.154 ms、P99 26.499 ms、最大71.491 ms；按现有20 ms门限有31组超限，另有2组力数据超过50 ms年龄门限。\r\n- 完整快照有效数仍为0/465，统一原因是`base_wrench_rotation_requires_robot_validation`。这不是通信或偏置失败，而是world到Base的力方向旋转尚未通过已知方向真机检查；程序没有擅自把该门禁改为通过。\r\n- 原始结果：`diagnostics/snapshot_alignment_20261018T091525Z.json`及同名CSV。\r\n\r\n结论：会话软件力偏置流程可用；下一项现场动作应是已知Base轴方向的轻推验证，或在只使用旋转不变的力/力矩模长时建立并审核单独的“模长守卫”策略。未完成其中一项前，不能把Base方向力分量标记为可信。\r\n\r\n## 17:17 Base +X 力方向检查\r\n\r\n操作员确认机器人静止、工作范围内无人并手持急停后，先执行无接触偏置和2秒基线，再沿机器人Base +X方向持续轻推3秒。全过程只读，机器人未被下发运动。\r\n\r\n- 基线Base力均值：`[-0.010, -0.064, 0.031] N`。\r\n- 轻推Base力均值：`[22.714, 5.886, 0.277] N`。\r\n- 相对基线变化：`[+22.724, +5.950, +0.246] N`。\r\n- 主响应轴/符号：`X / +`，与预期一致；横轴响应比0.262。\r\n- 原始结果：`diagnostics/wrench_frame_rotation_20261018T091752Z.json`及同名CSV。\r\n\r\n该结果通过Base +X轴和符号检查，但单一方向不能独立确定完整三维旋转及手性，因此尚未把`BASE_WRENCH_ROTATION_VERIFIED`改为true；至少还需一个不共线的已知方向检查，下一项选择Base +Z。\r\n\r\n## 17:19 Base +Z 力方向检查与合并结论\r\n\r\n在重新完成无接触偏置和2秒基线后，操作员沿机器人Base +Z方向持续轻推3秒。\r\n\r\n- 基线Base力均值：`[-0.003, -0.115, 0.198] N`。\r\n- 轻推Base力均值：`[-26.858, -3.438, 63.845] N`。\r\n- 相对基线变化：`[-26.855, -3.323, +63.647] N`。\r\n- 主响应轴/符号：`Z / +`，与预期一致；横轴响应比0.425，按实记录且不解释为零耦合。\r\n- 原始结果：`diagnostics/wrench_frame_rotation_20261018T091939Z.json`及同名CSV。\r\n\r\nBase +X和Base +Z两个不共线方向均得到正确的主响应轴和正号，满足当前机器人、当前工具安装和当前SDK变换下的定性方向验证。`BASE_WRENCH_ROTATION_VERIFIED`据此改为true，并绑定两份原始证据。更换机器人、工具安装、坐标约定或SDK力变换后必须重新置为false并复验。该结论不声称人工推力严格沿轴，也不把横轴耦合解释为传感器精度。\r\n\r\n## 17:21 方向门禁解除后的快照复核\r\n\r\n操作员再次确认已松手、机器人/工具/假腿静止且无人接触后，重新执行会话软件偏置和10秒、50 Hz快照诊断。\r\n\r\n- 完整有效快照409/454（90.1%）；不再出现Base旋转、偏置或未来时间戳错误。\r\n- 状态年龄均值8.348 ms、P95 9.162 ms、P99 10.014 ms、最大11.188 ms。\r\n- 力查询耗时均值0.846 ms、P95 1.180 ms、P99 1.503 ms、最大1.671 ms。\r\n- 45组超过现有20 ms状态/力skew门限；2组同时超过50 ms力年龄门限，其中最差力年龄255.663 ms、skew 247.661 ms。\r\n- 原始结果：`diagnostics/snapshot_alignment_20261018T092141Z.json`及同名CSV。\r\n\r\n随后进行30秒独立力查询复测，共1430次查询、5次20 ms期限违约。查询耗时P95 1.249 ms、P99 1.875 ms，但出现239.844 ms和311.986 ms两次长阻塞，确认尖峰来自SDK查询而非Base变换。原始结果：`diagnostics/wrench_query_timing_20261018T092232Z.json`及同名CSV。\r\n\r\n根据本次数据形成但尚待安全员明确签认的临时调试时序预算：状态年龄25 ms、力年龄50 ms、状态/力skew 40 ms、单次力查询50 ms；任何超限立即将样本/采集健康标为无效并触发上层停止。用该预算回放本次454组快照时452组通过，239--312 ms级停顿仍被拒绝。适用范围仅为无人、假腿、只采集、不训练的临时调试，不是人体实验授权。\r\n",
-      "REAL_ROBOT_SAFETY_DECLARATION_2026-10-17.json": "{\r\n  \"schema_version\": 1,\r\n  \"recorded_date\": \"2026-10-17\",\r\n  \"source\": \"operator-provided declaration in project chat\",\r\n  \"setup_id\": \"01\",\r\n  \"operator\": \"jacey\",\r\n  \"safety_reviewer\": \"jacey\",\r\n  \"submitted_project_status\": \"批准动态运动\",\r\n  \"submitted_release_conclusion\": \"通过\",\r\n  \"submitted_validity_text\": \"2027-10-31T23:59:59+08:00\",\r\n  \"machine_checkable_expires_at\": \"2027-10-31T23:59:59+08:00\",\r\n  \"expiry_confirmed_on\": \"2026-10-18\",\r\n  \"tool_name\": \"自制 3D 打印末端牵引工具（直接安装法兰）\",\r\n  \"workpiece_name\": \"TCHL 关节模组假腿组件\",\r\n  \"payload\": {\r\n    \"mass_kg\": 1.085,\r\n    \"cog_m\": [0.0, 0.0, 0.1],\r\n    \"inertia_kg_m2\": [0.0, 0.0, 0.0],\r\n    \"superseded_payloads\": [\r\n      {\r\n        \"mass_kg\": 1.05,\r\n        \"cog_m\": [0.0, 0.0, 0.0],\r\n        \"inertia_kg_m2\": [0.0, 0.0, 0.0]\r\n      },\r\n      {\r\n        \"mass_kg\": 0.45,\r\n        \"cog_m\": [0.0, 0.0, 0.115],\r\n        \"inertia_kg_m2\": [0.0008, 0.0014, 0.00098],\r\n        \"inertia_about_flange_origin_kg_m2\": [0.0067, 0.0073, 0.00098]\r\n      }\r\n    ],\r\n    \"updated_on\": \"2026-10-18\",\r\n    \"review_status\": \"TEMPORARY_SUPERVISED_COMMISSIONING_CONTROLLER_VALUES\",\r\n    \"review_note\": \"jacey directed temporary use of the live xCoreSDK controller readback values. Zero inertia is retained as observed controller state and is not physical/CAD validation. These values do not authorize automatic reference-trajectory execution.\"\r\n  },\r\n  \"workspace_base_m\": {\r\n    \"min\": [0.0, -0.15, 0.1],\r\n    \"max\": [1.0, 1.0, 1.2]\r\n  },\r\n  \"limits\": {\r\n    \"max_tcp_speed_m_s\": 1.0,\r\n    \"max_tcp_acceleration_m_s2\": 2.0,\r\n    \"max_contact_force_n\": 100.0,\r\n    \"max_contact_torque_nm\": 200.0,\r\n    \"hip_safe_range_deg\": [0.0, 160.0],\r\n    \"knee_safe_range_deg\": [0.0, 160.0],\r\n    \"executable_guard_range_deg_with_15deg_calibration_margin\": [15.0, 145.0]\r\n  },\r\n  \"leg_axes\": {\r\n    \"axis1_enable_allowed\": true,\r\n    \"axis4_enable_allowed\": true,\r\n    \"axis1_capture_torque_limit_nm\": 100.0,\r\n    \"axis4_capture_torque_limit_nm\": 100.0,\r\n    \"hip_torque_positive_direction\": \"extension\",\r\n    \"knee_torque_positive_direction\": \"flexion\"\r\n  },\r\n  \"declared_checks\": {\r\n    \"collision_and_emergency_stop_verified\": true,\r\n    \"active_tool_workpiece_payload_match_controller\": false,\r\n    \"controller_payload_readback_matches_temporary_debug_values\": true\r\n  },\r\n  \"device_notes\": {\r\n    \"robot_brand\": \"ROKAE\",\r\n    \"pendant_label\": \"XMC12-R1300\",\r\n    \"exact_nameplate_model_verified\": false,\r\n    \"twincat_version\": \"3 Build 4024.75\",\r\n    \"axis1_mapping\": \"NC Axis 1 -> EtherCAT Drive 1\",\r\n    \"axis4_mapping\": \"NC Axis 4 -> EtherCAT Drive 4\",\r\n    \"drive_engineering_label\": \"TC600E TR CoE Drive\",\r\n    \"output_torque_candidate_object\": \"0x3C1A\",\r\n    \"output_torque_unit\": \"N.m\",\r\n    \"pdo_correspondence_verified\": true\r\n  },\r\n  \"rehab_frame_in_robot_base\": {\r\n    \"x_axis\": [1.0, 0.0, 0.0],\r\n    \"z_axis\": [0.0, 0.0, 1.0],\r\n    \"submitted_by\": \"jacey\",\r\n    \"submitted_on\": \"2026-10-17\"\r\n  },\r\n  \"joint_soft_limits_candidate_deg\": {\r\n    \"J1\": [-360.0, 360.0],\r\n    \"J2\": [-135.0, 135.0],\r\n    \"J3\": [-170.0, 140.0],\r\n    \"J4\": [-360.0, 360.0],\r\n    \"J5\": [-360.0, 360.0],\r\n    \"J6\": [-360.0, 360.0],\r\n    \"active_state_confirmed\": false,\r\n    \"source\": \"teach pendant display values submitted by jacey\"\r\n  },\r\n  \"realtime_candidates_not_reviewed\": {\r\n    \"filter_hz\": 50.0,\r\n    \"network_tolerance_percent\": 20.0,\r\n    \"source\": \"repository legacy compatibility defaults and vendor examples; SDK has setter only and no confirmed live readback\",\r\n    \"approved_for_execution\": false\r\n  },\r\n  \"execution_release\": {\r\n    \"effective\": false,\r\n    \"reason\": \"The submitted approval is retained as evidence. The temporary payload matches live controller readback, but zero inertia is not physically validated. Active tool/workobject identity, active soft limits, current RT settings, timing budgets and runtime collision-state availability remain unresolved. Only a dedicated supervised one-command commissioning jog may bypass the unavailable SDK collision query; no automatic trajectory release was generated.\"\r\n  },\r\n  \"unresolved_required_items\": [\r\n    \"physical_payload_inertia_validation\",\r\n    \"active_hmi_tool_workobject_identity\",\r\n    \"runtime_collision_state_or_equivalent_fail_safe_evidence\",\r\n    \"joint_soft_limits_active_state\",\r\n    \"reviewed_rt_filter_hz\",\r\n    \"reviewed_rt_network_tolerance_percent\",\r\n    \"motion_and_acquisition_timing_budgets\",\r\n    \"device_notes.exact_nameplate_model_verified\"\r\n  ]\r\n}\r\n",
-      "ON_SITE_REVIEW_FORM_2026-10-16.md": "# 现场标定与安全签认表（2026-10-16）\r\n\r\n此表只记录证据，不自动授权运动。所有签名和物理数值必须由现场人员测量、确认并填写；完成前配置中的 `reviewed/passed` 保持 `false`。\r\n\r\n## 2026-10-17 操作员提交的动态运动授权声明\r\n\r\n- 项目状态（提交原文）：**批准动态运动**\r\n- 安装编号：`01`\r\n- 操作员/安全审核人：`jacey`（依据此前“我就是安全员”的声明登记）\r\n- 审核有效期：`2027-10-31T23:59:59+08:00`（jacey于2026-10-18确认）\r\n- 工具：`自制 3D 打印末端牵引工具（直接安装法兰）`\r\n- 工件：`TCHL 关节模组假腿组件`\r\n- 临时调试负载质量：`1.085 kg`（2026-10-18 SDK读回值）\r\n- 临时调试负载质心：`[0, 0, 0.100] m`\r\n- 临时调试惯量：`[0, 0, 0] kg·m²`（仅记录控制器现状，未作物理验证）\r\n- TCP速度/加速度上限：`1.0 m/s` / `2.0 m/s²`\r\n- 接触力/力矩上限：`100 N` / `200 N·m`\r\n- 髋/膝物理允许范围（最新声明）：`0–160°` / `0–160°`；按15°标定误差，软件守卫采用`15–145°`\r\n- 轴1/轴4允许使能：`是` / `是`\r\n- 轴1/轴4采集力矩上限：`100 N·m` / `100 N·m`\r\n- 碰撞检测及急停已现场验证：`是`\r\n- 当前工具、工件、负载与控制器设置一致：`否`（2026-10-18 SDK读回质量仍为0 kg）\r\n- 运行授权结论（提交原文）：**通过**\r\n\r\n后续提交的工作空间、床面方向、髋膝力矩方向和限位显示值也已留档。2026-10-18最终按控制器SDK读回值登记临时调试负载：1.085 kg、质心`[0,0,0.100] m`、惯量全零；零惯量没有物理依据，不得外推为正式动力学验证。六轴限位生效状态仍待确认，实时参数无SDK回读，碰撞查询与事件初始状态均无效。因此执行配置继续保持 `reviewed=false`；仅专用人工监督单步调试可以使用查询豁免，本文件不构成自动轨迹放行。\r\n\r\n结构化原始声明：`REAL_ROBOT_SAFETY_DECLARATION_2026-10-17.json`；SHA-256：`CD51FBC9937F453254F63DE937EF9A056C6D9CA65CF7A312E1AB1EC3FA4ADCED`。\r\n\r\n## A. 已自动核实的事实\r\n\r\n- [x] 机器人：`XMC12-R1300-W7G3B4`\r\n- [x] 序列号：`0f98879e-e936-47a2-9c0d-f7b748a7eb86`\r\n- [x] 控制器：`3.2.1`；xCoreSDK：`0.7.0`\r\n- [x] 通信：`192.168.50.209 -> 192.168.50.103`；TCP 6666/7777，SDK 会话内 1337\r\n- [x] 只读状态：`IDLE`；状态、关节位置、TCP 位姿、软限位和内置力矩可读\r\n- [x] 50 Hz 力矩查询：498/498 有效，0 次 deadline miss，最大 1.894 ms\r\n- [x] TwinCAT ADS：`10.20.4.89.1.1:11`，200/200 次完整读取 1366 字节\r\n- [x] 四轴偏移：`0/23/46/69`；toggle：字节 1365 bit 4，观察到 92 次跳变\r\n\r\n证据：`robot_network_2026-10-16.md`、`twincat_mapping_2026-10-16.md`、`results/lab_visit/twincat_readonly_mapping_20261016.json`。\r\n\r\n## B. TwinCAT 人工映射签认\r\n\r\n- [x] 对照在线工程确认轴1=髋、轴4=膝（jacey，2026-10-17 确认）。\r\n- [x] 对照在线 PDO 确认每轴字段顺序和类型：6041/U16、6064/I32、606C/I32、6077/I16、60F4/I32、603F/U16、6061/I8、3C1A/F32（jacey，2026-10-17 确认；3C1A单位 N·m）。\r\n- [ ] 用受控、无需机器人运动的方式验证 `0x6077` 是有符号 INT16，并记录正/负方向定义。\r\n- [x] 确认当前允许的假腿使能状态：轴1 是；轴4 是（jacey，2026-10-17 声明）。\r\n- [x] 评审轴1只读采集力矩限值：100 N·m；依据：jacey，2026-10-17 声明。\r\n- [x] 评审轴4只读采集力矩限值：100 N·m；依据：jacey，2026-10-17 声明。\r\n- [ ] 评审 ADS 超时/心跳/无新样本预算并填入 `config/twincat_leg_capture.json`。\r\n\r\nTwinCAT 审核人：jacey　日期：2026-10-17　工程/Boot 版本：TwinCAT 3 Build 4024.75 / CurrentConfig.xml SHA-256 `C5D...`（完整哈希见映射证据）\r\n\r\n## C. 髋膝标定原始记录\r\n\r\n测角工具：手机　安装位置：平行小腿　零角定义：与大腿平行的参考线　安装编号：01\r\n\r\n膝标定期间大腿未固定并同时发生屈曲；jacey确认在A、B、C、A-return每一点都先以大腿平行参考线给手机重新归零，再在小腿上读数。因此30°/60°/0°按膝关节相对角记录。安全员最终采用15°最大绝对误差标准后，髋膝独立验证均通过；完整复核见 `joint_angle_calibration.md`。\r\n\r\n| 点位 | 关节 | ADS原始计数 | 实测角度/° | 方向 | 静止区间/s | 负载/支撑 | 用途 |\r\n| --- | --- | ---: | ---: | --- | ---: | --- | --- |\r\n| A | 膝 | -1312511.508（稳定段均值） | 30 | 初始点 | 3.000946–3.999874 | 当前假腿安装/负载保持 | fit |\r\n| B | 膝 | 42145.592（稳定段均值） | 60 | 屈曲 | 8.001047–8.998367 | 当前假腿安装/负载保持 | fit |\r\n| C | 膝 | -2466729.641（稳定段均值） | 0 | 伸展（由60°降至0°） | 3.000591–3.998831 | 当前假腿安装/负载保持 | validation；A/B公式预测4.439°，误差+4.439° |\r\n| A-return | 膝 | -1391645.429（稳定段均值） | 30 | 回程/屈曲 | 8.001621–8.999953 | 当前假腿安装/负载保持 | return；相对A差-79133.921 count，折算-1.752° |\r\n| H1 | 髋 | -135641.392（稳定段均值） | 10 | 屈曲 | 9.000990–9.999570 | 当前假腿安装/负载保持 | validation；旧公式预测14.651°，误差+4.651° |\r\n| H1-return | 髋 | -135640.366（稳定段均值） | 10 | 回程/屈曲 | 8.000366–8.998886 | 当前假腿安装/负载保持 | return；相对H1差+1.026 count，旧比例折算-0.0010° |\r\n\r\n- [x] 膝标定独立验证按15°标准通过。\r\n- [x] 髋现有两点候选独立验证按15°标准通过。\r\n- [x] 髋物理允许角范围：0 至 160°；带标定误差的软件守卫：15 至145°。\r\n- [x] 膝物理允许角范围：0 至 160°；带标定误差的软件守卫：15 至145°。\r\n- [x] 髋3C1A正值对应伸展力矩；模型以屈曲为正，因此换算符号为-1（jacey，2026-10-17声明）。\r\n- [x] 膝3C1A正值对应屈曲力矩；模型以屈曲为正，因此换算符号为+1（jacey，2026-10-17声明）。\r\n\r\n标定执行人：________　复核人：________　日期时间：________\r\n\r\n## D. 机器人安全参数\r\n\r\n| 配置字段 | 数值 | 单位 | 现场依据/规程 |\r\n| --- | ---: | --- | --- |\r\n| max_tcp_speed_m_s | 1.0 | m/s | jacey，2026-10-17 声明 |\r\n| max_tcp_acceleration_m_s2 | 2.0 | m/s² | jacey，2026-10-17 声明 |\r\n| max_start_anchor_position_error_m |  | m |  |\r\n| max_start_anchor_orientation_error_rad |  | rad |  |\r\n| max_command_lateness_s |  | s |  |\r\n| max_force_n | 100 | N | jacey，2026-10-17 声明 |\r\n| max_torque_nm | 200 | N·m | jacey，2026-10-17 声明 |\r\n| max_state_age_s |  | s |  |\r\n| max_wrench_age_s |  | s |  |\r\n| max_state_wrench_skew_s |  | s |  |\r\n| workspace_min_base_m | [0, -0.150, 0.100] | m | jacey，2026-10-17声明 |\r\n| workspace_max_base_m | [1.000, 1.000, 1.200] | m | jacey，2026-10-17声明 |\r\n\r\n工具名称：自制 3D 打印末端牵引工具（直接安装法兰）　工件名称：TCHL 关节模组假腿组件　临时调试负载质量：1.085 kg\r\n\r\n控制器SDK读回负载质心 `[0,0,0.100] m`、惯量 `[0,0,0] kg·m²`。这组值已写入临时调试配置并能与SDK读回匹配；零惯量只表示控制器当前设置，不是实体工具与假腿的物理惯量证明。\r\n\r\n康复床 +x 在 Base：`[1,0,0]`　康复床 +z 在 Base：`[0,0,1]`（jacey，2026-10-17提交并评审）\r\n\r\n- [x] 当前 HMI 激活工具/工件与以上名称一致（jacey，2026-10-17 声明）。\r\n- [x] 临时调试负载质量、质心和惯量与2026-10-18 SDK读回一致；物理惯量验证仍未完成。\r\n- [ ] 关节软限位显示值已记录但生效状态待确认：J1 [-360,360]°、J2 [-135,135]°、J3 [-170,140]°、J4/J5/J6 [-360,360]°。\r\n- [x] 碰撞检测配置和停止行为已按现场规程验证（jacey，2026-10-17 声明）；硬件保护继续启用。\r\n- [ ] SDK碰撞状态查询或等效的上层可观测失效停机信号有效；2026-10-18查询无效，不能取消该失效停机门禁。\r\n- [x] 急停/保护停止/人工停止方式已演练，操作员可立即停止（按“急停已现场验证”声明登记）。\r\n- [ ] 实时滤波频率和网络容差已由负责人评审。仓库旧兼容默认/厂家示例为50 Hz/20%，但SDK只有setter、无当前值readback；不得据此自动签认。\r\n\r\n## E. 时序与采集预算\r\n\r\n| 项目 | 实测值 | 评审上限 | 证据文件 |\r\n| --- | ---: | ---: | --- |\r\n| wrench查询耗时 | mean 0.995 ms；p99 1.731 ms；max 1.894 ms |  | `wrench_query_timing_20261016T143911Z.json` |\r\n| 状态年龄 | mean 7.98 ms；p99 8.68 ms；max 9.36 ms |  | `rt_state_timing_20261016T144000Z.json` |\r\n| ADS读取耗时 | mean 1.165 ms；p95 2.053 ms；max 2.193 ms |  | `twincat_readonly_mapping_20261016.json` |\r\n| 传感器接收延迟 |  |  |  |\r\n| 命令应用延迟 |  |  |  |\r\n| 跨设备时间偏差 |  |  |  |\r\n\r\n## F. 最终签认\r\n\r\n安装编号：01　操作员：jacey　安全审核人：jacey（依据本人安全员声明）\r\n\r\n工具/工件审核：________　标定审核：________　实时与网络审核：________\r\n\r\n审核日期：2026-10-17；机器可校验有效期：`2027-10-31T23:59:59+08:00`（2026-10-18确认）\r\n\r\n- [ ] 所有原始证据已保存并计算 SHA-256。\r\n- [ ] 所有配置值均来自本次现场测量或明确规程，没有从历史值猜测。\r\n- [ ] 只有完成独立复核后，才人工更新对应配置并设置 `reviewed=true`。\r\n\r\n",
-      "OFFLINE_EMPTY_LOAD_REVIEW_2026-10-19.md": "# 2026-10-18空载尝试：离线复核与修复\n\n复核日期：2026-10-19。本轮未连接控制器、上电、启动RT循环或发送运动目标；未改写现场预算、碰撞豁免、标定或既有签认文件。\n\n## 结论\n\n贴出的日志停在准备第四次尝试，仓库实际上已经保存第四次结果（retry3）。最后的native_start_ns计时修复已生效，但第四次仍因真实采集新鲜度不足而失败。不能用前三次的解释继续声称第四次也是原生查询计时误判。\n\n四次trajectory_command.csv均为零条数据记录。零记录本身不能独立证明物理下电、没有任何运动或SDK侧从未发送目标；这些需要结合当时控制器和执行链记录，不能由本轮离线分析推断当前机器人状态。\n\n| 尝试 | 原始记录说明 |\n| --- | --- |\n| 初次 | 第二会话要求idle，与取得RT控制器后的rtControlling状态语义冲突；有状态新鲜度及清理ACK故障 |\n| retry1 | query_pending_too_long、日志背压、清理ACK超时；未形成完整查询结果，不能推算厂家调用耗时 |\n| retry2 | query_pending_too_long、清理ACK超时；未形成完整查询结果，不能推算厂家调用耗时 |\n| retry3 | 已完成一次查询；随后wrench_sample_stale_or_clock_invalid、state_freshness_failure及清理ACK超时 |\n\n第四次的第一条查询：\n\n- 从查询意图到原生调用前计时标记：112.0825 ms，包含审计等待及调度。\n- 原生调用外包围区间：0.9443 ms，包含Python包装开销，不能当作厂家内部精确执行时间。\n- 查询完成到该记录持久化：53.6858 ms，包含IPC、父进程调度、排队和刷盘，不能全部归因于磁盘。\n- 监督器记录ACK时，样本年龄约69.99485 ms，已经超过现场50 ms预算。\n\n因此这条记录说明：SDK查询本身很快，结果进入可用且可追溯的采集链时已经过期。状态不新鲜的原因尚不能从这一条记录断言；仍需现场同步检查状态接收、GIL/线程调度与日志负载。现有历史诊断也出现过真正的长SDK查询，不能由这一次短查询排除厂家长阻塞。\n\n## 本轮软件修复\n\n1. 已结束查询也核对真实起止区间。此前若查询在两次监督轮询之间超时并结束，共享内存已被完成结果覆盖，仅检查in-progress标记会漏判。\n2. 已完成的fsync按实际durable_ns判定日志预算。此前仅在写盘未完成时检查，监督器再次得到调度时可能漏过已结束的超时写盘；及时完成的写盘也不会因父进程稍晚轮询而被误算超时。\n3. 合并已经排队的审计记录共享一次fsync。保持原有顺序，不等待凑批，每个ticket仍在实际fsync后才确认，批次写入失败则全部不确认。此优化降低重复刷盘开销，不承诺现场一定达标。\n4. 清理结果要求断连已被确认，且无已锁存故障。修正历史日志中携带failure_latch却声称NORMAL_CLEANUP=true的矛盾；返回结果包含关闭审计时新增的故障。审计中的CLEANUP_OUTCOME记录在关闭审计前生成，audit_closed只能由最终返回结果确认。\n5. 启动等待一旦发现不可恢复的故障锁存立即返回，进入既有清理流程，不再为一个已经不可能恢复的启动等待满3秒。\n6. 增加纯离线审计工具scripts/audit_empty_load_attempts.py，逐次输出命令记录数、各阶段耗时、故障、清理矛盾和来源SHA-256，不导入SDK、不生成发布、不重写原始记录。\n7. 补齐本机跨进程的一次性领取。既有single_cycle只限制单次执行器的周期数；现在加载时拒绝已领取发布，首次命令意图写入前，以发布SHA-256为键独占创建results/commissioning_release_uses下的持久记录，刷盘后才能继续。多个进程竞争只有一个成功。领取后发生故障、崩溃或写盘异常均保守视为已经使用，不自动删除凭据或回收重试。领取前的预检失败不消耗发布。此记录限本机同一仓库，不能作为多电脑分布式核销保证，也不能在迁移时丢弃；不得删除凭据后重用旧发布。\n\n## 验证\n\n170项相关测试通过（169项组合回归，加1项新增独立进程竞争测试）：新增的时钟边界、完成后超时、及时/延迟刷盘、批次落盘与失败、断连确认、启动故障立即返回、发布重复领取/并发竞争/领取写盘故障/首次命令前集成，以及已有生产力进程、采集尾段、采集器、执行器、实验入口、发布流程和静止采集回归。没有执行全仓库测试或硬件测试。\n\n实际四次数据的可复算输出：results/empty_load_attempt_audit_20261019.json，包含12个来源文件的SHA-256。\n\n复算命令（在D:\\rehab_robot执行，输出文件必须不存在）：\n\n```powershell\n.\\.venv\\Scripts\\python.exe -X utf8 -m scripts.audit_empty_load_attempts --input-root results/empty_load_reference_round --output results/empty_load_attempt_audit_new.json\n```\n\n## 仍需完成的现场验证\n\n1. 先验证不启动轨迹的生产采集链：状态/力的新鲜度、对齐、审计队列和清理过程在原25/50/40 ms及100 ms预算下能否同时成立。RT准备可能改变模式和上电，不属于无副作用的只读操作；应按既有现场流程执行。\n2. 通过数据说明优化后每个阶段耗时，而不是仅看allowed=true或平均查询时间。若仍超限，定位状态接收、GIL/调度、IPC或存储；不能把待确认结果提前标成可用来绕过审计。\n3. 本轮修改了受发布哈希绑定的采集代码，旧commissioning_release不能沿用，不得手工更新哈希冒充原签认覆盖新代码。新的现场发布必须按既有流程生成并重新复核。\n4. 一次性领取规则已经补齐并离线验证。新现场发布必须明确此保守规则：领取后即使未发出目标，也不能自动再次使用；现场留存领取凭据及失败证据，不能通过清目录继续复用旧发布。本轮未生成任何真实领取凭据或新签认。\n5. 通过上述检查后，再依据现场有效发布安排一次空载回合。当前结论是离线缺陷已修复，现场运动仍未验收通过。\n",
-      "joint_angle_calibration.md": "# 假腿关节角标定证据（15°精度标准通过，2026-10-17）\r\n\r\n## 膝关节初始两点公式（已被九点公式取代）\r\n\r\n状态：该初始两点公式未通过当时的严格判据。原始点和静止区间均已保存；它不再作为正式候选，正式候选见后文九点扫描公式。\r\n\r\n- 测角工具：手机\r\n- 安装位置：平行小腿\r\n- 零角定义：与大腿平行的参考线\r\n- 大腿状态：未固定，并在膝标定过程中同时发生屈曲。\r\n- 测量方法确认：jacey确认在A、B、C、A-return每一点都先以大腿平行参考线给手机重新归零，再在小腿上读数。因此本轮手机读数按膝关节相对角处理。\r\n\r\n| 点 | 用途 | 手机实测/° | 稳定段均值/count | A/B公式预测/° | 误差/° |\r\n| --- | --- | ---: | ---: | ---: | ---: |\r\n| A | fit | 30 | -1312511.508 | 30.000 | 0（拟合内） |\r\n| B | fit | 60 | 42145.592 | 60.000 | 0（拟合内） |\r\n| C | validation | 0 | -2466729.641 | 4.439 | +4.439 |\r\n| A-return | return | 30 | -1391645.429 | 28.248 | -1.752 |\r\n\r\n两点暂定公式：\r\n\r\n```text\r\nknee_angle_deg = (axis4_position_raw + 2667168.608356345) / 45155.236677473906\r\n```\r\n\r\n同角度往返差：`-79133.921 count`，按暂定比例为 `-1.752°`。A/B两点误差接近零是两点拟合的必然结果，不是独立精度证据。\r\n\r\n## 髋关节阶段结论\r\n\r\n旧髋候选公式在新的独立10°点误差为4.651°，按最终15°标准通过：\r\n\r\n- 测角工具：手机\r\n- 安装位置：平行大腿\r\n- 零角参考：平行地面\r\n- 调整方向：屈曲\r\n- 有效静止区间：`9.000990–9.999570 s`\r\n- ADS计数均值：`-135641.392`\r\n- 手机实测：`10°`\r\n- 旧公式预测：`14.651°`\r\n- 独立误差：`+4.651°`\r\n\r\n同角度回程结果：\r\n\r\n- H1-return手机实测：`10°`\r\n- H1-return计数均值：`-135640.366`\r\n- 相对H1计数差：`+1.026 count`\r\n- 按旧比例折算的同角度差：`-0.0010°`\r\n- 旧公式对H1-return仍预测：`14.650°`，误差 `+4.650°`\r\n\r\n回程重复性很好，绝对误差约4.65°。该误差在安全员最终确认的15°精度标准内，因此髋公式的本轮独立验证通过；它不改变仍需单独评审的运动范围和安全裕量。\r\n\r\n来源：\r\n\r\n- `results/lab_visit/points_20261017.json`\r\n- `results/lab_visit/calibration_knee_ABCAreturn_20261017.json`\r\n- `results/lab_visit/calibration_knee_and_hip_validation_20261017.json`\r\n- `results/lab_visit/calibration_knee_hip_complete_20261017.json`\r\n- 四个对应采集目录内的原始 `leg.csv`、`quality.json` 和 `segment_status.json`\r\n\r\n本文件只证明髋、膝角度换算在安全员确认的最大绝对误差15°标准下通过，不授权任何运动。本阶段结束时允许运动范围、边界安全裕量和力矩符号尚未验证，后续确认见文末。\r\n\r\n## 膝关节双向九点扫描\r\n\r\n扫描序列：`0→15→30→45→60→45→30→15→0°`。每点均重新以大腿平行参考线给手机归零，取得独立角度后进行10秒只读ADS采集；九个点均找到满足本轮范围、斜率和10 ms最大间隔筛查的静止子区间。\r\n\r\n| 指标 | 屈曲 | 伸展 |\r\n| --- | ---: | ---: |\r\n| 全局线性斜率/count·deg⁻¹ | 36460.642 | 36423.752 |\r\n| 零位/count | -2625656.472 | -2593821.442 |\r\n| R² | 0.998193 | 0.997214 |\r\n| 角度RMSE/° | 0.903 | 1.121 |\r\n| 最大绝对角度残差/° | 1.668 | 1.972 |\r\n\r\n同角度伸展减屈曲差：0°为 `+0.460°`、15°为 `+2.016°`、30°为 `-1.044°`、45°为 `+2.784°`（使用双方向全局斜率均值折算）。局部分段斜率范围为 `28185.6–42829.4 count/°`。\r\n\r\n方向差正负不一致，不能仅凭这一轮认定为机械回差；它可能同时包含逐点手机放置/归零误差。最终采用安全员评审的15°最大绝对误差标准，并选择后文单一直线作为冻结候选；方向分离直线和分段曲线未获批准。\r\n\r\n扫描清单及完整数值：`results/lab_visit/knee_sweep_20261017.json`。\r\n\r\n## 安全员最终确认 15° 容差后的复核\r\n\r\n安全员 jacey 于 2026-10-17 最终明确确认关节角度标定允许的最大绝对误差为15°（取代此前3°和5°记录）。按九点扫描冻结单一直线膝候选公式：\r\n\r\n```text\r\nknee_angle_deg = (axis4_position_raw + 2615016.5409129467) / 36794.035628458296\r\n```\r\n\r\n九个参与拟合的扫描点 RMSE 为 1.078°、最大绝对残差为 2.075°，但这是拟合内结果，不能作为独立验证。用未参与该扫描拟合的既有四次观测复核，误差如下：\r\n\r\n| 独立观测 | 实测/° | 预测/° | 误差/° | 15°判定 |\r\n| --- | ---: | ---: | ---: | --- |\r\n| knee_A | 30 | 35.400 | +5.400 | 通过 |\r\n| knee_B | 60 | 72.217 | +12.217 | 通过 |\r\n| knee_C_validation | 0 | 4.030 | +4.030 | 通过 |\r\n| knee_A_return | 30 | 33.249 | +3.249 | 通过 |\r\n\r\n四个既有独立观测的最大绝对误差为12.217°，全部满足15°标准；髋独立点误差4.651°也满足该标准。因此角度换算验证批准，`joint_angle_calibration.passed` 可设为 `true`。正式标定文件已写入冻结膝公式并将 `independent_validation_passed` 设为 `true`；当时允许运动范围的误差裕量及两个关节的力矩符号尚未确认，后续确认见下一节。\r\n\r\n## 最终角度守卫与力矩符号\r\n\r\njacey 于2026-10-17进一步声明髋、膝物理允许角范围均为0–160°，髋3C1A正值对应伸展力矩，膝3C1A正值对应屈曲力矩。项目逆动力学坐标以屈曲为正，因此正式换算采用：\r\n\r\n- 髋 `torque_sign_to_inverse_dynamics = -1`\r\n- 膝 `torque_sign_to_inverse_dynamics = +1`\r\n\r\n考虑已接受的最大15°角度标定误差，正式软件角度守卫不直接使用物理端点，而收窄为髋、膝均15–145°。当前固定参考髋约28.91–112.03°、膝约18.32–124.79°，落在该守卫范围内。`config/leg_joint_calibration.json` 已据此设为 `reviewed=true`；这只批准假腿角度/力矩符号转换和守卫范围，不授权机器人运动。\r\n",
-      "HANDOVER_2026-10-18.md": "# 现场交接（2026-10-18）\r\n\r\n## 本次完成\r\n\r\n- 在正常Windows网络权限下确认xCoreSDK可连接机器人`192.168.50.103`；此前错误256和端口关闭是受限命令环境造成的假阴性。\r\n- 只读确认机器人型号`XMC12-R1300-W7G3B4`、序列号`0f98879e-e936-47a2-9c0d-f7b748a7eb86`、控制器3.2.1、xCoreSDK 0.7.0、六轴软限位以及控制器负载1.085 kg、质心`[0,0,0.100] m`、惯量`[0,0,0] kg·m²`。\r\n- 修复项目中`perf_counter`时间戳与`monotonic`检查时钟混用导致的“数据来自未来”误判。\r\n- 在操作员确认静止、无人接触后完成会话软件力偏置。\r\n- 完成Base +X和Base +Z两个不共线方向的轻推检查，主响应轴和正号均与预期一致；当前机器人/工具安装的world到Base旋转已标记为验证通过。\r\n- 方向门禁解除后完成10秒状态/力快照复核：409/454组按旧20 ms skew门限有效。\r\n- 完成30秒力查询复测：1430次查询，正常P99 1.875 ms，但观测到239.844 ms和311.986 ms长阻塞。\r\n- 安全员jacey批准临时调试时序预算：启动5 s、查询50 ms、进度250 ms、力年龄50 ms、状态年龄25 ms、skew 40 ms、审计确认/日志各100 ms、关闭/终止各1 s；超限立即停止；范围仅限现场监督下、无人体受试者的假腿采集，不训练。\r\n\r\n## 当前阻断\r\n\r\n- 本次未执行机器人运动，因此没有生成`results/robot_leg_round`会话目录或运动CSV。\r\n- SDK碰撞主动查询仍返回错误259；事件订阅可注册，但未收到初始事件，状态为`safety_event_initial_state_unknown`。专用临时调试策略可以记录该不可观测性，但自动参考轨迹的正式门禁尚未因此整体通过。\r\n- 30秒诊断证实SDK力查询存在偶发239--312 ms阻塞；正式采集必须使用独立力查询进程和已批准的50 ms超限故障锁存，不能在轨迹控制线程内同步查询。\r\n- 尚未完成基于独立进程的10秒真实live observation采集，也未完成机器人状态/力与TwinCAT ADS的同轮并行采集。\r\n- `experiment_safety.json`整体仍为`reviewed=false`：起点位置/姿态容差、命令延迟、活动HMI工具/工件身份、RT滤波和network tolerance等运动参数仍未全部闭环。\r\n- 工作区内未发现现场相机照片或`photos/`目录；备份中会保存缺失说明，不以分析图代替现场照片。\r\n\r\n## 错误与发生时间（Asia/Shanghai）\r\n\r\n- 约17:00、17:05：受限命令环境下SDK连接错误256、0样本；后续证明是假阴性，保留原始失败记录。\r\n- 约17:12：真实SDK连接成功，但`queryEventInfo(safety)`返回错误259；事件订阅初始状态未知。\r\n- 17:21快照：一组力年龄255.663 ms、skew 247.661 ms，另有一组力年龄63.324 ms、skew 55.296 ms。\r\n- 17:22的30秒力查询：两次长查询239.844 ms和311.986 ms，5次20 ms调度期限违约。\r\n\r\n## 设备最终状态\r\n\r\n- 最后一次只读诊断正常结束并断开SDK会话。\r\n- 诊断期间观测到机器人`operation_state=IDLE`。\r\n- 本次没有由项目发送上电、断电、模式切换或运动命令。\r\n- 会话软件力偏置随诊断进程结束而失效，下一次live采集必须在静止、无人接触条件下重新执行。\r\n\r\n## 下次最先做\r\n\r\n1. 保持无人、假腿、只采集、不训练；操作员持急停，确认机器人/工具/假腿静止且无人接触。\r\n2. 使用`config/live_observation_acquisition_20261018.json`启动10秒独立进程live observation采集，不发运动。\r\n3. 检查故障锁存、心跳、状态/力年龄和skew；若出现超过批准预算的SDK阻塞，确认上层立即停止且原始失败记录完整保存。\r\n4. live observation通过后，再做机器人状态/力与TwinCAT ADS同轮并行采集和时间对齐；仍不进入训练。\r\n\r\n## 关键原始证据\r\n\r\n- `diagnostics/rt_state_timing_20261018T090859Z.json`\r\n- `diagnostics/snapshot_alignment_20261018T092141Z.json`\r\n- `diagnostics/wrench_query_timing_20261018T092232Z.json`\r\n- `diagnostics/wrench_frame_rotation_20261018T091752Z.json`\r\n- `diagnostics/wrench_frame_rotation_20261018T091939Z.json`\r\n- `site_evidence/reference_commissioning_gate_attempt_2026-10-18.md`\r\n- `results/lab_visit/`\r\n\r\n## 备份结果\r\n\r\n- 备份目录：`backups/lab_handover_20261018_172714/`。\r\n- 便携归档：`backups/lab_handover_20261018_172714.zip`。\r\n- ZIP SHA-256：`0ebcbe13bcd3185aca7615e1ce9295222e3fa6363f192cdbfdbad8ab0a9e9178`。\r\n- 目录清单：168个数据文件，116,516,730字节；另含`manifest.json`、`SHA256SUMS.txt`和缺失项说明。\r\n- `results/lab_visit`原始CSV：23个；源文件与备份逐一比较，哈希不匹配为0。\r\n- `results/robot_leg_round`：未创建，因为本次未执行机器人运动。\r\n- 现场照片：工作区内未找到，未用分析图代替；需由操作员从相机/手机另行补入后制作增量备份。\r\n",
-      "empty_load_reference_preflight_2026-10-18.md": "# 空载参考轨迹预检记录（2026-10-18）\r\n\r\n## 本次物理范围\r\n\r\n- 机器人：ROKAE XMC12-R1300-W7G3B4\r\n- 机器人序列号：`0f98879e-e936-47a2-9c0d-f7b748a7eb86`\r\n- 当前末端：法兰夹具保留，未安装假腿，无人体受试者\r\n- 控制器 SDK 负载读回：质量 `1.085 kg`，质心 `[0, 0, 0.100] m`，惯量 `[0, 0, 0] kg·m²`\r\n- 本次未发送上电、模式切换、使能或运动命令\r\n\r\n## 只读状态\r\n\r\n- SDK 连接成功，控制器版本 `3.2.1`，SDK `0.7.0`\r\n- 状态：`IDLE`\r\n- `operator_powered=false`\r\n- 六轴软限位可读且与此前记录一致\r\n- SDK 碰撞主动查询仍返回错误 259，不能证明当前“无碰撞”\r\n\r\n## 当前起点\r\n\r\n- 起点文件：`../results/empty_load_preflight_20261018_173808_265/anchor.json`\r\n- 起点 ID：`empty_load_fixture_20261018_173808_265`\r\n- TCP Base 位置：`[0.7378495541, -0.0431018139, 0.4358238542] m`\r\n- 起点仅由只读状态流取得，尚未人工评审，因此 `reviewed=false`\r\n\r\n## 原始 24 秒参考轨迹\r\n\r\n- 文件：`../reference_release/reference_measured_asymmetric_closed_slow.csv`\r\n- SHA-256：`f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881`\r\n- 时长：`24 s`\r\n- 当前起点下 TCP 峰值速度：约 `0.165419 m/s`\r\n- 当前起点下 TCP 峰值加速度：约 `0.116580 m/s²`\r\n- 发布清单仍明确记录 `approved_for_first_robot_trial=false`、`robot_execution_status=NO_GO`\r\n- 结论：不得直接下发。\r\n\r\n## 临时等几何降速副本\r\n\r\n- 文件：`../results/reference_commissioning/formal_reference_temp_20261018/commissioning_reference.csv`\r\n- SHA-256：`892da699b9afd0f57b8e77a5fa1c9b8da6069599515f7e2c24fec6b064b3b945`\r\n- 时长：`132.335441 s`\r\n- 当前起点下 TCP 峰值速度：`0.030000 m/s`\r\n- 当前起点下 TCP 峰值加速度：约 `0.003834 m/s²`\r\n- Base 工作空间包络：X `[0.211153, 0.738269] m`，Y `-0.043102 m`，Z `[0.434531, 0.529231] m`\r\n- 包络位于已登记工作空间 X `[0, 1.000] m`、Y `[-0.150, 1.000] m`、Z `[0.100, 1.200] m` 内\r\n- 预览：`../results/empty_load_preflight_20261018_173808_265/preview_retimed/`\r\n- 几何、闭合、有限值和离线轨迹检查通过，但该副本仍为 `PREPARED_NOT_AUTHORIZED`，现有正式执行器也未绑定该 SHA-256。\r\n\r\n## 结论\r\n\r\n本次没有开始运动。阻断原因不是网络：机器人可连接。当前阻断为机器人未上电、起点未评审、碰撞状态不可观测、空载夹具负载身份尚未由控制器/HMI活动项核对，以及降速副本尚无有效空载发布批准。不得用原始 24 秒 `NO_GO` 轨迹或修改标志绕过这些条件。\r\n\r\n## 待签认包\r\n\r\n- 签认请求：`../results/empty_load_preflight_20261018_173808_265/review_request.json`\r\n- 请求文件 SHA-256：`c38dd96f4cad8d6c00a0941dc8a90e8454f8d2940dc97e4ace0d472733d64676`\r\n- 空载安全草稿：`../config/empty_load_commissioning_safety_20261018.json`\r\n- 空载采集草稿：`../config/empty_load_live_observation_20261018.json`\r\n- 签认前两份配置均保持 `reviewed=false`，不会形成运动授权。\r\n",
-      "COLLISION_EVENT_INTERFACE_2026-10-19.md": "# 碰撞状态替代接口与验证入口\n\n日期：2026-10-19。本轮仅修改离线工具并执行假SDK测试，没有连接机器人。\n\n## 采用的接口\n\n采用项目已有的collision_source=events模式，通过厂家setEventWatcher(Event.safety, callback, ec)接收collided布尔值，避开queryEventInfo(Event.safety, ec)主动查询路径。实现位于hardware/windows/rokae_xcore.py和hardware/safety_events.py，适配器、实验入口及执行器已有对应接入。\n\n接口存在不代表这台控制器已经返回有效数据。此前现场注册成功但未收到初始事件，因此不能声称本轮已经消除了现场阻断。SDK没有在本地接口说明中保证初始快照或周期心跳；事件静默不能当作无碰撞。当前缓存会保持未知、过期和碰撞锁存的阻断行为，不把powerState、operationState、历史日志或普通外力阈值当作同等碰撞观测源。\n\n## 新增工具\n\nscripts/diagnose_collision_events.py连接后使用上述事件模式，周期读取本地回调缓存并保存JSON。它不调用主动安全查询，不选择实时控制模式，不上电，不复位，不改变碰撞保护配置，不发送运动目标。连接、状态订阅和断开仍是实际SDK会话操作，不宣称完全无控制器副作用。\n\n记录包括：设备身份、状态序号、碰撞布尔值和锁存、接收时间、年龄、过期原因、异常及断连后失效状态。它采样的是缓存，不是完整原始回调日志，可能跳过两次采样之间的中间事件。碰撞锁存由已有监视器保留。\n\n在实验电脑仓库目录使用（以下0.2秒仅为诊断观测值，不是新运动预算或签认）：\n\n```powershell\n.\\.venv\\Scripts\\python.exe -X utf8 -m scripts.diagnose_collision_events --robot-ip 192.168.50.103 --local-ip 192.168.50.209 --duration-s 10 --max-age-s 0.2 --output diagnostics/collision_events_probe_new.json\n```\n\n使用实验电脑实际Python路径和网卡IP；输出文件必须不存在。此命令本轮没有执行。不要为了刷新事件触发真实碰撞，也不要直接运行包含保护开关或复位的厂家完整示例。\n\n## 如何解读\n\n- observed_event_count=0、initial_state_unknown：未取得状态，不能用于启动运动。\n- observed_clear=true但final_status_valid=false：曾收到无碰撞消息，后来失效，不能当成持续有效。\n- observed_collision=true：已收到碰撞证据；后续false不会自动清掉锁存。\n- 最终状态有效且断连确认：仅说明该诊断窗口末端的观测有效，不证明整个132秒轨迹或训练期间持续有效。\n- 退出码0只表示末端状态有效、未观测到碰撞且会话清理无报告错误；所有结果的execution_authorized始终为false。\n\n## 接入发布的限制\n\n现有正式实验入口支持--collision-source events和显式的--collision-event-max-age-s。但现场批准的空载259豁免发布绑定query来源，不能直接拿来运行events模式。需要先取得真实数据并确认是否能满足所需观察时长，再按既有发布流程绑定相同来源与参数。未修改默认来源、已签认配置或豁免范围。\n\n如果事件始终无初始状态，或仅在状态变化时通知而无法满足当前新鲜度契约，该接口仍不能承担当前门禁；需要另一个经过验证的当前安全状态输入，不能默认false或通过重订阅清除故障。\n\n## 验证\n\n82项相关测试通过：新增诊断、既有安全事件生命周期、机器人适配器、实验入口及轨迹执行器。覆盖无初始状态、正常事件、过期、碰撞锁存、断连、注册失败、参数错误和防覆盖。未做硬件验证。\n",
-      "acquisition_stability.md": "# TwinCAT 静止真实采集证据（2026-10-17）\r\n\r\n## 结论\r\n\r\n- 三段只读 ADS 采集均为 `CAPTURE_COMPLETE`，CSV已正常关闭并计算 SHA-256。\r\n- `motion_commanded=false`；轴1/轴4全程 `operation_enabled=false`、`fault=false`、错误码 `0x0000`。\r\n- 静止姿态保持良好，力矩首尾变化很小，无自动去零。\r\n- 采集链路可用，但本次**不签为 acquisition_stability passed**：实际频率约 486.76–488.20 Hz，三段均存在超过4 ms的主机接收间隔，最坏间隔 39.1875 ms。主机时序缺口估算不是设备确切丢帧数。\r\n\r\n## 配置与门禁\r\n\r\n- 配置：`config/twincat_leg_capture.json`\r\n- 配置 SHA-256：`433F41E2B1B664B37C95E352035275D720A9EA5A6BF506272D8E263AD7DBF30C`\r\n- 采集方法：`ADS_READ_ONLY_SINGLE_INPUT_IMAGE`\r\n- 四轴来自同一1366字节过程映像；设备级同步时序仍未验证。\r\n- 轴1/轴4预期状态：未使能；3C1A绝对值保护：各100 N·m。\r\n- 三个 `capture_stderr.log` 均为空。\r\n\r\n## 结果\r\n\r\n| 段 | 行数 | 实际频率/Hz | 间隔p99/ms | 最大间隔/ms | >4ms间隔 | 主机缺口估算 | 读取p99/ms | 最大读取/ms | 重复时间 |\r\n| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |\r\n| 10 s | 4,887 | 488.201 | 3.763 | 32.6052 | 39 | 605 | 2.091 | 31.9250 | 0 |\r\n| 30 s | 14,607 | 486.759 | 3.949 | 37.9195 | 142 | 1,738 | 2.083 | 33.4576 | 0 |\r\n| 240 s | 117,130 | 488.023 | 3.778 | 39.1875 | 935 | 14,418 | 2.082 | 35.0398 | 0 |\r\n\r\n| 段 | 髋位置范围/count | 膝位置范围/count | 髋首尾力矩变化/N·m | 膝首尾力矩变化/N·m | 髋力矩全程范围/N·m | 膝力矩全程范围/N·m |\r\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\r\n| 10 s | 23 | 11 | +0.00825 | -0.00187 | 0.51266 | 0.27769 |\r\n| 30 s | 25 | 11 | -0.01705 | -0.00318 | 0.51266 | 0.27769 |\r\n| 240 s | 29 | 12 | +0.00458 | +0.01418 | 0.58591 | 0.31737 |\r\n\r\n## 原始文件\r\n\r\n- `results/lab_visit/static_10s_20261017_143046_907/leg.csv`；SHA-256 `848079E4B8A8AB07ED1C38D28AA248890AAA71D38B0A9A6F420B7AFFABDEB3B7`\r\n- `results/lab_visit/static_30s_20261017_143106_873/leg.csv`；SHA-256 `E4FE9A34A88F30E1E6279DE17041F3B59006E2B2E84F2D584300995A340BDAA1`\r\n- `results/lab_visit/stability_240s_20261017_143202_596/leg.csv`；SHA-256 `A3926956B09B11819A5BF15197F486B895BD6D7BB87B7DB74DB516DA085BAE06`\r\n\r\n每个目录同时保存 `segment_status.json`、`quality.json` 和 `capture_stderr.log`。本证据只说明静止只读采集结果，不授权机器人或假腿运动。\r\n"
-    },
-    "empty_load_commissioning_safety_20261018": {
-      "schema_version": 3,
-      "max_tcp_speed_m_s": 0.03,
-      "max_tcp_acceleration_m_s2": 0.01,
-      "max_start_anchor_position_error_m": 0.005,
-      "max_start_anchor_orientation_error_rad": 0.05235987755982989,
-      "max_command_lateness_s": 0.02,
-      "max_force_n": 100,
-      "max_torque_nm": 200,
-      "max_state_age_s": 0.025,
-      "max_wrench_age_s": 0.05,
-      "max_state_wrench_skew_s": 0.04,
-      "workspace_min_base_m": [
-        0,
-        -0.15,
-        0.1
-      ],
-      "workspace_max_base_m": [
-        1,
-        1,
-        1.2
-      ],
-      "expected_robot_model": "XMC12-R1300-W7G3B4",
-      "expected_robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
-      "expected_controller_version": "3.2.1",
-      "reviewed_tool_name": "tool0",
-      "reviewed_workpiece_name": "wobj0",
-      "reviewed_payload_mass_kg": 1.085,
-      "reviewed_payload_cog_m": [
-        0,
-        0,
-        0.1
-      ],
-      "reviewed_payload_inertia_kg_m2": [
-        0,
-        0,
-        0
-      ],
-      "reviewed_joint_soft_limits_rad": [
-        [
-          -6.283185307179586,
-          6.283185307179586
-        ],
-        [
-          -2.356194490192345,
-          2.356194490192345
-        ],
-        [
-          -2.96705972839036,
-          2.443460952792061
-        ],
-        [
-          -6.283185307179586,
-          6.283185307179586
-        ],
-        [
-          -6.283185307179586,
-          6.283185307179586
-        ],
-        [
-          -6.283185307179586,
-          6.283185307179586
-        ]
-      ],
-      "reviewed_rt_filter_hz": 50,
-      "reviewed_rt_network_tolerance_percent": 20,
-      "robot_identity_reviewed": true,
-      "tool_workpiece_reviewed": true,
-      "payload_configuration_reviewed": true,
-      "collision_configuration_reviewed": true,
-      "joint_soft_limits_reviewed": true,
-      "realtime_configuration_reviewed": true,
-      "reviewed": true,
-      "notes": "Reviewed by on-site safety officer and operator jacey at 2026-10-18T17:45:31+08:00 for exactly one supervised empty-load commissioning cycle: flange fixture installed, no dummy leg, no human subject. The reviewer confirmed the controller payload 1.085 kg, CoG [0,0,0.100] m and inertia [0,0,0] correspond to the installed fixture, and approved start tolerances 5 mm/3 deg, command lateness 20 ms, RT filter 50 Hz and network tolerance 20%. The descriptive physical fixture is bound to SDK-listed tool0 with zero TCP offset; no external workpiece is bound to SDK-listed wobj0. The SDK cannot prove those HMI names are active, so the operator's physical/payload confirmation is the controlling evidence. The SDK collision-state query error 259 is waived only for the hash-bound 132.335 s empty-load commissioning release; controller collision protection, operator-held emergency stop, clear workspace and immediate stop on any other limit remain mandatory."
-    },
-    "empty_load_live_observation_20261018": {
-      "schema_version": 1,
-      "scope": "LIVE_OBSERVATION_ACQUISITION",
-      "reviewed": true,
-      "reviewer": "jacey",
-      "reviewed_at": "2026-10-18T17:45:31+08:00",
-      "restriction": "NO_HUMAN_SUBJECT_EMPTY_LOAD_FIXTURE_ONLY_NO_TRAINING",
-      "connection": {
-        "robot_ip": "192.168.50.103",
-        "local_ip": "192.168.50.209",
-        "robot_class": "xMateRobot"
+  "robot": {
+    "ip": "192.168.50.103",
+    "local_ip": "192.168.50.209",
+    "robot_class": "xMateRobot",
+    "collision_source": "events",
+    "collision_event_max_age_s": null
+  },
+  "motion": {
+    "max_tcp_speed_m_s": 1,
+    "max_tcp_acceleration_m_s2": 2,
+    "max_start_anchor_position_error_m": null,
+    "max_start_anchor_orientation_error_rad": null,
+    "max_command_lateness_s": null,
+    "max_force_n": 100,
+    "max_torque_nm": 200,
+    "max_state_age_s": 0.025,
+    "max_wrench_age_s": 0.05,
+    "max_state_wrench_skew_s": 0.04,
+    "workspace_min_base_m": [
+      0,
+      -0.15,
+      0.1
+    ],
+    "workspace_max_base_m": [
+      1,
+      1,
+      1.2
+    ],
+    "rt_filter_hz": null,
+    "rt_network_tolerance_percent": null
+  },
+  "leg": {
+    "clock_domain": "LOCAL_HOST_PERF_COUNTER",
+    "ams_net_id": "10.20.4.89.1.1",
+    "ads_port": 11,
+    "index_group": 50593808,
+    "index_offset": 2147483807,
+    "image_bytes": 1366,
+    "axis_offsets": [
+      0,
+      23,
+      46,
+      69
+    ],
+    "toggle_byte": 1365,
+    "toggle_bit": 4,
+    "expected_hz": 500,
+    "ads_dll_path": "hardware/windows/TcAdsDll.dll",
+    "ads_timeout_ms": 100,
+    "startup_timeout_s": 5,
+    "max_progress_age_s": 0.25,
+    "shutdown_timeout_s": 5,
+    "heartbeat_s": 0.05,
+    "no_new_sample_timeout_s": 0.1,
+    "poll_interval_s": 0.0005,
+    "guards": {
+      "axis1": {
+        "max_abs_torque_nm": 100,
+        "expected_operation_enabled": false
       },
-      "expected_identity": {
-        "robot_model": "XMC12-R1300-W7G3B4",
-        "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
-        "controller_version": "3.2.1",
-        "sdk_version": "0.7.0"
-      },
-      "allowed_power_states": [
-        "on"
-      ],
-      "allowed_operation_states": [
-        "rtcontrolling"
-      ],
-      "budgets": {
-        "startup_s": 5,
-        "query_s": 0.05,
-        "progress_s": 0.25,
-        "sample_age_s": 0.05,
-        "ack_s": 0.1,
-        "log_s": 0.1,
-        "shutdown_s": 1,
-        "terminate_s": 1,
-        "state_age_s": 0.025,
-        "skew_s": 0.04,
-        "provenance": "Explicitly approved by on-site safety officer and operator jacey at 2026-10-18T17:45:31+08:00 for one supervised fixture-only empty-load commissioning cycle, with immediate stop on any exceedance."
-      },
-      "evidence": {
-        "state_timing": "diagnostics/rt_state_timing_20261018T090859Z.json",
-        "snapshot_alignment": "diagnostics/snapshot_alignment_20261018T092141Z.json",
-        "wrench_query_timing": "diagnostics/wrench_query_timing_20261018T092232Z.json",
-        "base_x_direction": "diagnostics/wrench_frame_rotation_20261018T091752Z.json",
-        "base_z_direction": "diagnostics/wrench_frame_rotation_20261018T091939Z.json"
-      },
-      "notes": [
-        "This acquisition approval is bound separately into a one-cycle motion release; it does not independently authorize motion.",
-        "Stop immediately when any acquisition budget is exceeded.",
-        "The 30 s wrench diagnostic contained 239.844 ms and 311.986 ms stalls; the 50 ms query/sample-age budgets intentionally reject such stalls."
-      ]
-    },
-    "experiment_safety": {
-      "schema_version": 3,
-      "max_tcp_speed_m_s": 1,
-      "max_tcp_acceleration_m_s2": 2,
-      "max_start_anchor_position_error_m": null,
-      "max_start_anchor_orientation_error_rad": null,
-      "max_command_lateness_s": null,
-      "max_force_n": 100,
-      "max_torque_nm": 200,
-      "max_state_age_s": 0.025,
-      "max_wrench_age_s": 0.05,
-      "max_state_wrench_skew_s": 0.04,
-      "workspace_min_base_m": [
-        0,
-        -0.15,
-        0.1
-      ],
-      "workspace_max_base_m": [
-        1,
-        1,
-        1.2
-      ],
-      "expected_robot_model": "XMC12-R1300-W7G3B4",
-      "expected_robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
-      "expected_controller_version": "3.2.1",
-      "reviewed_tool_name": "自制 3D 打印末端牵引工具（直接安装法兰）",
-      "reviewed_workpiece_name": "TCHL 关节模组假腿组件",
-      "reviewed_payload_mass_kg": 1.085,
-      "reviewed_payload_cog_m": [
-        0,
-        0,
-        0.1
-      ],
-      "reviewed_payload_inertia_kg_m2": [
-        0,
-        0,
-        0
-      ],
-      "reviewed_joint_soft_limits_rad": null,
-      "reviewed_rt_filter_hz": null,
-      "reviewed_rt_network_tolerance_percent": null,
-      "robot_identity_reviewed": true,
-      "tool_workpiece_reviewed": true,
-      "payload_configuration_reviewed": true,
-      "collision_configuration_reviewed": true,
-      "joint_soft_limits_reviewed": true,
-      "realtime_configuration_reviewed": true,
-      "reviewed": false,
-      "notes": "Identity and payload were reconfirmed by read-only xCoreSDK on 2026-10-18. At jacey's request, the live controller values mass 1.085 kg, CoG [0,0,0.100] m and inertia [0,0,0] kg*m^2 replace the earlier 0.45 kg candidate for temporary supervised commissioning. Zero inertia is recorded as controller state, not accepted as physical/CAD validation. On 2026-10-18 jacey explicitly approved temporary dummy-leg capture timing limits: state age 0.025 s, wrench age 0.05 s and state/wrench skew 0.04 s, with immediate stop on exceedance. These timing fields are reviewed only for unattended dummy-leg capture and do not make the overall motion safety file reviewed. The SDK payload readback now matches these temporary values, but active HMI tool/workobject identity remains unverified. Controller-enforced collision protection and emergency stop must remain active. The unavailable SDK collision state may be bypassed only by the dedicated one-command supervised commissioning path; it is not waived for automatic reference-trajectory execution. Submitted joint limits remain candidates because their active state is explicitly unconfirmed. Repository defaults 50 Hz/20% are legacy candidates, not live readback. Overall reviewed remains false."
-    },
-    "formal_experiment_manifest": {
-      "schema_version": 1,
-      "rom_protocol_version": "ROM_PROTOCOL_V2",
-      "hip_rom_deg": [
-        0,
-        120
-      ],
-      "knee_rom_deg": [
-        5,
-        145
-      ],
-      "theta_shank_definition": "q_hip - q_knee",
-      "active_reference_id": "reference_measured_asymmetric_closed_slow",
-      "active_reference_parent_cycle_frames": [
-        5844,
-        5895,
-        5934
-      ],
-      "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
-      "reference_release_manifest": "reference_release/reference_release_manifest.json",
-      "scope": "formal_offline_paper_and_active_pipeline",
-      "real_robot_safety_thresholds_reviewed": true,
-      "notes": "ROM protocol approval does not approve robot motion or site-specific safety thresholds."
-    },
-    "lab_next_visit": {
-      "schema_version": 1,
-      "robot_ip": "192.168.50.103",
-      "local_ip": "192.168.50.209",
-      "leg_config": "config/twincat_leg_capture.json",
-      "round_config": "config/robot_leg_round.json",
-      "observation_wrench_config": "config/live_observation_acquisition_20261018.json",
-      "observation_wrench_hz": 50,
-      "diagnostic_duration_s": 10,
-      "diagnostic_event_max_age_s": 0.2,
-      "empty_load_max_release_lifetime_s": 1800,
-      "empty_load": {
-        "review_request": "results/empty_load_preflight_20261018_173808_265/review_request.json",
-        "release": null,
-        "reference": "results/reference_commissioning/formal_reference_temp_20261018/commissioning_reference.csv",
-        "anchor": "results/empty_load_preflight_20261018_173808_265/reviewed_anchor.json",
-        "safety_config": "config/empty_load_commissioning_safety_20261018.json",
-        "frame_config": "config/rehab_frame_config.json",
-        "wrench_config": "config/empty_load_live_observation_20261018.json"
-      },
-      "note": "Launcher configuration only, not a safety approval. Event age is diagnostic-only. Empty-load requires a separate current reviewed release; capture/training cannot inherit its 259 waiver."
-    },
-    "leg_joint_calibration": {
-      "reviewed": true,
-      "independent_validation_passed": true,
-      "joints": {
-        "hip": {
-          "counts_per_degree": 993.5884722910836,
-          "zero_counts": -121084.4218312675,
-          "flexion_sign": -1,
-          "safe_min_deg": 15,
-          "safe_max_deg": 145,
-          "torque_sign_to_inverse_dynamics": -1
-        },
-        "knee": {
-          "counts_per_degree": 36794.035628458296,
-          "zero_counts": -2615016.5409129467,
-          "flexion_sign": 1,
-          "safe_min_deg": 15,
-          "safe_max_deg": 145,
-          "torque_sign_to_inverse_dynamics": 1
-        }
-      },
-      "note": "Reviewed by jacey on 2026-10-17. Declared physical hip/knee range is 0..160 deg. The executable measured-angle guard is narrowed to 15..145 deg to preserve a 15 deg calibration-error margin. Project inverse-dynamics coordinates are flexion-positive: axis1/hip 3C1A positive was declared extension torque, hence sign -1; axis4/knee 3C1A positive was declared flexion torque, hence sign +1. This approves calibration/sign conversion only, not robot motion."
-    },
-    "leg_round_analysis": {
-      "reviewed": false,
-      "alignment_reviewed": false,
-      "sensor_receive_delay_s": null,
-      "command_application_delay_s": null,
-      "max_gap_s": null,
-      "max_read_duration_s": null,
-      "max_dispatch_time_error_s": null,
-      "derivative_rate_hz": null,
-      "derivative_window_s": null,
-      "max_start_angle_error_deg": null,
-      "max_tracking_error_deg": null,
-      "note": "Timing delays/budgets and derivative settings need measured alignment validation. No device hardware synchronization is assumed."
-    },
-    "live_observation_acquisition_20261018": {
-      "schema_version": 1,
-      "scope": "LIVE_OBSERVATION_ACQUISITION",
-      "reviewed": true,
-      "reviewer": "jacey",
-      "reviewed_at": "2026-10-18T17:27:14+08:00",
-      "restriction": "NO_HUMAN_SUBJECT_DUMMY_LEG_CAPTURE_ONLY_NO_TRAINING",
-      "connection": {
-        "robot_ip": "192.168.50.103",
-        "local_ip": "192.168.50.209",
-        "robot_class": "xMateRobot"
-      },
-      "expected_identity": {
-        "robot_model": "XMC12-R1300-W7G3B4",
-        "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
-        "controller_version": "3.2.1",
-        "sdk_version": "0.7.0"
-      },
-      "allowed_power_states": [
-        "on",
-        "off"
-      ],
-      "budgets": {
-        "startup_s": 5,
-        "query_s": 0.05,
-        "progress_s": 0.25,
-        "sample_age_s": 0.05,
-        "ack_s": 0.1,
-        "log_s": 0.1,
-        "shutdown_s": 1,
-        "terminate_s": 1,
-        "state_age_s": 0.025,
-        "skew_s": 0.04,
-        "provenance": "Safety reviewer jacey explicitly approved these temporary debugging budgets on 2026-10-18 for supervised dummy-leg capture with no human subject, with immediate stop on any exceedance. State/wrench evidence: diagnostics/rt_state_timing_20261018T090859Z.json, diagnostics/snapshot_alignment_20261018T092141Z.json, diagnostics/wrench_query_timing_20261018T092232Z.json."
-      },
-      "evidence": {
-        "state_timing": "diagnostics/rt_state_timing_20261018T090859Z.json",
-        "snapshot_alignment": "diagnostics/snapshot_alignment_20261018T092141Z.json",
-        "wrench_query_timing": "diagnostics/wrench_query_timing_20261018T092232Z.json",
-        "base_x_direction": "diagnostics/wrench_frame_rotation_20261018T091752Z.json",
-        "base_z_direction": "diagnostics/wrench_frame_rotation_20261018T091939Z.json"
-      },
-      "notes": [
-        "This approval authorizes observation/capture only and does not authorize robot motion or training.",
-        "The acquisition supervisor must latch a failure and request the upper-layer stop when any budget is exceeded.",
-        "Power state on/off is accepted only because this file is an observation configuration; any motion path must independently require the reviewed powered state.",
-        "The 30 s query diagnostic observed 239.844 ms and 311.986 ms SDK stalls; the 50 ms query and sample-age budgets deliberately reject them."
-      ]
-    },
-    "live_observation_acquisition_template": {
-      "schema_version": 1,
-      "scope": "LIVE_OBSERVATION_ACQUISITION",
-      "reviewed": false,
-      "connection": {
-        "robot_ip": "192.168.50.103",
-        "local_ip": "192.168.50.209",
-        "robot_class": "xMateRobot"
-      },
-      "expected_identity": {
-        "robot_model": "XMC12-R1300-W7G3B4",
-        "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
-        "controller_version": "3.2.1",
-        "sdk_version": "0.7.0"
-      },
-      "allowed_power_states": [],
-      "budgets": {
-        "startup_s": null,
-        "query_s": null,
-        "progress_s": null,
-        "sample_age_s": null,
-        "ack_s": null,
-        "log_s": null,
-        "shutdown_s": null,
-        "terminate_s": null,
-        "state_age_s": null,
-        "skew_s": null,
-        "provenance": null
-      },
-      "notes": [
-        "Template only. Every null and the reviewed=false flag must be filled from a site review.",
-        "Connection and identity values were reconfirmed by a read-only xCoreSDK 0.7.0 session on 2026-10-16; physical setup and safety values still require site review.",
-        "used with: python -m scripts.acquire_robot_data --mode live --wrench-config <file>",
-        "budgets.provenance must not be NOT_SAFETY_THRESHOLDS.",
-        "The reviewed flag records a human review performed outside this process; it is not an approval service.",
-        "This configuration never authorizes robot motion. Motion remains NO_GO."
-      ]
-    },
-    "python_source_scope_manifest": {
-      "schema_version": 1,
-      "default_active_policy_gate_scan": true,
-      "non_production_path_prefixes": [
-        {
-          "path_prefix": "external_simulation",
-          "classification": "OFFLINE_EXTERNAL_SIMULATION_RESEARCH",
-          "reason": "Derived-model feasibility, diagnostic replay, and stress-only tooling; not imported by the active rehabilitation pipeline.",
-          "metadata_evidence_glob": "external_simulation_audits/**/metadata.json"
-        },
-        {
-          "path_prefix": "external_simulation_audits",
-          "classification": "GENERATED_OFFLINE_EXTERNAL_SIMULATION_AUDITS",
-          "reason": "Retained reports, reproducibility runners, and diagnostic artifacts with explicit offline evidence levels; not active policy gates.",
-          "metadata_evidence_glob": "external_simulation_audits/**/metadata.json"
-        }
-      ]
-    },
-    "real_identification_config": {
-      "schema_version": 1,
-      "reviewed": true,
-      "raw_wrench_frame": null,
-      "R_rehab_from_raw_wrench": null,
-      "force_sign_robot_on_leg": null,
-      "assumed_wrench_delay_s": null,
-      "baseline_subject_template": {
-        "mass_thigh_kg": null,
-        "mass_shank_kg": null,
-        "com_thigh_m": null,
-        "com_shank_m": null,
-        "inertia_thigh_kg_m2": null,
-        "inertia_shank_kg_m2": null,
-        "q0_hip_rad": null,
-        "q0_knee_rad": null,
-        "gravity_m_s2": null
-      },
-      "notes": "Template only. Do not identify a person until anthropometry, force sign/frame, and delay are reviewed for the actual setup."
-    },
-    "reference_commissioning": {
-      "schema_version": 1,
-      "mode": "FORMAL_REFERENCE_TEMPORARY_COMMISSIONING",
-      "enabled": true,
-      "execution_enabled": false,
-      "trajectory": {
-        "id": "reference_measured_asymmetric_closed_slow",
-        "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
-        "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881"
-      },
-      "speed": {
-        "controller_speed_ratio_percent": 3,
-        "max_tcp_speed_m_s": 0.03
-      },
-      "scope": {
-        "dummy_leg_only": true,
-        "patient_present_allowed": false,
-        "capture_only": true,
-        "training_allowed": false,
-        "cycles_per_session": 1
-      },
-      "safety": {
-        "allow_missing_sdk_collision_state": true,
-        "require_controller_collision_protection": true,
-        "require_operator_at_emergency_stop": true,
-        "fail_stop_on_state_or_wrench_fault": true
-      },
-      "expires_at": "2027-10-31T23:59:59+08:00",
-      "note": "This policy prepares a time-scaled formal-reference commissioning artifact only. It does not approve or execute motion. The sole proposed waiver is unavailable SDK collision-state observability; controller collision protection and a staffed emergency stop remain mandatory."
-    },
-    "rehab_frame_config": {
-      "rehab_x_axis_in_base": [
-        1,
-        0,
-        0
-      ],
-      "rehab_z_axis_in_base": [
-        0,
-        0,
-        1
-      ],
-      "reviewed": true,
-      "notes": "Submitted and reviewed by on-site safety officer jacey on 2026-10-17 for setup 01. The derived right-handed rehab +y direction is Base +y."
-    },
-    "robot_leg_round": {
-      "schema_version": 1,
-      "reviewed": false,
-      "trial_kind": "dummy_leg_capture_only",
-      "setup_id": "01",
-      "reviewer": "jacey",
-      "operator": "jacey",
-      "leg_config": "config/twincat_leg_capture.json",
-      "calibration": "config/leg_joint_calibration.json",
-      "analysis": "config/leg_round_analysis.json",
-      "safety_config": "config/experiment_safety.json",
-      "frame_config": "config/rehab_frame_config.json",
-      "wrench_config": "config/live_observation_acquisition_20261018.json",
-      "algorithm_root": "experiment_algorithm",
-      "algorithm_sha256": {
-        "config.py": "57a73a9988270dfa49b4932a0bc366415ff77e6d4068597e5d9b8dc879b27297",
-        "surrogate.py": "5b9452b485d9a87c95f8cd5c2f3c5a1a29e64b628d8c82de0365daf926aa57e2",
-        "policy.py": "7663a488186b7d3d99e8a6dd3d424dfdf5ab23c550fd800888d26fb929f63b3c"
-      },
-      "algorithm_dependencies": {
-        "experiment_algorithm/__init__.py": "847aa699943e255ea6b8e106dff4a0b22ef56e2dd6353f79f2fbc80bc62c4b26",
-        "experiment_algorithm/coupled_model.py": "109ac5705a6e83704219adeb2c15c6a35f110faeeb6e83f3f6303f462c184641",
-        "experiment_algorithm/coordinate_consistent_model.py": "f9f41d7f5e0401944eeed65318ddfee94494c8b5c1cfa7bd947ea6a44c8d7705",
-        "experiment_algorithm/coordinates.py": "41584840a2d13d387141e278ebde04d1ad2eecb912ad4554ca988ca650f78559",
-        "lower_limb_sim/__init__.py": "083288af8b721518b030d451f5daeb7215330fb124260db7ffd1a7b8b01bbb94",
-        "lower_limb_sim/config.py": "16b02c11196e30357f3c97193fabb8898b957c35aa332e7230c8977472f95940",
-        "lower_limb_sim/dynamic_subject.py": "1cddafcce71fc1159e693e9e05d00a6975683d7462ae235d2ce40bdfba5ca8c8",
-        "lower_limb_sim/formal_protocol.py": "a954f35e6c233c68742b3e80632694c15f36bdee18c798142ecfcdf02f3620ae",
-        "lower_limb_sim/full_dynamics.py": "435635bb5940012b2ca21cc1aed5a567d29dd73371892b7876824128c1b45fff",
-        "lower_limb_sim/jacobian.py": "efd4240885c8d65a965a5cc053dad9995125678e3bb170322a4da4fac6761a25",
-        "lower_limb_sim/myoleg_benchmark/__init__.py": "b1a61719a7e06a4636df52fc00a13f16c83b985ac5b1d680d0d39ba1f0f548fb",
-        "lower_limb_sim/myoleg_benchmark/portable_model.py": "78cac4fbb25b282fa8e27bfe52a60bbd89e87df8934347066c01651199dcc159",
-        "lower_limb_sim/observation_model.py": "4daea3029f357ff783b4655d371e84d6d46060d2632381fcee58a3e6880a1369",
-        "lower_limb_sim/parameter_estimator.py": "e27ea27c2300678f056295c9053ed10c6e49b8856d381ff6109cd5966899e0e6",
-        "lower_limb_sim/quasi_static_dynamics.py": "68d042080683d7c743e0b94094b368d9bfbe1b9c41b4f557c4a2f0ec47daacc9",
-        "lower_limb_sim/virtual_subject.py": "00d99c720c1e314c2be1f889ae1fd75430e58f0195a52cf4db8f6afbeedc9e67",
-        "scripts/train_robot_leg_round.py": "65e75913a4fb33f73051e4c81490241873fd7055fa05c61be1e7866cecc4ae4e",
-        "external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml": "960cdb3dca5eeda281a69c99e899bbd1571377e8f12d8c729286948ce9792e59",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/scene/myosuite_scene.png": "b14011caf35a0fcdfe32d287907149c7eae159e2e599f27c144dc97d2abc41ce",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/scene/floor0.png": "b6480ddfc8519607574fb08f98d6ee9673e3790014b1c5239641632d24752cf1",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/scene/myosuite_logo.png": "6587db5da73706f355155f0c49f550afbe601f51029ef7aa89bcf4e73ff09698",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/scene/myosuite_scene_noFloor_noPedestal.msh": "b80b2a96ccbafaae58a979118f026a40056c5904f9daba1d464fa49c7a696355",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/scene/myosuite_logo.msh": "6dc356d095d68c2fb35942aaf1835b3ea32b3f50aca51bbde703a61f57bb6f07",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/torso_lowpoly-v1.stl": "117e5ba0b225b778b07c9854b4f87a9ea51f2b98b9be6a26e8bbd4d0d77366b2",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_pelvis.stl": "6eb7bbe904ce85566fc6afcde0935eda11ae12da341965616c7c798c9b2d7ee4",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_pelvis.stl": "6998661b30f05288f018ca3e4934ae45560b1fd62f638f339fcf4881aa16c1a4",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_femur.stl": "7d6e76a58e964551824169d89ae4b6142617f947bfdbc4ee0a4328040acf9f63",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_tibia.stl": "7c016de88550dab6bb33d3060ba7aa42b061ca78c5224b7d92a4c766f25ca15f",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_fibula.stl": "2cb0f77671c5421abdec1643aab77b41af2c2b5a8eff49845b098b2393443354",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_talus.stl": "96202bdab4836e8fede82d3897b4b1bbc6f1afd6fc77e87b8bb444212df2ae90",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_foot.stl": "e95cf6418432ea49488790364588246202b7ce54d6827bef49ac3406733d9f4f",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_bofoot.stl": "39dae011e441c0018cba4a00664d4076f0bb8f86f73522567275ececf6f78db5",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/r_patella.stl": "6a08e1e74354c65940bfd00ba343823e65eece2ebf10d9bf66c0429e83588128",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_femur.stl": "d72e3bc4c1d0bbf76e189d50cd0594e3275169d1b2bf48370cb07d3d2a1a848d",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_tibia.stl": "0b4392cf63f523dba4fa0d9fdd62cf2bf0b464eaeaad320103d33534fc9e5b60",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_fibula.stl": "1b31ecc2af2935d3602f977af1787c55551a2179d38a44bb015005698a1e1bae",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_talus.stl": "45cff977c3cf0e2da78832366630f662f20526a5c5ad4f753c268a58b10b3a6a",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_foot.stl": "4cb976c3d03dc47cbee8786999a572f580044976e149c1bdeffe27666a0e42f7",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_bofoot.stl": "e3cc26950da6a22ac921e937740408bba43193f1c422810716435a4dd39a0ad1",
-        ".cache/myosuite-assets/2.12.2/myosuite/simhive/myo_sim/meshes/l_patella.stl": "1cd80b37a1ba01dd6c135273e7e85a14733c9940905aaa72ce001fc164659440",
-        "scripts/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "config/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "config/bundle.py": "e7e914106d7c4987b8e4af6f76217b4f5cacd56a1d937b06fb23ccf4f75a5933",
-        "utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "utils/evidence.py": "c8b5892afa65c09b570e9daa813cc79e1841891274b0bd6b331386be0dc419e4",
-        "lower_limb_sim/kinematics.py": "f14c543a1f3481e4f5e3fe73d0e4ec52bff024da8023463adef1e251508585a5"
-      },
-      "candidates": [
-        {
-          "share_shift": 0,
-          "candidate_id": "reference_measured_asymmetric_closed_slow",
-          "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
-          "sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
-          "beta_flex": 0,
-          "beta_extend": 0
-        }
-      ],
-      "reference_candidate_id": "reference_measured_asymmetric_closed_slow",
-      "geometry_m": [
-        0.42,
-        0.3
-      ],
-      "robot_ip": "192.168.50.103",
-      "local_ip": "192.168.50.209",
-      "robot_class": "xMateRobot",
-      "tool_name": "自制 3D 打印末端牵引工具（直接安装法兰）",
-      "workpiece_name": "TCHL 关节模组假腿组件",
-      "robot_identity": {
-        "sdk_version": "0.7.0",
-        "controller_version": "3.2.1",
-        "robot_model": "XMC12-R1300-W7G3B4",
-        "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86"
-      },
-      "wrench_hz": 50,
-      "collision_source": "events",
-      "collision_event_max_age_s": null,
-      "expires_at": "2027-10-31T23:59:59+08:00",
-      "pre_roll_s": 1,
-      "post_roll_s": 1,
-      "training_timeout_s": 300,
-      "max_leg_start_age_s": null,
-      "site_evidence": {
-        "controller_safety": {
-          "passed": false,
-          "path": "site_evidence/controller_safety.md",
-          "sha256": null
-        },
-        "acquisition_stability": {
-          "passed": false,
-          "path": "site_evidence/acquisition_stability.md",
-          "sha256": "b3b9b94885ef8337462cbbc34cef3cd76e04918a2657de4af724603fe73fbccb"
-        },
-        "wrench_semantics": {
-          "passed": false,
-          "path": "site_evidence/wrench_semantics.md",
-          "sha256": null
-        },
-        "setup_and_stop": {
-          "passed": false,
-          "path": "site_evidence/setup_and_stop.md",
-          "sha256": null
-        },
-        "dummy_leg_installation": {
-          "passed": false,
-          "path": "site_evidence/dummy_leg_installation.md",
-          "sha256": null
-        },
-        "joint_angle_calibration": {
-          "passed": true,
-          "path": "site_evidence/joint_angle_calibration.md",
-          "sha256": "7be97fc3aa2a0f607c2d2203fb428403203d8ec75de572bc702ac0f6efd9dd4d"
-        },
-        "cross_device_timing": {
-          "passed": false,
-          "path": "site_evidence/cross_device_timing.md",
-          "sha256": null
-        }
-      },
-      "note": "Configured for loaded dummy-leg motion capture without training at jacey's request. The temporary commissioning payload now matches the 2026-10-18 SDK readback: 1.085 kg, CoG [0,0,0.100] m, inertia [0,0,0] kg*m^2. Zero inertia is controller state rather than physical validation. Missing collision-state feedback may be bypassed only for a dedicated supervised one-command commissioning jog; the automatic reference-trajectory gate is unchanged. reviewed remains false because active tool/workobject identity, active robot soft limits, reviewed RT settings, timing budgets and remaining evidence are incomplete."
-    },
-    "static_validation_logging": {
-      "enabled": true,
-      "notes": "Default-off sidecar label logging only. This config does not authorize robot connection, motion, loading, human data, or static validation execution.",
-      "record_schema": "scripts/static_validation_record_schema_v1.json",
-      "schema_version": 1
-    },
-    "twincat_leg_capture": {
-      "schema_version": 1,
-      "mapping_reviewed": true,
-      "clock_domain": "LOCAL_HOST_PERF_COUNTER",
-      "ams_net_id": "10.20.4.89.1.1",
-      "ads_port": 11,
-      "index_group": 50593808,
-      "index_offset": 2147483807,
-      "image_bytes": 1366,
-      "axis_offsets": [
-        0,
-        23,
-        46,
-        69
-      ],
-      "toggle_byte": 1365,
-      "toggle_bit": 4,
-      "expected_hz": 500,
-      "torque_6077_signedness_verified": false,
-      "ads_dll_path": "hardware/windows/TcAdsDll.dll",
-      "ads_timeout_ms": 100,
-      "startup_timeout_s": 5,
-      "max_progress_age_s": 0.25,
-      "shutdown_timeout_s": 5,
-      "heartbeat_s": 0.05,
-      "no_new_sample_timeout_s": 0.1,
-      "poll_interval_s": 0.0005,
-      "guards": {
-        "axis1": {
-          "max_abs_torque_nm": 100,
-          "expected_operation_enabled": false
-        },
-        "axis4": {
-          "max_abs_torque_nm": 100,
-          "expected_operation_enabled": false
-        }
-      },
-      "source": "2026-10-11 lab handover. 2026-10-16 local inspection found 64-bit TcAdsDll.dll version 2.11.0.45 at C:/TwinCAT/Common64/TcAdsDll.dll (SHA-256 46B306A26F54210DAB7279F0A7880F3122AD7E9FF7B0E946DDCDC69434D44CEC); Python is 64-bit. File and live read-only evidence is recorded in site_evidence/twincat_mapping_2026-10-16.md and results/lab_visit/twincat_readonly_mapping_20261016.json. A second read-only pre-capture check on 2026-10-17 completed 200/200 reads, observed max ADS read time 2.2095 ms and 89 toggle transitions, with axes 1 and 4 operation_enabled=false, fault=false and error=0x0000. Capture-process timeouts are engineering guards derived from these read-only observations, not physical safety limits. Operator/safety reviewer jacey declared a 100 N.m acquisition guard for axes 1 and 4 and on 2026-10-17 explicitly confirmed axis1=hip, axis4=knee, the per-axis input PDO order/types 6041/U16, 6064/I32, 606C/I32, 6077/I16, 60F4/I32, 603F/U16, 6061/I8, 3C1A/F32, and 3C1A units N.m. Expected operation-enabled=false records the current stationary capture condition; the collector will fail closed if either axis becomes enabled. 0x6077 signedness/direction remains unverified and is not used for the 3C1A torque guard. | Unified configuration: install the site ADS DLL at hardware/windows/TcAdsDll.dll; no native library is bundled or approved by this migration."
-    },
-    "static_validation_record_schema_v1": {
-      "$schema": "https://json-schema.org/draft/2020-12/schema",
-      "additionalProperties": false,
-      "description": "Default-off sidecar schema linking static validation cell/phase labels to an existing raw wrench/state measurement without replacing that raw record.",
-      "properties": {
-        "schema_version": {
-          "const": "STATIC_VALIDATION_LABEL_SCHEMA_V1"
-        },
-        "record_id": {
-          "pattern": "^[0-9a-f]{64}$",
-          "type": "string"
-        },
-        "cell_id": {
-          "pattern": "^[0-9a-f]{64}$",
-          "type": "string"
-        },
-        "session_id": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "protocol_sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "type": "string"
-        },
-        "pose_id": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "direction_id": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "load_level_id": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "repeat_id": {
-          "minimum": 1,
-          "type": "integer"
-        },
-        "phase": {
-          "enum": [
-            "PRE",
-            "LOAD",
-            "POST"
-          ]
-        },
-        "phase_sample_index": {
-          "minimum": 0,
-          "type": "integer"
-        },
-        "raw_measurement_source": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "raw_measurement_id": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "query_start_s": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "query_end_s": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "query_midpoint_s": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "query_latency_ms": {
-          "minimum": 0,
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "fx_raw_n": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "fy_raw_n": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "fz_raw_n": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "raw_force_frame": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "state_host_time_s": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "state_sequence_id": {
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "robot_state_valid": {
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "robot_state_invalid_reason": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "tcp_x_m": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "tcp_y_m": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "tcp_z_m": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "tcp_rx_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "tcp_ry_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "tcp_rz_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "q1_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "q2_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "q3_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "q4_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "q5_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "q6_rad": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "robot_operation_state": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "robot_model": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "robot_serial_number": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "controller_version": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "active_tool_name": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "active_workobject_name": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "active_hmi_tool_workobject_verified": {
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "tcp_translation_m_json": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "tcp_rpy_rad_json": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "payload_mass_kg": {
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "payload_cog_m_json": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "payload_inertia_kg_m2_json": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "sdk_available_tool_names_json": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "sdk_available_workobject_names_json": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "valid": {
-          "type": "boolean"
-        },
-        "status": {
-          "enum": [
-            "VALID",
-            "INVALID"
-          ]
-        },
-        "invalid_reason": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "schema_version",
-        "record_id",
-        "cell_id",
-        "session_id",
-        "protocol_sha256",
-        "pose_id",
-        "direction_id",
-        "load_level_id",
-        "repeat_id",
-        "phase",
-        "phase_sample_index",
-        "raw_measurement_source",
-        "raw_measurement_id",
-        "query_start_s",
-        "query_end_s",
-        "query_midpoint_s",
-        "query_latency_ms",
-        "fx_raw_n",
-        "fy_raw_n",
-        "fz_raw_n",
-        "raw_force_frame",
-        "state_host_time_s",
-        "state_sequence_id",
-        "robot_state_valid",
-        "robot_state_invalid_reason",
-        "tcp_x_m",
-        "tcp_y_m",
-        "tcp_z_m",
-        "tcp_rx_rad",
-        "tcp_ry_rad",
-        "tcp_rz_rad",
-        "q1_rad",
-        "q2_rad",
-        "q3_rad",
-        "q4_rad",
-        "q5_rad",
-        "q6_rad",
-        "robot_operation_state",
-        "robot_model",
-        "robot_serial_number",
-        "controller_version",
-        "active_tool_name",
-        "active_workobject_name",
-        "active_hmi_tool_workobject_verified",
-        "tcp_translation_m_json",
-        "tcp_rpy_rad_json",
-        "payload_mass_kg",
-        "payload_cog_m_json",
-        "payload_inertia_kg_m2_json",
-        "sdk_available_tool_names_json",
-        "sdk_available_workobject_names_json",
-        "valid",
-        "status",
-        "invalid_reason"
-      ],
-      "title": "Static Validation Label Record V1",
-      "type": "object"
+      "axis4": {
+        "max_abs_torque_nm": 100,
+        "expected_operation_enabled": false
+      }
     }
+  },
+  "calibration": {
+    "hip": {
+      "counts_per_degree": 993.5884722910836,
+      "zero_counts": -121084.4218312675,
+      "flexion_sign": -1,
+      "safe_min_deg": 15,
+      "safe_max_deg": 145,
+      "torque_sign_to_inverse_dynamics": -1
+    },
+    "knee": {
+      "counts_per_degree": 36794.035628458296,
+      "zero_counts": -2615016.5409129467,
+      "flexion_sign": 1,
+      "safe_min_deg": 15,
+      "safe_max_deg": 145,
+      "torque_sign_to_inverse_dynamics": 1
+    }
+  },
+  "analysis": {
+    "sensor_receive_delay_s": null,
+    "command_application_delay_s": null,
+    "max_gap_s": null,
+    "max_read_duration_s": null,
+    "max_dispatch_time_error_s": null,
+    "derivative_rate_hz": null,
+    "derivative_window_s": null,
+    "max_start_angle_error_deg": null,
+    "max_tracking_error_deg": null
+  },
+  "frame": {
+    "rehab_x_axis_in_base": [
+      1,
+      0,
+      0
+    ],
+    "rehab_z_axis_in_base": [
+      0,
+      0,
+      1
+    ]
+  },
+  "acquisition": {
+    "wrench_hz": 50,
+    "pre_roll_s": 1,
+    "post_roll_s": 1,
+    "max_leg_start_age_s": null,
+    "budgets": {
+      "startup_s": 5,
+      "query_s": 0.05,
+      "progress_s": 0.25,
+      "sample_age_s": 0.05,
+      "ack_s": 0.1,
+      "log_s": 0.1,
+      "shutdown_s": 1,
+      "terminate_s": 1,
+      "state_age_s": 0.025,
+      "skew_s": 0.04
+    },
+    "max_start_angle_error_deg": null
+  },
+  "training": {
+    "enabled": false,
+    "timeout_s": 300,
+    "candidates": [
+      {
+        "share_shift": 0,
+        "candidate_id": "reference_measured_asymmetric_closed_slow",
+        "path": "reference_release/reference_measured_asymmetric_closed_slow.csv",
+        "beta_flex": 0,
+        "beta_extend": 0
+      }
+    ]
   }
 }

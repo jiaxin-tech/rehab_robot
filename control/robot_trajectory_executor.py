@@ -97,21 +97,6 @@ class RokaeMotionExecutor:
             with self._stop_lock:
                 self._stop_confirmed = True
 
-    def _collision_waiver_allows(self, summary: Mapping[str, Any]) -> bool:
-        release = getattr(self, "_trial_release", None)
-        if release is None:
-            return False
-        try:
-            payload = release.payload
-        except Exception:
-            return False
-        return bool(
-            payload.get("scope") == "FIRST_ROBOT_TRIAL_EMPTY_LOAD_FIXTURE_ONLY"
-            and payload.get("allow_missing_sdk_collision_state_error") == 259
-            and summary.get("collision_state") is not True
-            and "259" in str(summary.get("collision_state_invalid_reason") or "")
-        )
-
     def _runtime_reasons(self) -> tuple[str, ...]:
         reasons: list[str] = []
         execution_guard = getattr(self, "execution_guard", None)
@@ -122,12 +107,6 @@ class RokaeMotionExecutor:
                     reasons.append(str(reason))
             except Exception as exc:
                 reasons.append("external_acquisition_guard_failed:" + str(exc))
-        release = getattr(self, "_trial_release", None)
-        if release is not None:
-            try:
-                release.require_current()
-            except PermissionError as exc:
-                reasons.append("trial_release_invalid:" + str(exc))
         event_reason = safety_event_block_reason(getattr(self.acquisition, "adapter", None))
         if event_reason:
             reasons.append(event_reason)
@@ -146,6 +125,10 @@ class RokaeMotionExecutor:
         if not health.alignment_thread_alive:
             reasons.append("alignment_thread_not_alive")
         limits = self.safety
+        for name in ("state_age_s", "wrench_age_s", "state_wrench_skew_s", "force_magnitude_n", "torque_magnitude_nm"):
+            value = getattr(health, name)
+            if value is None or not math.isfinite(value) or value < 0:
+                reasons.append(name + "_invalid")
         if limits.max_state_age_s is None or health.state_age_s is None:
             reasons.append("state_age_limit_or_value_unavailable")
         elif health.state_age_s > limits.max_state_age_s:
@@ -268,156 +251,20 @@ class RokaeMotionExecutor:
                 "command deadline missed after intent logging; refusing dispatch"
             )
 
-    def _require_post_attach_robot_summary(self) -> dict[str, Any]:
-        """Re-query cached state and the SDK safety event after RT attachment."""
-
-        adapter = getattr(self.acquisition, "adapter", None)
-        reader = getattr(adapter, "get_robot_state_summary", None)
-        if not callable(reader):
-            raise RuntimeError("post-attach robot summary is unavailable")
-        summary = reader()
-        if not isinstance(summary, dict):
-            raise RuntimeError("post-attach robot summary is invalid")
-        reasons: list[str] = []
-        if summary.get("connected") is not True:
-            reasons.append("sdk_not_connected")
-        if summary.get("state_valid") is not True:
-            reasons.append("robot_state_invalid")
-        if summary.get("state_stream_thread_alive") is not True:
-            reasons.append("state_thread_not_alive")
-        if summary.get("operation_state") != "RT_CONTROLLING":
-            reasons.append("robot_not_in_rt_control_state_after_attachment")
-        collision_waived = self._collision_waiver_allows(summary)
-        if summary.get("collision_state_query_valid") is not True and not collision_waived:
-            reasons.append("collision_state_unavailable_after_attachment")
-        if summary.get("collision_state") is not False and not collision_waived:
-            reasons.append("collision_detected_after_attachment")
-        metadata_value = summary.get("robot_metadata")
-        metadata = metadata_value if isinstance(metadata_value, Mapping) else None
-        if metadata is None:
-            reasons.append("robot_metadata_unavailable_after_attachment")
-        else:
-            for runtime_name, expected_name in (
-                ("robot_model", "expected_robot_model"),
-                ("robot_serial_number", "expected_robot_serial_number"),
-                ("controller_version", "expected_controller_version"),
-            ):
-                runtime_value = metadata.get(runtime_name)
-                expected_value = getattr(self.safety, expected_name)
-                if runtime_value != expected_value:
-                    reasons.append(f"{runtime_name}_changed_after_preflight")
-
-            payload_value = metadata.get("sdk_tool_payload")
-            payload = payload_value if isinstance(payload_value, Mapping) else None
-            if payload is None:
-                reasons.append("payload_unavailable_after_attachment")
-            else:
-                scalar_payload = payload.get("toolset_load_mass_kg")
-                expected_mass = self.safety.reviewed_payload_mass_kg
-                if (
-                    isinstance(scalar_payload, bool)
-                    or not isinstance(scalar_payload, (int, float))
-                    or expected_mass is None
-                    or not math.isfinite(float(scalar_payload))
-                    or not math.isclose(
-                        float(scalar_payload),
-                        expected_mass,
-                        rel_tol=0.0,
-                        abs_tol=1e-9,
-                    )
-                ):
-                    reasons.append("payload_mass_changed_after_preflight")
-                for runtime_name, expected_name in (
-                    ("toolset_load_cog_m", "reviewed_payload_cog_m"),
-                    (
-                        "toolset_load_inertia_kg_m2",
-                        "reviewed_payload_inertia_kg_m2",
-                    ),
-                ):
-                    runtime_vector = payload.get(runtime_name)
-                    expected_vector = getattr(self.safety, expected_name)
-                    if not self._same_finite_vector(
-                        runtime_vector,
-                        expected_vector,
-                        3,
-                    ):
-                        reasons.append(f"{runtime_name}_changed_after_preflight")
-                tool_names = payload.get("sdk_available_tool_names")
-                workpiece_names = payload.get("sdk_available_workobject_names")
-                if not self._contains_exact_text(
-                    tool_names,
-                    self.safety.reviewed_tool_name,
-                ):
-                    reasons.append("reviewed_tool_disappeared_after_preflight")
-                if not self._contains_exact_text(
-                    workpiece_names,
-                    self.safety.reviewed_workpiece_name,
-                ):
-                    reasons.append("reviewed_workpiece_disappeared_after_preflight")
-
-            runtime_limits = metadata.get("joint_soft_limits_rad")
-            reviewed_limits = self.safety.reviewed_joint_soft_limits_rad
-            if not self._same_finite_matrix(runtime_limits, reviewed_limits, 6, 2):
-                reasons.append("joint_soft_limits_changed_after_preflight")
-            runtime_joints = summary.get("joint_position_rad")
-            if not self._joints_inside_reviewed_limits(
-                runtime_joints,
-                reviewed_limits,
-            ):
-                reasons.append("joint_position_invalid_after_attachment")
-        if reasons:
-            raise RuntimeError(
-                "post-attach robot safety summary: " + ";".join(reasons)
-            )
+    def _require_post_attach_robot_summary(self):
+        adapter = self.acquisition.adapter
+        summary = adapter.get_robot_state_summary()
+        if not isinstance(summary, dict) or summary.get("connected") is not True or summary.get("state_valid") is not True or summary.get("operation_state") != "RT_CONTROLLING":
+            raise RuntimeError("robot is not ready for realtime commands")
+        if summary.get("collision_state_query_valid") is not True or summary.get("collision_state") is not False:
+            raise RuntimeError("collision protection state unavailable or active")
+        limits = summary.get("robot_metadata", {}).get("joint_soft_limits_rad")
+        if not self._joints_inside_reviewed_limits(summary.get("joint_position_rad"), limits):
+            raise RuntimeError("joint state or controller soft limits invalid")
         return summary
 
-    @staticmethod
-    def _same_finite_vector(
-        runtime_value: object,
-        expected_value: object,
-        size: int,
-    ) -> bool:
-        try:
-            runtime = np.asarray(runtime_value, dtype=float)
-            expected = np.asarray(expected_value, dtype=float)
-        except (TypeError, ValueError):
-            return False
-        return bool(
-            runtime.shape == (size,)
-            and expected.shape == (size,)
-            and np.isfinite(runtime).all()
-            and np.isfinite(expected).all()
-            and np.allclose(runtime, expected, rtol=0.0, atol=1e-9)
-        )
 
-    @staticmethod
-    def _same_finite_matrix(
-        runtime_value: object,
-        expected_value: object,
-        rows: int,
-        columns: int,
-    ) -> bool:
-        try:
-            runtime = np.asarray(runtime_value, dtype=float)
-            expected = np.asarray(expected_value, dtype=float)
-        except (TypeError, ValueError):
-            return False
-        return bool(
-            runtime.shape == (rows, columns)
-            and expected.shape == (rows, columns)
-            and np.isfinite(runtime).all()
-            and np.isfinite(expected).all()
-            and np.allclose(runtime, expected, rtol=0.0, atol=1e-9)
-        )
 
-    @staticmethod
-    def _contains_exact_text(values: object, expected: str | None) -> bool:
-        return bool(
-            expected is not None
-            and isinstance(values, Sequence)
-            and not isinstance(values, (str, bytes))
-            and expected in values
-        )
 
     @staticmethod
     def _joints_inside_reviewed_limits(
@@ -454,11 +301,6 @@ class RokaeMotionExecutor:
                 )
             self._used = True
         preflight.require_allowed()
-        preflight.require_live_trajectory_binding(trajectory)
-        preflight.require_safety_binding(self.safety)
-        self._trial_release = preflight.release_approval
-        if self._trial_release is not None:
-            self._trial_release.require_current(check_files=True)
         self.safety.require_execute_allowed()
         self.logger.assert_healthy()
         if len(trajectory) < 2:
@@ -540,7 +382,7 @@ class RokaeMotionExecutor:
             initial_reasons = self._runtime_reasons()
             if initial_reasons:
                 raise RuntimeError("runtime safety gate: " + ";".join(initial_reasons))
-            reviewed_filter_hz = self.safety.reviewed_rt_filter_hz
+            reviewed_filter_hz = self.safety.rt_filter_hz
             if reviewed_filter_hz is None:
                 raise RuntimeError("reviewed realtime command filter is unavailable")
             self.motion_adapter.attach_externally_prepared(
@@ -565,11 +407,6 @@ class RokaeMotionExecutor:
                     "robot_execution_approved": False,
                 }
             )
-            from safety.empty_load_commissioning_release import ValidatedEmptyLoadCommissioningRelease
-
-            if isinstance(self._trial_release, ValidatedEmptyLoadCommissioningRelease):
-                claim_path = self._trial_release.claim_execution()
-                self.logger.update_metadata({"commissioning_release_claim": claim_path})
             initial_start_deadline_s = self.clock.now_s() + lateness_limit_s
             # Starting the RT hold already publishes the first TCP target.
             # Persist that first command before any callback can become active.
@@ -595,9 +432,6 @@ class RokaeMotionExecutor:
             # this the last potentially blocking SDK gate before the atomic
             # stop-check/start transition.
             final_summary = self._require_post_attach_robot_summary()
-            if self._trial_release is not None:
-                self._trial_release.require_current(check_files=True)
-                self._trial_release.require_runtime(final_summary)
             final_start_reasons = self._runtime_reasons()
             if final_start_reasons:
                 raise RuntimeError(
@@ -614,8 +448,6 @@ class RokaeMotionExecutor:
                     raise RuntimeError(
                         "initial hold deadline expired before realtime start"
                     )
-                if self._trial_release is not None:
-                    self._trial_release.require_current()
                 dispatch_start = time.perf_counter_ns()
                 self.motion_adapter.start_cartesian_hold(initial_pose)
                 if self.dispatch_observer is not None:
@@ -656,8 +488,6 @@ class RokaeMotionExecutor:
                         raise RuntimeError(
                             "command deadline expired during final safety check"
                         )
-                    if self._trial_release is not None:
-                        self._trial_release.require_current()
                     dispatch_start = time.perf_counter_ns()
                     self.motion_adapter.send_cartesian_target(pose)
                     if self.dispatch_observer is not None:

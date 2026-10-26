@@ -11,7 +11,6 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from collections import deque
-import hashlib
 import json
 import math
 import multiprocessing as mp
@@ -49,7 +48,7 @@ class WrenchBudgets:
     terminate_s: float
     state_age_s: float
     skew_s: float
-    provenance: str
+    provenance: str = "experiment"
 
     def __post_init__(self):
         for key, value in asdict(self).items():
@@ -69,7 +68,7 @@ class Slot:
 
     def put(self, value):
         body = json.dumps(value, allow_nan=False, separators=(",", ":")).encode()
-        raw = hashlib.sha256(body).digest() + body
+        raw = body
         if len(raw) > len(self.data):
             raise ValueError("audit_overflow")
         self.version.value += 1  # odd: write in progress
@@ -86,14 +85,12 @@ class Slot:
         if version == 0 or version % 2:
             return None
         size = self.length.value
-        if not 32 <= size <= len(self.data):
+        if not 1 <= size <= len(self.data):
             raise ValueError("invalid_slot_length")
         raw = bytes(self.data[:size])
         if self.version.value != version:
             return None
-        if hashlib.sha256(raw[32:]).digest() != raw[:32]:
-            raise ValueError("torn_slot")
-        return version, json.loads(raw[32:])
+        return version, json.loads(raw)
 
 
 class DurableAudit:
@@ -338,14 +335,11 @@ class WrenchProcessProvider:
                 "robot_ip",
                 "local_ip",
                 "robot_class",
-                "expected_identity",
                 "allowed_power_states",
                 "allowed_operation_states",
             )
             if any(not self.config.get(k) for k in required) or budgets.provenance == "NOT_SAFETY_THRESHOLDS":
                 raise ValueError("live identity/connection/reviewed budgets required")
-            if set(self.config["expected_identity"]) != {"robot_model", "robot_serial", "controller_version", "sdk_version"}:
-                raise ValueError("complete identity binding required")
             if not set(self.config["allowed_operation_states"]).issubset(
                 {"idle", "rtcontrolling"}
             ):

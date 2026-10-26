@@ -1,25 +1,30 @@
-# 假腿采集与 Greedy 轨迹更新
+# 假腿实验
 
-本仓库统一原机器人仓库和“康复”研究工作区，保留一条实验主线：假腿与机器人采集 → 质量检查及时间对齐 → 六参数辨识 → 残差 GP 均值 Greedy 更新。
+个人实验主线：机器人与假腿采集 → 质量与时间对齐 → 六参数辨识 → 残差 GP Greedy。
 
-| 入口 | 内容 |
-| --- | --- |
-| [操作与代码地图](docs/CODE_MAP.md) | 最短操作路径、架构图、每个目录和文件的作用 |
-| [实验指南](docs/EXPERIMENT.md) | 安装、离线检查、现场流程和追溯 |
-| [统一配置](config/experiment.json) | 安全、采集、标定、分析与训练的唯一可编辑配置 |
-| [主线测试](tests/test_mainline.py) | 采集、安全门禁、异常停止、分析与训练回归 |
-| [结果汇总](data/experiment_summary.csv) | 实验指标、验证结果及来源哈希 |
-| [原始证据包](data/evidence.zip) | 去重后的原始数据、冻结轨迹、正式结果和复现材料 |
+只编辑 [config/experiment.json](config/experiment.json)。没有 SHA/hash 校验、签认表、放行文件或证据审计流程。
 
 ~~~powershell
 $env:PYTHONUTF8 = '1'
-.\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q
 .\.venv\Scripts\python.exe -m scripts.lab_session check
-.\.venv\Scripts\python.exe -m utils.evidence verify
+.\.venv\Scripts\python.exe -m scripts.lab_session prepare --session results/round_001
+.\.venv\Scripts\python.exe -m scripts.lab_session run --session results/round_001 --live
 ~~~
 
-统一入口为 scripts.lab_session，轮次入口为 scripts.run_robot_leg_round，算法位于 experiment_algorithm。所有项目依赖随仓库保存，配置和证据的运行快照只生成到 .cache，不进入 Git。
+prepare 读取现场起点并生成预览；run --live 会实际运动。运行前填写缺失的物理参数，查看预览，并核对实际安装、负载和起点。限位、力阈值、过期数据停止和异常清理继续生效。
 
-当前现场审批尚未完成。默认保留只采集模式，开启训练和执行仍需实际配置与证据；软件验证不构成真机放行。参考自身只用于初始化，单候选时返回 DOMAIN_EXHAUSTED，不代表优化收益。
+默认只采集，训练可随后单独运行：
 
-旧研究的代码、正式报告和协议集中保留于证据包，并可从 Git 基线 585e8064 追溯。缓存、临时测试产物及可再生仿真跟踪已退出主工作树。
+~~~powershell
+.\.venv\Scripts\python.exe -m scripts.lab_session train --session results/round_001
+~~~
+
+| 入口 | 内容 |
+| --- | --- |
+| [实验指南](docs/EXPERIMENT.md) | 安装、参数和最短操作路径 |
+| [代码地图](docs/CODE_MAP.md) | 架构、目录和每个文件的用途 |
+| [主线测试](tests/test_mainline.py) | 离线回归，不连接真实设备 |
+| [结果汇总](data/experiment_summary.csv) | source / metric / value 三列长表 |
+| [实验数据包](data/experiment_data.zip) | 原始 CSV、结果表、参考轨迹和公共模型资产 |
+
+本轮先看 results/round_001/report.md。质量、训练结果和失败原因集中在 round_status.json。当前候选域只有参考自身，DOMAIN_EXHAUSTED 是预期停止原因，不能据此声称优化有效。

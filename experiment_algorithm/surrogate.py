@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from collections.abc import Mapping
-import hashlib
 
 import numpy as np
 import pandas as pd
@@ -82,13 +81,6 @@ class ModelContext:
         mechanical.set_mode('rigid_only')
         # Cache only the public basis, bound to source and exact kinematics.
         basis = mechanical.public_basis()
-        digest = hashlib.sha256()
-        digest.update(Path(mechanical.__file__).read_bytes())
-        digest.update(str(basis.provenance['source_sha256']).encode())
-        digest.update(repr(self.template).encode())
-        for p in self.points:
-            digest.update(self.frames[p.candidate_id].to_numpy(float).tobytes())
-        key = digest.hexdigest()
         self.matrix = np.stack([mechanical.design_matrix(self.frames[p.candidate_id], self.template)[0]
                                 for p in self.points])
         if self.matrix.shape != (len(self.points),2*self.n_time,6) or not np.isfinite(self.matrix).all():
@@ -96,7 +88,7 @@ class ModelContext:
         self.torque_design = self.matrix.reshape(len(self.points),2,self.n_time,6)
         self.offset = np.zeros(self.matrix.shape[:2])
         self.design_by_candidate = {p.candidate_id:self.matrix[i] for i,p in enumerate(self.points)}
-        self.public_prior = dict(basis.provenance, basis_cache_sha256=key, mode='rigid_only')
+        self.public_prior = dict(basis.provenance, mode='rigid_only')
         phases = np.asarray(domain.subject_reference.phases)
         self.weights = np.array([[_weights(p.time_s, phases == branch)
                                  for branch in ('flexion','extension')] for p in self.points])

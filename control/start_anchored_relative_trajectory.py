@@ -22,13 +22,11 @@ from lower_limb_sim.config import L1, L2
 from lower_limb_sim.kinematics import forward_kinematics
 from lower_limb_sim.formal_protocol import (
     ACTIVE_REFERENCE_ID,
-    ACTIVE_REFERENCE_SHA256,
     FORMAL_HIP_ROM_DEG,
     FORMAL_KNEE_ROM_DEG,
     ROM_PROTOCOL_VERSION,
     THETA_SHANK_DEFINITION,
 )
-from lower_limb_sim.reference_release import load_reference_release_manifest
 from lower_limb_sim.reference_measured_asymmetric import (
     MEASURED_ASYMMETRIC_CLOSED_REFERENCE,
 )
@@ -42,9 +40,6 @@ ABSOLUTE_CALIBRATED_MODE = "absolute_calibrated"
 START_ANCHORED_RELATIVE_MODE = "start_anchored_relative"
 FIRST_ROBOT_TRIAL_TRAJECTORY_ID = (
     ACTIVE_REFERENCE_ID
-)
-APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256 = (
-    ACTIVE_REFERENCE_SHA256
 )
 APPROVED_FIRST_ROBOT_TRIAL_L1_M = 0.42
 APPROVED_FIRST_ROBOT_TRIAL_L2_M = 0.30
@@ -75,7 +70,7 @@ class RehabFrameConfig:
 
     rehab_x_axis_in_base: tuple[float, float, float]
     rehab_z_axis_in_base: tuple[float, float, float]
-    reviewed: bool
+    reviewed: bool = False
     notes: str = ""
     input_tolerance: float = DEFAULT_FRAME_INPUT_TOLERANCE
 
@@ -149,7 +144,7 @@ def load_rehab_frame_config(path: str | Path) -> RehabFrameConfig:
     payload = json.loads(source.read_text(encoding="utf-8"))
     if not isinstance(payload, Mapping):
         raise ValueError("rehab frame config must be a JSON object")
-    required = {"rehab_x_axis_in_base", "rehab_z_axis_in_base", "reviewed", "notes"}
+    required = {"rehab_x_axis_in_base", "rehab_z_axis_in_base"}
     missing = required.difference(payload)
     if missing:
         raise ValueError(f"rehab frame config missing fields: {sorted(missing)}")
@@ -165,8 +160,8 @@ def load_rehab_frame_config(path: str | Path) -> RehabFrameConfig:
     return RehabFrameConfig(
         rehab_x_axis_in_base=tuple(payload["rehab_x_axis_in_base"]),
         rehab_z_axis_in_base=tuple(payload["rehab_z_axis_in_base"]),
-        reviewed=payload["reviewed"],
-        notes=payload["notes"],
+        reviewed=payload.get("reviewed", False),
+        notes=payload.get("notes", ""),
     )
 
 
@@ -495,25 +490,6 @@ def build_start_anchored_relative_trajectory(
         "trajectory_id": trajectory_id,
         "reference": source_metadata,
         "parent_reference_id": source_metadata.get("parent_reference_id"),
-        "parent_reference_sha256": source_metadata.get(
-            "parent_reference_sha256"
-        ),
-        "approved_first_robot_trial_reference_sha256": (
-            APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
-        ),
-        "reference_sha256_matches_approved_first_trial": bool(
-            trajectory_id == FIRST_ROBOT_TRIAL_TRAJECTORY_ID
-            and source_metadata.get("sha256")
-            == APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
-            and load_reference_release_manifest()[
-                "approved_for_first_robot_trial"
-            ]
-        ),
-        "reference_sha256_matches_frozen_release": bool(
-            trajectory_id == FIRST_ROBOT_TRIAL_TRAJECTORY_ID
-            and source_metadata.get("sha256")
-            == APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
-        ),
         "model_angle_definition": MODEL_ANGLE_DEFINITION,
         "approved_hip_rom_deg": list(APPROVED_HIP_ROM_DEG),
         "approved_knee_rom_deg": list(APPROVED_KNEE_ROM_DEG),
@@ -536,9 +512,6 @@ def build_start_anchored_relative_trajectory(
         "observed_ankle_used_as_pull_point": False,
         "tool_offset_applied_to_relative_increment": False,
         "tool_offset_retained_for_mode": ABSOLUTE_CALIBRATED_MODE,
-        "allowed_for_first_robot_trial": bool(
-            load_reference_release_manifest()["approved_for_first_robot_trial"]
-        ),
         "first_robot_trial_candidate_whitelisted": bool(
             trajectory_id in ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES
         ),
@@ -551,7 +524,6 @@ def build_start_anchored_relative_trajectory(
 __all__ = [
     "ABSOLUTE_CALIBRATED_MODE",
     "ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES",
-    "APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256",
     "APPROVED_FIRST_ROBOT_TRIAL_L1_M",
     "APPROVED_FIRST_ROBOT_TRIAL_L2_M",
     "FIRST_ROBOT_TRIAL_TRAJECTORY_ID",

@@ -14,7 +14,8 @@ import sys
 import threading
 import time
 
-from safety.robot_trial_release import read_json
+def read_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
 def atomic_json(path, value):
@@ -34,8 +35,6 @@ def positive(value, name):
 
 
 def validate_config(c):
-    if c.get("schema_version") != 1 or c.get("mapping_reviewed") is not True:
-        raise ValueError("reviewed TwinCAT mapping required")
     if c.get("clock_domain") != "LOCAL_HOST_PERF_COUNTER":
         raise ValueError("collector must run on the same Windows host as robot orchestration")
     parts = c["ams_net_id"].split(".")
@@ -60,8 +59,6 @@ def validate_config(c):
         raise ValueError("current reviewed mapping is a 500 Hz source")
     if c["poll_interval_s"] >= 1 / c["expected_hz"]:
         raise ValueError("poll interval must be shorter than the expected source cycle")
-    if type(c.get("torque_6077_signedness_verified")) is not bool:
-        raise ValueError("declare whether 6077 signedness is verified")
     if c["ads_timeout_ms"] > 0xFFFFFFFF:
         raise ValueError("ADS timeout exceeds API range")
     if not c.get("ads_dll_path"):
@@ -147,7 +144,7 @@ def decode_image(image, config):
         if not math.isfinite(sensor):
             raise ValueError(f"axis{axis} nonfinite torque sensor")
         values = (f"0x{status:04X}", bool(status & 4), bool(status & 8), pos, pos * .0004577637,
-                  vel, torque * .1 if config["torque_6077_signedness_verified"] else None,
+                  vel, torque * .1 if config.get("torque_6077_signedness_verified", False) else None,
                   following, f"0x{error:04X}", mode, sensor, torque & 0xFFFF)
         result.update({f"axis{axis}_{name}": value for name, value in zip(AXIS_FIELDS, values)})
     return result

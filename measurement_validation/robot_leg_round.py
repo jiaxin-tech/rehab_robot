@@ -11,12 +11,9 @@ from scipy.signal import savgol_filter
 from collection.twincat_leg import positive
 from lower_limb_sim.mechanical_endpoints import branch_rms_components
 from measurement_validation.leg_episode import JointCalibration, read_leg_episode
-from safety.robot_trial_release import read_json, sha256_file
 
 
 def validate_analysis(config, calibration):
-    if config.get("reviewed") is not True or config.get("alignment_reviewed") is not True:
-        raise ValueError("reviewed cross-device timing and analysis configuration required")
     for key in ("max_gap_s", "max_read_duration_s", "max_dispatch_time_error_s", "derivative_rate_hz",
                 "derivative_window_s", "max_start_angle_error_deg", "max_tracking_error_deg"):
         positive(config.get(key), key)
@@ -24,8 +21,6 @@ def validate_analysis(config, calibration):
         v = config.get(key)
         if isinstance(v, bool) or not isinstance(v, (int, float)) or not np.isfinite(v) or v < 0:
             raise ValueError(f"reviewed finite nonnegative {key} required")
-    if calibration.get("reviewed") is not True or calibration.get("independent_validation_passed") is not True:
-        raise ValueError("independently validated hip AND knee calibration required")
     result = {}
     for name in ("hip", "knee"):
         values = calibration["joints"][name]
@@ -117,8 +112,7 @@ def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calib
                                                measured.time_s, measured.phase))
     peaks = np.max(np.abs(measured[["tau_hip_nm", "tau_knee_nm"]].to_numpy()), axis=0)
     return measured, dict(components_nm=components.tolist(), peaks_nm=peaks.tolist(),
-        source_sha256=sha256_file(csv_path), dispatch_sha256=sha256_file(dispatch_path),
-        reference_sha256=sha256_file(reference_path), synchronization="reviewed same-host receive/dispatch alignment; not device hardware synchronization",
+        synchronization="reviewed same-host receive/dispatch alignment; not device hardware synchronization",
         derivative_method=dict(method="Savitzky-Golay degree 3 on uniformly resampled measured angles", window_samples=window, delta_s=delta),
         raw_torque_preserved=True, automatically_tared=False)
 

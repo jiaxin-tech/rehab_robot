@@ -11,7 +11,6 @@ nonlinear baseline. They are not absolute physiological stiffness/damping.
 The mass bound remains [0.6,1.6]. Neither mode proves identifiability.
 """
 from pathlib import Path
-import hashlib
 import numpy as np
 import mujoco
 
@@ -36,7 +35,6 @@ class PublicNominalBasis:
         self.mass=np.zeros((self.model.nv,self.model.nv))
         self.cache={}
         self.provenance.update(basis_source='common public nominal XML; no subject lookup',
-            source_sha256=hashlib.sha256(Path(self.provenance['model_path']).read_bytes()).hexdigest(),
             coordinate_map='existing supine root pose and seven-knee-coordinate virtual-work tangent',
             includes_foot_and_auxiliary_inertia=True)
 

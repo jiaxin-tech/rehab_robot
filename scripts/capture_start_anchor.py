@@ -13,7 +13,6 @@ from typing import Any, Callable, Sequence
 
 from control.start_anchor import capture_start_anchor, save_start_anchor
 from control.start_anchored_relative_trajectory import (
-    APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256,
     FIRST_ROBOT_TRIAL_TRAJECTORY_ID,
 )
 from lower_limb_sim.run_robot_trajectory_export import (
@@ -49,13 +48,6 @@ def run_capture(
             "first anchor capture accepts only "
             f"{FIRST_ROBOT_TRIAL_TRAJECTORY_ID}"
         )
-    if (
-        reference_metadata.get("sha256")
-        != APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
-    ):
-        raise ValueError(
-            "first anchor capture requires the pinned reviewed slow-reference SHA-256"
-        )
     first = reference_frame.iloc[0]
     adapter = (adapter_factory or _default_adapter_factory)(robot_ip)
     connect_attempted = False
@@ -81,7 +73,6 @@ def run_capture(
             "path": str(destination.resolve()),
             "anchor": anchor.to_dict(),
             "motion_commanded": False,
-            "requires_manual_review": True,
         }
     finally:
         cleanup_errors: list[BaseException] = []

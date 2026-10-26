@@ -15,7 +15,7 @@ outputs/
 backups/
 lower_limb_sim/data/
 /data/*
-!/data/evidence.zip
+!/data/experiment_data.zip
 !/data/experiment_summary.csv
 *.pth
 .DS_Store

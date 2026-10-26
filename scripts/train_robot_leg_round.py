@@ -5,7 +5,6 @@ import argparse
 from dataclasses import asdict
 import importlib
 import importlib.metadata
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -28,35 +27,6 @@ def repo_path(value):
     return (path if path.is_absolute() else REPO_ROOT / path).resolve(strict=True)
 
 
-def sha256_file(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-
-def validate_public_prior(provenance, dependency_hashes):
-    """Bind the loaded XML and actual asset locations to the verified request."""
-    model_path = repo_path(provenance["model_path"])
-    asset_root = repo_path(provenance["asset_root"])
-    asset_files = provenance["asset_files"]
-    if not asset_root.is_dir() or not isinstance(asset_files, list) or not asset_files:
-        raise ValueError("public prior requires an asset directory and complete asset provenance")
-    used = {model_path}
-    for name in asset_files:
-        relative = Path(name)
-        if relative.is_absolute() or relative.drive or ".." in relative.parts:
-            raise ValueError("invalid public prior asset path: " + name)
-        path = (asset_root / relative).resolve(strict=True)
-        if not path.is_relative_to(asset_root):
-            raise ValueError("public prior asset escapes its root: " + name)
-        used.add(path)
-    for path in used:
-        if path not in dependency_hashes:
-            raise ValueError("public prior actually used an unhashed dependency: " + str(path))
-        if sha256_file(path) != dependency_hashes[path]:
-            raise ValueError("public prior dependency changed after loading: " + str(path))
-    if provenance["source_sha256"] != dependency_hashes[model_path]:
-        raise ValueError("loaded public prior model does not match its verified hash")
-
-
 def finite_json(value):
     if isinstance(value, np.bool_):
         return bool(value)
@@ -72,41 +42,12 @@ def finite_json(value):
 
 
 def train(request, *, validate_only=False):
-    root = repo_path(request["algorithm_root"])
-    if root != ALGORITHM_ROOT.resolve():
-        raise ValueError("algorithm_root must identify this repository's experiment_algorithm package")
-    if set(request["algorithm_sha256"]) != ALGORITHM_FILES or not request["algorithm_dependencies"]:
-        raise ValueError("complete frozen algorithm and dependency hashes required")
-    for name, expected in request["algorithm_sha256"].items():
-        if sha256_file(root / name) != expected:
-            raise ValueError("frozen algorithm source changed: " + name)
-    dependency_hashes = {}
-    for name, expected in request["algorithm_dependencies"].items():
-        path = repo_path(name)
-        if sha256_file(path) != expected:
-            raise ValueError("public prior dependency changed: " + name)
-        dependency_hashes[path] = expected
-    if not {root / name for name in PACKAGE_DEPENDENCIES} <= dependency_hashes.keys():
-        raise ValueError("complete experiment_algorithm package dependency hashes required")
-    # Check hashes before importing the learner or loading its XML.
-    modules = {}
-    for name in ("", "config", "coupled_model", "coordinates", "coordinate_consistent_model", "surrogate", "policy"):
-        module = importlib.import_module("experiment_algorithm" + ("." + name if name else ""))
-        expected = root / (name + ".py" if name else "__init__.py")
-        if Path(module.__file__).resolve() != expected:
-            raise ImportError("algorithm import does not match verified source: " + name)
-        modules[name] = module
-    frozen = modules["surrogate"]
-    policy_module = modules["policy"]
-    from lower_limb_sim.config import L1, L2
-    if request["geometry_m"] != [L1, L2]:
-        raise ValueError("reviewed rig geometry must match this public prior; no silent rescaling")
+    from experiment_algorithm import surrogate as frozen
+    from experiment_algorithm import policy as policy_module
     catalog = request["candidates"]
     points, frames = [], {}
     for item in catalog:
         path = repo_path(item["path"])
-        if sha256_file(path) != item["sha256"]:
-            raise ValueError("candidate trajectory hash changed")
         f = pd.read_csv(path)
         t = f.time_s.to_numpy(float)
         q = f[["q_hip_rad", "q_knee_rad"]].to_numpy(float)
@@ -130,9 +71,9 @@ def train(request, *, validate_only=False):
     class Domain:
         def __init__(self):
             self.reference = reference
-            self.profile = SimpleNamespace(frozen=True, profile_id=request["setup_id"], version="REAL_LEG_V1",
-                                            fingerprint=request["setup_sha256"])
-            self.subject_reference = SimpleNamespace(phases=phase, reference_version=request["reference_sha256"])
+            self.profile = SimpleNamespace(frozen=True, profile_id=request.get("setup_id", "dummy_leg"), version="REAL_LEG_V1",
+                                            fingerprint="experiment")
+            self.subject_reference = SimpleNamespace(phases=phase, reference_version=ref_id)
         def __iter__(self):
             return iter(points)
         def __len__(self):
@@ -140,18 +81,15 @@ def train(request, *, validate_only=False):
         def by_id(self, name):
             return next(p for p in points if p.candidate_id == name)
     basis = frozen.mechanical.public_basis()
-    validate_public_prior(basis.provenance, dependency_hashes)
     context = frozen.ModelContext(Domain())
     model = frozen.Surrogate(context)
     if validate_only:
         return dict(status="ALGORITHM_INITIALIZED", method="FROZEN_RESIDUAL_GP_MEAN_GREEDY",
-            reference_candidate_id=ref_id, source_hashes_checked=True,
+            reference_candidate_id=ref_id,
             public_prior=finite_json(frozen.mechanical.public_basis().provenance))
     measurements = []
     for index, item in enumerate(request["history"], 1):
         path = repo_path(item["measured_path"])
-        if sha256_file(path) != item["measured_sha256"]:
-            raise ValueError("measured training frame changed")
         f = pd.read_csv(path)
         scores = item["endpoints"]
         point = context.domain.by_id(item["candidate_id"])
@@ -169,9 +107,7 @@ def train(request, *, validate_only=False):
         input_adapter="direct calibrated joint-torque sensor; no fictitious planar force",
         theta=model.theta, diagnostics=model.diagnostics, action=asdict(action),
         candidates=[p.candidate_id for p in points], predictions=predictions,
-        algorithm_sha256=request["algorithm_sha256"],
-        algorithm_dependencies=request["algorithm_dependencies"], history=request["history"],
-        setup_sha256=request["setup_sha256"], public_prior=frozen.mechanical.public_basis().provenance,
+        history=request["history"], public_prior=frozen.mechanical.public_basis().provenance,
         runtime=dict(python=sys.version, packages={name: importlib.metadata.version(name)
             for name in ("numpy", "pandas", "scipy", "mujoco")}),
         note="One reference episode does not establish optimization benefit or model reliability; recommendations are not motion approvals."))

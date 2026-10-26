@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-import hashlib
-import json
+from dataclasses import dataclass
 import math
 from typing import Any, Mapping, Sequence
 
@@ -17,7 +15,6 @@ from control.start_anchored_relative_trajectory import (
     ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES,
     APPROVED_FIRST_ROBOT_TRIAL_L1_M,
     APPROVED_FIRST_ROBOT_TRIAL_L2_M,
-    APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256,
     FIRST_ROBOT_TRIAL_TRAJECTORY_ID,
     RehabFrameConfig,
     RelativeTrajectoryAudit,
@@ -32,119 +29,29 @@ from lower_limb_sim.run_robot_trajectory_export import (
     DEFAULT_REFERENCE_PATH,
     load_closed_reference_trajectory,
 )
-from lower_limb_sim.reference_release import load_reference_release_manifest
 from safety.experiment_safety import ExperimentSafetyConfig
-from safety.empty_load_commissioning_release import (
-    ValidatedEmptyLoadCommissioningRelease,
-)
-from safety.robot_trial_release import ValidatedRobotTrialRelease
 
 
-EXECUTE_MODE = "execute"
 OPERATOR_CONFIRMATION = "I CONFIRM SUPERVISED SLOW ROBOT MOTION"
-_LIVE_PREFLIGHT_TOKEN = object()
-
-
-def trajectory_execution_digest(trajectory: pd.DataFrame) -> str:
-    """Bind a preflight result to one exact, ordered execution table."""
-
-    if not isinstance(trajectory, pd.DataFrame):
-        raise TypeError("trajectory must be a pandas DataFrame")
-    descriptor = json.dumps(
-        {
-            "columns": [str(column) for column in trajectory.columns],
-            "dtypes": [str(dtype) for dtype in trajectory.dtypes],
-            "shape": list(trajectory.shape),
-        },
-        ensure_ascii=True,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
-    try:
-        row_hashes = pd.util.hash_pandas_object(
-            trajectory,
-            index=True,
-            categorize=True,
-        ).to_numpy(dtype=np.uint64, copy=False)
-    except (TypeError, ValueError) as exc:
-        raise ValueError("trajectory contains values that cannot be bound") from exc
-    digest = hashlib.sha256()
-    digest.update(descriptor)
-    digest.update(row_hashes.tobytes(order="C"))
-    return digest.hexdigest()
-
-
-def experiment_safety_digest(safety: ExperimentSafetyConfig) -> str:
-    """Bind a live approval to the exact reviewed safety snapshot."""
-
-    if not isinstance(safety, ExperimentSafetyConfig):
-        raise TypeError("safety must be ExperimentSafetyConfig")
-    encoded = json.dumps(
-        safety.to_dict(),
-        ensure_ascii=True,
-        allow_nan=False,
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
 
 
 @dataclass(frozen=True)
 class ExecutionPreflight:
     allowed: bool
-    reasons: tuple[str, ...]
+    reasons: tuple
     trajectory_id: str
     anchor_id: str
     maximum_tcp_speed_m_s: float | None
     maximum_tcp_acceleration_m_s2: float | None
-    runtime_robot_summary: dict[str, object] | None = None
-    evaluation_phase: str = "unbound"
-    trajectory_sha256: str | None = None
-    experiment_safety_sha256: str | None = None
-    release_approval: (
-        ValidatedRobotTrialRelease | ValidatedEmptyLoadCommissioningRelease | None
-    ) = field(default=None, repr=False, compare=False)
-    _live_token: object | None = field(
-        default=None,
-        repr=False,
-        compare=False,
-    )
+    runtime_robot_summary: dict | None = None
 
-    def require_allowed(self) -> None:
+    def require_allowed(self):
         if not self.allowed:
-            raise PermissionError("real robot execution blocked: " + ";".join(self.reasons))
+            raise PermissionError("execution blocked: " + "; ".join(self.reasons))
 
-    def require_live_trajectory_binding(self, trajectory: pd.DataFrame) -> None:
-        """Reject offline, manually constructed, or subsequently changed input."""
-
-        if self.evaluation_phase != "live" or self._live_token is not _LIVE_PREFLIGHT_TOKEN:
-            raise PermissionError("real robot execution blocked: preflight_is_not_live_bound")
-        if not self.trajectory_sha256:
-            raise PermissionError("real robot execution blocked: trajectory_binding_missing")
-        if trajectory_execution_digest(trajectory) != self.trajectory_sha256:
-            raise PermissionError("real robot execution blocked: trajectory_binding_mismatch")
-
-    def require_safety_binding(self, safety: ExperimentSafetyConfig) -> None:
-        if not self.experiment_safety_sha256:
-            raise PermissionError("real robot execution blocked: safety_binding_missing")
-        if experiment_safety_digest(safety) != self.experiment_safety_sha256:
-            raise PermissionError("real robot execution blocked: safety_binding_mismatch")
-
-    def as_metadata(self) -> dict[str, object]:
-        """JSON-safe evidence without exposing the in-process validation token."""
-
-        return {
-            "allowed": self.allowed,
-            "reasons": list(self.reasons),
-            "trajectory_id": self.trajectory_id,
-            "anchor_id": self.anchor_id,
-            "maximum_tcp_speed_m_s": self.maximum_tcp_speed_m_s,
-            "maximum_tcp_acceleration_m_s2": self.maximum_tcp_acceleration_m_s2,
-            "runtime_robot_summary": self.runtime_robot_summary,
-            "evaluation_phase": self.evaluation_phase,
-            "trajectory_sha256": self.trajectory_sha256,
-            "experiment_safety_sha256": self.experiment_safety_sha256,
-        }
+    def as_metadata(self):
+        from dataclasses import asdict
+        return asdict(self)
 
 
 def _connected(adapter: Any) -> bool:
@@ -466,552 +373,55 @@ def audit_execution_trajectory_content(
             "trajectory_outside_reviewed_workspace",
         )
 
-    if require_official_reference:
-        official_match = False
-        if table_trajectory_id == FIRST_ROBOT_TRIAL_TRAJECTORY_ID:
-            try:
-                official, official_metadata = load_closed_reference_trajectory(
-                    DEFAULT_REFERENCE_PATH
-                )
-                official_ids = official["trajectory_id"].astype(str).unique().tolist()
-                official_match = bool(
-                    official_metadata.get("sha256")
-                    == APPROVED_FIRST_ROBOT_TRIAL_REFERENCE_SHA256
-                    and
-                    official_ids == [FIRST_ROBOT_TRIAL_TRAJECTORY_ID]
-                    and len(official) == len(trajectory)
-                    and np.allclose(
-                        official["time_s"].to_numpy(float),
-                        time_s,
-                        rtol=0.0,
-                        atol=1e-12,
-                    )
-                    and np.allclose(
-                        official["q_hip_rad"].to_numpy(float),
-                        q_hip,
-                        rtol=0.0,
-                        atol=1e-12,
-                    )
-                    and np.allclose(
-                        official["q_knee_rad"].to_numpy(float),
-                        q_knee,
-                        rtol=0.0,
-                        atol=1e-12,
-                    )
-                )
-            except (KeyError, OSError, TypeError, ValueError):
-                official_match = False
-        block(not official_match, "trajectory_not_exact_official_slow_reference")
-
     return tuple(reasons), max_speed, max_acceleration
 
 
-def evaluate_execution_preflight(
-    *,
-    mode: str,
-    enable_motion: bool,
-    operator_confirmation: str,
-    requested_anchor_id: str,
-    frame: RehabFrameConfig,
-    anchor: StartAnchor,
-    safety: ExperimentSafetyConfig,
-    trajectory: pd.DataFrame,
-    audit: RelativeTrajectoryAudit,
-    acquisition_health: AcquisitionHealth,
-    logger: Any,
-    robot_adapter: Any,
-    current_tcp_pose_base: Any | None = None,
-    release_approval: (
-        ValidatedRobotTrialRelease | ValidatedEmptyLoadCommissioningRelease | None
-    ) = None,
-    _evaluation_phase: str = "live",
-) -> ExecutionPreflight:
-    """Evaluate every offline, runtime, logging, and human-review gate."""
-    if _evaluation_phase not in {"live", "offline"}:
-        raise ValueError("execution preflight phase must be live or offline")
-    reasons: list[str] = []
+def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirmation,
+        requested_anchor_id, frame, anchor, safety, trajectory, audit):
+    reasons = list(safety.execution_block_reasons())
+    if mode != "execute" or enable_motion is not True or operator_confirmation != OPERATOR_CONFIRMATION:
+        reasons.append("explicit motion confirmation required")
+    if requested_anchor_id != anchor.anchor_id or anchor.trajectory_id != audit.trajectory_id:
+        reasons.append("start anchor does not match this trajectory")
+    content, speed, acceleration = audit_execution_trajectory_content(
+        trajectory, safety, expected_trajectory_id=audit.trajectory_id, frame=frame, anchor=anchor,
+        require_official_reference=False)
+    reasons.extend(content)
+    if not audit.trajectory_valid:
+        reasons.append("invalid trajectory")
+    return ExecutionPreflight(not reasons, tuple(reasons), audit.trajectory_id, anchor.anchor_id, speed, acceleration)
 
-    def block(condition: bool, reason: str) -> None:
-        if condition and reason not in reasons:
-            reasons.append(reason)
 
-    block(mode != EXECUTE_MODE, "mode_is_not_execute")
-    block(type(enable_motion) is not bool or not enable_motion, "enable_motion_flag_missing")
-    block(operator_confirmation != OPERATOR_CONFIRMATION, "operator_confirmation_missing")
-    block(not frame.reviewed, "rehab_frame_not_reviewed")
-    block(not anchor.reviewed, "start_anchor_not_reviewed")
-    block(requested_anchor_id != anchor.anchor_id, "requested_anchor_id_mismatch")
-    validated_release = (
-        release_approval
-        if isinstance(
-            release_approval,
-            (ValidatedRobotTrialRelease, ValidatedEmptyLoadCommissioningRelease),
-        )
-        else None
-    )
-    release_is_approved = False
-    if validated_release is not None:
-        try:
-            validated_release.require_current(check_files=True)
-            validated_release.require_objects(safety=safety, frame=frame, anchor=anchor, trajectory=trajectory)
-            release_approval = validated_release.payload
-            release_is_approved = True
-        except (ValueError, OSError, PermissionError) as exc:
-            block(True, "release_validation_failed:" + str(exc))
-    block(not release_is_approved, "reference_release_not_approved_for_first_robot_trial")
-    for reason in safety.execution_block_reasons():
-        block(True, reason)
-    adapter_connected = _connected(robot_adapter)
-    block(not adapter_connected, "sdk_not_connected")
-    block(not bool(getattr(logger, "ready", False)), "logger_not_ready")
-    block(not bool(getattr(logger, "healthy", False)), "logger_not_healthy")
-
-    runtime_summary: Mapping[str, object] | None = None
-    if adapter_connected:
-        summary_reader = getattr(robot_adapter, "get_robot_state_summary", None)
-        if callable(summary_reader):
-            try:
-                candidate = summary_reader()
-                if isinstance(candidate, Mapping):
-                    runtime_summary = candidate
-            except Exception:
-                runtime_summary = None
-    block(runtime_summary is None, "runtime_robot_summary_unavailable")
-    if release_is_approved and _evaluation_phase == "live" and runtime_summary is not None:
-        try:
-            validated_release.require_runtime(runtime_summary)
-        except (ValueError, PermissionError) as exc:
-            block(True, "release_runtime_validation_failed:" + str(exc))
-    metadata_value = (
-        runtime_summary.get("robot_metadata") if runtime_summary is not None else None
-    )
-    metadata = metadata_value if isinstance(metadata_value, Mapping) else None
-    block(metadata is None, "runtime_robot_metadata_unavailable")
-
-    identity_bindings = (
-        ("robot_model", "expected_robot_model"),
-        ("robot_serial_number", "expected_robot_serial_number"),
-        ("controller_version", "expected_controller_version"),
-    )
-    for metadata_name, expected_name in identity_bindings:
-        anchor_value = _optional_text(getattr(anchor, metadata_name, None))
-        expected_value = _optional_text(getattr(safety, expected_name, None))
-        runtime_value = (
-            _optional_text(metadata.get(metadata_name)) if metadata is not None else None
-        )
-        block(anchor_value is None, f"anchor_{metadata_name}_unavailable")
-        block(runtime_value is None, f"runtime_{metadata_name}_unavailable")
-        if expected_value is not None:
-            block(anchor_value != expected_value, f"anchor_{metadata_name}_mismatch")
-            block(runtime_value != expected_value, f"runtime_{metadata_name}_mismatch")
-        if release_is_approved:
-            release_identity = release_approval.get("robot_identity")
-            release_key = {
-                "robot_model": "robot_model",
-                "robot_serial_number": "robot_serial_number",
-                "controller_version": "controller_version",
-            }[metadata_name]
-            release_value = (
-                release_identity.get(release_key)
-                if isinstance(release_identity, Mapping)
-                else None
-            )
-            block(anchor_value != release_value, f"anchor_{metadata_name}_release_mismatch")
-            block(runtime_value != release_value, f"runtime_{metadata_name}_release_mismatch")
-
-    expected_tool = _optional_text(safety.reviewed_tool_name)
-    expected_workpiece = _optional_text(safety.reviewed_workpiece_name)
-    anchor_tool = _optional_text(getattr(anchor, "tool_name", None))
-    anchor_workpiece = _optional_text(getattr(anchor, "workpiece_name", None))
-    block(anchor_tool is None, "anchor_tool_name_unavailable")
-    block(anchor_workpiece is None, "anchor_workpiece_name_unavailable")
-    if expected_tool is not None:
-        block(anchor_tool != expected_tool, "anchor_tool_name_mismatch")
-    if expected_workpiece is not None:
-        block(anchor_workpiece != expected_workpiece, "anchor_workpiece_name_mismatch")
-
-    payload_value = metadata.get("sdk_tool_payload") if metadata is not None else None
-    payload = payload_value if isinstance(payload_value, Mapping) else None
-    block(payload is None, "runtime_sdk_tool_payload_unavailable")
-    available_tools = payload.get("sdk_available_tool_names") if payload is not None else None
-    available_workpieces = (
-        payload.get("sdk_available_workobject_names") if payload is not None else None
-    )
-    tool_names = (
-        tuple(value for item in available_tools if (value := _optional_text(item)) is not None)
-        if isinstance(available_tools, Sequence)
-        and not isinstance(available_tools, (str, bytes))
-        else None
-    )
-    workpiece_names = (
-        tuple(
-            value
-            for item in available_workpieces
-            if (value := _optional_text(item)) is not None
-        )
-        if isinstance(available_workpieces, Sequence)
-        and not isinstance(available_workpieces, (str, bytes))
-        else None
-    )
-    block(tool_names is None, "runtime_sdk_tool_names_unavailable")
-    block(workpiece_names is None, "runtime_sdk_workpiece_names_unavailable")
-    if expected_tool is not None and tool_names is not None:
-        block(expected_tool not in tool_names, "reviewed_tool_name_not_reported_by_sdk")
-    if expected_workpiece is not None and workpiece_names is not None:
-        block(
-            expected_workpiece not in workpiece_names,
-            "reviewed_workpiece_name_not_reported_by_sdk",
-        )
-
-    runtime_mass = payload.get("toolset_load_mass_kg") if payload is not None else None
-    runtime_cog = payload.get("toolset_load_cog_m") if payload is not None else None
-    runtime_inertia = (
-        payload.get("toolset_load_inertia_kg_m2") if payload is not None else None
-    )
-    mass_valid = (
-        not isinstance(runtime_mass, bool)
-        and isinstance(runtime_mass, (int, float))
-        and math.isfinite(float(runtime_mass))
-        and float(runtime_mass) >= 0.0
-    )
-    block(not mass_valid, "runtime_payload_mass_unavailable")
-    block(_finite_vector(runtime_cog, 3) is None, "runtime_payload_cog_unavailable")
-    parsed_runtime_inertia = _finite_vector(runtime_inertia, 3)
-    block(
-        parsed_runtime_inertia is None
-        or any(value < 0.0 for value in parsed_runtime_inertia),
-        "runtime_payload_inertia_unavailable",
-    )
-    if safety.reviewed_payload_mass_kg is not None and mass_valid:
-        block(
-            not math.isclose(
-                float(runtime_mass),
-                safety.reviewed_payload_mass_kg,
-                rel_tol=0.0,
-                abs_tol=1e-9,
-            ),
-            "runtime_payload_mass_mismatch",
-        )
-    if safety.reviewed_payload_cog_m is not None:
-        block(
-            not _same_numbers(runtime_cog, safety.reviewed_payload_cog_m, 3),
-            "runtime_payload_cog_mismatch",
-        )
-    if safety.reviewed_payload_inertia_kg_m2 is not None:
-        block(
-            not _same_numbers(
-                runtime_inertia,
-                safety.reviewed_payload_inertia_kg_m2,
-                3,
-            ),
-            "runtime_payload_inertia_mismatch",
-        )
-
-    runtime_limits_value = (
-        metadata.get("joint_soft_limits_rad") if metadata is not None else None
-    )
-    runtime_limits = _soft_limits(runtime_limits_value)
-    block(runtime_limits is None, "runtime_joint_soft_limits_unavailable")
-    if safety.reviewed_joint_soft_limits_rad is not None:
-        block(
-            not _same_soft_limits(
-                runtime_limits_value,
-                safety.reviewed_joint_soft_limits_rad,
-            ),
-            "runtime_joint_soft_limits_mismatch",
-        )
-        anchor_joints = _finite_vector(anchor.robot_joint_positions, 6)
-        if anchor_joints is not None:
-            block(
-                any(
-                    joint < lower or joint > upper
-                    for joint, (lower, upper) in zip(
-                        anchor_joints,
-                        safety.reviewed_joint_soft_limits_rad,
-                    )
-                ),
-                "anchor_joint_position_outside_reviewed_soft_limits",
-            )
-
-    runtime_joints_value = (
-        runtime_summary.get("joint_position_rad") if runtime_summary is not None else None
-    )
-    runtime_joints = _finite_vector(runtime_joints_value, 6)
-    block(runtime_joints is None, "runtime_joint_positions_unavailable")
-    if runtime_joints is not None and runtime_limits is not None:
-        block(
-            any(
-                joint < lower or joint > upper
-                for joint, (lower, upper) in zip(runtime_joints, runtime_limits)
-            ),
-            "runtime_joint_position_outside_soft_limits",
-        )
-
-    commissioning_collision_waiver = bool(
-        release_is_approved
-        and isinstance(validated_release, ValidatedEmptyLoadCommissioningRelease)
-        and release_approval.get("allow_missing_sdk_collision_state_error") == 259
-    )
-    collision_state = (
-        runtime_summary.get("collision_state") if runtime_summary is not None else None
-    )
-    collision_query_valid = (
-        runtime_summary.get("collision_state_query_valid")
-        if runtime_summary is not None
-        else None
-    )
-    if not commissioning_collision_waiver:
-        block(
-            collision_query_valid is not True or type(collision_state) is not bool,
-            "runtime_collision_state_unavailable",
-        )
-    elif collision_query_valid is not True:
-        invalid_reason = str(
-            runtime_summary.get("collision_state_invalid_reason")
-            if runtime_summary is not None
-            else ""
-        )
-        block("259" not in invalid_reason, "runtime_collision_waiver_error_mismatch")
-    block(collision_state is True, "runtime_collision_detected")
-    if release_is_approved and _evaluation_phase == "live":
-        release_source = release_approval.get("collision_source")
-        runtime_source = runtime_summary.get("collision_state_source") if runtime_summary else None
-        block(runtime_source != release_source, "runtime_collision_source_release_mismatch")
-
-    current_pose = np.asarray(current_tcp_pose_base, dtype=float) if current_tcp_pose_base is not None else None
-    if current_pose is None or current_pose.shape != (6,) or not np.isfinite(current_pose).all():
-        block(True, "current_tcp_pose_unavailable")
+def evaluate_execution_preflight(*, acquisition_health, logger, robot_adapter, current_tcp_pose_base, **request):
+    from hardware.safety_events import safety_event_block_reason
+    result = evaluate_offline_execution_request(**request)
+    reasons = list(result.reasons)
+    safety, anchor = request["safety"], request["anchor"]
+    if not _connected(robot_adapter) or not logger.ready or not logger.healthy:
+        reasons.append("robot or logger not ready")
+    summary = robot_adapter.get_robot_state_summary()
+    if summary.get("collision_state_query_valid") is not True or summary.get("collision_state") is not False:
+        reasons.append("collision state is unavailable or active")
+    event_reason = safety_event_block_reason(robot_adapter)
+    if event_reason:
+        reasons.append(event_reason)
+    pose = np.asarray(current_tcp_pose_base, float)
+    if pose.shape != (6,) or not np.isfinite(pose).all():
+        reasons.append("invalid current TCP pose")
     else:
-        anchor_pose = np.asarray(anchor.tcp_pose_base, dtype=float)
-        position_error = float(np.linalg.norm(current_pose[:3] - anchor_pose[:3]))
-        orientation_delta = np.arctan2(
-            np.sin(current_pose[3:] - anchor_pose[3:]),
-            np.cos(current_pose[3:] - anchor_pose[3:]),
-        )
-        orientation_error = float(np.linalg.norm(orientation_delta))
-        if safety.max_start_anchor_position_error_m is not None:
-            block(
-                position_error > safety.max_start_anchor_position_error_m,
-                "robot_not_at_reviewed_start_anchor_position",
-            )
-        if safety.max_start_anchor_orientation_error_rad is not None:
-            block(
-                orientation_error > safety.max_start_anchor_orientation_error_rad,
-                "robot_not_at_reviewed_start_anchor_orientation",
-            )
-
-    trajectory_id = audit.trajectory_id
-    block(
-        trajectory_id not in ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES,
-        "trajectory_not_whitelisted_for_first_robot_trial",
-    )
-    block(anchor.trajectory_id != trajectory_id, "anchor_trajectory_id_mismatch")
-    if "q_hip_ref" in trajectory and "q_knee_ref" in trajectory and len(trajectory):
-        try:
-            first_q_hip = float(trajectory.iloc[0]["q_hip_ref"])
-            first_q_knee = float(trajectory.iloc[0]["q_knee_ref"])
-        except (TypeError, ValueError):
-            first_q_hip = math.nan
-            first_q_knee = math.nan
-        block(
-            not math.isclose(
-                anchor.reference_start_q_hip,
-                first_q_hip,
-                rel_tol=0.0,
-                abs_tol=1e-10,
-            )
-            or not math.isclose(
-                anchor.reference_start_q_knee,
-                first_q_knee,
-                rel_tol=0.0,
-                abs_tol=1e-10,
-            ),
-            "anchor_reference_start_joint_mismatch",
-        )
-    else:
-        block(True, "anchor_reference_start_joint_mismatch")
-    block(not audit.trajectory_valid, "trajectory_audit_invalid")
-    block(not audit.first_target_equals_anchor, "trajectory_start_not_anchor")
-    block(not audit.final_target_equals_anchor, "trajectory_end_not_anchor")
-    block(not audit.first_relative_displacement_zero, "relative_start_not_zero")
-    block(not audit.final_relative_displacement_zero, "trajectory_not_closed")
-    block(not audit.approved_rom_valid, "approved_rom_invalid")
-    block(not audit.theta_shank_definition_valid, "theta_shank_definition_invalid")
-    block(not audit.all_samples_finite, "trajectory_contains_non_finite_values")
-    block(not audit.time_strictly_increasing, "trajectory_time_invalid")
-    block(audit.sample_count != len(trajectory), "trajectory_audit_sample_count_mismatch")
-    content_reasons, max_speed, max_acceleration = audit_execution_trajectory_content(
-        trajectory,
-        safety,
-        expected_trajectory_id=trajectory_id,
-        frame=frame,
-        anchor=anchor,
-        require_official_reference=not isinstance(
-            validated_release, ValidatedEmptyLoadCommissioningRelease
-        ),
-    )
-    for content_reason in content_reasons:
-        block(True, content_reason)
-
+        expected = np.asarray(anchor.tcp_pose_base, float)
+        delta = np.arctan2(np.sin(pose[3:] - expected[3:]), np.cos(pose[3:] - expected[3:]))
+        if np.linalg.norm(pose[:3] - expected[:3]) > safety.max_start_anchor_position_error_m or np.linalg.norm(delta) > safety.max_start_anchor_orientation_error_rad:
+            reasons.append("robot moved away from previewed start")
     health = acquisition_health
-    block(not health.valid, "acquisition_streams_unhealthy")
-    block(not health.state_thread_alive, "state_thread_not_alive")
-    block(not health.wrench_thread_alive, "wrench_thread_not_alive")
-    block(not health.alignment_thread_alive, "alignment_thread_not_alive")
-    if safety.max_state_age_s is not None:
-        block(
-            health.state_age_s is None or health.state_age_s > safety.max_state_age_s,
-            "state_stale",
-        )
-    if safety.max_wrench_age_s is not None:
-        block(
-            health.wrench_age_s is None or health.wrench_age_s > safety.max_wrench_age_s,
-            "wrench_stale",
-        )
-    if safety.max_state_wrench_skew_s is not None:
-        block(
-            health.state_wrench_skew_s is None
-            or health.state_wrench_skew_s > safety.max_state_wrench_skew_s,
-            "state_wrench_skew_limit_exceeded",
-        )
-    if safety.max_force_n is not None:
-        block(
-            health.force_magnitude_n is None or health.force_magnitude_n > safety.max_force_n,
-            "force_limit_exceeded_or_unavailable",
-        )
-    if safety.max_torque_nm is not None:
-        block(
-            health.torque_magnitude_nm is None
-            or health.torque_magnitude_nm > safety.max_torque_nm,
-            "torque_limit_exceeded_or_unavailable",
-        )
-    block(not math.isfinite(max_speed) if max_speed is not None else False, "invalid_speed_audit")
-    block(
-        not math.isfinite(max_acceleration) if max_acceleration is not None else False,
-        "invalid_acceleration_audit",
-    )
-    return ExecutionPreflight(
-        allowed=not reasons,
-        reasons=tuple(reasons),
-        trajectory_id=trajectory_id,
-        anchor_id=anchor.anchor_id,
-        maximum_tcp_speed_m_s=max_speed,
-        maximum_tcp_acceleration_m_s2=max_acceleration,
-        runtime_robot_summary=(
-            dict(runtime_summary) if runtime_summary is not None else None
-        ),
-        evaluation_phase=_evaluation_phase,
-        trajectory_sha256=trajectory_execution_digest(trajectory),
-        experiment_safety_sha256=experiment_safety_digest(safety),
-        release_approval=validated_release if release_is_approved else None,
-        _live_token=(
-            _LIVE_PREFLIGHT_TOKEN if _evaluation_phase == "live" else None
-        ),
-    )
-
-
-def evaluate_offline_execution_request(
-    *,
-    mode: str,
-    enable_motion: bool,
-    operator_confirmation: str,
-    requested_anchor_id: str,
-    frame: RehabFrameConfig,
-    anchor: StartAnchor,
-    safety: ExperimentSafetyConfig,
-    trajectory: pd.DataFrame,
-    audit: RelativeTrajectoryAudit,
-    release_approval: (
-        ValidatedRobotTrialRelease | ValidatedEmptyLoadCommissioningRelease | None
-    ) = None,
-) -> ExecutionPreflight:
-    """Run all static gates before a robot connection is attempted.
-
-    Runtime state/wrench/logger/connection values are intentionally neutral in
-    this pass and are evaluated again from real caches immediately before
-    motion.  The returned object must never be passed to the executor.
-    """
-
-    class _ReadyLogger:
-        ready = True
-        healthy = True
-
-    class _Connected:
-        @staticmethod
-        def is_connected() -> bool:
-            return True
-
-        @staticmethod
-        def get_robot_state_summary() -> dict[str, object]:
-            return {
-                "connected": True,
-                "joint_position_rad": list(anchor.robot_joint_positions),
-                "collision_state": False,
-                "collision_state_query_valid": True,
-                "robot_metadata": {
-                    "robot_model": anchor.robot_model,
-                    "robot_serial_number": anchor.robot_serial_number,
-                    "controller_version": anchor.controller_version,
-                    "joint_soft_limits_rad": safety.reviewed_joint_soft_limits_rad,
-                    "sdk_tool_payload": {
-                        "toolset_load_mass_kg": safety.reviewed_payload_mass_kg,
-                        "toolset_load_cog_m": safety.reviewed_payload_cog_m,
-                        "toolset_load_inertia_kg_m2": (
-                            safety.reviewed_payload_inertia_kg_m2
-                        ),
-                        "sdk_available_tool_names": [safety.reviewed_tool_name],
-                        "sdk_available_workobject_names": [
-                            safety.reviewed_workpiece_name
-                        ],
-                        "active_hmi_tool_workobject_verified": False,
-                    },
-                },
-            }
-
-    neutral_health = AcquisitionHealth(
-        host_time_s=0.0,
-        state_time_s=0.0,
-        wrench_time_s=0.0,
-        state_age_s=0.0,
-        wrench_age_s=0.0,
-        state_wrench_skew_s=0.0,
-        state_valid=True,
-        wrench_valid=True,
-        state_thread_alive=True,
-        wrench_thread_alive=True,
-        alignment_thread_alive=True,
-        query_duration_ms=0.0,
-        force_magnitude_n=0.0,
-        torque_magnitude_nm=0.0,
-        valid=True,
-        invalid_reason="",
-    )
-    return evaluate_execution_preflight(
-        mode=mode,
-        enable_motion=enable_motion,
-        operator_confirmation=operator_confirmation,
-        requested_anchor_id=requested_anchor_id,
-        frame=frame,
-        anchor=anchor,
-        safety=safety,
-        trajectory=trajectory,
-        audit=audit,
-        acquisition_health=neutral_health,
-        logger=_ReadyLogger(),
-        robot_adapter=_Connected(),
-        current_tcp_pose_base=anchor.tcp_pose_base,
-        release_approval=release_approval,
-        _evaluation_phase="offline",
-    )
-
-
-__all__ = [
-    "EXECUTE_MODE",
-    "ExecutionPreflight",
-    "OPERATOR_CONFIRMATION",
-    "audit_execution_trajectory_content",
-    "evaluate_execution_preflight",
-    "experiment_safety_digest",
-    "evaluate_offline_execution_request",
-    "trajectory_execution_digest",
-]
+    if not health.valid or not all((health.state_thread_alive, health.wrench_thread_alive, health.alignment_thread_alive)):
+        reasons.append("acquisition unhealthy")
+    for value, limit in ((health.state_age_s, safety.max_state_age_s),
+                         (health.wrench_age_s, safety.max_wrench_age_s),
+                         (health.state_wrench_skew_s, safety.max_state_wrench_skew_s),
+                         (health.force_magnitude_n, safety.max_force_n),
+                         (health.torque_magnitude_nm, safety.max_torque_nm)):
+        if value is None or not math.isfinite(value) or value < 0 or limit is None or value > limit:
+            reasons.append("measurement missing, stale or over limit")
+    return ExecutionPreflight(not reasons, tuple(reasons), result.trajectory_id, result.anchor_id,
+                              result.maximum_tcp_speed_m_s, result.maximum_tcp_acceleration_m_s2, summary)

@@ -1,7 +1,5 @@
-# Runtime approvals and algorithm manifests bind exact source bytes.
-# Preserve those bytes on Windows and Linux; evidence.zip stores raw originals.
+# Preserve existing text bytes and the vendor SDK line endings.
 * -text whitespace=cr-at-eol
 *.zip binary
-# Preserve the vendor SDK's original text normalization and binary payloads.
 /hardware/windows/xcoresdk/*.md text eol=crlf
 /hardware/windows/xcoresdk/**/*.pyi text eol=crlf

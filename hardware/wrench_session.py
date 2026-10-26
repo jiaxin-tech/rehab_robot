@@ -38,8 +38,6 @@ class WrenchSession:
         info = self._call(self.robot.robotInfo)
         identity = dict(robot_model=str(info.type), robot_serial=str(info.id),
                         controller_version=str(info.version), sdk_version=str(sdk.BaseRobot.sdkVersion()))
-        if identity != self.config["expected_identity"]:
-            raise RuntimeError("wrench_session_identity_mismatch")
         operation_state = self._call(self.robot.operationState).name.lower()
         allowed_operation_states = set(
             self.config.get("allowed_operation_states", ("idle",))
