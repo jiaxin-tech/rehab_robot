@@ -5244,6 +5244,54 @@ def test_personal_executor_completes_and_stops(personal_context):
     assert c.events.count("stop") == 1
 
 
+@pytest.mark.parametrize("source,allowed", [("controller", True), ("query", False), ("events", False)])
+def test_unknown_collision_feedback_through_preflight_and_executor(personal_context, source, allowed):
+    c = personal_context
+    c.summary.update(collision_state_source=source, collision_state_query_valid=False,
+                     collision_state=None)
+    preflight = evaluate_execution_preflight(**c.request, acquisition_health=c.health,
+        logger=c.logger, robot_adapter=c.adapter, current_tcp_pose_base=c.anchor.tcp_pose_base)
+    assert preflight.allowed is allowed
+    executor, _ = personal_executor(c)
+    if allowed:
+        result = executor.execute(c.trajectory, preflight)
+        assert result.completed and result.commands_dispatched == len(c.trajectory)
+        assert "hold" in c.events and c.events[-1] == "stop"
+    else:
+        with pytest.raises(RuntimeError, match="collision protection"):
+            executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
+        assert "hold" not in c.events and c.events[-1] == "stop"
+
+
+@pytest.mark.parametrize("field,value,reason", [
+    ("state_age_s", .026, "state_stale"),
+    ("wrench_age_s", .051, "wrench_stale"),
+    ("state_wrench_skew_s", .041, "state_wrench_skew_limit_exceeded"),
+    ("force_magnitude_n", 101., "force_limit_exceeded"),
+    ("torque_magnitude_nm", 201., "torque_limit_exceeded"),
+    ("valid", False, "controller_realtime_motion_error"),
+])
+def test_controller_mode_stops_after_motion_begins_on_measurement_fault(personal_context, field, value, reason):
+    c = personal_context
+    c.summary.update(collision_state_source="controller", collision_state_query_valid=False,
+                     collision_state=None)
+    preflight = evaluate_execution_preflight(**c.request, acquisition_health=c.health,
+        logger=c.logger, robot_adapter=c.adapter, current_tcp_pose_base=c.anchor.tcp_pose_base)
+    preflight.require_allowed()
+    def target(pose):
+        c.events.append("target")
+        setattr(c.health, field, value)
+        if field == "valid":
+            c.health.invalid_reason = reason
+    c.motion.send_cartesian_target = target
+    executor, _ = personal_executor(c)
+    with pytest.raises(RuntimeError, match=reason):
+        executor.execute(c.trajectory, preflight)
+    assert "hold" in c.events
+    assert c.events.count("target") == 1
+    assert c.events.count("stop") == 1 and c.events[-1] == "stop"
+
+
 def test_personal_executor_stops_on_late_logging(personal_context):
     c = personal_context
     executor, clock = personal_executor(c)
@@ -5645,3 +5693,64 @@ def test_slow_controller_fault_poll_does_not_refresh_old_state_timestamp(monkeyp
     native._state_loop()
     assert native.get_state_frame().host_monotonic_time_s == 1.
     assert clock[0] == 1_300_000_000
+
+
+@pytest.mark.parametrize("source", ["controller", "query", "events"])
+def test_realtime_preparation_unknown_feedback_only_allows_controller_mode(source):
+    from scripts.run_rehab_experiment import _prepare_realtime_session
+    calls = []
+    native = SimpleNamespace(get_robot_mode=lambda: "IDLE",
+        enable_realtime=lambda **kw: calls.append(kw))
+    adapter = SimpleNamespace(connect=lambda: None, native_robot=native,
+        get_robot_state_summary=lambda: dict(collision_state_source=source,
+            collision_state_query_valid=False, collision_state=None))
+    if source == "controller":
+        _prepare_realtime_session(adapter, filter_hz=50., network_tolerance_percent=20.)
+        assert calls == [{"load": 0.}]
+    else:
+        with pytest.raises(PermissionError, match="collision state"):
+            _prepare_realtime_session(adapter, filter_hz=50., network_tolerance_percent=20.)
+        assert not calls
+
+
+@pytest.mark.parametrize("states", [[False, False], [False, True, True], [False, True, False]])
+def test_recording_report_retains_startup_and_failed_samples(tmp_path, states):
+    import csv
+    from scripts.diagnose_robot import summarize_recording
+    directory = tmp_path / "robot"
+    directory.mkdir()
+    path = directory / "aligned_snapshot.csv"
+    with path.open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=["host_time_s", "query_duration_ms", "state_age_s",
+            "wrench_age_s", "state_wrench_skew_s", "valid", "invalid_reason"])
+        writer.writeheader()
+        for i, valid in enumerate(states):
+            writer.writerow(dict(host_time_s=1.+i*.02, query_duration_ms=312. if i == 0 else 1.,
+                state_age_s=.36 if i == 0 else .01, wrench_age_s=.06, state_wrench_skew_s=.03,
+                valid=valid, invalid_reason="" if valid else "state_stale;wrench_stale"))
+    result = summarize_recording(tmp_path)
+    assert result["samples"] == len(states)
+    assert result["valid_samples"] == sum(states)
+    assert result["ever_ready"] == any(states)
+    assert result["invalid_after_ready"] == (None if not any(states) else states[states.index(True):].count(False))
+    assert result["metrics"]["query_duration_ms"]["max"] == 312.
+    assert result["metrics"]["state_age_ms"]["max"] == 360.
+    assert result["invalid_reasons"]["state_stale"] == states.count(False)
+    state = dict(status="FAILED", reason="original acquisition failure")
+    personal_round.report(tmp_path, state)
+    saved = json.loads((tmp_path / "round_status.json").read_text(encoding="utf-8"))
+    assert saved["reason"] == "original acquisition failure"
+    assert saved["robot_timing"] == result
+    assert "312.000" in (tmp_path / "report.md").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("content", [None, "not,a,snapshot\n", "host_time_s,valid,invalid_reason,query_duration_ms,state_age_s,wrench_age_s,state_wrench_skew_s\nnan,True,,1,.01,.02,.01\n"])
+def test_unreadable_timing_never_masks_session_failure(tmp_path, content):
+    from scripts.diagnose_robot import summarize_recording
+    if content is not None:
+        (tmp_path / "robot").mkdir()
+        (tmp_path / "robot/aligned_snapshot.csv").write_text(content, encoding="utf-8")
+    assert not summarize_recording(tmp_path)["available"]
+    state = dict(status="FAILED", reason="original failure")
+    personal_round.report(tmp_path, state)
+    assert json.loads((tmp_path / "round_status.json").read_text(encoding="utf-8"))["reason"] == "original failure"

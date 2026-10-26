@@ -169,7 +169,7 @@ flowchart LR
 | [scripts/acquire_robot_data.py](../scripts/acquire_robot_data.py) | 只观测机器人状态和力；复用独立力查询进程，联动假腿故障退出 |
 | [scripts/capture_start_anchor.py](../scripts/capture_start_anchor.py) | 读取现场机器人起点，不发送轨迹 |
 | [scripts/diagnose_collision_events.py](../scripts/diagnose_collision_events.py) | 观测厂商安全回调和事件时效 |
-| [scripts/diagnose_robot.py](../scripts/diagnose_robot.py) | 一个命令诊断状态时序、力查询耗时和快照对齐；样本只写 CSV |
+| [scripts/diagnose_robot.py](../scripts/diagnose_robot.py) | 诊断状态、力和对齐；汇总真实会话时序并复用到本轮报告，样本只写 CSV |
 | [scripts/lab_session.py](../scripts/lab_session.py) | 统一入口：检查、静止观测、准备、运动采集、离线训练；集中写本轮报告 |
 | [scripts/preview_rehab_trajectory.py](../scripts/preview_rehab_trajectory.py) | 生成轨迹 CSV 和图片预览 |
 | [scripts/rokae_commission.py](../scripts/rokae_commission.py) | 现场设备调试命令入口，含显式上电、复位及点动动作 |

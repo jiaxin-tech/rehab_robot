@@ -112,6 +112,51 @@ def invalid_reason_counts(rows: Iterable[dict[str, Any]]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
+def summarize_recording(session: Path) -> dict:
+    """Summarize actual mainline snapshots, including startup and failed runs."""
+    path = Path(session) / "robot/aligned_snapshot.csv"
+    fields = {"query_duration_ms": 1., "state_age_s": 1000.,
+              "wrench_age_s": 1000., "state_wrench_skew_s": 1000.}
+    try:
+        with path.open(newline="", encoding="utf-8") as stream:
+            reader = csv.DictReader(stream)
+            if not set(fields).union({"valid", "host_time_s", "invalid_reason"}).issubset(reader.fieldnames or []):
+                raise ValueError("aligned snapshot columns missing")
+            rows = list(reader)
+        times = [float(row["host_time_s"]) for row in rows]
+        if not all(math.isfinite(value) and value >= 0 for value in times):
+            raise ValueError("invalid snapshot timestamps")
+        metrics, invalid_numeric = {}, 0
+        for field, scale in fields.items():
+            values = []
+            for row in rows:
+                raw = row[field]
+                if raw in (None, ""):
+                    continue
+                try:
+                    value = float(raw)
+                except (ValueError, TypeError):
+                    invalid_numeric += 1
+                    continue
+                if not math.isfinite(value) or value < 0:
+                    invalid_numeric += 1
+                    continue
+                values.append(value * scale)
+            metrics[field.removesuffix("_s").removesuffix("_ms") + "_ms"] = numeric_summary(values)
+        valid = [str(row["valid"]).lower() == "true" for row in rows]
+        first = next((i for i, good in enumerate(valid) if good), None)
+        return dict(available=True, samples=len(rows), valid_samples=sum(valid),
+            recorded_span_s=times[-1] - times[0] if times else 0.,
+            timestamp_order_valid=all(b > a for a, b in zip(times, times[1:])),
+            maximum_snapshot_gap_ms=max(((b-a)*1000. for a, b in zip(times, times[1:])), default=None),
+            includes_startup=True, ever_ready=first is not None,
+            invalid_after_ready=None if first is None else valid[first:].count(False),
+            invalid_numeric_values=invalid_numeric, metrics=metrics,
+            invalid_reasons=invalid_reason_counts(rows))
+    except (OSError, ValueError, TypeError, csv.Error) as exc:
+        return dict(available=False, reason=f"{type(exc).__name__}:{exc}")
+
+
 def sequence_drops(sequence_ids: Sequence[int | None]) -> int:
     """Count missing frames between increasing source sequence identifiers."""
     dropped = 0

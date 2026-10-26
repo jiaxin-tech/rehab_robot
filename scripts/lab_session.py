@@ -21,6 +21,7 @@ from measurement_validation.robot_leg_round import aligned_measurement, endpoint
 from safety.experiment_safety import ExperimentSafetyConfig
 from scripts.acquire_robot_data import _configured_adapter_factory, load_live_wrench_config, run_acquisition
 from scripts.capture_start_anchor import run_capture
+from scripts.diagnose_robot import summarize_recording
 from scripts.preview_rehab_trajectory import preview_trajectory
 from scripts.run_rehab_experiment import run_execute
 
@@ -58,11 +59,26 @@ def check_config(config_path=BUNDLE_PATH):
 
 
 def report(directory, state):
+    if (directory / "robot/aligned_snapshot.csv").is_file():
+        state["robot_timing"] = summarize_recording(directory)
     atomic_json(directory / "round_status.json", state)
     lines = ["# 假腿实验", "", "状态：" + state["status"],
              "训练：" + state.get("training_status", "DISABLED"),
              "原因：" + state.get("reason", "无"), ""]
     lines += ["- " + x for x in state.get("blockers", [])]
+    timing = state.get("robot_timing", {})
+    if timing:
+        if timing.get("available"):
+            lines += [f"机器人快照（含启动）：有效 {timing['valid_samples']}/{timing['samples']}；"
+                      f"曾就绪 {timing['ever_ready']}；就绪后失效 {timing['invalid_after_ready']}。"]
+            for field, label in (("query_duration_ms", "力查询"), ("state_age_ms", "状态时龄"),
+                                 ("wrench_age_ms", "力时龄"), ("state_wrench_skew_ms", "状态/力时差")):
+                metric = timing["metrics"][field]
+                values = ["无数据" if metric[k] is None else f"{metric[k]:.3f}" for k in ("p95", "max")]
+                lines += [f"- {label} P95/最大：{' / '.join(values)} 毫秒"]
+            lines += ["机器人失效原因：" + json.dumps(timing["invalid_reasons"], ensure_ascii=False)]
+        else:
+            lines += ["机器人时序统计不可用：" + timing["reason"]]
     quality = state.get("quality", {})
     if quality:
         lines += ["采集：" + json.dumps({k: quality.get(k) for k in
