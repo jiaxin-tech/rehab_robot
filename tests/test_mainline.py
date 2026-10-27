@@ -5292,6 +5292,22 @@ def test_controller_mode_stops_after_motion_begins_on_measurement_fault(personal
     assert c.events.count("stop") == 1 and c.events[-1] == "stop"
 
 
+@pytest.mark.parametrize("remaining,allowed", [(0.20, True), (0.0, False)])
+def test_wrench_stale_grace_allows_only_short_runtime_gap(personal_context, remaining, allowed):
+    c = personal_context
+    c.summary.update(collision_state_source="controller", collision_state_query_valid=False,
+                     collision_state=None)
+    c.health.valid = False
+    c.health.invalid_reason = "wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded"
+    c.health.wrench_stale_grace_active = remaining > 0
+    c.health.wrench_stale_grace_remaining_s = remaining
+    c.health.wrench_age_s = .20 if remaining > 0 else .40
+    c.health.state_wrench_skew_s = .10
+    executor, _ = personal_executor(c)
+    reasons = executor._runtime_reasons()
+    assert (not reasons) is allowed
+
+
 def test_personal_executor_stops_on_late_logging(personal_context):
     c = personal_context
     executor, clock = personal_executor(c)

@@ -116,7 +116,17 @@ class RokaeMotionExecutor:
         if not bool(logger_health):
             reasons.append("logger_unhealthy")
         health = self.acquisition.latest_health()
-        if not health.valid:
+        tolerated_stale = {
+            "wrench_stale_or_unavailable",
+            "state_wrench_skew_unavailable_or_exceeded",
+        }
+        health_reasons = set(filter(None, health.invalid_reason.split(";")))
+        grace_only = bool(
+            getattr(health, "wrench_stale_grace_active", False)
+            and health_reasons
+            and health_reasons.issubset(tolerated_stale)
+        )
+        if not health.valid and not grace_only:
             reasons.append(health.invalid_reason or "acquisition_unhealthy")
         if not health.state_thread_alive:
             reasons.append("state_thread_not_alive")
@@ -135,11 +145,11 @@ class RokaeMotionExecutor:
             reasons.append("state_stale")
         if limits.max_wrench_age_s is None or health.wrench_age_s is None:
             reasons.append("wrench_age_limit_or_value_unavailable")
-        elif health.wrench_age_s > limits.max_wrench_age_s:
+        elif health.wrench_age_s > limits.max_wrench_age_s and not grace_only:
             reasons.append("wrench_stale")
         if limits.max_state_wrench_skew_s is None or health.state_wrench_skew_s is None:
             reasons.append("state_wrench_skew_limit_or_value_unavailable")
-        elif health.state_wrench_skew_s > limits.max_state_wrench_skew_s:
+        elif health.state_wrench_skew_s > limits.max_state_wrench_skew_s and not grace_only:
             reasons.append("state_wrench_skew_limit_exceeded")
         if limits.max_force_n is None or health.force_magnitude_n is None:
             reasons.append("force_limit_or_value_unavailable")

@@ -48,6 +48,7 @@ class WrenchBudgets:
     terminate_s: float
     state_age_s: float
     skew_s: float
+    runtime_stale_grace_s: float = 0.30
     provenance: str = "experiment"
 
     def __post_init__(self):

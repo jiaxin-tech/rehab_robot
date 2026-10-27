@@ -114,14 +114,15 @@
     "budgets": {
       "startup_s": 5,
       "query_s": 0.05,
-      "progress_s": 0.25,
+      "progress_s": 0.4,
       "sample_age_s": 0.05,
       "ack_s": 0.1,
       "log_s": 0.1,
       "shutdown_s": 1,
       "terminate_s": 1,
       "state_age_s": 0.025,
-      "skew_s": 0.04
+      "skew_s": 0.04,
+      "runtime_stale_grace_s": 0.3
     },
     "max_start_angle_error_deg": null
   },

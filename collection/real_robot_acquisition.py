@@ -54,6 +54,8 @@ class AcquisitionHealth:
     wrench_stream_healthy: bool = False
     wrench_query_state: str = "NOT_STARTED"
     wrench_failure_latch: tuple[str, ...] = ()
+    wrench_stale_grace_active: bool = False
+    wrench_stale_grace_remaining_s: float = 0.0
 
 
 class RealRobotAcquisition:
@@ -509,6 +511,20 @@ class RealRobotAcquisition:
                            ("DISABLED_FOR_STATIONARY_A" if self.diagnostic_state_only else "wrench_process_not_ready"))
         if self.wrench_provider is not None:
             limits = self.wrench_provider.budgets
+            stale_grace_s = float(getattr(limits, "runtime_stale_grace_s", 0.30))
+            stale_grace_active = bool(
+                self._runtime_freshness_armed
+                and wrench_age is not None
+                and wrench_age <= limits.sample_age_s + stale_grace_s
+                and state_age is not None
+                and state_age <= limits.state_age_s
+                and state_valid
+                and bool(process_health.get("PROCESS_ALIVE"))
+                and not process_health.get("FAILURE_LATCH")
+            )
+            stale_grace_remaining = max(
+                0.0, limits.sample_age_s + stale_grace_s - (wrench_age or 0.0)
+            ) if stale_grace_active else 0.0
             if state_age is None or state_age > limits.state_age_s:
                 reasons.append("state_stale_or_unavailable")
                 # Startup is an alignment phase: the independently started
@@ -523,9 +539,12 @@ class RealRobotAcquisition:
                 reasons.append("wrench_stale_or_unavailable")
             if skew is None or skew > limits.skew_s:
                 reasons.append("state_wrench_skew_unavailable_or_exceeded")
-                if (self._runtime_freshness_armed and skew is not None
+                if (self._runtime_freshness_armed and not stale_grace_active and skew is not None
                         and provider_has_sample):
                     self.wrench_provider.fail("state_wrench_skew_failure")
+        else:
+            stale_grace_active = False
+            stale_grace_remaining = 0.0
         if not state_valid:
             reasons.append(state_error or (state.invalid_reason if state else "state_not_ready"))
         if not wrench_valid:
@@ -579,6 +598,8 @@ class RealRobotAcquisition:
             wrench_stream_healthy=stream_healthy,
             wrench_query_state=process_health.get("CURRENT_QUERY_STATE", "NOT_STARTED"),
             wrench_failure_latch=tuple(process_health.get("FAILURE_LATCH", ())),
+            wrench_stale_grace_active=stale_grace_active,
+            wrench_stale_grace_remaining_s=stale_grace_remaining,
         )
 
     def latest_state_frame(self) -> KinematicStateFrame | None:
