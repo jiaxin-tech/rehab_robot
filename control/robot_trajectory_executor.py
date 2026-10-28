@@ -137,6 +137,8 @@ class RokaeMotionExecutor:
         limits = self.safety
         for name in ("state_age_s", "wrench_age_s", "state_wrench_skew_s", "force_magnitude_n", "torque_magnitude_nm"):
             value = getattr(health, name)
+            if grace_only and name in ("force_magnitude_n", "torque_magnitude_nm") and value is None:
+                continue
             if value is None or not math.isfinite(value) or value < 0:
                 reasons.append(name + "_invalid")
         if limits.max_state_age_s is None or health.state_age_s is None:
@@ -151,13 +153,13 @@ class RokaeMotionExecutor:
             reasons.append("state_wrench_skew_limit_or_value_unavailable")
         elif health.state_wrench_skew_s > limits.max_state_wrench_skew_s and not grace_only:
             reasons.append("state_wrench_skew_limit_exceeded")
-        if limits.max_force_n is None or health.force_magnitude_n is None:
+        if limits.max_force_n is None or (health.force_magnitude_n is None and not grace_only):
             reasons.append("force_limit_or_value_unavailable")
-        elif health.force_magnitude_n > limits.max_force_n:
+        elif health.force_magnitude_n is not None and health.force_magnitude_n > limits.max_force_n:
             reasons.append("force_limit_exceeded")
-        if limits.max_torque_nm is None or health.torque_magnitude_nm is None:
+        if limits.max_torque_nm is None or (health.torque_magnitude_nm is None and not grace_only):
             reasons.append("torque_limit_or_value_unavailable")
-        elif health.torque_magnitude_nm > limits.max_torque_nm:
+        elif health.torque_magnitude_nm is not None and health.torque_magnitude_nm > limits.max_torque_nm:
             reasons.append("torque_limit_exceeded")
         return tuple(dict.fromkeys(reasons))
 
@@ -454,6 +456,9 @@ class RokaeMotionExecutor:
                     raise RuntimeError(
                         f"execution stopped before realtime start: {self._stop_reason}"
                     )
+                arm_grace = getattr(self.acquisition, "arm_runtime_grace", None)
+                if arm_grace is not None:
+                    arm_grace()
                 if self.clock.now_s() > initial_start_deadline_s:
                     raise RuntimeError(
                         "initial hold deadline expired before realtime start"

@@ -474,6 +474,11 @@ class RealRobotAcquisition:
             if now_s - next_tick > period:
                 next_tick = now_s
 
+    def arm_runtime_grace(self) -> None:
+        if not self.latest_health().valid:
+            raise RuntimeError("acquisition_not_fresh_before_runtime")
+        self.wrench_provider.arm_runtime_grace()
+
     def latest_health(self) -> AcquisitionHealth:
         live_state = self.latest_state_frame()
         now_s = self.clock.now_s()
@@ -513,9 +518,12 @@ class RealRobotAcquisition:
             limits = self.wrench_provider.budgets
             stale_grace_s = float(getattr(limits, "runtime_stale_grace_s", 0.30))
             stale_grace_active = bool(
-                self._runtime_freshness_armed
+                getattr(self.wrench_provider, "runtime_grace_armed", False)
                 and wrench_age is not None
+                and wrench_age >= 0
                 and wrench_age <= limits.sample_age_s + stale_grace_s
+                and (wrench_age > limits.sample_age_s
+                     or (skew is not None and skew > limits.skew_s))
                 and state_age is not None
                 and state_age <= limits.state_age_s
                 and state_valid
@@ -566,6 +574,11 @@ class RealRobotAcquisition:
             if wrench is not None and wrench.cartesian_torque_raw_nm is not None
             else None
         )
+        if self.wrench_provider is not None and (
+                wrench_age is None or wrench_age > self.wrench_provider.budgets.sample_age_s):
+            wrench_valid = False
+            force_magnitude = None
+            torque_magnitude = None
         valid = bool(
             state_valid
             and wrench_valid

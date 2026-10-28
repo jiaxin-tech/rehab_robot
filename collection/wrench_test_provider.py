@@ -14,6 +14,8 @@ def query(config, query_id, started_ns):
     behavior = config.get("behavior", "normal")
     if query_id <= config.get("good_queries", 0):
         behavior = "normal"
+    if config.get("block_once") and query_id != config.get("good_queries", 0) + 1:
+        behavior = "normal"
     if behavior == "crash":
         os._exit(73)
     if behavior == "never":

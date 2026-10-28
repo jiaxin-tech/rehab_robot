@@ -5075,6 +5075,7 @@ def test_wrench_production_process__runtime_state_freshness_failure_is_latched(w
     from collection.real_robot_acquisition import RealRobotAcquisition
     p=wrench_production_process__make_provider()
     wrench_production_process__until(p,lambda h:h['STREAM_HEALTH'])
+    p.arm_runtime_grace()
     acquisition=RealRobotAcquisition(FakeAdapter(),EpisodeLogger(tmp_path/'unused'),wrench_provider=p)
     acquisition._runtime_freshness_armed=True
     stale=FakeAdapter().read_state_frame()
@@ -5303,9 +5304,121 @@ def test_wrench_stale_grace_allows_only_short_runtime_gap(personal_context, rema
     c.health.wrench_stale_grace_remaining_s = remaining
     c.health.wrench_age_s = .20 if remaining > 0 else .40
     c.health.state_wrench_skew_s = .10
+    c.health.force_magnitude_n = None
+    c.health.torque_magnitude_nm = None
     executor, _ = personal_executor(c)
     reasons = executor._runtime_reasons()
     assert (not reasons) is allowed
+
+
+@pytest.mark.parametrize("delay", [.240, .312])
+def test_runtime_wrench_block_recovers_across_provider_health_and_executor(
+        wrench_production_process__make_provider, wrench_production_process__budgets,
+        personal_context, tmp_path, delay):
+    from collection.episode_logger import EpisodeLogger
+    from collection.real_robot_acquisition import RealRobotAcquisition
+    limits = wrench_production_process__replace(wrench_production_process__budgets,
+        query_s=.05, sample_age_s=.05, runtime_stale_grace_s=.30, progress_s=.4,
+        state_age_s=.025, skew_s=.04, shutdown_s=1)
+    p = wrench_production_process__make_provider(limits=limits, behavior="block",
+        delay_s=delay, good_queries=12, block_once=True)
+    wrench_production_process__until(p, lambda h: p.last_good is not None)
+    c = personal_context
+    acquisition = RealRobotAcquisition(c.adapter, EpisodeLogger(tmp_path / "unused"), wrench_provider=p)
+    acquisition.latest_state_frame = lambda: wrench_production_process__replace(
+        real_robot_acquisition__FakeAdapter().read_state_frame(),
+        host_monotonic_time_s=wrench_production_process__time.perf_counter())
+    acquisition._thread_alive = lambda name: True
+    acquisition._latest_wrench = p.last_good
+    acquisition.arm_runtime_grace()
+    c.acquisition = acquisition
+    executor, _ = personal_executor(c)
+    saw_gap = False
+    baseline = None
+    deadline = wrench_production_process__time.perf_counter() + 4
+    while wrench_production_process__time.perf_counter() < deadline:
+        acquisition._latest_wrench = p.last_good
+        h = acquisition.latest_health()
+        if p.query_id == 13 and h.wrench_age_s > .05:
+            saw_gap = True
+            if baseline is None:
+                baseline = acquisition._latest_wrench
+            assert acquisition._latest_wrench == baseline
+            assert not h.valid and not h.wrench_valid
+            assert h.wrench_stale_grace_active
+            assert h.force_magnitude_n is None and h.torque_magnitude_nm is None
+            assert not executor._runtime_reasons()
+        if acquisition._latest_wrench.sequence_id >= 14:
+            assert h.valid
+            break
+        assert not p.failure_latch
+        wrench_production_process__time.sleep(.002)
+    else:
+        pytest.fail(str(p.health()))
+    assert saw_gap and baseline.sequence_id == 12
+    assert p.native_query_overrun_count == 1
+    slow = next(e for e in p.events if e["type"] == "QUERY_SUCCESS" and e["query_id"] == 13)
+    assert slow["frame"]["sequence_id"] == 13  # raw measurement retained
+    assert not p.failure_latch
+
+
+@pytest.mark.parametrize("armed,delay,once", [(False, .240, True), (True, .5, True), (True, .12, False)])
+def test_runtime_wrench_gap_deadline_is_latched(
+        wrench_production_process__make_provider, wrench_production_process__budgets, armed, delay, once):
+    limits = wrench_production_process__replace(wrench_production_process__budgets,
+        query_s=.05, sample_age_s=.05, runtime_stale_grace_s=.30, progress_s=.4, shutdown_s=1)
+    p = wrench_production_process__make_provider(limits=limits, behavior="block",
+        delay_s=delay, good_queries=10, block_once=once)
+    wrench_production_process__until(p, lambda h: p.last_good is not None)
+    if armed:
+        p.arm_runtime_grace()
+    wrench_production_process__until(p, lambda h: bool(h["FAILURE_LATCH"]))
+    assert p.last_good.sequence_id == 10
+    assert set(p.failure_latch) & {"query_pending_too_long", "wrench_sample_stale_or_clock_invalid"}
+    failures = tuple(p.failure_latch)
+    p.stop()
+    assert not p.health()["STREAM_HEALTH"]
+    assert all(reason in p.failure_latch for reason in failures)
+
+
+@pytest.mark.parametrize("behavior,reason", [("error263", "sdk_error"), ("crash", "worker_exited")])
+def test_runtime_wrench_grace_never_hides_worker_fault(
+        wrench_production_process__make_provider, behavior, reason):
+    p = wrench_production_process__make_provider(behavior=behavior, good_queries=10, delay_s=.08)
+    wrench_production_process__until(p, lambda h: p.last_good is not None)
+    p.arm_runtime_grace()
+    wrench_production_process__until(p, lambda h: reason in h["FAILURE_LATCH"])
+    assert not p.health()["STREAM_HEALTH"]
+
+
+@pytest.mark.parametrize("elapsed_ns,expired", [(349_000_000, False), (351_000_000, True)])
+def test_runtime_wrench_completed_between_polls_cannot_erase_gap(tmp_path, elapsed_ns, expired):
+    p = wrench_deadline_regressions__provider(tmp_path)
+    p.budgets = wrench_production_process__replace(p.budgets, sample_age_s=.05)
+    old_ns = 1_100_000_000
+    end = old_ns + elapsed_ns
+    start = end - 1_000_000
+    p.last_good = wrench_deadline_regressions__RobotWrenchFrame(0, 1.1, 1.1, 1.1,
+        1.1, "", "OFFLINE_HOST_QUERY", True, "", "world",
+        (1., 2., 3.), (.1, .2, .3), (1.,) * 6, (.5,) * 6)
+    p.runtime_grace_armed = True
+    p.query_state = "IDLE"
+    frame = wrench_production_process__replace(p.last_good, sequence_id=1,
+        host_monotonic_time_s=end / 1e9)
+    event = dict(version=1, run_id=p.run_id, session_id=p.session_id, pid=123,
+        event_id=1, query_id=1, type="QUERY_SUCCESS", timestamp_ns=end,
+        intent_ns=start, native_start_ns=start, completion_ns=end,
+        frame=wrench_deadline_regressions__asdict(frame), error=None)
+    p._accept(event, end)
+    assert ("wrench_sample_stale_or_clock_invalid" in p.failure_latch) is expired
+
+
+def test_runtime_grace_is_armed_after_final_gate_before_hold(personal_context):
+    c = personal_context
+    c.acquisition.arm_runtime_grace = lambda: c.events.append("arm")
+    executor, _ = personal_executor(c)
+    executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
+    assert c.events.index("arm") + 1 == c.events.index("hold")
 
 
 def test_personal_executor_stops_on_late_logging(personal_context):

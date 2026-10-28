@@ -376,6 +376,7 @@ class WrenchProcessProvider:
         self.events = deque(maxlen=1024)  # diagnostics cache; durable log is authoritative
         self.timeline = []
         self.stopping = False
+        self.runtime_grace_armed = False
         self.exit_seen = False
         self.disconnect_confirmed = None
         self.offline_disconnect_completed = False
@@ -447,6 +448,23 @@ class WrenchProcessProvider:
                     self.failure_latch.append(reason)
                 self.stop_flag.value = 1
 
+    def arm_runtime_grace(self):
+        """Enable bounded gaps only after a strictly fresh pre-motion sample."""
+        with self._poll_lock:
+            health = self._poll()
+            age = health.get("WRENCH_SAMPLE_AGE")
+            if (not health.get("STREAM_HEALTH") or age is None
+                    or not 0 <= age <= self.budgets.sample_age_s
+                    or self.query_state == "HUNG"):
+                raise RuntimeError("wrench_not_fresh_before_runtime")
+            self.runtime_grace_armed = True
+
+    def _within_runtime_gap(self, now):
+        if not self.runtime_grace_armed or self.last_good is None:
+            return False
+        age = now / 1e9 - self.last_good.host_monotonic_time_s
+        return 0 <= age <= self.budgets.sample_age_s + self.budgets.runtime_stale_grace_s
+
     def fail(self, reason):
         with self._record_lock:
             if reason not in self.failure_latch:
@@ -470,6 +488,11 @@ class WrenchProcessProvider:
         kind = event["type"]
         qid = event.get("query_id")
         if kind in ("QUERY_SUCCESS", "QUERY_ERROR"):
+            # Check the old sample before accepting a completion: a late quick
+            # result must not erase an already exhausted continuous gap.
+            if (self.runtime_grace_armed and not self._within_runtime_gap(now)
+                    and not self.stopping):
+                self.fail("wrench_sample_stale_or_clock_invalid")
             observed_in_progress = (
                 qid == self.query_id
                 and self.query_state in ("IN_PROGRESS", "HUNG")
@@ -533,7 +556,8 @@ class WrenchProcessProvider:
             )
             if duration_ns / 1e9 > self.budgets.query_s:
                 self.native_query_overrun_count += 1
-                self.fail("query_pending_too_long")
+                if not self._within_runtime_gap(now):
+                    self.fail("query_pending_too_long")
                 self._record("QUERY_BUDGET_EXCEEDED", native_start_ns=event["native_start_ns"],
                              completion_ns=event["completion_ns"], duration_ns=duration_ns,
                              budget_s=self.budgets.query_s)
@@ -574,7 +598,11 @@ class WrenchProcessProvider:
                 self.last_error = event["error"]
                 self.fail("sdk_error")
             else:
-                self.last_good = _frame(event["frame"])
+                # Preserve slow results in the raw event, but their uncertain
+                # measurement time cannot refresh the runtime freshness clock.
+                duration = (event["completion_ns"] - event["native_start_ns"]) / 1e9
+                if not self.runtime_grace_armed or duration <= self.budgets.query_s:
+                    self.last_good = _frame(event["frame"])
         elif kind == "DISCONNECT_START":
             self.lifecycle_state = "DISCONNECTING"
         elif kind == "DISCONNECT_COMPLETE":
@@ -702,7 +730,8 @@ class WrenchProcessProvider:
                 if self.query_state != "HUNG":
                     self.query_state = "HUNG"
                     self._record("QUERY_HUNG", completion=None)
-                self.fail("query_pending_too_long")
+                if not self._within_runtime_gap(now):
+                    self.fail("query_pending_too_long")
             # A primary fault already requests child shutdown. Do not obscure
             # its root cause with stale/progress cascade faults while the
             # uninterruptible native call returns and disconnects.
@@ -710,7 +739,8 @@ class WrenchProcessProvider:
                     and progress_age > self.budgets.progress_s):
                 self.fail("worker_progress_missing")
             if (not self.failure_latch and age is not None
-                    and (age < 0 or age > self.budgets.sample_age_s)):
+                    and (age < 0 or (age > self.budgets.sample_age_s
+                                    and not self._within_runtime_gap(now)))):
                 self.fail("wrench_sample_stale_or_clock_invalid")
         if self.process and not alive and not self.exit_seen:
             self.exit_seen = True
