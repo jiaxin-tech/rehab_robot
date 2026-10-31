@@ -1,0 +1,121 @@
+{
+  "file": "ep.csv",
+  "rows": 12,
+  "duration_s": 4.230769,
+  "sample_rate_hz": 2.6000001418181897,
+  "mean_period_s": 0.3846153636363636,
+  "jitter_s": {
+    "std": 5.045249791850357e-07,
+    "max_abs_deviation_from_median": 1.0000000003063114e-06
+  },
+  "expected_period_s": 0.384615,
+  "gap_count": 0,
+  "non_atomic_axis_reads": true,
+  "joints": {
+    "hip": {
+      "axis": 1,
+      "signals": {
+        "position": "axis1_position_raw",
+        "velocity": "axis1_velocity_606c",
+        "torque_nm": "axis1_torque_3c1a",
+        "torque_pct": "axis1_torque_6077",
+        "statusword": "axis1_statusword_6041",
+        "error_code": "axis1_error_603f",
+        "brake_override": "axis1_brake_override_381e"
+      },
+      "raw_torque_nm": {
+        "n": 12,
+        "mean": -34.5872,
+        "std": 0.0,
+        "minimum": -34.5872,
+        "maximum": -34.5872
+      },
+      "torque_offset_note": "descriptive only; never subtracted by default because the offset moves with pose, gravity, brake and support",
+      "motor_side_torque_pct": {
+        "n": 12,
+        "mean": 0.0,
+        "std": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "position_counts": {
+        "n": 12,
+        "mean": 97500.0,
+        "std": 1638.7608955327414,
+        "minimum": 95000.0,
+        "maximum": 100000.0
+      },
+      "motor_side_deg_range": [
+        43.4875515,
+        45.77637
+      ],
+      "joint_angle_available": false,
+      "brake_override_values": [
+        128.0
+      ],
+      "brake_state_not_end_of_run": "the CSV shows the override during acquisition, not the restored state",
+      "statusword_values": [
+        561.0
+      ],
+      "nonzero_error_count": 0
+    },
+    "knee": {
+      "axis": 4,
+      "signals": {
+        "position": "axis4_position_raw",
+        "velocity": "axis4_velocity_606c",
+        "torque_nm": "axis4_torque_3c1a",
+        "torque_pct": "axis4_torque_6077",
+        "statusword": "axis4_statusword_6041",
+        "error_code": "axis4_error_603f",
+        "brake_override": "axis4_brake_override_381e"
+      },
+      "raw_torque_nm": {
+        "n": 12,
+        "mean": 2.6403,
+        "std": 0.0,
+        "minimum": 2.6403,
+        "maximum": 2.6403
+      },
+      "torque_offset_note": "descriptive only; never subtracted by default because the offset moves with pose, gravity, brake and support",
+      "motor_side_torque_pct": {
+        "n": 12,
+        "mean": 0.0,
+        "std": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "position_counts": {
+        "n": 12,
+        "mean": 204500.0,
+        "std": 2950.0217256518945,
+        "minimum": 200000.0,
+        "maximum": 209000.0
+      },
+      "motor_side_deg_range": [
+        91.55274,
+        95.6726133
+      ],
+      "joint_angle_available": false,
+      "brake_override_values": [
+        128.0
+      ],
+      "brake_state_not_end_of_run": "the CSV shows the override during acquisition, not the restored state",
+      "statusword_values": [
+        561.0
+      ],
+      "nonzero_error_count": 0
+    }
+  },
+  "sync_evidence_note": "CSV synchronization labels are declarations, not independently verified physical simultaneity",
+  "usable_for_dynamics": false,
+  "findings": [
+    "sample_rate_below_100hz:2.600",
+    "axis_channels_not_a_single_instant",
+    "hip_missing_flexion_deg",
+    "hip_has_no_joint_angle_calibration",
+    "knee_missing_flexion_deg",
+    "knee_has_no_joint_angle_calibration"
+  ],
+  "interpretation": "trial/acquisition evidence only; not identification, phase or high-rate control data"
+}

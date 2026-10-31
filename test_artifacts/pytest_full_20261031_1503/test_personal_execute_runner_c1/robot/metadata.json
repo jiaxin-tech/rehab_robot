@@ -1,0 +1,462 @@
+{
+  "approved_hip_rom": [
+    0.0,
+    120.0
+  ],
+  "approved_knee_rom": [
+    5.0,
+    145.0
+  ],
+  "collision_event_max_age_s": null,
+  "collision_source": "query",
+  "experiment_mode": "start_anchored_relative",
+  "experiment_safety": {
+    "max_command_lateness_s": 0.05,
+    "max_force_n": 100,
+    "max_start_anchor_orientation_error_rad": 0.05,
+    "max_start_anchor_position_error_m": 0.005,
+    "max_state_age_s": 0.025,
+    "max_state_wrench_skew_s": 0.04,
+    "max_tcp_acceleration_m_s2": 2,
+    "max_tcp_speed_m_s": 1,
+    "max_torque_nm": 200,
+    "max_wrench_age_s": 0.05,
+    "rt_filter_hz": 50,
+    "rt_network_tolerance_percent": 20,
+    "workspace_max_base_m": [
+      2.0,
+      2.0,
+      2.0
+    ],
+    "workspace_min_base_m": [
+      -2.0,
+      -2.0,
+      -2.0
+    ]
+  },
+  "experiment_safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\test_artifacts\\pytest_full_20261031_1503\\test_personal_execute_runner_c1\\limits.json",
+  "git_commit": "1e56d8eef9f733b680524b1c7881be0c03ddc8c2",
+  "initial_hold_intent_persisted": true,
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 0.0,
+      "robot_state": 0.0,
+      "robot_wrench": 0.0,
+      "trajectory_command": 41.21484888575656
+    },
+    "episode_duration_s": 0.0485262,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:execute_exception:RuntimeError:synthetic target failure",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 3174800886262700,
+    "finished_host_time_s": 3174800.8862627,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 3174800886452700,
+    "metadata_updated_host_time_s": 3174800.8864527,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 0,
+      "robot_state": 0,
+      "robot_wrench": 0,
+      "trajectory_command": 2
+    },
+    "started_host_time_ns": 3174800837736500,
+    "started_host_time_s": 3174800.8377365,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "motion_api_physical_validation": false,
+  "motion_api_static_evidence": "xCoreSDK_0.7.0_realtime_cartesian_pyi_and_vendor_examples",
+  "motion_attachment_confirmed": true,
+  "motion_attachment_host_time_s": 1.0,
+  "operator_confirmation": "I CONFIRM SUPERVISED SLOW ROBOT MOTION",
+  "parent_reference_id": null,
+  "post_attach_runtime_gate_passed": true,
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+  "reference_version": "reference_measured_asymmetric_closed",
+  "rehab_frame": {
+    "R_base_from_rehab": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "construction": "x_normalize_then_z_orthogonalize_then_y_equals_z_cross_x",
+    "notes": "",
+    "rehab_x_axis_in_base": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "rehab_y_axis_in_base": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "rehab_z_axis_in_base": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "reviewed": false
+  },
+  "rehab_frame_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\test_artifacts\\pytest_full_20261031_1503\\test_personal_execute_runner_c1\\frame.json",
+  "robot_execution_approved": true,
+  "robot_ip": "192.0.2.1",
+  "robot_local_ip": "192.0.2.2",
+  "robot_state_summary_after_motion_attachment": {
+    "collision_state": false,
+    "collision_state_query_valid": true,
+    "connected": true,
+    "joint_position_rad": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "operation_state": "RTCONTROLLING",
+    "robot_metadata": {
+      "joint_soft_limits_rad": [
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ]
+      ]
+    },
+    "state_valid": true
+  },
+  "robot_state_summary_before_motion": {
+    "collision_state": false,
+    "collision_state_query_valid": true,
+    "connected": true,
+    "joint_position_rad": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "operation_state": "RTCONTROLLING",
+    "robot_metadata": {
+      "joint_soft_limits_rad": [
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ],
+        [
+          -3.0,
+          3.0
+        ]
+      ]
+    },
+    "state_valid": true
+  },
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "runtime_preflight": {
+    "allowed": true,
+    "anchor_id": "test",
+    "maximum_tcp_acceleration_m_s2": 0.11658037732398005,
+    "maximum_tcp_speed_m_s": 0.1654193014040697,
+    "reasons": [],
+    "runtime_robot_summary": {
+      "collision_state": false,
+      "collision_state_query_valid": true,
+      "connected": true,
+      "joint_position_rad": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "operation_state": "RTCONTROLLING",
+      "robot_metadata": {
+        "joint_soft_limits_rad": [
+          [
+            -3.0,
+            3.0
+          ],
+          [
+            -3.0,
+            3.0
+          ],
+          [
+            -3.0,
+            3.0
+          ],
+          [
+            -3.0,
+            3.0
+          ],
+          [
+            -3.0,
+            3.0
+          ],
+          [
+            -3.0,
+            3.0
+          ]
+        ]
+      },
+      "state_valid": true
+    },
+    "trajectory_id": "reference_measured_asymmetric_closed_slow"
+  },
+  "sdk_version_if_available": null,
+  "start_anchor": {
+    "anchor_id": "test",
+    "capture_host_time_s": 1.0,
+    "controller_version": null,
+    "created_at": "2026-10-31T07:00:41.701+00:00",
+    "notes": "",
+    "reference_start_q_hip": 0.5061580913269217,
+    "reference_start_q_knee": 0.3203519370158654,
+    "reviewed": false,
+    "robot_joint_positions": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "robot_model": null,
+    "robot_serial_number": null,
+    "schema_version": 2,
+    "tcp_orientation": {
+      "representation": "euler_xyz_rad",
+      "strategy": "fixed",
+      "values_rad": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "tcp_pose_base": [
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tcp_position_base_m": [
+      0.5,
+      0.0,
+      0.5
+    ],
+    "tool_name": null,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "workpiece_name": null
+  },
+  "start_anchor_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\test_artifacts\\pytest_full_20261031_1503\\test_personal_execute_runner_c1\\anchor.json",
+  "tcp_orientation_strategy": "fixed",
+  "timestamp_source": "time.perf_counter_ns",
+  "trajectory_audit": {
+    "all_samples_finite": true,
+    "approved_rom_valid": true,
+    "final_relative_displacement_zero": true,
+    "final_target_equals_anchor": true,
+    "first_relative_displacement_zero": true,
+    "first_target_equals_anchor": true,
+    "invalid_reasons": [],
+    "maximum_acceleration_step_m_s2": 0.03286438607784298,
+    "maximum_position_step_m": 0.008602327937594915,
+    "maximum_velocity_step_m_s": 0.006201289113449767,
+    "no_obvious_acceleration_jump": true,
+    "no_obvious_position_jump": true,
+    "no_obvious_velocity_jump": true,
+    "orientation_constant": true,
+    "pull_forward_kinematics_valid": true,
+    "sample_count": 401,
+    "source_formal_gate_valid": true,
+    "source_samples_valid": true,
+    "theta_shank_definition_valid": true,
+    "time_strictly_increasing": true,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "trajectory_valid": true
+  },
+  "trajectory_generation": {
+    "approved_hip_rom_deg": [
+      0.0,
+      120.0
+    ],
+    "approved_knee_rom_deg": [
+      5.0,
+      145.0
+    ],
+    "equivalent_pull_point_geometry": {
+      "L1_hip_to_knee_m": 0.42,
+      "L2_knee_to_equivalent_shank_strap_pull_point_m": 0.3,
+      "matches_approved_first_trial_geometry": true,
+      "physical_scope": "supine passive hip-knee rehabilitation with an equivalent shank strap pull point"
+    },
+    "experiment_mode": "start_anchored_relative",
+    "first_robot_trial_candidate_whitelisted": true,
+    "hip_center_required": false,
+    "model_angle_definition": "theta_shank = q_hip - q_knee",
+    "observed_ankle_used_as_pull_point": false,
+    "parent_reference_id": null,
+    "reference": {
+      "duration_s": 24.0,
+      "input_had_time_axis": true,
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "reference_version_verified": true,
+      "retimed_timing_is_original": false,
+      "retiming_profile": "provided_by_input",
+      "sample_count": 401,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "source_formal_execution_allowed_all": true,
+      "stage6a_retimed_from_phase": false,
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ]
+    },
+    "rehab_frame": {
+      "R_base_from_rehab": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "construction": "x_normalize_then_z_orthogonalize_then_y_equals_z_cross_x",
+      "notes": "",
+      "rehab_x_axis_in_base": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "rehab_y_axis_in_base": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "rehab_z_axis_in_base": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "reviewed": false
+    },
+    "rehab_pull_point_formula": "p_R(t)=[x_pull_FK(t),0,z_pull_FK(t)]",
+    "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@(p_R(t)-p_R(0))",
+    "robot_execution_approved": false,
+    "rom_protocol_version": "ROM_PROTOCOL_V2",
+    "start_tcp_pose_base": [
+      0.5,
+      0.0,
+      0.5,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tcp_orientation_strategy": "fixed_at_start_anchor",
+    "tool_offset_applied_to_relative_increment": false,
+    "tool_offset_retained_for_mode": "absolute_calibrated",
+    "trajectory_audit": {
+      "all_samples_finite": true,
+      "approved_rom_valid": true,
+      "final_relative_displacement_zero": true,
+      "final_target_equals_anchor": true,
+      "first_relative_displacement_zero": true,
+      "first_target_equals_anchor": true,
+      "invalid_reasons": [],
+      "maximum_acceleration_step_m_s2": 0.03286438607784298,
+      "maximum_position_step_m": 0.008602327937594915,
+      "maximum_velocity_step_m_s": 0.006201289113449767,
+      "no_obvious_acceleration_jump": true,
+      "no_obvious_position_jump": true,
+      "no_obvious_velocity_jump": true,
+      "orientation_constant": true,
+      "pull_forward_kinematics_valid": true,
+      "sample_count": 401,
+      "source_formal_gate_valid": true,
+      "source_samples_valid": true,
+      "theta_shank_definition_valid": true,
+      "time_strictly_increasing": true,
+      "trajectory_id": "reference_measured_asymmetric_closed_slow",
+      "trajectory_valid": true
+    },
+    "trajectory_id": "reference_measured_asymmetric_closed_slow"
+  },
+  "trajectory_id": "reference_measured_asymmetric_closed_slow"
+}

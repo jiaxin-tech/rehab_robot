@@ -360,6 +360,35 @@ def test_acquisition_timing_and_tail__startup_misalignment_does_not_kill_wrench_
     ]
 
 
+def test_acquisition_timing_and_tail__health_uses_provider_sample_ahead_of_csv_consumer():
+    clock = acquisition_timing_and_tail__FakeClock()
+    provider = acquisition_timing_and_tail__StartupHealthProvider(clock.now_s())
+    acquisition = acquisition_timing_and_tail__RealRobotAcquisition(
+        acquisition_timing_and_tail__SimpleNamespace(),
+        acquisition_timing_and_tail__RecordingLogger(),
+        wrench_provider=provider,
+        clock=clock,
+    )
+    acquisition._threads = {
+        name: acquisition_timing_and_tail__AlwaysAliveThread()
+        for name in ("state", "wrench", "alignment")
+    }
+    logged = acquisition_timing_and_tail__frame(0)
+    object.__setattr__(logged, "host_monotonic_time_s", clock.now_s() - .1)
+    acquisition._latest_wrench = logged
+    acquisition._latest_state = acquisition_timing_and_tail__state_frame(
+        1, clock.now_s()
+    )
+    acquisition._runtime_freshness_armed = True
+
+    health = acquisition.latest_health()
+
+    assert health.valid
+    assert health.wrench_time_s == provider.last_good.host_monotonic_time_s
+    assert health.wrench_age_s == 0.0
+    assert provider.failures == []
+
+
 @acquisition_timing_and_tail__pytest.mark.parametrize("interrupt", [False, True])
 def test_acquisition_timing_and_tail__deadline_wait_uses_short_sleep_slices_and_observes_stop(monkeypatch, interrupt):
     clock = acquisition_timing_and_tail__FakeClock()
@@ -5167,7 +5196,7 @@ def personal_context():
     health = SimpleNamespace(valid=True, invalid_reason="", state_thread_alive=True, wrench_thread_alive=True,
         alignment_thread_alive=True, state_age_s=.001, wrench_age_s=.001, state_wrench_skew_s=.001,
         force_magnitude_n=1., torque_magnitude_nm=1.)
-    summary = dict(connected=True, state_valid=True, operation_state="RT_CONTROLLING",
+    summary = dict(connected=True, state_valid=True, operation_state="RTCONTROLLING",
                    collision_state_query_valid=True, collision_state=False, joint_position_rad=[0.] * 6,
                    robot_metadata={"joint_soft_limits_rad": [[-3., 3.]] * 6})
     adapter = SimpleNamespace(is_connected=True, get_robot_state_summary=lambda: summary)
@@ -5421,6 +5450,21 @@ def test_runtime_grace_is_armed_after_final_gate_before_hold(personal_context):
     assert c.events.index("arm") + 1 == c.events.index("hold")
 
 
+def test_initial_hold_logging_has_pre_motion_budget_without_relaxing_runtime_deadlines(
+        personal_context):
+    c = personal_context
+    timeouts = []
+    c.logger.append_trajectory_command_bounded = lambda timeout_s, **kwargs: (
+        timeouts.append(timeout_s)
+    )
+    executor, _ = personal_executor(c)
+
+    executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
+
+    assert timeouts[0] == pytest.approx(.1)
+    assert max(timeouts[1:]) == pytest.approx(c.safety.max_command_lateness_s)
+
+
 def test_personal_executor_stops_on_late_logging(personal_context):
     c = personal_context
     executor, clock = personal_executor(c)
@@ -5620,7 +5664,7 @@ def test_unified_config_readers_need_no_generated_sections(tmp_path, monkeypatch
     assert Path(read_json(path)["ads_dll_path"]).is_absolute()
     assert load_live_wrench_config(path)["connection"]["robot_ip"] == "192.0.2.33"
     assert set(_calibration_from_json(path)) == {"hip", "knee"}
-    assert personal_round.check_config(path)  # Actual missing physical parameters remain visible.
+    assert personal_round.check_config(path) == []
     assert list(tmp_path.iterdir()) == [path]
 
 
@@ -5944,6 +5988,68 @@ def test_from_current_cli_routes_config_and_explicit_live(tmp_path, monkeypatch)
     assert calls == [(config, session, dict(live=True))]
     with pytest.raises(SystemExit):
         personal_round.main(["observe", "--session", str(session), "--from-current"])
+
+
+def test_empty_load_cli_supports_review_before_explicit_run(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(personal_round, "prepare", lambda config, directory, **kwargs:
+        calls.append(("prepare", config, directory, kwargs)) or dict(status="PREPARED"))
+    monkeypatch.setattr(personal_round, "run", lambda directory, **kwargs:
+        calls.append(("run", directory, kwargs)) or dict(status="EMPTY_LOAD_COMPLETE"))
+    config, session = tmp_path / "config.json", tmp_path / "empty_load"
+    assert personal_round.main(["prepare", "--config", str(config), "--session",
+        str(session), "--empty-load"]) == 0
+    assert personal_round.main(["run", "--session", str(session), "--empty-load",
+        "--live"]) == 0
+    assert calls == [
+        ("prepare", config, session, dict(empty_load=True)),
+        ("run", session, dict(live=True, empty_load=True)),
+    ]
+    with pytest.raises(SystemExit):
+        personal_round.main(["observe", "--session", str(session), "--empty-load"])
+
+
+def test_empty_load_retiming_uses_independent_slow_limits(tmp_path, personal_context):
+    config = personal_round.configuration()
+    config_path = tmp_path / "experiment.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    personal_context.anchor.save_json(tmp_path / "anchor.json")
+    metadata = personal_round._prepare_empty_load_artifacts(config_path, tmp_path)
+    assert metadata["dummy_leg_required"] is False
+    assert metadata["training_allowed"] is False
+    assert metadata["retimed_duration_s"] > 132.
+    assert metadata["retimed_peak_speed_m_s"] < .03
+    assert metadata["retimed_peak_acceleration_m_s2"] < .01
+    safety = json.loads((tmp_path / "empty_load_safety.json").read_text(encoding="utf-8"))
+    assert safety["max_tcp_speed_m_s"] == .03
+    assert safety["max_tcp_acceleration_m_s2"] == .01
+
+
+def test_empty_load_run_skips_dummy_leg_and_training(tmp_path, monkeypatch, personal_context):
+    config = personal_round.configuration()
+    config["training"]["enabled"] = True
+    config_path = tmp_path / "experiment.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    personal_context.anchor.save_json(tmp_path / "anchor.json")
+    metadata = personal_round._prepare_empty_load_artifacts(config_path, tmp_path)
+    personal_round.report(tmp_path, dict(status="PREPARED", config_path=str(config_path),
+        empty_load=True, reference_path=metadata["reference_path"],
+        safety_config_path=metadata["safety_path"]))
+    monkeypatch.setattr(personal_round, "check_config", lambda *args, **kwargs: [])
+    def forbidden_capture(*args, **kwargs):
+        raise AssertionError("empty-load run must not construct dummy-leg capture")
+    def execute(**kwargs):
+        assert "execution_guard" not in kwargs
+        assert kwargs["reference_path_override"] == Path(metadata["reference_path"])
+        assert kwargs["safety_config_path"] == metadata["safety_path"]
+        kwargs["dispatch_observer"](0., 1, 2)
+        return {"completed": True, "same_session_realtime_cleanup_completed": True}
+    state = personal_round.run(tmp_path, live=True, empty_load=True,
+        capture_factory=forbidden_capture, execute_fn=execute)
+    assert state["status"] == "EMPTY_LOAD_COMPLETE"
+    assert not (tmp_path / "leg").exists()
+    assert not (tmp_path / "training.log").exists()
+    assert (tmp_path / "dispatch.csv").is_file()
 
 
 def test_command_logging_flushes_before_dispatch_and_syncs_only_on_close(tmp_path):

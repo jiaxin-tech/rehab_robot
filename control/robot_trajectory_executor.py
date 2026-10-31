@@ -28,6 +28,13 @@ from utils.clock import MonotonicClock, SYSTEM_CLOCK
 from hardware.safety_events import safety_event_block_reason, collision_feedback_allows_motion
 
 
+# The first target is persisted before the realtime loop exists, so it has no
+# trajectory schedule to be late against.  Give Windows enough time to run the
+# bounded logging worker, then recheck every live gate immediately before the
+# hold starts.  Scheduled targets continue to use max_command_lateness_s.
+INITIAL_HOLD_INTENT_TIMEOUT_S = 0.1
+
+
 @dataclass(frozen=True)
 class ExecutionResult:
     completed: bool
@@ -266,7 +273,7 @@ class RokaeMotionExecutor:
     def _require_post_attach_robot_summary(self):
         adapter = self.acquisition.adapter
         summary = adapter.get_robot_state_summary()
-        if not isinstance(summary, dict) or summary.get("connected") is not True or summary.get("state_valid") is not True or summary.get("operation_state") != "RT_CONTROLLING":
+        if not isinstance(summary, dict) or summary.get("connected") is not True or summary.get("state_valid") is not True or summary.get("operation_state") != "RTCONTROLLING":
             raise RuntimeError("robot is not ready for realtime commands")
         if not collision_feedback_allows_motion(summary):
             raise RuntimeError("collision protection state unavailable or active")
@@ -419,13 +426,15 @@ class RokaeMotionExecutor:
                     "robot_execution_approved": False,
                 }
             )
-            initial_start_deadline_s = self.clock.now_s() + lateness_limit_s
+            initial_intent_deadline_s = (
+                self.clock.now_s() + INITIAL_HOLD_INTENT_TIMEOUT_S
+            )
             # Starting the RT hold already publishes the first TCP target.
             # Persist that first command before any callback can become active.
             self._persist_command_intent(
                 first,
                 initial_pose,
-                latest_finish_s=initial_start_deadline_s,
+                latest_finish_s=initial_intent_deadline_s,
             )
             pre_start_reasons = self._runtime_reasons()
             if pre_start_reasons:
@@ -459,10 +468,6 @@ class RokaeMotionExecutor:
                 arm_grace = getattr(self.acquisition, "arm_runtime_grace", None)
                 if arm_grace is not None:
                     arm_grace()
-                if self.clock.now_s() > initial_start_deadline_s:
-                    raise RuntimeError(
-                        "initial hold deadline expired before realtime start"
-                    )
                 dispatch_start = time.perf_counter_ns()
                 self.motion_adapter.start_cartesian_hold(initial_pose)
                 if self.dispatch_observer is not None:

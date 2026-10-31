@@ -30,7 +30,8 @@ def load_section(name, *, resolved=False, config_path=BUNDLE_PATH):
     if key == "acquisition":
         r = c["robot"]
         value = dict(connection=dict(robot_ip=r["ip"], local_ip=r["local_ip"], robot_class=r["robot_class"]),
-                     budgets=value["budgets"], allowed_power_states=["on", "off"],
+                     expected_identity=value["expected_identity"], budgets=value["budgets"],
+                     allowed_power_states=["on", "off"],
                      allowed_operation_states=["idle", "rtcontrolling"])
     return value
 

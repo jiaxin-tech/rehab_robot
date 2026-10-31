@@ -481,13 +481,22 @@ class RealRobotAcquisition:
 
     def latest_health(self) -> AcquisitionHealth:
         live_state = self.latest_state_frame()
-        now_s = self.clock.now_s()
         with self._state_lock:
             state = live_state
             state_error = self._state_error
         with self._wrench_lock:
             wrench = self._latest_wrench
             wrench_error = self._wrench_error
+        # Live health must follow the isolated provider's admitted immutable
+        # sample, not the raw-CSV consumer's logging progress.  Metadata fsync
+        # or a slow file append may delay ``_latest_wrench`` even while the
+        # provider continues to confirm fresh 50 Hz SDK results.
+        process_health = self.wrench_provider.poll() if self.wrench_provider is not None else {}
+        if self.wrench_provider is not None:
+            wrench = self.wrench_provider.last_good
+        # Poll may admit a just-completed sample.  Take the comparison time
+        # afterwards so that sample cannot appear to come from the future.
+        now_s = self.clock.now_s()
         state_time = state.host_monotonic_time_s if state is not None else None
         wrench_time = wrench.host_monotonic_time_s if wrench is not None else None
         state_age = _age_s(now_s, state_time)
@@ -508,7 +517,6 @@ class RealRobotAcquisition:
             reasons.append(event_reason)
         # This second supervisor entry can detect failure even if the raw-CSV
         # consumer is held up in logger I/O. poll never waits on child locks/I/O.
-        process_health = self.wrench_provider.poll() if self.wrench_provider is not None else {}
         stream_healthy = bool(process_health.get("STREAM_HEALTH"))
         provider_has_sample = bool(process_health.get("LATEST_GOOD_SAMPLE_VALID"))
         if not stream_healthy:

@@ -1,0 +1,8 @@
+{
+  "status": "FAILED",
+  "reason": "original failure",
+  "robot_timing": {
+    "available": false,
+    "reason": "ValueError:invalid snapshot timestamps"
+  }
+}

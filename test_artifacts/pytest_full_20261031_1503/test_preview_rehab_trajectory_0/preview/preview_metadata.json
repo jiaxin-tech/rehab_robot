@@ -1,0 +1,183 @@
+{
+  "anchor": {
+    "anchor_id": "anchor_preview_test",
+    "capture_host_time_s": 123.0,
+    "controller_version": null,
+    "created_at": "2026-10-31T07:00:20.602+00:00",
+    "notes": "offline test",
+    "reference_start_q_hip": 0.5061580913269217,
+    "reference_start_q_knee": 0.3203519370158654,
+    "reviewed": false,
+    "robot_joint_positions": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "robot_model": null,
+    "robot_serial_number": null,
+    "schema_version": 2,
+    "tcp_orientation": {
+      "representation": "euler_xyz_rad",
+      "strategy": "fixed",
+      "values_rad": [
+        0.1,
+        -0.2,
+        0.3
+      ]
+    },
+    "tcp_pose_base": [
+      0.41,
+      -0.12,
+      0.36,
+      0.1,
+      -0.2,
+      0.3
+    ],
+    "tcp_position_base_m": [
+      0.41,
+      -0.12,
+      0.36
+    ],
+    "tool_name": null,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "workpiece_name": null
+  },
+  "anchor_reviewed": false,
+  "approved_hip_rom_deg": [
+    0.0,
+    120.0
+  ],
+  "approved_knee_rom_deg": [
+    5.0,
+    145.0
+  ],
+  "equivalent_pull_point_geometry": {
+    "L1_hip_to_knee_m": 0.42,
+    "L2_knee_to_equivalent_shank_strap_pull_point_m": 0.3,
+    "matches_approved_first_trial_geometry": true,
+    "physical_scope": "supine passive hip-knee rehabilitation with an equivalent shank strap pull point"
+  },
+  "experiment_mode": "start_anchored_relative",
+  "first_robot_trial_candidate_whitelisted": true,
+  "frame_reviewed": false,
+  "git_commit": "1e56d8eef9f733b680524b1c7881be0c03ddc8c2",
+  "hardware_accessed": false,
+  "hip_center_required": false,
+  "model_angle_definition": "theta_shank = q_hip - q_knee",
+  "observed_ankle_used_as_pull_point": false,
+  "parent_reference_id": null,
+  "plots": [
+    "trajectory_3d.png",
+    "xyz_time.png",
+    "speed_time.png",
+    "acceleration_time.png"
+  ],
+  "preview_only": true,
+  "reference": {
+    "duration_s": 24.0,
+    "input_had_time_axis": true,
+    "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+    "reference_version": "reference_measured_asymmetric_closed",
+    "reference_version_verified": true,
+    "retimed_timing_is_original": false,
+    "retiming_profile": "provided_by_input",
+    "sample_count": 401,
+    "source_approved_hip_rom_deg": [
+      0.0,
+      120.0
+    ],
+    "source_approved_knee_rom_deg": [
+      5.0,
+      145.0
+    ],
+    "source_approved_rom_normalized": true,
+    "source_formal_execution_allowed_all": true,
+    "stage6a_retimed_from_phase": false,
+    "supported_reference_versions": [
+      "reference_measured_asymmetric_closed",
+      "reference_closed_c2",
+      "reference_closed_symmetric"
+    ]
+  },
+  "rehab_frame": {
+    "R_base_from_rehab": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "construction": "x_normalize_then_z_orthogonalize_then_y_equals_z_cross_x",
+    "notes": "offline preview draft",
+    "rehab_x_axis_in_base": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "rehab_y_axis_in_base": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "rehab_z_axis_in_base": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "reviewed": false
+  },
+  "rehab_pull_point_formula": "p_R(t)=[x_pull_FK(t),0,z_pull_FK(t)]",
+  "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@(p_R(t)-p_R(0))",
+  "robot_execution_approved": false,
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "start_tcp_pose_base": [
+    0.41,
+    -0.12,
+    0.36,
+    0.1,
+    -0.2,
+    0.3
+  ],
+  "tcp_orientation_strategy": "fixed_at_start_anchor",
+  "tool_offset_applied_to_relative_increment": false,
+  "tool_offset_retained_for_mode": "absolute_calibrated",
+  "trajectory_audit": {
+    "all_samples_finite": true,
+    "approved_rom_valid": true,
+    "final_relative_displacement_zero": true,
+    "final_target_equals_anchor": true,
+    "first_relative_displacement_zero": true,
+    "first_target_equals_anchor": true,
+    "invalid_reasons": [],
+    "maximum_acceleration_step_m_s2": 0.03286438607783243,
+    "maximum_position_step_m": 0.008602327937594915,
+    "maximum_velocity_step_m_s": 0.006201289113449309,
+    "no_obvious_acceleration_jump": true,
+    "no_obvious_position_jump": true,
+    "no_obvious_velocity_jump": true,
+    "orientation_constant": true,
+    "pull_forward_kinematics_valid": true,
+    "sample_count": 401,
+    "source_formal_gate_valid": true,
+    "source_samples_valid": true,
+    "theta_shank_definition_valid": true,
+    "time_strictly_increasing": true,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "trajectory_valid": true
+  },
+  "trajectory_csv": "trajectory_preview.csv",
+  "trajectory_id": "reference_measured_asymmetric_closed_slow"
+}

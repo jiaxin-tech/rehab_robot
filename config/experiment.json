@@ -9,9 +9,9 @@
   "motion": {
     "max_tcp_speed_m_s": 1,
     "max_tcp_acceleration_m_s2": 2,
-    "max_start_anchor_position_error_m": null,
-    "max_start_anchor_orientation_error_rad": null,
-    "max_command_lateness_s": null,
+    "max_start_anchor_position_error_m": 0.005,
+    "max_start_anchor_orientation_error_rad": 0.05235987755982989,
+    "max_command_lateness_s": 0.02,
     "max_force_n": 100,
     "max_torque_nm": 200,
     "max_state_age_s": 0.025,
@@ -27,8 +27,8 @@
       1,
       1.2
     ],
-    "rt_filter_hz": null,
-    "rt_network_tolerance_percent": null
+    "rt_filter_hz": 50,
+    "rt_network_tolerance_percent": 20
   },
   "leg": {
     "clock_domain": "LOCAL_HOST_PERF_COUNTER",
@@ -46,7 +46,7 @@
     "toggle_byte": 1365,
     "toggle_bit": 4,
     "expected_hz": 500,
-    "ads_dll_path": "hardware/windows/TcAdsDll.dll",
+    "ads_dll_path": "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\TcAdsDll.dll",
     "ads_timeout_ms": 100,
     "startup_timeout_s": 5,
     "max_progress_age_s": 0.25,
@@ -110,7 +110,13 @@
     "wrench_hz": 50,
     "pre_roll_s": 1,
     "post_roll_s": 1,
-    "max_leg_start_age_s": null,
+    "max_leg_start_age_s": 0.05,
+    "expected_identity": {
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "controller_version": "3.2.1",
+      "sdk_version": "0.7.0"
+    },
     "budgets": {
       "startup_s": 5,
       "query_s": 0.05,
@@ -124,7 +130,12 @@
       "skew_s": 0.04,
       "runtime_stale_grace_s": 0.3
     },
-    "max_start_angle_error_deg": null
+    "max_start_angle_error_deg": 2
+  },
+  "empty_load": {
+    "max_tcp_speed_m_s": 0.03,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "retiming_margin": 1.01
   },
   "training": {
     "enabled": false,

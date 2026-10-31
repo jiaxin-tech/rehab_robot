@@ -120,6 +120,7 @@ def build_live_wrench_provider(
     provider_config.update(
         mode="live",
         rate_hz=wrench_hz,
+        expected_identity=dict(config["expected_identity"]),
         allowed_power_states=list(config["allowed_power_states"]),
         allowed_operation_states=list(
             config.get("allowed_operation_states", ["idle"])
@@ -306,7 +307,16 @@ def run_acquisition(
         adapter.connect()
         acquisition_start_attempted = True
         acquisition.start(manage_connection=False)
-        ready, reason = _wait_until_ready(acquisition, mode, timeout_s=3.0)
+        startup_timeout_s = (
+            float(wrench_provider.budgets.startup_s) + 0.5
+            if wrench_provider is not None
+            else 3.0
+        )
+        ready, reason = _wait_until_ready(
+            acquisition,
+            mode,
+            timeout_s=startup_timeout_s,
+        )
         if not ready:
             raise RuntimeError(f"acquisition did not become ready: {reason}")
         logger.update_metadata({"robot_state_summary": adapter.get_robot_state_summary()})

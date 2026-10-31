@@ -51,6 +51,20 @@ observe 的完成只表示观测结束；它没有轨迹发送记录，不能直
 
 此入口先检查配置，再自动捕获当前 TCP 位姿、生成相对轨迹和预览，随后运动，不回固定机器人原点。第一点和闭合终点都是捕获的位置，整段保持捕获时的 TCP 朝向；路径方向仍由 frame 中的假腿安装坐标系决定，不随工具旋转。连接假腿时仍需满足参考起始角，整条平移后的路径仍须在工作空间内。捕获后机器人发生位移时，原有起点容差检查仍适用；再次运行换新会话重新捕获。
 
+首次空载慢速试跑建议分两步执行。这里的“空载”是保留当前末端工具、拆除假腿；先生成会话内轨迹和预览，不会运动：
+
+~~~powershell
+.\.venv\Scripts\python.exe -m scripts.lab_session prepare --empty-load --session results/empty_load_001
+~~~
+
+确认 `results/empty_load_001/preview/trajectory_preview.csv`、`empty_load_retiming.json` 和现场工作空间无误后，再显式启动运动：
+
+~~~powershell
+.\.venv\Scripts\python.exe -m scripts.lab_session run --empty-load --live --session results/empty_load_001
+~~~
+
+空载模式不启动 TwinCAT/ADS、不检查假腿角度、不生成假腿数据，也不进入训练。它保持相同路径几何，并按独立上限 0.03 m/s、0.01 m/s² 和 1% 余量自动延长时间；当前参考轨迹约延长至 133.66 s。机器人状态、力传感器、起点锚定、工作空间、碰撞、实时性和清理门禁仍然有效。运行前须确认假腿已拆除，当前工具及控制器负载与实际安装一致，工作空间清空，受训操作员在急停旁。空载完成不代表假腿联动已获准。
+
 ## 参数建议
 
 以下是调试初值建议，未自动写入运动配置，也不是假腿联动的标定结论。前五项来自 physics 的10月18日空载配置；当时没有完成完整动态验证。厂商 SDK 声明建议滤波截止频率10～100 Hz，50 Hz 位于该范围中。
