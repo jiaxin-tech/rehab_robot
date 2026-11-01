@@ -1,0 +1,14 @@
+{
+  "NORMAL_CLEANUP": false,
+  "GRACEFUL_SDK_DISCONNECT": false,
+  "OFFLINE_DISCONNECT_COMPLETED": false,
+  "FORCED_WORKER_TERMINATION": true,
+  "CONTROLLER_SESSION_RECOVERY": null,
+  "process_exited": true,
+  "exitcode": -15,
+  "query_state": "NOT_STARTED",
+  "failure_latch": [
+    "forced_worker_termination"
+  ],
+  "audit_closed": true
+}

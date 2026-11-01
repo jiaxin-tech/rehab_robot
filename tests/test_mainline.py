@@ -290,8 +290,14 @@ class acquisition_timing_and_tail__StartupHealthProvider:
         self.last_good = acquisition_timing_and_tail__frame(1)
         object.__setattr__(self.last_good, "host_monotonic_time_s", stamp)
         self.failures = []
+        self.runtime_grace_armed = False
+        self.poll_calls = 0
 
     def poll(self):
+        self.poll_calls += 1
+        return self.health()
+
+    def health(self):
         return dict(
             STREAM_HEALTH=not self.failures,
             LATEST_GOOD_SAMPLE_VALID=True,
@@ -303,6 +309,9 @@ class acquisition_timing_and_tail__StartupHealthProvider:
     def fail(self, reason):
         if reason not in self.failures:
             self.failures.append(reason)
+
+    def arm_runtime_grace(self):
+        self.runtime_grace_armed = True
 
 
 def acquisition_timing_and_tail__state_frame(sequence, stamp):
@@ -349,6 +358,15 @@ def test_acquisition_timing_and_tail__startup_misalignment_does_not_kill_wrench_
 
     acquisition._latest_state = acquisition_timing_and_tail__state_frame(2, clock.now_s())
     assert acquisition.latest_health().valid
+    assert acquisition._runtime_freshness_armed is False
+
+    # A merely observed healthy pair is still startup state.  The transition
+    # arms provider grace first. Strict acquisition latching is a separate
+    # post-hold transition.
+    acquisition.arm_runtime_grace()
+    assert provider.runtime_grace_armed is True
+    assert acquisition._runtime_freshness_armed is False
+    acquisition.arm_runtime_freshness()
     assert acquisition._runtime_freshness_armed is True
 
     acquisition._latest_state = acquisition_timing_and_tail__state_frame(3, clock.now_s() - .2)
@@ -386,6 +404,67 @@ def test_acquisition_timing_and_tail__health_uses_provider_sample_ahead_of_csv_c
     assert health.valid
     assert health.wrench_time_s == provider.last_good.host_monotonic_time_s
     assert health.wrench_age_s == 0.0
+    assert provider.failures == []
+
+
+def test_acquisition_timing_and_tail__scheduler_snapshot_does_not_poll_provider():
+    clock = acquisition_timing_and_tail__FakeClock()
+    provider = acquisition_timing_and_tail__StartupHealthProvider(clock.now_s())
+    acquisition = acquisition_timing_and_tail__RealRobotAcquisition(
+        acquisition_timing_and_tail__SimpleNamespace(),
+        acquisition_timing_and_tail__RecordingLogger(),
+        wrench_provider=provider,
+        clock=clock,
+    )
+    acquisition._threads = {
+        name: acquisition_timing_and_tail__AlwaysAliveThread()
+        for name in ("state", "wrench", "alignment")
+    }
+    acquisition._latest_state = acquisition_timing_and_tail__state_frame(
+        1, clock.now_s()
+    )
+
+    before = provider.poll_calls
+    health = acquisition.latest_health_snapshot()
+
+    assert health.valid
+    assert provider.poll_calls == before
+
+
+def test_acquisition_timing_and_tail__slow_provider_poll_rereads_latest_state_before_aging():
+    clock = acquisition_timing_and_tail__FakeClock()
+    provider = acquisition_timing_and_tail__StartupHealthProvider(clock.now_s())
+    original_poll = provider.poll
+    def slow_poll():
+        clock.value += .03
+        return original_poll()
+    provider.poll = slow_poll
+    adapter = acquisition_timing_and_tail__SimpleNamespace(
+        read_state_frame=lambda: acquisition_timing_and_tail__state_frame(
+            2, clock.now_s()
+        )
+    )
+    acquisition = acquisition_timing_and_tail__RealRobotAcquisition(
+        adapter,
+        acquisition_timing_and_tail__RecordingLogger(),
+        wrench_provider=provider,
+        clock=clock,
+    )
+    acquisition._threads = {
+        name: acquisition_timing_and_tail__AlwaysAliveThread()
+        for name in ("state", "wrench", "alignment")
+    }
+    acquisition._state_capture_enabled = True
+    acquisition._latest_state = acquisition_timing_and_tail__state_frame(
+        1, clock.now_s()
+    )
+    acquisition._runtime_freshness_armed = True
+
+    health = acquisition.latest_health()
+
+    assert health.valid
+    assert health.state_age_s == acquisition_timing_and_tail__pytest.approx(0.0)
+    assert health.wrench_age_s == acquisition_timing_and_tail__pytest.approx(.03)
     assert provider.failures == []
 
 
@@ -2397,17 +2476,12 @@ def test_rokae_adapter__external_realtime_attach_checks_but_never_sets_power_or_
     ]
 
 
-def test_rokae_adapter__native_stop_failure_calls_both_stops_and_preserves_hold_target():
+def test_rokae_adapter__callback_finish_timeout_preserves_hold_target(monkeypatch):
+    import hardware.windows.rokae_xcore as module
+
     class Controller:
         def __init__(self):
             self.calls = []
-
-        def stopLoop(self):
-            self.calls.append("stopLoop")
-            raise RuntimeError("loop did not confirm stop")
-
-        def stopMove(self):
-            self.calls.append("stopMove")
 
     robot = rokae_adapter__RokaeRobot("192.0.2.1")
     controller = Controller()
@@ -2417,9 +2491,10 @@ def test_rokae_adapter__native_stop_failure_calls_both_stops_and_preserves_hold_
     robot._rt_callback = lambda: None
     robot._rt_target_native = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
     robot.is_connected = True
-    with rokae_adapter__pytest.raises(RuntimeError, match="stopLoop"):
+    monkeypatch.setattr(module, "_RT_FINISH_ACK_TIMEOUT_S", 0.01)
+    with rokae_adapter__pytest.raises(RuntimeError, match="callbackFinish"):
         robot.stop_realtime(switch_to_nrt=False)
-    assert controller.calls == ["stopLoop", "stopMove"]
+    assert controller.calls == []
     assert robot._rt_active is True
     assert robot._rt_callback is not None
     assert robot._rt_target_native == (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
@@ -2496,6 +2571,14 @@ def test_rokae_adapter__start_and_stop_share_one_atomic_native_lifecycle_lock():
     start_entered = rokae_adapter__threading.Event()
     allow_start_return = rokae_adapter__threading.Event()
 
+    class Command:
+        def __init__(self, target):
+            self.target = tuple(target)
+            self.finished = False
+
+        def setFinished(self):
+            self.finished = True
+
     class Controller:
         def __init__(self):
             self.calls = []
@@ -2511,16 +2594,10 @@ def test_rokae_adapter__start_and_stop_share_one_atomic_native_lifecycle_lock():
             start_entered.set()
             assert allow_start_return.wait(timeout=1.0)
 
-        def stopLoop(self):
-            self.calls.append("stopLoop")
-
-        def stopMove(self):
-            self.calls.append("stopMove")
-
     robot = rokae_adapter__RokaeRobot("192.0.2.1")
     controller = Controller()
     robot._sdk = rokae_adapter__SimpleNamespace(
-        CartesianPosition=lambda target: tuple(target),
+        CartesianPosition=Command,
         RtControllerMode=rokae_adapter__SimpleNamespace(cartesianPosition="cartesianPosition"),
     )
     robot._robot = object()
@@ -2542,23 +2619,147 @@ def test_rokae_adapter__start_and_stop_share_one_atomic_native_lifecycle_lock():
             False,
         )
     )
+    finisher = rokae_adapter__threading.Thread(
+        target=lambda: (
+            robot._rt_stop_requested.wait(timeout=1.0),
+            robot._rt_callback(),
+        )
+    )
     starter.start()
     assert start_entered.wait(timeout=1.0)
     stopper.start()
+    finisher.start()
     allow_start_return.set()
     starter.join(timeout=1.0)
     stopper.join(timeout=1.0)
+    finisher.join(timeout=1.0)
     assert not starter.is_alive()
     assert not stopper.is_alive()
+    assert not finisher.is_alive()
     assert errors == []
     assert controller.calls == [
         "setControlLoopCar",
         "startMove",
         "startLoop",
-        "stopLoop",
-        "stopMove",
     ]
     assert robot._rt_active is False
+
+
+def test_rokae_adapter__callback_schedule_dispatches_only_admitted_target(monkeypatch):
+    import hardware.windows.rokae_xcore as module
+
+    class Command:
+        def __init__(self, target):
+            self.target = tuple(target)
+            self.finished = False
+
+        def setFinished(self):
+            self.finished = True
+
+    class Controller:
+        def setControlLoopCar(self, callback, priority, use_state):
+            self.callback = callback
+
+        def startMove(self, mode):
+            pass
+
+        def startLoop(self, blocking):
+            pass
+
+    robot = rokae_adapter__RokaeRobot("192.0.2.1")
+    robot._sdk = rokae_adapter__SimpleNamespace(
+        CartesianPosition=Command,
+        RtControllerMode=rokae_adapter__SimpleNamespace(
+            cartesianPosition="cartesianPosition"
+        ),
+    )
+    robot._robot = object()
+    robot._rt_controller = Controller()
+    robot.is_connected = True
+    first = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
+    second = (0.31, 0.0, 0.4, 0.0, 0.0, 0.0)
+    ticks = iter((1_000_000_000, 1_000_001_000, 1_018_000_000, 1_018_001_000))
+    monkeypatch.setattr(module.time, "perf_counter_ns", lambda: next(ticks))
+
+    robot.configure_realtime_cartesian_schedule(
+        (first, second), (0.0, 0.02), max_lateness_s=0.03
+    )
+    robot.admit_realtime_cartesian_schedule_target(0)
+    robot.start_realtime_cartesian(first)
+    assert robot._rt_callback().target == first
+    assert robot._rt_schedule_dispatched_index == 0
+    robot.admit_realtime_cartesian_schedule_target(1)
+    robot._rt_schedule_timing_armed = True
+    robot._rt_schedule_origin_s = 1.0
+    command = robot._rt_callback()
+
+    assert command.target == second
+    assert not command.finished
+    assert robot.wait_realtime_cartesian_schedule_target(1, timeout_s=0.0)[0] == 1
+    assert robot._rt_schedule_fault is None
+
+
+def test_rokae_adapter__callback_schedule_refuses_late_target(monkeypatch):
+    import hardware.windows.rokae_xcore as module
+
+    class Command:
+        def __init__(self, target):
+            self.target = tuple(target)
+            self.finished = False
+
+        def setFinished(self):
+            self.finished = True
+
+    class Controller:
+        def setControlLoopCar(self, callback, priority, use_state): pass
+        def startMove(self, mode): pass
+        def startLoop(self, blocking): pass
+
+    robot = rokae_adapter__RokaeRobot("192.0.2.1")
+    robot._sdk = rokae_adapter__SimpleNamespace(
+        CartesianPosition=Command,
+        RtControllerMode=rokae_adapter__SimpleNamespace(
+            cartesianPosition="cartesianPosition"
+        ),
+    )
+    robot._robot = object()
+    robot._rt_controller = Controller()
+    robot.is_connected = True
+    first = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
+    second = (0.31, 0.0, 0.4, 0.0, 0.0, 0.0)
+    ticks = iter((1_000_000_000, 1_000_001_000, 1_051_000_000))
+    monkeypatch.setattr(module.time, "perf_counter_ns", lambda: next(ticks))
+    robot.configure_realtime_cartesian_schedule(
+        (first, second), (0.0, 0.02), max_lateness_s=0.03
+    )
+    robot.admit_realtime_cartesian_schedule_target(0)
+    robot.admit_realtime_cartesian_schedule_target(1)
+    robot.start_realtime_cartesian(first)
+    robot._rt_callback()
+    robot._rt_schedule_timing_armed = True
+    robot._rt_schedule_origin_s = 1.0
+
+    command = robot._rt_callback()
+
+    assert command.finished
+    assert command.target == first
+    assert robot._rt_schedule_dispatched_index == 0
+    assert "lateness=0.031000s" in robot._rt_schedule_fault
+
+
+def test_rokae_adapter__schedule_cancellation_wakes_dispatch_waiter():
+    robot = rokae_adapter__RokaeRobot("192.0.2.1")
+    robot._rt_controller = object()
+    first = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
+    second = (0.31, 0.0, 0.4, 0.0, 0.0, 0.0)
+    robot.configure_realtime_cartesian_schedule(
+        (first, second), (0.0, 0.02), max_lateness_s=0.03
+    )
+
+    robot.cancel_realtime_cartesian_schedule("safety gate")
+
+    with rokae_adapter__pytest.raises(RuntimeError, match="safety gate"):
+        robot.wait_realtime_cartesian_schedule_target(0, timeout_s=1.0)
 
 
 def rokae_adapter___capture_thread_error(errors, function, *args):
@@ -3952,6 +4153,7 @@ def test_rokae_safety_events__missing_event_budget_fails_before_sdk_or_files(mon
 
 import unittest as rokae_xcore__unittest
 import sys as rokae_xcore__sys
+import threading as rokae_xcore__threading
 
 from hardware.windows.rokae_xcore import RokaeRobot as rokae_xcore__RokaeRobot, _load_sdk as rokae_xcore___load_sdk
 
@@ -4066,9 +4268,21 @@ class rokae_xcore__RokaeXCoreTests(rokae_xcore__unittest.TestCase):
         self.assertEqual(updated.rpy, [0.1, 0.2, 0.3])
         self.assertIn(("startLoop", False), native.rt.calls)
 
-        robot.stop_realtime(switch_to_nrt=False)
-        self.assertIn(("stopLoop",), native.rt.calls)
-        self.assertIn(("stopMove",), native.rt.calls)
+        stop_errors = []
+        stopper = rokae_xcore__threading.Thread(
+            target=lambda: rokae_adapter___capture_thread_error(
+                stop_errors, robot.stop_realtime, False
+            )
+        )
+        stopper.start()
+        self.assertTrue(robot._rt_stop_requested.wait(timeout=1.0))
+        finished = native.rt.callback()
+        self.assertNotEqual(finished.isFinished(), 0)
+        stopper.join(timeout=1.0)
+        self.assertFalse(stopper.is_alive())
+        self.assertEqual(stop_errors, [])
+        self.assertNotIn(("stopLoop",), native.rt.calls)
+        self.assertNotIn(("stopMove",), native.rt.calls)
 
     def test_realtime_requires_local_ip(self):
         robot, _ = self.make_robot(local_ip="")
@@ -5162,6 +5376,8 @@ def test_wrench_production_process__missing_provider_refuses_before_connect(tmp_
 # Personal experiment workflow regressions. All device interfaces below are fakes.
 import copy
 import json
+import threading
+import time
 from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
@@ -5272,6 +5488,40 @@ def test_personal_executor_completes_and_stops(personal_context):
     assert c.events.index("log") < c.events.index("hold")
     executor.request_stop("again")
     assert c.events.count("stop") == 1
+
+
+def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
+        personal_context):
+    c = personal_context
+    configured = {}
+    admitted = []
+    observed = []
+    c.motion.configure_cartesian_schedule = lambda poses, times, max_lateness_s: (
+        configured.update(poses=poses, times=tuple(times), lateness=max_lateness_s)
+    )
+    c.motion.admit_scheduled_target = admitted.append
+    c.motion.scheduled_origin_s = lambda: 1.0
+    c.motion.start_scheduled_timing = lambda timeout_s: 1.0
+    c.motion.wait_scheduled_target = lambda index, timeout_s: (
+        index,
+        int((1.0 + configured["times"][index]) * 1e9),
+        int((1.0 + configured["times"][index]) * 1e9) + 1000,
+    )
+    c.motion.send_cartesian_target = lambda pose: pytest.fail(
+        "main thread dispatched instead of realtime callback"
+    )
+    executor, _ = personal_executor(c)
+    executor.dispatch_observer = lambda *values: observed.append(values)
+
+    result = executor.execute(
+        c.trajectory, evaluate_offline_execution_request(**c.request)
+    )
+
+    assert result.completed
+    assert admitted == list(range(len(c.trajectory)))
+    assert len(configured["poses"]) == len(c.trajectory)
+    assert configured["lateness"] == c.safety.max_command_lateness_s
+    assert len(observed) == len(c.trajectory)
 
 
 @pytest.mark.parametrize("source,allowed", [("controller", True), ("query", False), ("events", False)])
@@ -5442,15 +5692,119 @@ def test_runtime_wrench_completed_between_polls_cannot_erase_gap(tmp_path, elaps
     assert ("wrench_sample_stale_or_clock_invalid" in p.failure_latch) is expired
 
 
-def test_runtime_grace_is_armed_after_final_gate_before_hold(personal_context):
+def test_runtime_grace_is_armed_before_blocking_metadata_and_before_hold(personal_context):
     c = personal_context
     c.acquisition.arm_runtime_grace = lambda: c.events.append("arm")
+    c.logger.update_metadata = lambda value: c.events.append("metadata")
     executor, _ = personal_executor(c)
     executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
-    assert c.events.index("arm") + 1 == c.events.index("hold")
+    assert c.events.index("arm") < c.events.index("metadata") < c.events.index("hold")
 
 
-def test_initial_hold_logging_has_pre_motion_budget_without_relaxing_runtime_deadlines(
+def test_prestart_waits_for_fresh_acquisition_after_metadata(personal_context):
+    c = personal_context
+    c.acquisition.arm_runtime_grace = lambda: c.events.append("arm")
+    c.acquisition.wait_until_healthy = lambda **kwargs: c.events.append("recover") or True
+    executor, _ = personal_executor(c)
+
+    executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
+
+    assert c.events.index("recover") < c.events.index("hold")
+
+
+def test_strict_runtime_freshness_arms_only_after_hold_recovers(personal_context):
+    c = personal_context
+    c.acquisition.arm_runtime_grace = lambda: c.events.append("grace")
+    c.acquisition.arm_runtime_freshness = lambda: c.events.append("strict")
+    c.acquisition.wait_until_healthy = (
+        lambda **kwargs: c.events.append("recover") or True
+    )
+    executor, _ = personal_executor(c)
+
+    executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
+
+    hold = c.events.index("hold")
+    strict = c.events.index("strict")
+    assert hold < strict < c.events.index("target")
+    assert c.events[hold + 1:strict] == ["recover"]
+
+
+def test_deadline_guard_window_performs_no_potentially_blocking_health_poll(
+        personal_context, monkeypatch):
+    c = personal_context
+    executor, clock = personal_executor(c)
+    executor._wait_until = RokaeMotionExecutor._wait_until.__get__(executor)
+    executor._runtime_reasons = lambda: (_ for _ in ()).throw(
+        AssertionError("health poll entered deadline guard window")
+    )
+    monkeypatch.setattr(
+        "control.robot_trajectory_executor.time.sleep",
+        lambda seconds: setattr(clock, "value", clock.value + seconds),
+    )
+    deadline = clock.value + 0.020
+
+    executor._wait_until(deadline)
+
+    assert deadline <= clock.value <= deadline + 0.001
+
+
+def test_live_runtime_watchdog_stops_motion_without_scheduler_poll(personal_context):
+    c = personal_context
+    stop_called = threading.Event()
+    c.motion.request_stop = lambda reason: (
+        c.events.append(reason), stop_called.set()
+    )
+    executor = RokaeMotionExecutor(c.motion, c.acquisition, c.logger, c.safety)
+    reasons = []
+    executor._runtime_reasons = lambda: tuple(reasons)
+
+    executor._start_runtime_watchdog()
+    reasons.append("force_limit_exceeded")
+
+    assert stop_called.wait(.25)
+    executor._stop_runtime_watchdog(require_clean=False)
+    assert executor._stop_event.is_set()
+    assert executor._runtime_watchdog_fault == (
+        "runtime safety gate: force_limit_exceeded"
+    )
+    assert c.events == [
+        "runtime_watchdog:runtime safety gate: force_limit_exceeded"
+    ]
+
+
+def test_live_deadline_wait_uses_bounded_final_spin(personal_context):
+    c = personal_context
+    executor = RokaeMotionExecutor(c.motion, c.acquisition, c.logger, c.safety)
+    # A non-None thread selects the real-clock watchdog scheduling path.  The
+    # thread itself need not run for this isolated wait test.
+    executor._runtime_watchdog_thread = threading.current_thread()
+    executor._runtime_reasons = lambda: (_ for _ in ()).throw(
+        AssertionError("deadline scheduler polled safety instead of watchdog")
+    )
+    deadline = time.perf_counter() + .025
+
+    executor._wait_until(deadline)
+
+    lateness = time.perf_counter() - deadline
+    executor._runtime_watchdog_thread = None
+    assert lateness >= 0
+    assert lateness < .030
+    assert executor._last_wait_diagnostics["fine_entry_remaining_s"] <= .010
+
+
+def test_prestart_recovery_timeout_refuses_motion(personal_context):
+    c = personal_context
+    c.acquisition.arm_runtime_grace = lambda: None
+    c.acquisition.wait_until_healthy = lambda **kwargs: False
+    executor, _ = personal_executor(c)
+
+    with pytest.raises(RuntimeError, match="did not recover"):
+        executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
+
+    assert "hold" not in c.events and c.events[-1] == "stop"
+
+
+def test_initial_hold_and_ahead_of_deadline_runtime_logging_have_bounded_budgets(
         personal_context):
     c = personal_context
     timeouts = []
@@ -5461,8 +5815,8 @@ def test_initial_hold_logging_has_pre_motion_budget_without_relaxing_runtime_dea
 
     executor.execute(c.trajectory, evaluate_offline_execution_request(**c.request))
 
-    assert timeouts[0] == pytest.approx(.1)
-    assert max(timeouts[1:]) == pytest.approx(c.safety.max_command_lateness_s)
+    assert timeouts[0] == pytest.approx(.25)
+    assert min(timeouts[1:]) > c.safety.max_command_lateness_s
 
 
 def test_personal_executor_stops_on_late_logging(personal_context):
@@ -5825,7 +6179,10 @@ def test_controller_motion_fault_invalidates_stream_and_stays_latched(monkeypatc
     updates = iter((True, False))
     native._robot = SimpleNamespace(updateRobotState=lambda timeout: next(updates),
         getStateData=lambda *args: None)
-    native.realtime_motion_error = lambda: True
+    native._controller_motion_fault = True
+    native.realtime_motion_error = lambda: (_ for _ in ()).throw(
+        AssertionError("state loop must not poll blocking hasMotionError")
+    )
     monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
         RtSupportedFields=SimpleNamespace(tcpPoseAbc_m=1, jointPos_m=2, keypads=3)))
     import hardware.windows.rokae_xcore as module
@@ -5836,7 +6193,7 @@ def test_controller_motion_fault_invalidates_stream_and_stays_latched(monkeypatc
     assert not native.get_state_frame().valid
 
 
-def test_slow_controller_fault_poll_does_not_refresh_old_state_timestamp(monkeypatch):
+def test_controller_state_loop_never_calls_blocking_motion_error_poll(monkeypatch):
     import sys
     from types import SimpleNamespace
     import hardware.windows.rokae_xcore as module
@@ -5850,12 +6207,10 @@ def test_slow_controller_fault_poll_does_not_refresh_old_state_timestamp(monkeyp
     updates = iter((True, False))
     native._robot = SimpleNamespace(updateRobotState=lambda timeout: next(updates),
         getStateData=lambda *args: None)
-    clock = [1_000_000_000]
-    monkeypatch.setattr(module.time, "perf_counter_ns", lambda: clock[0])
-    def poll():
-        clock[0] += 300_000_000
-        return False
-    native.realtime_motion_error = poll
+    monkeypatch.setattr(module.time, "perf_counter_ns", lambda: 1_000_000_000)
+    native.realtime_motion_error = lambda: (_ for _ in ()).throw(
+        AssertionError("state loop must not poll blocking hasMotionError")
+    )
     monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
         RtSupportedFields=SimpleNamespace(tcpPoseAbc_m=1, jointPos_m=2, keypads=3)))
     accept = native._accept_state
@@ -5865,7 +6220,41 @@ def test_slow_controller_fault_poll_does_not_refresh_old_state_timestamp(monkeyp
     native._accept_state = accept_once
     native._state_loop()
     assert native.get_state_frame().host_monotonic_time_s == 1.
-    assert clock[0] == 1_300_000_000
+
+
+def test_controller_collision_watcher_latches_true_without_querying_initial_state(monkeypatch):
+    native = rokae_safety_events__Native()
+    robot = rokae_safety_events__rokae_xcore.RokaeRobot(
+        "192.0.2.1", collision_source="controller"
+    )
+    sdk = rokae_safety_events__SimpleNamespace(
+        BaseRobot=rokae_safety_events__SimpleNamespace(sdkVersion=lambda: "0.7.0"),
+        xMateRobot=lambda: native,
+        Event=rokae_safety_events__SimpleNamespace(safety="safety"),
+    )
+    monkeypatch.setattr(rokae_safety_events__rokae_xcore, "_load_sdk", lambda: sdk)
+    monkeypatch.setattr(robot, "start_state_stream", lambda: None)
+    monkeypatch.setattr(robot, "stop_state_stream", lambda: None)
+    monkeypatch.setattr(robot, "_refresh_operation_state", lambda: None)
+    monkeypatch.setattr(robot, "_read_joint_soft_limits_rad", lambda: ((-2., 2.),) * 6)
+
+    robot.connect()
+    assert native.calls == ["connect", "subscribe"]
+    native.callbacks[-1]({"collided": False})
+    assert not robot._controller_motion_fault
+    native.callbacks[-1]({"collided": True})
+    assert robot._controller_motion_fault
+    robot.disconnect()
+    assert native.calls[-2:] == ["unsubscribe", "disconnect"]
+
+
+def test_controller_fault_poll_tolerates_concurrent_realtime_teardown():
+    from hardware.windows.rokae_xcore import RokaeRobot
+    native = RokaeRobot("192.0.2.1", collision_source="controller")
+    native._rt_active = True
+    native._rt_controller = None
+
+    assert native.realtime_motion_error() is False
 
 
 @pytest.mark.parametrize("source", ["controller", "query", "events"])

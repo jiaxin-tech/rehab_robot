@@ -1,0 +1,7 @@
+{
+  "gaps": [],
+  "failures": [
+    "query_pending_too_long"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

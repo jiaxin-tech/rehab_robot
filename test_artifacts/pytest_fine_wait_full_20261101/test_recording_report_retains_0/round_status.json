@@ -1,0 +1,58 @@
+{
+  "status": "FAILED",
+  "reason": "original acquisition failure",
+  "robot_timing": {
+    "available": true,
+    "samples": 2,
+    "valid_samples": 0,
+    "recorded_span_s": 0.020000000000000018,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 20.000000000000018,
+    "includes_startup": true,
+    "ever_ready": false,
+    "invalid_after_ready": null,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 2,
+        "mean": 156.5,
+        "p50": 156.5,
+        "p95": 296.45,
+        "p99": 308.89,
+        "min": 1.0,
+        "max": 312.0
+      },
+      "state_age_ms": {
+        "count": 2,
+        "mean": 185.0,
+        "p50": 185.0,
+        "p95": 342.5,
+        "p99": 356.5,
+        "min": 10.0,
+        "max": 360.0
+      },
+      "wrench_age_ms": {
+        "count": 2,
+        "mean": 60.0,
+        "p50": 60.0,
+        "p95": 60.0,
+        "p99": 60.0,
+        "min": 60.0,
+        "max": 60.0
+      },
+      "state_wrench_skew_ms": {
+        "count": 2,
+        "mean": 30.0,
+        "p50": 30.0,
+        "p95": 30.0,
+        "p99": 30.0,
+        "min": 30.0,
+        "max": 30.0
+      }
+    },
+    "invalid_reasons": {
+      "state_stale": 2,
+      "wrench_stale": 2
+    }
+  }
+}

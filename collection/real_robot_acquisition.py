@@ -117,8 +117,12 @@ class RealRobotAcquisition:
         # stop the isolated wrench owner merely because its first good sample
         # arrived before a fresh state/wrench pair was available.  Once the
         # complete acquisition health gate has passed, freshness/skew failures
-        # are again latched immediately for the rest of the episode.
+        # are again latched immediately for the rest of the episode.  Arming is
+        # deliberately explicit and ordered after the provider's bounded-gap
+        # grace; otherwise an alignment-thread health check can expose a small
+        # startup race and permanently latch a transient state/wrench skew.
         self._runtime_freshness_armed = False
+        self._runtime_arm_lock = threading.Lock()
 
     @property
     def running(self) -> bool:
@@ -475,11 +479,53 @@ class RealRobotAcquisition:
                 next_tick = now_s
 
     def arm_runtime_grace(self) -> None:
-        if not self.latest_health().valid:
-            raise RuntimeError("acquisition_not_fresh_before_runtime")
-        self.wrench_provider.arm_runtime_grace()
+        with self._runtime_arm_lock:
+            if getattr(self.wrench_provider, "runtime_grace_armed", False):
+                return
+            if not self.latest_health().valid:
+                raise RuntimeError("acquisition_not_fresh_before_runtime")
+            # Provider grace is needed across bounded metadata/SDK transitions,
+            # but state freshness is not permanently latched until the initial
+            # anchor hold has started and both streams have recovered.
+            self.wrench_provider.arm_runtime_grace()
 
-    def latest_health(self) -> AcquisitionHealth:
+    def arm_runtime_freshness(self) -> None:
+        """Enter strict motion-time freshness after a healthy anchor hold."""
+        with self._runtime_arm_lock:
+            if self._runtime_freshness_armed:
+                return
+            if not getattr(self.wrench_provider, "runtime_grace_armed", False):
+                raise RuntimeError("runtime_grace_not_armed")
+            if not self.latest_health().valid:
+                raise RuntimeError("acquisition_not_fresh_before_runtime")
+            # Grace is already visible, so no alignment-thread observation can
+            # expose an unprotected state/wrench transition after this store.
+            self._runtime_freshness_armed = True
+
+    def latest_health_snapshot(self) -> AcquisitionHealth:
+        """Return live ages/limits without servicing provider IPC on this thread.
+
+        The provider supervisor and wrench consumer continue polling every 2 ms.
+        This path is for the command scheduler, which must never inherit audit
+        admission or disk-writer timing while approaching a target deadline.
+        """
+        return self.latest_health(_service_provider=False)
+
+    def latest_health(self, *, _service_provider: bool = True) -> AcquisitionHealth:
+        # Live health must follow the isolated provider's admitted immutable
+        # sample, not the raw-CSV consumer's logging progress.  Metadata fsync
+        # or a slow file append may delay ``_latest_wrench`` even while the
+        # provider continues to confirm fresh 50 Hz SDK results.
+        process_health = (
+            (self.wrench_provider.poll() if _service_provider
+             else self.wrench_provider.health())
+            if self.wrench_provider is not None else {}
+        )
+        # Provider polling can drain and persist an audit batch.  Read the
+        # independently advancing state cache *after* that work; otherwise a
+        # frame captured before a slow poll is compared with a post-poll clock
+        # and can be falsely classified as stale even though newer state frames
+        # arrived throughout the poll.
         live_state = self.latest_state_frame()
         with self._state_lock:
             state = live_state
@@ -487,11 +533,6 @@ class RealRobotAcquisition:
         with self._wrench_lock:
             wrench = self._latest_wrench
             wrench_error = self._wrench_error
-        # Live health must follow the isolated provider's admitted immutable
-        # sample, not the raw-CSV consumer's logging progress.  Metadata fsync
-        # or a slow file append may delay ``_latest_wrench`` even while the
-        # provider continues to confirm fresh 50 Hz SDK results.
-        process_health = self.wrench_provider.poll() if self.wrench_provider is not None else {}
         if self.wrench_provider is not None:
             wrench = self.wrench_provider.last_good
         # Poll may admit a just-completed sample.  Take the comparison time
@@ -596,8 +637,6 @@ class RealRobotAcquisition:
             and stream_healthy
             and not reasons
         )
-        if valid:
-            self._runtime_freshness_armed = True
         return AcquisitionHealth(
             host_time_s=now_s,
             state_time_s=state_time,
@@ -671,12 +710,23 @@ class RealRobotAcquisition:
             if now_s - next_tick > period:
                 next_tick = now_s
 
-    def wait_until_healthy(self, timeout_s: float = 3.0) -> bool:
+    def wait_until_healthy(self, timeout_s: float = 3.0, *,
+                           arm_runtime_grace: bool = False) -> bool:
         deadline = self.clock.now_s() + timeout_s
         while self.clock.now_s() < deadline and not self._stop_event.is_set():
             health = self.latest_health()
             if health.valid:
-                return True
+                if not arm_runtime_grace:
+                    return True
+                try:
+                    self.arm_runtime_grace()
+                except RuntimeError:
+                    # The provider rechecks freshness while arming.  A sample
+                    # may turn stale between the two checks; remain in startup
+                    # mode and wait for the next fully fresh pair.
+                    pass
+                else:
+                    return True
             if health.wrench_failure_latch or self._background_error:
                 return False
             time.sleep(0.005)

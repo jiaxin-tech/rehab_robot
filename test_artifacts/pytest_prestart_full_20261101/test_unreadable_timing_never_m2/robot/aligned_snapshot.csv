@@ -1,0 +1,2 @@
+host_time_s,valid,invalid_reason,query_duration_ms,state_age_s,wrench_age_s,state_wrench_skew_s
+nan,True,,1,.01,.02,.01

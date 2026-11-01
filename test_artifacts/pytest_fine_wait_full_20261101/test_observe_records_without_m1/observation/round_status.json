@@ -1,0 +1,6 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\test_artifacts\\pytest_fine_wait_full_20261101\\test_observe_records_without_m1\\experiment.json",
+  "motion_commanded": false,
+  "reason": "robot query stalled"
+}

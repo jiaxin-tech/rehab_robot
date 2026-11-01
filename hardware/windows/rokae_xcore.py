@@ -38,6 +38,14 @@ logger = logging.getLogger(__name__)
 _SDK_DIR = Path(__file__).resolve().parent / "xcoresdk"
 _EXPECTED_SDK_VERSION = "0.7.0"
 _DLL_DIRECTORY_HANDLE = None
+_RT_FINISH_ACK_TIMEOUT_S = 0.25
+_RT_FINISH_QUIET_S = 0.02
+_RT_FINISH_POLL_S = 0.002
+# Arm each already-reviewed target just before its nominal timestamp.  The
+# callback still measures lateness against the unshifted timestamp and refuses
+# anything beyond the configured limit.  A common 2 ms lead preserves all
+# inter-target intervals while avoiding a timer-boundary miss.
+_RT_SCHEDULE_DISPATCH_LEAD_S = 0.002
 
 
 def _load_sdk():
@@ -112,6 +120,24 @@ class RokaeRobot:
         self._rt_callback = None
         self._rt_target_native: tuple[float, ...] | None = None
         self._rt_active = False
+        self._rt_stop_requested = threading.Event()
+        self._rt_finish_issued = threading.Event()
+        self._rt_callback_count = 0
+        self._rt_schedule_native: tuple[tuple[float, ...], ...] | None = None
+        self._rt_schedule_times_s: tuple[float, ...] | None = None
+        self._rt_schedule_lateness_s: float | None = None
+        self._rt_schedule_admitted_index = -1
+        self._rt_schedule_dispatched_index = -1
+        self._rt_schedule_timing_armed = False
+        self._rt_schedule_origin_s: float | None = None
+        self._rt_schedule_fault: str | None = None
+        self._rt_schedule_dispatches: list[tuple[int, int, int]] = []
+        self._rt_schedule_event = threading.Event()
+        self._rt_schedule_use_windows_callback_priority = False
+        self._rt_callback_avrt = None
+        self._rt_callback_mmcss_handle = None
+        self._state_avrt = None
+        self._state_mmcss_handle = None
         self._sdk_lock = threading.RLock()
         # xCoreSDK state reception and getEndTorque are independent producer
         # loops.  Keep their host-side serialization domains separate so a
@@ -243,6 +269,8 @@ class RokaeRobot:
             self._refresh_operation_state()
             if self._safety_events is not None:
                 self.start_safety_events()
+            elif self.collision_source == "controller":
+                self.start_controller_safety_events()
         except Exception as connection_exc:
             try:
                 self._cleanup_failed_connection()
@@ -399,44 +427,66 @@ class RokaeRobot:
         from xCoreSDK_python import RtSupportedFields
 
         timeout = timedelta(milliseconds=max(1, self.state_interval_ms * 2))
-        while self._state_running:
-            try:
-                with self._state_sdk_lock:
-                    updated = self._robot.updateRobotState(timeout)
-                    if not updated:
-                        continue
-                    # The SDK queue does not overwrite old frames. Drain every
-                    # immediately available frame before reading fields so the
-                    # application observes the newest controller state.
-                    while self._robot.updateRobotState(timedelta(milliseconds=0)):
-                        pass
-                    tcp = self._sdk.PyTypeVectorDouble()
-                    joints = self._sdk.PyTypeVectorDouble()
-                    keypads = self._sdk.PyTypeVectorBool()
-                    self._robot.getStateData(RtSupportedFields.tcpPoseAbc_m, tcp, 6)
-                    self._robot.getStateData(RtSupportedFields.jointPos_m, joints, 6)
-                    self._robot.getStateData(RtSupportedFields.keypads, keypads)
-                    tcp_native = list(tcp.content())
-                    joints_native = list(joints.content())
-                    keypad_native = tuple(bool(value) for value in keypads.content())
-                received_s = time.perf_counter_ns() / 1_000_000_000.0
-                # Poll away from target dispatch. A controller stop/error must
-                # invalidate state even when collision feedback is unavailable.
-                if self.collision_source == "controller" and self._rt_active:
-                    self._controller_motion_fault |= self.realtime_motion_error()
-                if self._controller_motion_fault:
-                    raise RuntimeError("controller_realtime_motion_error")
-                self._accept_state(
-                    tcp_native,
-                    joints_native,
-                    received_s,
-                    keypad_native,
-                )
-            except Exception as exc:
-                if self._state_running:
-                    self._mark_state_error(exc)
-                    logger.warning("xCoreSDK state update failed: %s", exc)
-                    time.sleep(0.05)
+        try:
+            while self._state_running:
+                if (
+                    self._rt_schedule_use_windows_callback_priority
+                    and self._state_mmcss_handle is None
+                ):
+                    try:
+                        self._state_avrt, self._state_mmcss_handle = (
+                            self._register_current_thread_mmcss()
+                        )
+                    except BaseException as exc:
+                        self._mark_state_error(exc)
+                        return
+                try:
+                    with self._state_sdk_lock:
+                        updated = self._robot.updateRobotState(timeout)
+                        if not updated:
+                            continue
+                        # The SDK queue does not overwrite old frames. Drain every
+                        # immediately available frame before reading fields so the
+                        # application observes the newest controller state.
+                        while self._robot.updateRobotState(timedelta(milliseconds=0)):
+                            pass
+                        tcp = self._sdk.PyTypeVectorDouble()
+                        joints = self._sdk.PyTypeVectorDouble()
+                        keypads = self._sdk.PyTypeVectorBool()
+                        self._robot.getStateData(RtSupportedFields.tcpPoseAbc_m, tcp, 6)
+                        self._robot.getStateData(RtSupportedFields.jointPos_m, joints, 6)
+                        self._robot.getStateData(RtSupportedFields.keypads, keypads)
+                        tcp_native = list(tcp.content())
+                        joints_native = list(joints.content())
+                        keypad_native = tuple(bool(value) for value in keypads.content())
+                    received_s = time.perf_counter_ns() / 1_000_000_000.0
+                    # In controller-owned collision mode, receive the SDK safety
+                    # event instead of polling hasMotionError() here.  On Windows
+                    # xCoreSDK 0.7.0 that native poll can occasionally retain the
+                    # Python GIL for over 100 ms, starving both this state producer
+                    # and the 1 kHz Python command callback.  The event callback is
+                    # edge-driven and the controller remains the safety owner.
+                    if self._controller_motion_fault:
+                        raise RuntimeError("controller_realtime_motion_error")
+                    self._accept_state(
+                        tcp_native,
+                        joints_native,
+                        received_s,
+                        keypad_native,
+                    )
+                except Exception as exc:
+                    if self._state_running:
+                        self._mark_state_error(exc)
+                        logger.warning("xCoreSDK state update failed: %s", exc)
+                        time.sleep(0.05)
+        finally:
+            if self._state_mmcss_handle is not None and self._state_avrt is not None:
+                if not self._state_avrt.AvRevertMmThreadCharacteristics(
+                    self._state_mmcss_handle
+                ):
+                    logger.warning("Unable to restore state-thread MMCSS priority")
+                self._state_mmcss_handle = None
+                self._state_avrt = None
 
     def _accept_state(
         self,
@@ -724,13 +774,104 @@ class RokaeRobot:
                 raise RuntimeError("No robot state is available for the realtime hold pose")
             initial_pose = self.get_cartesian_pose()
         self._rt_target_native = tuple(self._pose_to_sdk(initial_pose))
+        self._rt_stop_requested.clear()
+        self._rt_finish_issued.clear()
+        self._rt_callback_count = 0
         sdk = self._sdk
 
         def cartesian_callback():
             target = self._rt_target_native
             if target is None:
                 raise RuntimeError("Realtime Cartesian target is unavailable")
-            return sdk.CartesianPosition(target)
+            callback_started_ns = time.perf_counter_ns()
+            schedule = self._rt_schedule_native
+            schedule_times = self._rt_schedule_times_s
+            if schedule is not None and schedule_times is not None:
+                if (
+                    self._rt_schedule_use_windows_callback_priority
+                    and self._rt_callback_mmcss_handle is None
+                ):
+                    try:
+                        self._enter_realtime_callback_priority()
+                    except BaseException as exc:
+                        self._rt_schedule_fault = (
+                            "realtime callback priority setup failed: "
+                            f"{type(exc).__name__}:{exc}"
+                        )
+                now_s = callback_started_ns / 1e9
+                if self._rt_schedule_dispatched_index < 0:
+                    if self._rt_schedule_admitted_index < 0:
+                        self._rt_schedule_fault = (
+                            "initial realtime schedule target was not admitted"
+                        )
+                    else:
+                        self._rt_schedule_origin_s = now_s - schedule_times[0]
+                        self._rt_schedule_dispatched_index = 0
+                        self._rt_target_native = schedule[0]
+                        target = schedule[0]
+                        self._rt_schedule_dispatches.append(
+                            (0, callback_started_ns, time.perf_counter_ns())
+                        )
+                        self._rt_schedule_event.set()
+                elif not self._rt_schedule_timing_armed:
+                    pass
+                elif self._rt_schedule_origin_s is None:
+                    self._rt_schedule_origin_s = now_s - schedule_times[0]
+                    self._rt_schedule_event.set()
+                else:
+                    next_index = self._rt_schedule_dispatched_index + 1
+                    if next_index < len(schedule):
+                        deadline_s = (
+                            self._rt_schedule_origin_s + schedule_times[next_index]
+                        )
+                        if now_s >= deadline_s - _RT_SCHEDULE_DISPATCH_LEAD_S:
+                            lateness_s = now_s - deadline_s
+                            if self._rt_schedule_admitted_index < next_index:
+                                self._rt_schedule_fault = (
+                                    "realtime schedule target was not admitted before "
+                                    f"deadline: index={next_index}"
+                                )
+                            elif (
+                                self._rt_schedule_lateness_s is None
+                                or lateness_s > self._rt_schedule_lateness_s
+                            ):
+                                self._rt_schedule_fault = (
+                                    "realtime callback deadline missed; refusing late "
+                                    f"dispatch: index={next_index};"
+                                    f"lateness={lateness_s:.6f}s"
+                                )
+                            else:
+                                target = schedule[next_index]
+                                self._rt_target_native = target
+                                self._rt_schedule_dispatched_index = next_index
+                                self._rt_schedule_dispatches.append(
+                                    (
+                                        next_index,
+                                        callback_started_ns,
+                                        time.perf_counter_ns(),
+                                    )
+                                )
+                                self._rt_schedule_event.set()
+            command = sdk.CartesianPosition(target)
+            self._rt_callback_count += 1
+            if self._rt_stop_requested.is_set() or self._rt_schedule_fault is not None:
+                # xCoreSDK documents setFinished() as the callback-safe way to
+                # stop motion and stop further callback invocations.  Calling
+                # stopLoop() from a Python thread while the SDK callback thread
+                # is trying to acquire the GIL can deadlock inside the native
+                # join path, so termination is handed back through the callback.
+                command.setFinished()
+                self._rt_finish_issued.set()
+                self._rt_schedule_event.set()
+                try:
+                    self._leave_realtime_callback_priority()
+                except BaseException as exc:
+                    if self._rt_schedule_fault is None:
+                        self._rt_schedule_fault = (
+                            "realtime callback priority restore failed: "
+                            f"{type(exc).__name__}:{exc}"
+                        )
+            return command
 
         self._rt_callback = cartesian_callback
         move_attempted = False
@@ -795,6 +936,154 @@ class RokaeRobot:
             raise
         self.robot_mode = "RT_CONTROLLING"
 
+    def configure_realtime_cartesian_schedule(
+        self,
+        poses: Sequence[Sequence[float]],
+        times_s: Sequence[float],
+        *,
+        max_lateness_s: float,
+        use_windows_callback_priority: bool = False,
+    ) -> None:
+        """Preload targets; callback dispatch remains blocked until admission."""
+        if self._rt_active:
+            raise RuntimeError("cannot configure an active realtime schedule")
+        if self._rt_controller is None:
+            raise RuntimeError("realtime controller is not attached")
+        times = tuple(float(value) for value in times_s)
+        native = tuple(tuple(self._pose_to_sdk(pose)) for pose in poses)
+        lateness = float(max_lateness_s)
+        if len(native) < 2 or len(native) != len(times):
+            raise ValueError("realtime schedule requires matching target/time arrays")
+        if not all(math.isfinite(value) for value in times) or not all(
+            later > earlier for earlier, later in zip(times, times[1:])
+        ):
+            raise ValueError("realtime schedule times must be finite and increasing")
+        if not math.isfinite(lateness) or lateness <= 0.0:
+            raise ValueError("max_lateness_s must be finite and positive")
+        if type(use_windows_callback_priority) is not bool:
+            raise TypeError("use_windows_callback_priority must be bool")
+        if not all(all(math.isfinite(value) for value in pose) for pose in native):
+            raise ValueError("realtime schedule targets must be finite")
+        self._rt_schedule_native = native
+        self._rt_schedule_times_s = times
+        self._rt_schedule_lateness_s = lateness
+        self._rt_schedule_admitted_index = -1
+        self._rt_schedule_dispatched_index = -1
+        self._rt_schedule_timing_armed = False
+        self._rt_schedule_origin_s = None
+        self._rt_schedule_fault = None
+        self._rt_schedule_dispatches = []
+        self._rt_schedule_event.clear()
+        self._rt_schedule_use_windows_callback_priority = bool(
+            use_windows_callback_priority and sys.platform == "win32"
+        )
+
+    def _enter_realtime_callback_priority(self) -> None:
+        """Register the actual SDK callback thread with Windows MMCSS."""
+        if not self._rt_schedule_use_windows_callback_priority:
+            return
+        avrt, handle = self._register_current_thread_mmcss()
+        self._rt_callback_avrt = avrt
+        self._rt_callback_mmcss_handle = handle
+
+    @staticmethod
+    def _register_current_thread_mmcss():
+        import ctypes
+        from ctypes import wintypes
+
+        avrt = ctypes.WinDLL("avrt", use_last_error=True)
+        avrt.AvSetMmThreadCharacteristicsW.argtypes = [
+            wintypes.LPCWSTR,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        avrt.AvSetMmThreadCharacteristicsW.restype = wintypes.HANDLE
+        avrt.AvSetMmThreadPriority.argtypes = [wintypes.HANDLE, ctypes.c_int]
+        avrt.AvSetMmThreadPriority.restype = wintypes.BOOL
+        avrt.AvRevertMmThreadCharacteristics.argtypes = [wintypes.HANDLE]
+        avrt.AvRevertMmThreadCharacteristics.restype = wintypes.BOOL
+        task_index = wintypes.DWORD(0)
+        handle = avrt.AvSetMmThreadCharacteristicsW(
+            "Pro Audio", ctypes.byref(task_index)
+        )
+        if not handle:
+            raise RuntimeError(
+                f"AvSetMmThreadCharacteristicsW failed: {ctypes.get_last_error()}"
+            )
+        if not avrt.AvSetMmThreadPriority(handle, 1):
+            error = ctypes.get_last_error()
+            avrt.AvRevertMmThreadCharacteristics(handle)
+            raise RuntimeError(f"AvSetMmThreadPriority failed: {error}")
+        return avrt, handle
+
+    def _leave_realtime_callback_priority(self) -> None:
+        handle = self._rt_callback_mmcss_handle
+        avrt = self._rt_callback_avrt
+        if handle is None or avrt is None:
+            return
+        if not avrt.AvRevertMmThreadCharacteristics(handle):
+            raise RuntimeError("AvRevertMmThreadCharacteristics failed")
+        self._rt_callback_mmcss_handle = None
+        self._rt_callback_avrt = None
+
+    def admit_realtime_cartesian_schedule_target(self, index: int) -> None:
+        if self._rt_schedule_native is None:
+            raise RuntimeError("realtime schedule is not configured")
+        expected = self._rt_schedule_admitted_index + 1
+        if type(index) is not int or index != expected or index >= len(self._rt_schedule_native):
+            raise ValueError(
+                f"realtime schedule admission must be sequential: expected {expected}"
+            )
+        self._rt_schedule_admitted_index = index
+
+    def wait_realtime_cartesian_schedule_target(
+        self, index: int, *, timeout_s: float
+    ) -> tuple[int, int, int]:
+        deadline_s = time.perf_counter() + max(0.0, float(timeout_s))
+        while True:
+            fault = self._rt_schedule_fault
+            if fault is not None:
+                raise RuntimeError(fault)
+            if self._rt_schedule_dispatched_index >= index:
+                return self._rt_schedule_dispatches[index]
+            remaining_s = deadline_s - time.perf_counter()
+            if remaining_s <= 0.0:
+                raise TimeoutError(
+                    f"realtime schedule dispatch {index} was not observed"
+                )
+            self._rt_schedule_event.wait(min(remaining_s, 0.01))
+            self._rt_schedule_event.clear()
+
+    def start_realtime_cartesian_schedule_timing(self, *, timeout_s: float) -> float:
+        if self._rt_schedule_dispatched_index != 0:
+            raise RuntimeError("initial scheduled hold was not dispatched")
+        self._rt_schedule_timing_armed = True
+        deadline_s = time.perf_counter() + max(0.0, float(timeout_s))
+        while self._rt_schedule_origin_s is None:
+            fault = self._rt_schedule_fault
+            if fault is not None:
+                raise RuntimeError(fault)
+            remaining_s = deadline_s - time.perf_counter()
+            if remaining_s <= 0.0:
+                raise TimeoutError("realtime callback did not start schedule timing")
+            self._rt_schedule_event.wait(min(remaining_s, 0.01))
+            self._rt_schedule_event.clear()
+        return self._rt_schedule_origin_s
+
+    def realtime_cartesian_schedule_origin_s(self) -> float:
+        if self._rt_schedule_origin_s is None:
+            raise RuntimeError("realtime schedule has not started")
+        return self._rt_schedule_origin_s
+
+    def cancel_realtime_cartesian_schedule(self, reason: str) -> None:
+        schedule = self._rt_schedule_native
+        if (
+            schedule is not None
+            and self._rt_schedule_dispatched_index < len(schedule) - 1
+            and self._rt_schedule_fault is None
+        ):
+            self._rt_schedule_fault = "realtime schedule cancelled: " + str(reason)
+            self._rt_schedule_event.set()
+
     def set_realtime_cartesian_target(self, pose: Sequence[float]) -> None:
         """Atomically replace the target held by the 1 ms SDK callback.
 
@@ -810,11 +1099,45 @@ class RokaeRobot:
         self._rt_target_native = target
 
     def realtime_motion_error(self) -> bool:
-        """Poll the SDK motion-error flag outside the command update hot path."""
-        if self._rt_controller is None:
-            return False
+        """Explicit diagnostic poll; do not call from the realtime hot path."""
         with self._sdk_lock:
-            return bool(self._rt_controller.hasMotionError())
+            # Realtime teardown clears these fields on another thread.  Check
+            # and dereference them under the same lifecycle lock so the state
+            # producer cannot observe ``active`` with a cleared controller.
+            controller = self._rt_controller
+            if not self._rt_active or controller is None:
+                return False
+            return bool(controller.hasMotionError())
+
+    def _finish_realtime_from_callback(self) -> None:
+        """Request SDK-owned loop termination without joining it under the GIL."""
+
+        self._rt_stop_requested.set()
+        if not self._rt_finish_issued.wait(timeout=_RT_FINISH_ACK_TIMEOUT_S):
+            raise RuntimeError(
+                "xCoreSDK realtime callback did not acknowledge setFinished"
+            )
+
+        # setFinished is published immediately before the command returns to
+        # the SDK.  Keep the callback and hold target alive until callback
+        # activity has remained quiescent for a bounded interval.  The bounded
+        # sleeps release the GIL, allowing the native callback to finish.
+        observed_count = self._rt_callback_count
+        quiet_since = time.perf_counter()
+        deadline = quiet_since + _RT_FINISH_ACK_TIMEOUT_S
+        while time.perf_counter() < deadline:
+            time.sleep(_RT_FINISH_POLL_S)
+            now = time.perf_counter()
+            current_count = self._rt_callback_count
+            if current_count != observed_count:
+                observed_count = current_count
+                quiet_since = now
+                continue
+            if now - quiet_since >= _RT_FINISH_QUIET_S:
+                return
+        raise RuntimeError(
+            "xCoreSDK realtime callback did not become quiescent after setFinished"
+        )
 
     def _stop_realtime_impl(self, *, raise_on_error: bool) -> None:
         controller = self._rt_controller
@@ -822,23 +1145,25 @@ class RokaeRobot:
             self._rt_active = False
             self._rt_callback = None
             self._rt_target_native = None
+            self._rt_stop_requested.clear()
+            self._rt_finish_issued.clear()
             return
 
         failures: list[str] = []
         with self._sdk_lock:
             if self._rt_active:
                 try:
-                    controller.stopLoop()
+                    self._finish_realtime_from_callback()
                 except Exception as exc:
-                    failures.append(f"stopLoop:{type(exc).__name__}:{exc}")
-                    logger.warning("Unable to stop xCoreSDK realtime loop: %s", exc)
-                try:
-                    controller.stopMove()
-                except Exception as exc:
-                    failures.append(f"stopMove:{type(exc).__name__}:{exc}")
-                    logger.warning("Unable to stop xCoreSDK realtime motion: %s", exc)
+                    failures.append(
+                        f"callbackFinish:{type(exc).__name__}:{exc}"
+                    )
+                    logger.warning(
+                        "Unable to confirm callback-driven xCoreSDK realtime stop: %s",
+                        exc,
+                    )
         if failures:
-            # The callback may still be running when stopLoop reports failure.
+            # The callback may still be running when its finish handshake fails.
             # Preserve its finite hold target and keep the state retryable.
             self._rt_active = True
             self.robot_mode = "RT_STOP_FAILED_UNCONFIRMED"
@@ -850,6 +1175,12 @@ class RokaeRobot:
         self._rt_active = False
         self._rt_callback = None
         self._rt_target_native = None
+        self._rt_schedule_native = None
+        self._rt_schedule_times_s = None
+        self._rt_schedule_lateness_s = None
+        self._rt_schedule_event.set()
+        self._rt_stop_requested.clear()
+        self._rt_finish_issued.clear()
 
     def _stop_realtime_best_effort(self) -> None:
         self._stop_realtime_impl(raise_on_error=False)
@@ -1268,6 +1599,46 @@ class RokaeRobot:
                     )
             except Exception:
                 monitor.invalidate("safety_event_registration_failed")
+                raise
+
+    def start_controller_safety_events(self) -> None:
+        """Latch controller safety events without requiring an initial value.
+
+        ``collision_source=controller`` deliberately delegates collision
+        clearance and stopping to the controller.  The host therefore does
+        not turn a missing initial event into invented clearance, but a
+        reported collision (or malformed safety event) is still latched as a
+        motion fault so the software executor also enters its stop path.
+        """
+        if self.collision_source != "controller":
+            raise ValueError("collision_source=controller is required")
+        with self._sdk_lock:
+            self._require_connected()
+            if self._disconnect_requested:
+                raise RuntimeError(
+                    "cannot subscribe controller safety events while disconnect is pending"
+                )
+
+            def callback(payload):
+                try:
+                    if not isinstance(payload, dict) or type(payload.get("collided")) is not bool:
+                        self._controller_motion_fault = True
+                    elif payload["collided"]:
+                        self._controller_motion_fault = True
+                except Exception:
+                    # Never let a Python exception cross the vendor callback.
+                    self._controller_motion_fault = True
+
+            self._safety_event_callback = callback
+            try:
+                self._call(
+                    "setEventWatcher(safety)",
+                    self._robot.setEventWatcher,
+                    self._sdk.Event.safety,
+                    callback,
+                )
+            except Exception:
+                self._safety_event_callback = None
                 raise
 
     def get_safety_event_status(self) -> dict[str, Any] | None:

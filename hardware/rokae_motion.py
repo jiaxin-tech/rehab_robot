@@ -3,8 +3,9 @@
 The adapter contains only the SDK methods statically confirmed in xCoreSDK
 0.7.0's bundled ``.pyi`` and examples: realtime Cartesian callback control via
 ``getRtMotionController``, ``setControlLoopCar``, ``startMove``, ``startLoop``,
-``stopLoop``, and ``stopMove``.  It never powers on or selects automatic mode.
-Physical suitability remains unverified until a supervised Windows robot test.
+and callback-command ``setFinished``.  It never powers on or selects automatic
+mode. Physical suitability remains unverified until a supervised Windows robot
+test.
 """
 
 from __future__ import annotations
@@ -73,6 +74,47 @@ class RokaeCartesianMotionAdapter:
             self._robot.start_realtime_cartesian(initial_pose)
             self._active = True
 
+    def configure_cartesian_schedule(
+        self,
+        poses: Sequence[Sequence[float]],
+        times_s: Sequence[float],
+        *,
+        max_lateness_s: float,
+    ) -> None:
+        with self._stop_lock:
+            if self._stop_reason is not None:
+                raise RuntimeError(
+                    f"motion adapter was permanently stopped: {self._stop_reason}"
+                )
+            if not self._attached or self._active:
+                raise RuntimeError(
+                    "motion adapter must be attached and inactive before schedule setup"
+                )
+            self._robot.configure_realtime_cartesian_schedule(
+                poses,
+                times_s,
+                max_lateness_s=max_lateness_s,
+                use_windows_callback_priority=True,
+            )
+
+    def admit_scheduled_target(self, index: int) -> None:
+        self._robot.admit_realtime_cartesian_schedule_target(index)
+
+    def wait_scheduled_target(
+        self, index: int, *, timeout_s: float
+    ) -> tuple[int, int, int]:
+        return self._robot.wait_realtime_cartesian_schedule_target(
+            index, timeout_s=timeout_s
+        )
+
+    def scheduled_origin_s(self) -> float:
+        return self._robot.realtime_cartesian_schedule_origin_s()
+
+    def start_scheduled_timing(self, *, timeout_s: float) -> float:
+        return self._robot.start_realtime_cartesian_schedule_timing(
+            timeout_s=timeout_s
+        )
+
     def send_cartesian_target(self, pose: Sequence[float]) -> None:
         with self._stop_lock:
             if self._stop_reason is not None:
@@ -87,7 +129,7 @@ class RokaeCartesianMotionAdapter:
         return bool(self._robot.realtime_motion_error())
 
     def request_stop(self, reason: str) -> None:
-        """The only upper-layer route to SDK stopLoop/stopMove."""
+        """The only upper-layer route to the SDK callback-finish handshake."""
         reason = str(reason).strip()
         if not reason:
             raise ValueError("stop reason must not be empty")
@@ -98,6 +140,11 @@ class RokaeCartesianMotionAdapter:
                 return
             # Keep the lock over the native lifecycle call: concurrent callers
             # wait, then either observe success or retry after a failure.
+            cancel_schedule = getattr(
+                self._robot, "cancel_realtime_cartesian_schedule", None
+            )
+            if callable(cancel_schedule):
+                cancel_schedule(self._stop_reason)
             self._robot.stop_realtime(switch_to_nrt=False)
             self._active = False
             self._stop_confirmed = True

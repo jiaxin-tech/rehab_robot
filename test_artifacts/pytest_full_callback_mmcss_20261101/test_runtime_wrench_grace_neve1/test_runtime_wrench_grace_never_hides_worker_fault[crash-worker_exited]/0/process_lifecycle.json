@@ -1,0 +1,87 @@
+[
+  {
+    "version": 1,
+    "run_id": "8040193178474ff391c712960abc8fe2",
+    "session_id": "c904df0a9da24b02b7f61680c6339c1b",
+    "pid": 13196,
+    "event_id": 1,
+    "query_id": 0,
+    "type": "PROCESS_START",
+    "timestamp_ns": 3270485383914000,
+    "connection": {
+      "mode": "offline",
+      "rate_hz": 50,
+      "behavior": "crash",
+      "good_queries": 10,
+      "delay_s": 0.08,
+      "dispatch_ns": 3270485211201100
+    },
+    "dispatch_ns": 3270485211201100,
+    "parent_receive_ns": 3270485385379800,
+    "parent_accept_ns": 3270485385379800
+  },
+  {
+    "version": 1,
+    "run_id": "8040193178474ff391c712960abc8fe2",
+    "session_id": "c904df0a9da24b02b7f61680c6339c1b",
+    "pid": 13196,
+    "event_id": 2,
+    "query_id": 0,
+    "type": "PROCESS_READY",
+    "timestamp_ns": 3270485387317900,
+    "identity": {
+      "provider": "OFFLINE_STUB",
+      "NOT_SAFETY_THRESHOLDS": true
+    },
+    "parent_receive_ns": 3270485388375200,
+    "parent_accept_ns": 3270485388375200
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "8040193178474ff391c712960abc8fe2",
+    "session_id": "c904df0a9da24b02b7f61680c6339c1b",
+    "pid": 42284,
+    "query_id": 11,
+    "event_id": 13,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 3270485595287400,
+    "exitcode": 73,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "8040193178474ff391c712960abc8fe2",
+    "session_id": "c904df0a9da24b02b7f61680c6339c1b",
+    "pid": 42284,
+    "query_id": 11,
+    "event_id": 15,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 3270485595984200
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "8040193178474ff391c712960abc8fe2",
+    "session_id": "c904df0a9da24b02b7f61680c6339c1b",
+    "pid": 42284,
+    "query_id": 11,
+    "event_id": 17,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 3270485596302000,
+    "outcome": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": null,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 73,
+      "query_state": "IN_PROGRESS",
+      "failure_latch": [
+        "worker_exited"
+      ]
+    }
+  }
+]

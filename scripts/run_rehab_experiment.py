@@ -297,7 +297,8 @@ def run_execute(
         )
         acquisition.start(manage_connection=not realtime_prepared_here)
         startup_timeout_s = float(live_wrench_config["budgets"]["startup_s"]) + 0.5
-        if not acquisition.wait_until_healthy(timeout_s=startup_timeout_s):
+        if not acquisition.wait_until_healthy(
+                timeout_s=startup_timeout_s, arm_runtime_grace=True):
             raise RuntimeError(
                 "state/wrench streams did not become healthy: "
                 + acquisition.latest_health().invalid_reason
@@ -346,6 +347,7 @@ def run_execute(
             acquisition,
             logger,
             safety,
+            use_windows_scheduler_priority=True,
             **extra,
         )
         result = executor.execute(trajectory, preflight)

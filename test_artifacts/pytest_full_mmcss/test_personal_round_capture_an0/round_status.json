@@ -1,0 +1,12 @@
+{
+  "status": "CAPTURE_COMPLETE",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "blockers": [],
+  "execution": {
+    "completed": true,
+    "same_session_realtime_cleanup_completed": true
+  },
+  "quality": {
+    "rows": 3
+  }
+}

@@ -1,0 +1,1 @@
+{"hip": {"counts_per_degree": 1000.0, "zero_counts": 100000.0, "flexion_sign": -1, "safe_min_deg": -20.0, "safe_max_deg": 90.0}, "knee": {"counts_per_degree": 1000.0, "zero_counts": 200000.0, "flexion_sign": 1, "safe_min_deg": 0.0, "safe_max_deg": 120.0}}

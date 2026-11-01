@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import math
+import sys
 import threading
 import time
 from typing import Any, Mapping, Sequence
@@ -32,7 +33,167 @@ from hardware.safety_events import safety_event_block_reason, collision_feedback
 # trajectory schedule to be late against.  Give Windows enough time to run the
 # bounded logging worker, then recheck every live gate immediately before the
 # hold starts.  Scheduled targets continue to use max_command_lateness_s.
-INITIAL_HOLD_INTENT_TIMEOUT_S = 0.1
+INITIAL_HOLD_INTENT_TIMEOUT_S = 0.25
+# Blocking metadata persistence is complete before motion begins.  During that
+# bounded pause the isolated 50 Hz wrench worker can keep producing while the
+# parent has not yet admitted its newest sample.  Wait for an actually fresh,
+# aligned sample afterwards; this timeout does not relax any safety limit.
+PRESTART_ACQUISITION_RECOVERY_TIMEOUT_S = 0.5
+# Starting the vendor realtime callback can hold the Python caller for tens of
+# milliseconds while the target remains the already-validated anchor.  Do not
+# start trajectory time, or permanently arm motion-time freshness latches,
+# until both independent streams have recovered from that bounded transition.
+POST_HOLD_ACQUISITION_RECOVERY_TIMEOUT_S = 0.5
+# The 50 Hz wrench stream and 125 Hz state stream are independently supervised.
+# A dedicated watchdog owns continuous live health checks.  The deadline
+# scheduler can therefore make one interruptible wait and reserve only a short
+# final interval for a GIL-cooperative spin.  A fresh full gate immediately
+# after the deadline remains mandatory; no target is sent from cached approval.
+DEADLINE_FINE_WAIT_WINDOW_S = 0.030
+DEADLINE_FINE_SLEEP_S = 0.0005
+DEADLINE_BUSY_WAIT_WINDOW_S = 0.010
+RUNTIME_WATCHDOG_PERIOD_S = 0.005
+RUNTIME_WATCHDOG_READY_TIMEOUT_S = 0.25
+RUNTIME_WATCHDOG_JOIN_TIMEOUT_S = 0.5
+
+
+class _WindowsSchedulerPriority:
+    """Bounded Windows scheduling boost with mandatory restoration.
+
+    ``HIGH_PRIORITY_CLASS`` is intentionally used instead of Windows' realtime
+    class.  The calling scheduler thread is raised to ``HIGHEST`` only while a
+    real trajectory executor owns the system clock.
+    """
+
+    def __init__(self, enabled: bool) -> None:
+        self.enabled = bool(enabled and sys.platform == "win32")
+        self._kernel = None
+        self._process = None
+        self._thread = None
+        self._old_process_class = None
+        self._old_thread_priority = None
+        self._old_switch_interval = None
+        self._avrt = None
+        self._mmcss_handle = None
+        self._active = False
+
+    def enter(self) -> None:
+        if not self.enabled:
+            return
+        import ctypes
+        from ctypes import wintypes
+
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.GetCurrentProcess.restype = wintypes.HANDLE
+        kernel.GetCurrentThread.restype = wintypes.HANDLE
+        kernel.SwitchToThread.argtypes = []
+        kernel.SwitchToThread.restype = wintypes.BOOL
+        kernel.GetPriorityClass.argtypes = [wintypes.HANDLE]
+        kernel.GetPriorityClass.restype = wintypes.DWORD
+        kernel.SetPriorityClass.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        kernel.SetPriorityClass.restype = wintypes.BOOL
+        kernel.GetThreadPriority.argtypes = [wintypes.HANDLE]
+        kernel.GetThreadPriority.restype = ctypes.c_int
+        kernel.SetThreadPriority.argtypes = [wintypes.HANDLE, ctypes.c_int]
+        kernel.SetThreadPriority.restype = wintypes.BOOL
+
+        process = kernel.GetCurrentProcess()
+        thread = kernel.GetCurrentThread()
+        old_process_class = kernel.GetPriorityClass(process)
+        old_thread_priority = kernel.GetThreadPriority(thread)
+        if not old_process_class or old_thread_priority == 0x7FFFFFFF:
+            raise RuntimeError("unable to read Windows scheduler priority")
+        if not kernel.SetPriorityClass(process, 0x00000080):
+            raise RuntimeError(
+                f"unable to set Windows HIGH_PRIORITY_CLASS: {ctypes.get_last_error()}"
+            )
+        if not kernel.SetThreadPriority(thread, 2):
+            error = ctypes.get_last_error()
+            kernel.SetPriorityClass(process, old_process_class)
+            raise RuntimeError(
+                f"unable to set Windows THREAD_PRIORITY_HIGHEST: {error}"
+            )
+        # xCoreSDK owns a time-sensitive native callback thread.  Register only
+        # this Python deadline scheduler with MMCSS so it cannot be suspended
+        # for tens of milliseconds by an equal-priority callback.  HIGH is
+        # intentionally used instead of AVRT_PRIORITY_CRITICAL.
+        avrt = ctypes.WinDLL("avrt", use_last_error=True)
+        avrt.AvSetMmThreadCharacteristicsW.argtypes = [
+            wintypes.LPCWSTR,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        avrt.AvSetMmThreadCharacteristicsW.restype = wintypes.HANDLE
+        avrt.AvSetMmThreadPriority.argtypes = [wintypes.HANDLE, ctypes.c_int]
+        avrt.AvSetMmThreadPriority.restype = wintypes.BOOL
+        avrt.AvRevertMmThreadCharacteristics.argtypes = [wintypes.HANDLE]
+        avrt.AvRevertMmThreadCharacteristics.restype = wintypes.BOOL
+        task_index = wintypes.DWORD(0)
+        mmcss_handle = avrt.AvSetMmThreadCharacteristicsW(
+            "Pro Audio", ctypes.byref(task_index)
+        )
+        if not mmcss_handle:
+            error = ctypes.get_last_error()
+            kernel.SetThreadPriority(thread, old_thread_priority)
+            kernel.SetPriorityClass(process, old_process_class)
+            raise RuntimeError(
+                f"unable to register Windows MMCSS Pro Audio task: {error}"
+            )
+        if not avrt.AvSetMmThreadPriority(mmcss_handle, 1):
+            error = ctypes.get_last_error()
+            avrt.AvRevertMmThreadCharacteristics(mmcss_handle)
+            kernel.SetThreadPriority(thread, old_thread_priority)
+            kernel.SetPriorityClass(process, old_process_class)
+            raise RuntimeError(
+                f"unable to set Windows MMCSS HIGH priority: {error}"
+            )
+        self._kernel = kernel
+        self._process = process
+        self._thread = thread
+        self._old_process_class = old_process_class
+        self._old_thread_priority = old_thread_priority
+        self._avrt = avrt
+        self._mmcss_handle = mmcss_handle
+        # The acquisition, audit, and SDK callback threads all share CPython's
+        # GIL.  Its default 5 ms switching quantum can compound across several
+        # ready threads even when this OS thread has elevated priority.  A
+        # 1 ms quantum keeps the 1 kHz SDK callback and every producer live
+        # while bounding scheduler-thread starvation.
+        self._old_switch_interval = sys.getswitchinterval()
+        sys.setswitchinterval(0.001)
+        self._active = True
+
+    def restore(self, active_exception: BaseException | None) -> None:
+        if not self._active:
+            return
+        errors: list[str] = []
+        if self._mmcss_handle is not None and not self._avrt.AvRevertMmThreadCharacteristics(
+            self._mmcss_handle
+        ):
+            errors.append("mmcss_priority_restore_failed")
+        self._mmcss_handle = None
+        if not self._kernel.SetThreadPriority(
+            self._thread, self._old_thread_priority
+        ):
+            errors.append("thread_priority_restore_failed")
+        if not self._kernel.SetPriorityClass(
+            self._process, self._old_process_class
+        ):
+            errors.append("process_priority_restore_failed")
+        if self._old_switch_interval is not None:
+            sys.setswitchinterval(self._old_switch_interval)
+        self._active = False
+        if not errors:
+            return
+        message = ";".join(errors)
+        if active_exception is not None and hasattr(active_exception, "add_note"):
+            active_exception.add_note(message)
+            return
+        raise RuntimeError(message)
+
+    def yield_once(self) -> None:
+        if not self._active or self._kernel is None:
+            raise RuntimeError("Windows scheduler priority is not active")
+        self._kernel.SwitchToThread()
 
 
 @dataclass(frozen=True)
@@ -57,6 +218,7 @@ class RokaeMotionExecutor:
         clock: MonotonicClock = SYSTEM_CLOCK,
         execution_guard=None,
         dispatch_observer=None,
+        use_windows_scheduler_priority: bool = False,
     ) -> None:
         self.motion_adapter = motion_adapter
         self.acquisition = acquisition
@@ -65,6 +227,11 @@ class RokaeMotionExecutor:
         self.clock = clock
         self.execution_guard = execution_guard
         self.dispatch_observer = dispatch_observer
+        if type(use_windows_scheduler_priority) is not bool:
+            raise TypeError("use_windows_scheduler_priority must be bool")
+        self._use_windows_scheduler_priority = bool(
+            use_windows_scheduler_priority and clock is SYSTEM_CLOCK
+        )
         self._stop_event = threading.Event()
         self._stop_lock = threading.Lock()
         self._native_stop_lock = threading.Lock()
@@ -72,6 +239,15 @@ class RokaeMotionExecutor:
         self._stop_confirmed = False
         self._executing = False
         self._used = False
+        self._runtime_gate_count = 0
+        self._max_runtime_gate_ns = 0
+        self._max_health_snapshot_ns = 0
+        self._last_wait_diagnostics: dict[str, Any] = {}
+        self._deadline_yield_once = None
+        self._runtime_watchdog_stop = threading.Event()
+        self._runtime_watchdog_ready = threading.Event()
+        self._runtime_watchdog_thread: threading.Thread | None = None
+        self._runtime_watchdog_fault: str | None = None
 
     @property
     def stop_reason(self) -> str | None:
@@ -105,6 +281,7 @@ class RokaeMotionExecutor:
                 self._stop_confirmed = True
 
     def _runtime_reasons(self) -> tuple[str, ...]:
+        gate_started_ns = time.perf_counter_ns()
         reasons: list[str] = []
         execution_guard = getattr(self, "execution_guard", None)
         if execution_guard is not None:
@@ -122,7 +299,21 @@ class RokaeMotionExecutor:
             logger_health = getattr(self.logger, "healthy", False)
         if not bool(logger_health):
             reasons.append("logger_unhealthy")
-        health = self.acquisition.latest_health()
+        # The wrench provider is already serviced by two independent producer
+        # threads.  A command-deadline gate must consume their immutable health
+        # snapshot rather than becoming the third audit-draining poller; the
+        # latter can monopolize the scheduler around a disk flush.
+        health_reader = getattr(
+            self.acquisition,
+            "latest_health_snapshot",
+            self.acquisition.latest_health,
+        )
+        health_started_ns = time.perf_counter_ns()
+        health = health_reader()
+        health_duration_ns = time.perf_counter_ns() - health_started_ns
+        self._max_health_snapshot_ns = max(
+            self._max_health_snapshot_ns, health_duration_ns
+        )
         tolerated_stale = {
             "wrench_stale_or_unavailable",
             "state_wrench_skew_unavailable_or_exceeded",
@@ -168,17 +359,155 @@ class RokaeMotionExecutor:
             reasons.append("torque_limit_or_value_unavailable")
         elif health.torque_magnitude_nm is not None and health.torque_magnitude_nm > limits.max_torque_nm:
             reasons.append("torque_limit_exceeded")
-        return tuple(dict.fromkeys(reasons))
+        result = tuple(dict.fromkeys(reasons))
+        gate_duration_ns = time.perf_counter_ns() - gate_started_ns
+        self._runtime_gate_count += 1
+        self._max_runtime_gate_ns = max(
+            self._max_runtime_gate_ns, gate_duration_ns
+        )
+        return result
+
+    def _runtime_watchdog_loop(self) -> None:
+        """Continuously supervise live gates and stop without scheduler help."""
+        try:
+            while (
+                not self._runtime_watchdog_stop.is_set()
+                and not self._stop_event.is_set()
+            ):
+                reasons = self._runtime_reasons()
+                if reasons:
+                    fault = "runtime safety gate: " + ";".join(reasons)
+                    self._runtime_watchdog_fault = fault
+                    self.request_stop("runtime_watchdog:" + fault)
+                    return
+                self._runtime_watchdog_ready.set()
+                self._runtime_watchdog_stop.wait(RUNTIME_WATCHDOG_PERIOD_S)
+        except BaseException as exc:
+            fault = f"runtime watchdog failure: {type(exc).__name__}:{exc}"
+            self._runtime_watchdog_fault = fault
+            try:
+                self.request_stop("runtime_watchdog:" + fault)
+            except BaseException as stop_exc:
+                self._runtime_watchdog_fault = (
+                    fault
+                    + f"; stop failure: {type(stop_exc).__name__}:{stop_exc}"
+                )
+
+    def _start_runtime_watchdog(self) -> None:
+        """Start only for a real-clock execution after the anchor hold is live."""
+        if self.clock is not SYSTEM_CLOCK:
+            return
+        if self._runtime_watchdog_thread is not None:
+            raise RuntimeError("runtime watchdog already started")
+        self._runtime_watchdog_stop.clear()
+        self._runtime_watchdog_ready.clear()
+        self._runtime_watchdog_fault = None
+        thread = threading.Thread(
+            target=self._runtime_watchdog_loop,
+            name="robot-runtime-safety-watchdog",
+            daemon=True,
+        )
+        self._runtime_watchdog_thread = thread
+        thread.start()
+        if not self._runtime_watchdog_ready.wait(RUNTIME_WATCHDOG_READY_TIMEOUT_S):
+            fault = self._runtime_watchdog_fault
+            if fault is not None:
+                raise RuntimeError(fault)
+            raise RuntimeError("runtime safety watchdog did not become ready")
+
+    def _raise_runtime_watchdog_fault(self) -> None:
+        fault = self._runtime_watchdog_fault
+        if fault is not None:
+            raise RuntimeError(fault)
+
+    def _stop_runtime_watchdog(self, *, require_clean: bool) -> None:
+        thread = self._runtime_watchdog_thread
+        if thread is None:
+            return
+        self._runtime_watchdog_stop.set()
+        if thread is not threading.current_thread():
+            thread.join(RUNTIME_WATCHDOG_JOIN_TIMEOUT_S)
+        if thread.is_alive():
+            fault = "runtime safety watchdog did not stop"
+            if self._runtime_watchdog_fault is None:
+                self._runtime_watchdog_fault = fault
+        self._runtime_watchdog_thread = None
+        if require_clean:
+            self._raise_runtime_watchdog_fault()
 
     def _wait_until(self, deadline_s: float) -> None:
+        # The live watchdog independently checks all safety inputs and calls
+        # the native stop path on any fault.  One high-resolution Windows sleep
+        # avoids both the coarse Event.wait timeout and the repeated scheduling
+        # losses observed with Sleep(0)/SwitchToThread.  CPython's 1 ms switch
+        # interval keeps the watchdog,
+        # acquisition, audit, and SDK callback threads runnable during the
+        # bounded 10 ms final spin.
+        if self._runtime_watchdog_thread is not None:
+            fine_entry_remaining_s = None
+            while True:
+                self._raise_runtime_watchdog_fault()
+                if self._stop_event.is_set():
+                    raise RuntimeError(
+                        f"execution stop requested: {self._stop_reason}"
+                    )
+                remaining = deadline_s - self.clock.now_s()
+                if remaining <= 0.0:
+                    self._last_wait_diagnostics = {
+                        "fine_entry_remaining_s": fine_entry_remaining_s,
+                        "fine_yields": 0,
+                        "wake_lateness_s": self.clock.now_s() - deadline_s,
+                    }
+                    return
+                if remaining > DEADLINE_BUSY_WAIT_WINDOW_S:
+                    # Python 3.11+ implements time.sleep() on Windows with a
+                    # high-resolution waitable timer.  It is intentionally not
+                    # the stop event: the independent watchdog already invokes
+                    # native stop immediately, and this scheduler observes the
+                    # published fault as soon as the timer returns.
+                    time.sleep(remaining - DEADLINE_BUSY_WAIT_WINDOW_S)
+                    continue
+                if fine_entry_remaining_s is None:
+                    fine_entry_remaining_s = remaining
+                # Intentionally no OS sleep/yield here.  The interpreter still
+                # hands off the GIL every 1 ms while this executor owns the
+                # Windows priority scope.
+                continue
+
+        fine_entry_remaining_s = None
+        fine_yields = 0
         while not self._stop_event.is_set():
             remaining = deadline_s - self.clock.now_s()
             if remaining <= 0.0:
+                self._last_wait_diagnostics = {
+                    "fine_entry_remaining_s": fine_entry_remaining_s,
+                    "fine_yields": fine_yields,
+                    "wake_lateness_s": self.clock.now_s() - deadline_s,
+                }
                 return
+            if remaining <= DEADLINE_FINE_WAIT_WINDOW_S:
+                if fine_entry_remaining_s is None:
+                    fine_entry_remaining_s = remaining
+                fine_yields += 1
+                # Windows Event.wait() can oversleep a short final interval by
+                # more than the reviewed dispatch budget.  On the real Windows
+                # clock, Sleep(0) keeps this elevated scheduler runnable while
+                # releasing the GIL to the SDK's 1 kHz Python callback and the
+                # acquisition producers. SwitchToThread yields to at most one
+                # ready thread on the current processor, avoiding Sleep(0)'s
+                # repeated loss of the remaining time slice. Deterministic/fake
+                # clocks retain a positive sleep so tests can advance time.
+                if sys.platform == "win32" and self.clock is SYSTEM_CLOCK:
+                    self._deadline_yield_once()
+                else:
+                    time.sleep(min(remaining, DEADLINE_FINE_SLEEP_S))
+                continue
             runtime_reasons = self._runtime_reasons()
             if runtime_reasons:
                 raise RuntimeError("runtime safety gate: " + ";".join(runtime_reasons))
-            self._stop_event.wait(min(remaining, 0.01))
+            self._stop_event.wait(
+                min(remaining - DEADLINE_FINE_WAIT_WINDOW_S, 0.005)
+            )
         raise RuntimeError(f"execution stop requested: {self._stop_reason}")
 
     def _require_live_start_anchor(self, initial_pose: tuple[float, ...]) -> None:
@@ -344,6 +673,19 @@ class RokaeMotionExecutor:
             later > earlier for earlier, later in zip(times, times[1:])
         ):
             raise ValueError("trajectory time must be finite and strictly increasing")
+        scheduled_poses = tuple(
+            self._pose_from_row(row) for _, row in trajectory.iterrows()
+        )
+        callback_scheduled = all(
+            callable(getattr(self.motion_adapter, name, None))
+            for name in (
+                "configure_cartesian_schedule",
+                "admit_scheduled_target",
+                "wait_scheduled_target",
+                "scheduled_origin_s",
+                "start_scheduled_timing",
+            )
+        )
         content_reasons, maximum_speed, maximum_acceleration = (
             audit_execution_trajectory_content(
                 trajectory,
@@ -397,7 +739,19 @@ class RokaeMotionExecutor:
         lateness_limit_s = self.safety.max_command_lateness_s
         if lateness_limit_s is None:
             raise RuntimeError("reviewed command-lateness limit is unavailable")
+        scheduler_priority = _WindowsSchedulerPriority(
+            self._use_windows_scheduler_priority and not callback_scheduled
+        )
+        callback_old_switch_interval: float | None = None
         try:
+            scheduler_priority.enter()
+            if callback_scheduled and sys.platform == "win32":
+                # The MMCSS SDK callback still has to acquire CPython's GIL.
+                # Keep Python producer critical sections below the reviewed
+                # command-lateness budget without elevating the main thread.
+                callback_old_switch_interval = sys.getswitchinterval()
+                sys.setswitchinterval(0.001)
+            self._deadline_yield_once = scheduler_priority.yield_once
             initial_reasons = self._runtime_reasons()
             if initial_reasons:
                 raise RuntimeError("runtime safety gate: " + ";".join(initial_reasons))
@@ -415,6 +769,13 @@ class RokaeMotionExecutor:
                     + ";".join(post_attach_reasons)
                 )
             self._require_live_start_anchor(initial_pose)
+            # Arm the provider's bounded in-flight-query grace before metadata
+            # I/O can delay parent-side IPC admission.  No motion exists yet,
+            # and a strict fresh-health gate below must still pass before the
+            # realtime callback is allowed to start.
+            arm_grace = getattr(self.acquisition, "arm_runtime_grace", None)
+            if arm_grace is not None:
+                arm_grace()
             self.logger.update_metadata(
                 {
                     "motion_attachment_confirmed": True,
@@ -448,6 +809,13 @@ class RokaeMotionExecutor:
                     "robot_execution_approved": True,
                 }
             )
+            wait_healthy = getattr(self.acquisition, "wait_until_healthy", None)
+            if callable(wait_healthy) and not wait_healthy(
+                timeout_s=PRESTART_ACQUISITION_RECOVERY_TIMEOUT_S
+            ):
+                raise RuntimeError(
+                    "pre-start acquisition did not recover after metadata persistence"
+                )
             # Metadata persistence may have taken long enough for state/wrench,
             # the anchor, operation state, or collision state to change.  Make
             # this the last potentially blocking SDK gate before the atomic
@@ -460,33 +828,72 @@ class RokaeMotionExecutor:
                     + ";".join(final_start_reasons)
                 )
             self._require_live_start_anchor(initial_pose)
+            if callback_scheduled:
+                self.motion_adapter.configure_cartesian_schedule(
+                    scheduled_poses,
+                    times,
+                    max_lateness_s=lateness_limit_s,
+                )
+                # Target zero was durably persisted above.  Admission is the
+                # only operation that makes a preloaded target visible to the
+                # realtime callback.
+                self.motion_adapter.admit_scheduled_target(0)
             with self._stop_lock:
                 if self._stop_reason is not None or self._stop_event.is_set():
                     raise RuntimeError(
                         f"execution stopped before realtime start: {self._stop_reason}"
                     )
-                arm_grace = getattr(self.acquisition, "arm_runtime_grace", None)
-                if arm_grace is not None:
-                    arm_grace()
                 dispatch_start = time.perf_counter_ns()
                 self.motion_adapter.start_cartesian_hold(initial_pose)
-                if self.dispatch_observer is not None:
-                    self.dispatch_observer(float(times[0]), dispatch_start, time.perf_counter_ns())
-                dispatched = 1
-            schedule_origin_s = self.clock.now_s() - float(times[0])
-            for _, row in trajectory.iloc[1:].iterrows():
-                command_deadline_s = schedule_origin_s + float(row["time_s"])
-                self._wait_until(command_deadline_s)
-                lateness_s = self.clock.now_s() - command_deadline_s
-                if lateness_s > lateness_limit_s:
-                    raise RuntimeError(
-                        "command deadline missed; refusing late catch-up dispatch: "
-                        f"lateness={lateness_s:.6f}s"
+            if callback_scheduled:
+                _, dispatch_start, dispatch_end = (
+                    self.motion_adapter.wait_scheduled_target(
+                        0, timeout_s=INITIAL_HOLD_INTENT_TIMEOUT_S
                     )
-                runtime_reasons = self._runtime_reasons()
-                if runtime_reasons:
-                    raise RuntimeError("runtime safety gate: " + ";".join(runtime_reasons))
-                pose = self._pose_from_row(row)
+                )
+            else:
+                dispatch_end = time.perf_counter_ns()
+            if self.dispatch_observer is not None:
+                self.dispatch_observer(
+                    float(times[0]), dispatch_start, dispatch_end
+                )
+            dispatched = 1
+            if callable(wait_healthy) and not wait_healthy(
+                timeout_s=POST_HOLD_ACQUISITION_RECOVERY_TIMEOUT_S
+            ):
+                raise RuntimeError(
+                    "post-hold acquisition did not recover before trajectory timing"
+                )
+            arm_freshness = getattr(
+                self.acquisition, "arm_runtime_freshness", None
+            )
+            if callable(arm_freshness):
+                arm_freshness()
+            post_hold_reasons = self._runtime_reasons()
+            if post_hold_reasons:
+                raise RuntimeError(
+                    "post-hold runtime safety gate: "
+                    + ";".join(post_hold_reasons)
+                )
+            self._start_runtime_watchdog()
+            if callback_scheduled:
+                self.motion_adapter.start_scheduled_timing(
+                    timeout_s=INITIAL_HOLD_INTENT_TIMEOUT_S
+                )
+            schedule_origin_s = (
+                self.motion_adapter.scheduled_origin_s()
+                if callback_scheduled
+                else self.clock.now_s() - float(times[0])
+            )
+            for schedule_index, (_, row) in enumerate(
+                trajectory.iloc[1:].iterrows(), start=1
+            ):
+                command_deadline_s = schedule_origin_s + float(row["time_s"])
+                pose = scheduled_poses[schedule_index]
+                # Persist the next intent during the interval after the
+                # previous dispatch, rather than beginning disk I/O at the
+                # target instant.  The dispatch deadline itself is unchanged;
+                # every live gate is checked again after the wait below.
                 self._persist_command_intent(
                     row,
                     pose,
@@ -498,6 +905,56 @@ class RokaeMotionExecutor:
                         "post-log runtime safety gate: "
                         + ";".join(post_log_reasons)
                     )
+                if callback_scheduled:
+                    # The callback owns the reviewed deadline.  Main-thread
+                    # admission occurs only after durable intent logging and a
+                    # fresh safety gate; the independent watchdog remains live
+                    # until callback dispatch or stop.
+                    self.motion_adapter.admit_scheduled_target(schedule_index)
+                    remaining_s = (
+                        command_deadline_s
+                        + lateness_limit_s
+                        + 0.25
+                        - self.clock.now_s()
+                    )
+                    _, dispatch_start, dispatch_end = (
+                        self.motion_adapter.wait_scheduled_target(
+                            schedule_index,
+                            timeout_s=max(0.0, remaining_s),
+                        )
+                    )
+                    actual_dispatch_s = dispatch_start / 1e9
+                    lateness_s = actual_dispatch_s - command_deadline_s
+                    if lateness_s > lateness_limit_s:
+                        raise RuntimeError(
+                            "realtime callback reported a late dispatch: "
+                            f"lateness={lateness_s:.6f}s"
+                        )
+                    if self.dispatch_observer is not None:
+                        self.dispatch_observer(
+                            float(row["time_s"]),
+                            dispatch_start,
+                            dispatch_end,
+                        )
+                    dispatched += 1
+                    continue
+                self._wait_until(command_deadline_s)
+                lateness_s = self.clock.now_s() - command_deadline_s
+                if lateness_s > lateness_limit_s:
+                    wait_diag = self._last_wait_diagnostics
+                    raise RuntimeError(
+                        "command deadline missed; refusing late catch-up dispatch: "
+                        f"lateness={lateness_s:.6f}s;"
+                        f"max_runtime_gate_ms={self._max_runtime_gate_ns / 1e6:.3f};"
+                        f"max_health_snapshot_ms={self._max_health_snapshot_ns / 1e6:.3f};"
+                        "fine_entry_remaining_ms="
+                        f"{(wait_diag.get('fine_entry_remaining_s') or 0.0) * 1e3:.3f};"
+                        f"fine_yields={wait_diag.get('fine_yields', 0)};"
+                        f"wake_lateness_ms={wait_diag.get('wake_lateness_s', 0.0) * 1e3:.3f}"
+                    )
+                runtime_reasons = self._runtime_reasons()
+                if runtime_reasons:
+                    raise RuntimeError("runtime safety gate: " + ";".join(runtime_reasons))
                 with self._stop_lock:
                     if self._stop_reason is not None or self._stop_event.is_set():
                         raise RuntimeError(
@@ -513,6 +970,9 @@ class RokaeMotionExecutor:
                     if self.dispatch_observer is not None:
                         self.dispatch_observer(float(row["time_s"]), dispatch_start, time.perf_counter_ns())
                     dispatched += 1
+            # End continuous supervision before the intentional controller
+            # transition out of realtime mode can look like a safety fault.
+            self._stop_runtime_watchdog(require_clean=True)
             self.request_stop("trajectory_completed")
             with self._stop_lock:
                 if (
@@ -535,8 +995,17 @@ class RokaeMotionExecutor:
             self.request_stop(f"execution_exception:{type(exc).__name__}:{exc}")
             raise
         finally:
-            with self._stop_lock:
-                self._executing = False
+            try:
+                self._stop_runtime_watchdog(require_clean=False)
+            finally:
+                try:
+                    scheduler_priority.restore(sys.exc_info()[1])
+                finally:
+                    if callback_old_switch_interval is not None:
+                        sys.setswitchinterval(callback_old_switch_interval)
+                    self._deadline_yield_once = None
+                    with self._stop_lock:
+                        self._executing = False
 
 
 __all__ = ["ExecutionResult", "RokaeMotionExecutor"]

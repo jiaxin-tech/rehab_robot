@@ -1,0 +1,6 @@
+host_time_s,sync_quality,axis1_position_raw,axis4_position_raw,axis1_velocity_606c,axis4_velocity_606c,axis1_torque_3c1a,axis4_torque_3c1a,axis1_torque_6077,axis4_torque_6077,axis1_statusword_6041,axis4_statusword_6041,axis1_error_603f,axis4_error_603f,axis1_brake_override_381e,axis4_brake_override_381e
+0.000000,not_atomic_axes_read_sequentially,100000,200000,0,0,-34.5872,2.6403,0,0,561,561,0,0,128,128
+0.384615,not_atomic_axes_read_sequentially,98750,202250,0,0,-34.5872,2.6403,0,0,561,561,0,0,128,128
+0.769231,not_atomic_axes_read_sequentially,97500,204500,0,0,-34.5872,2.6403,0,0,561,561,0,0,128,128
+1.153846,not_atomic_axes_read_sequentially,96250,206750,0,0,-34.5872,2.6403,0,0,561,561,0,0,128,128
+1.538462,not_atomic_axes_read_sequentially,95000,209000,0,0,-34.5872,2.6403,0,0,561,561,0,0,128,128

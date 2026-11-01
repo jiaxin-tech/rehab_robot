@@ -1,0 +1,82 @@
+[
+  {
+    "version": 1,
+    "run_id": "a3ae3a26e14e4d8baaf6324409a86ecd",
+    "session_id": "a70a0b3d16f543118ec46dac0890e818",
+    "pid": 48784,
+    "event_id": 1,
+    "query_id": 0,
+    "type": "PROCESS_START",
+    "timestamp_ns": 3267769104513600,
+    "connection": {
+      "mode": "offline",
+      "rate_hz": 50,
+      "dispatch_ns": 3267768884474100
+    },
+    "dispatch_ns": 3267768884474100,
+    "parent_receive_ns": 3267769105904800,
+    "parent_accept_ns": 3267769105904800
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a3ae3a26e14e4d8baaf6324409a86ecd",
+    "session_id": "a70a0b3d16f543118ec46dac0890e818",
+    "pid": 53816,
+    "query_id": 0,
+    "event_id": 2,
+    "type": "PROCESS_STOP_REQUEST",
+    "timestamp_ns": 3267769107384600
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a3ae3a26e14e4d8baaf6324409a86ecd",
+    "session_id": "a70a0b3d16f543118ec46dac0890e818",
+    "pid": 53816,
+    "query_id": 0,
+    "event_id": 4,
+    "type": "FORCED_WORKER_TERMINATION",
+    "timestamp_ns": 3267769308219500,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a3ae3a26e14e4d8baaf6324409a86ecd",
+    "session_id": "a70a0b3d16f543118ec46dac0890e818",
+    "pid": 53816,
+    "query_id": 0,
+    "event_id": 5,
+    "type": "PROCESS_EXIT",
+    "timestamp_ns": 3267769311331200,
+    "exitcode": -15,
+    "completion": null
+  },
+  {
+    "version": 1,
+    "origin": "supervisor",
+    "run_id": "a3ae3a26e14e4d8baaf6324409a86ecd",
+    "session_id": "a70a0b3d16f543118ec46dac0890e818",
+    "pid": 53816,
+    "query_id": 0,
+    "event_id": 7,
+    "type": "CLEANUP_OUTCOME",
+    "timestamp_ns": 3267769311369500,
+    "outcome": {
+      "NORMAL_CLEANUP": false,
+      "GRACEFUL_SDK_DISCONNECT": false,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": true,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": -15,
+      "query_state": "STARTING",
+      "failure_latch": [
+        "logger_failure:audit_write:OSError:offline disk failure",
+        "logger_failure:RuntimeError:audit_write:OSError:offline disk failure",
+        "forced_worker_termination"
+      ]
+    }
+  }
+]

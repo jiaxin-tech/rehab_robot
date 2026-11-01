@@ -1,0 +1,8 @@
+{
+  "gaps": [],
+  "failures": [
+    "state_freshness_failure",
+    "state_wrench_skew_failure"
+  ],
+  "budget_provenance": "NOT_SAFETY_THRESHOLDS"
+}

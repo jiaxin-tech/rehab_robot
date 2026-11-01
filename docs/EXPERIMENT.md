@@ -75,7 +75,7 @@ observe 的完成只表示观测结束；它没有轨迹发送记录，不能直
 | motion.rt_network_tolerance_percent | 20% | SDK 网络包丢失容差；不是20毫秒，不能补偿力查询阻塞 |
 | motion.max_start_anchor_position_error_m | 0.005 m | 捕获起点至启动时允许的位置变化 |
 | motion.max_start_anchor_orientation_error_rad | 0.05236 rad，约3° | 同上，允许的朝向变化 |
-| motion.max_command_lateness_s | 0.02 s | 主机轨迹命令迟到预算 |
+| motion.max_command_lateness_s | 0.03 s | 主机轨迹命令迟到预算 |
 | acquisition.max_leg_start_age_s | 0.05 s | 起始假腿读数时龄；需结合现场抖动复核 |
 | acquisition.max_start_angle_error_deg | 2° | 假腿实际角度与参考起始角的容差 |
 

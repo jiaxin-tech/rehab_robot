@@ -1,0 +1,1 @@
+{"version": 1, "origin": "supervisor", "run_id": "39fac30eaeef49379c0cf1c73ef19a83", "session_id": "105fc28125ca43248e31326059b75575", "pid": 51664, "query_id": 0, "event_id": 1, "type": "FAILURE_LATCH", "timestamp_ns": 3267321476353500, "reason": "telemetry_failure:ValueError:event_sequence_gap_duplicate_or_reorder", "log_write_ns": 3267321476504200}
