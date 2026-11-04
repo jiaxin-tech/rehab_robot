@@ -347,7 +347,9 @@ def run_execute(
             acquisition,
             logger,
             safety,
-            use_windows_scheduler_priority=True,
+            # Do not require Windows process/thread priority changes for a
+            # physical run. Runtime safety gates remain enforced.
+            use_windows_scheduler_priority=False,
             **extra,
         )
         result = executor.execute(trajectory, preflight)
