@@ -1,0 +1,2 @@
+host_time_s,trajectory_time_s,trajectory_phase,delta_x_R,delta_y_R,delta_z_R,tcp_target_x,tcp_target_y,tcp_target_z,tcp_target_rx,tcp_target_ry,tcp_target_rz,q_hip_ref,q_knee_ref,command_valid,invalid_reason
+3266958.5056198,0.0,flexion,0.0,0.0,0.0,0.7376412546829568,-0.04304596720255854,0.4353822725808226,3.0944755657929077,-0.07016882882241401,0.7225469257399179,0.5061580913269217,0.3203519370158654,True,

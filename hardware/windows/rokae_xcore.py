@@ -174,6 +174,7 @@ class RokaeRobot:
         self.robot_mode = "DISCONNECTED"
         self.current_speed_ratio = 0
         self.cartesian_pose: list[float] | None = None
+        self.cartesian_matrix: list[float] | None = None
         self.tcp_speed: list[float] | None = None
         self.joint_angles: list[float] | None = None
         self.actual_joint_speeds: list[float] | None = None
@@ -317,6 +318,7 @@ class RokaeRobot:
         """Discard a previous connection's RT cache instead of reusing it."""
         with self._state_lock:
             self.cartesian_pose = None
+            self.cartesian_matrix = None
             self.tcp_speed = None
             self.joint_angles = None
             self.actual_joint_speeds = None
@@ -363,6 +365,7 @@ class RokaeRobot:
         # controller time are intentionally not requested because they are not
         # part of RtSupportedFields.
         fields = [
+            RtSupportedFields.tcpPose_m,
             RtSupportedFields.tcpPoseAbc_m,
             RtSupportedFields.jointPos_m,
             RtSupportedFields.keypads,
@@ -450,12 +453,17 @@ class RokaeRobot:
                         # application observes the newest controller state.
                         while self._robot.updateRobotState(timedelta(milliseconds=0)):
                             pass
+                        tcp_matrix = self._sdk.PyTypeVectorDouble()
                         tcp = self._sdk.PyTypeVectorDouble()
                         joints = self._sdk.PyTypeVectorDouble()
                         keypads = self._sdk.PyTypeVectorBool()
+                        self._robot.getStateData(
+                            RtSupportedFields.tcpPose_m, tcp_matrix, 16
+                        )
                         self._robot.getStateData(RtSupportedFields.tcpPoseAbc_m, tcp, 6)
                         self._robot.getStateData(RtSupportedFields.jointPos_m, joints, 6)
                         self._robot.getStateData(RtSupportedFields.keypads, keypads)
+                        tcp_matrix_native = list(tcp_matrix.content())
                         tcp_native = list(tcp.content())
                         joints_native = list(joints.content())
                         keypad_native = tuple(bool(value) for value in keypads.content())
@@ -473,6 +481,7 @@ class RokaeRobot:
                         joints_native,
                         received_s,
                         keypad_native,
+                        tcp_matrix_native=tcp_matrix_native,
                     )
                 except Exception as exc:
                     if self._state_running:
@@ -494,9 +503,18 @@ class RokaeRobot:
         joints_native: Sequence[float],
         now: float,
         keypads: Sequence[bool] | None = None,
+        *,
+        tcp_matrix_native: Sequence[float] | None = None,
     ) -> None:
         if len(tcp_native) < 6 or len(joints_native) < 6:
             raise ValueError("xCoreSDK returned an incomplete state frame")
+        matrix = None
+        if tcp_matrix_native is not None:
+            if len(tcp_matrix_native) < 16:
+                raise ValueError("xCoreSDK returned an incomplete Cartesian matrix")
+            matrix = [float(value) for value in tcp_matrix_native[:16]]
+            if not finite_vector(matrix, 16):
+                raise ValueError("xCoreSDK returned a non-finite Cartesian matrix")
 
         pose = self._pose_from_sdk(tcp_native)
         joints = [float(value) for value in joints_native[:6]]
@@ -519,6 +537,7 @@ class RokaeRobot:
                     (joints[i] - self.joint_angles[i]) / dt for i in range(6)
                 ]
             self.cartesian_pose = pose
+            self.cartesian_matrix = matrix
             self.tcp_speed = tcp_speed
             self.joint_angles = joints
             self.actual_joint_speeds = joint_speed
@@ -554,6 +573,25 @@ class RokaeRobot:
         if not all(math.isfinite(value) for value in values):
             raise ValueError("Cartesian pose must contain only finite values")
         return values
+
+    @staticmethod
+    def _pose_to_realtime_matrix(pose: Sequence[float]) -> list[float]:
+        """Return the row-major matrix required by RT Cartesian commands.
+
+        xCoreSDK's six-value ``CartesianPosition`` constructor initializes
+        only ``trans``/``rpy``.  The realtime position callback consumes the
+        separate 16-value ``pos`` field, so passing six values produces an
+        all-zero realtime matrix even though ``trans`` and ``rpy`` look valid.
+        """
+
+        values = RokaeRobot._pose_to_sdk(pose)
+        rotation = rpy_euler_xyz_rotation_matrix(values[3:6])
+        return [
+            rotation[0][0], rotation[0][1], rotation[0][2], values[0],
+            rotation[1][0], rotation[1][1], rotation[1][2], values[1],
+            rotation[2][0], rotation[2][1], rotation[2][2], values[2],
+            0.0, 0.0, 0.0, 1.0,
+        ]
 
     def clear_error(self) -> None:
         self._require_connected()
@@ -773,7 +811,9 @@ class RokaeRobot:
             if not self._state_ready.is_set():
                 raise RuntimeError("No robot state is available for the realtime hold pose")
             initial_pose = self.get_cartesian_pose()
-        self._rt_target_native = tuple(self._pose_to_sdk(initial_pose))
+        self._rt_target_native = tuple(
+            self._pose_to_realtime_matrix(initial_pose)
+        )
         self._rt_stop_requested.clear()
         self._rt_finish_issued.clear()
         self._rt_callback_count = 0
@@ -950,7 +990,9 @@ class RokaeRobot:
         if self._rt_controller is None:
             raise RuntimeError("realtime controller is not attached")
         times = tuple(float(value) for value in times_s)
-        native = tuple(tuple(self._pose_to_sdk(pose)) for pose in poses)
+        native = tuple(
+            tuple(self._pose_to_realtime_matrix(pose)) for pose in poses
+        )
         lateness = float(max_lateness_s)
         if len(native) < 2 or len(native) != len(times):
             raise ValueError("realtime schedule requires matching target/time arrays")
@@ -1093,7 +1135,7 @@ class RokaeRobot:
         """
         if not self._rt_active or self._rt_controller is None:
             raise RuntimeError("Realtime Cartesian control is not active")
-        target = tuple(self._pose_to_sdk(pose))
+        target = tuple(self._pose_to_realtime_matrix(pose))
         if not all(math.isfinite(value) for value in target):
             raise ValueError("Realtime Cartesian target must contain finite values")
         self._rt_target_native = target

@@ -1,0 +1,21 @@
+{
+  "samples_csv": "wrench_20261105T115846Z.csv",
+  "summary": {
+    "deadline_miss_count": 6,
+    "deadline_ms": 20.0,
+    "diagnostic": "wrench_query_timing",
+    "query_duration_ms": {
+      "count": 1431,
+      "max": 240.3663,
+      "mean": 2.093108245981831,
+      "min": 0.6874,
+      "p50": 1.0883,
+      "p95": 1.2300499999999999,
+      "p99": 1.6861500000000003
+    },
+    "sample_count": 1431,
+    "stable_50hz_supported": false,
+    "target_hz": 50.0,
+    "valid_count": 1431
+  }
+}

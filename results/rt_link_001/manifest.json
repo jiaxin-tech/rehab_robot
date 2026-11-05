@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "trajectory_id": "realtime_link_smoke_v1",
+  "trajectory_profile": "realtime_link_diagnostic",
+  "anchor_id": "anchor_58b994cb8b4a4633be358a6af67c230f",
+  "step_m": 0.001,
+  "maximum_tcp_speed_m_s": 0.0009359386718763574,
+  "maximum_tcp_acceleration_m_s2": 0.0014287500000076444,
+  "trajectory_sha256": "51304aca73292745b7b1959d6039db7b32d11a5509f7cf2ee0170b9fe14f6ad9",
+  "anchor_sha256": "7a4d1c5dd6937767c2fdb93ab148ca0e34a2db6cdf241eec40222ac8a65cc963",
+  "config_sha256": "500bc527764bd507a7a3e0aecf02c26cfc3a28379a83cb600277c6e66a914db2"
+}

@@ -1,0 +1,108 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "empty_load": true,
+  "empty_load_retiming": {
+    "mode": "empty_load",
+    "source_reference": {
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ],
+      "reference_version_verified": true,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "input_had_time_axis": true,
+      "stage6a_retimed_from_phase": false,
+      "retiming_profile": "provided_by_input",
+      "retimed_timing_is_original": false,
+      "sample_count": 401,
+      "duration_s": 24.0,
+      "source_formal_execution_allowed_all": true
+    },
+    "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_reference.csv",
+    "safety_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_safety.json",
+    "time_scale": 5.569116480603686,
+    "source_duration_s": 24.0,
+    "retimed_duration_s": 133.65879553448846,
+    "source_peak_speed_m_s": 0.16541930140406988,
+    "source_peak_acceleration_m_s2": 0.11658037732398116,
+    "retimed_peak_speed_m_s": 0.029702970297029563,
+    "retimed_peak_acceleration_m_s2": 0.0037588314655478284,
+    "max_tcp_speed_m_s": 0.03,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "retiming_margin": 1.01,
+    "dummy_leg_required": false,
+    "training_allowed": false
+  },
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_reference.csv",
+  "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_safety.json",
+  "blockers": [],
+  "reason": "trajectory_command durability acknowledgement exceeded 0.019997s",
+  "robot_timing": {
+    "available": true,
+    "samples": 143,
+    "valid_samples": 12,
+    "recorded_span_s": 3.48220630036667,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 122.28889996185899,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 0,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 12,
+        "mean": 0.9866916419317325,
+        "p50": 0.9995999280363321,
+        "p95": 1.3246150454506278,
+        "p99": 1.3627630798146129,
+        "min": 0.61039999127388,
+        "max": 1.3723000884056091
+      },
+      "state_age_ms": {
+        "count": 143,
+        "mean": 8.076908389249674,
+        "p50": 8.062599692493677,
+        "p95": 8.672629855573177,
+        "p99": 9.864205978810789,
+        "min": 7.069500163197517,
+        "max": 11.255200020968914
+      },
+      "wrench_age_ms": {
+        "count": 12,
+        "mean": 11.231620912440121,
+        "p50": 10.687900008633733,
+        "p95": 20.82965997979045,
+        "p99": 20.90041210874915,
+        "min": 1.3297004625201225,
+        "max": 20.918100140988827
+      },
+      "state_wrench_skew_ms": {
+        "count": 12,
+        "mean": 5.318845816267033,
+        "p50": 4.563450114801526,
+        "p95": 12.754040188156068,
+        "p99": 12.793288077227771,
+        "min": 0.2889498136937618,
+        "max": 12.803100049495697
+      }
+    },
+    "invalid_reasons": {
+      "state_wrench_skew_unavailable_or_exceeded": 131,
+      "wrench_not_ready": 131,
+      "wrench_process_not_ready": 131,
+      "wrench_stale_or_unavailable": 131
+    }
+  }
+}

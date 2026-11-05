@@ -1,0 +1,46 @@
+{
+  "anchor_id": "anchor_9fdab2b7301b421e8fde957d8bc89d04",
+  "capture_host_time_s": 3270517.0815902,
+  "controller_version": "3.2.1",
+  "created_at": "2026-11-01T09:35:59.314+00:00",
+  "notes": "",
+  "reference_start_q_hip": 0.5061580913269217,
+  "reference_start_q_knee": 0.3203519370158654,
+  "reviewed": false,
+  "robot_joint_positions": [
+    -0.2682756629380041,
+    0.5469088919875443,
+    -1.9849284756833567,
+    -3.076111567760419,
+    0.5318344947429253,
+    -1.0444273576623082
+  ],
+  "robot_model": "XMC12-R1300-W7G3B4",
+  "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+  "schema_version": 2,
+  "tcp_orientation": {
+    "representation": "euler_xyz_rad",
+    "strategy": "fixed",
+    "values_rad": [
+      3.0952884833724608,
+      -0.0696351224480241,
+      0.7224927241877392
+    ]
+  },
+  "tcp_pose_base": [
+    0.7373094843044437,
+    -0.04295526393871397,
+    0.4349401022815725,
+    3.0952884833724608,
+    -0.0696351224480241,
+    0.7224927241877392
+  ],
+  "tcp_position_base_m": [
+    0.7373094843044437,
+    -0.04295526393871397,
+    0.4349401022815725
+  ],
+  "tool_name": null,
+  "trajectory_id": "reference_measured_asymmetric_closed_slow",
+  "workpiece_name": null
+}

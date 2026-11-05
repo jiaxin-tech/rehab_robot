@@ -1,0 +1,103 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "empty_load": true,
+  "empty_load_retiming": {
+    "mode": "empty_load",
+    "source_reference": {
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ],
+      "reference_version_verified": true,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "input_had_time_axis": true,
+      "stage6a_retimed_from_phase": false,
+      "retiming_profile": "provided_by_input",
+      "retimed_timing_is_original": false,
+      "sample_count": 401,
+      "duration_s": 24.0,
+      "source_formal_execution_allowed_all": true
+    },
+    "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_004\\empty_load_reference.csv",
+    "safety_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_004\\empty_load_safety.json",
+    "time_scale": 5.569116480603686,
+    "source_duration_s": 24.0,
+    "retimed_duration_s": 133.65879553448846,
+    "source_peak_speed_m_s": 0.16541930140406988,
+    "source_peak_acceleration_m_s2": 0.11658037732398116,
+    "retimed_peak_speed_m_s": 0.029702970297029452,
+    "retimed_peak_acceleration_m_s2": 0.003758831465547965,
+    "max_tcp_speed_m_s": 0.03,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "retiming_margin": 1.01,
+    "dummy_leg_required": false,
+    "training_allowed": false
+  },
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_004\\empty_load_reference.csv",
+  "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_004\\empty_load_safety.json",
+  "blockers": [],
+  "reason": "xCoreSDK setOperateMode failed (-3): 机器人急停按钮被按下, 请先恢复",
+  "robot_timing": {
+    "available": true,
+    "samples": 0,
+    "valid_samples": 0,
+    "recorded_span_s": 0.0,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": null,
+    "includes_startup": true,
+    "ever_ready": false,
+    "invalid_after_ready": null,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_age_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "wrench_age_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_wrench_skew_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      }
+    },
+    "invalid_reasons": {}
+  }
+}

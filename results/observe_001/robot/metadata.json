@@ -1,0 +1,43 @@
+{
+  "experiment_mode": "observation_only_acquire",
+  "git_commit": "1e56d8eef9f733b680524b1c7881be0c03ddc8c2",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 0.0,
+      "robot_state": 0.0,
+      "robot_wrench": 0.0,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 0.7477813,
+    "failed_stream": "external",
+    "failure_reason": "external:RuntimeError:acquisition_start:KeyError:'expected_identity'",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 3172786382039100,
+    "finished_host_time_s": 3172786.3820391,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 3172786382241300,
+    "metadata_updated_host_time_s": 3172786.3822413,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 0,
+      "robot_state": 0,
+      "robot_wrench": 0,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 3172785634257800,
+    "started_host_time_s": 3172785.6342578,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "reviewed_observation_acquisition": true,
+  "robot_execution_approved": false,
+  "robot_ip": "192.168.50.103",
+  "timestamp_source": "time.perf_counter_ns",
+  "wrench_mode": "live"
+}

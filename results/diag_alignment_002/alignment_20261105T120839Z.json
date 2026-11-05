@@ -1,0 +1,55 @@
+{
+  "samples_csv": "alignment_20261105T120839Z.csv",
+  "summary": {
+    "base_rotation_config_verified": true,
+    "diagnostic": "snapshot_alignment",
+    "force_query_duration_ms": {
+      "count": 1397,
+      "max": 1.7534000799059868,
+      "mean": 0.9855150302462733,
+      "min": 0.6424002349376678,
+      "p50": 1.0011997073888779,
+      "p95": 1.1347997933626175,
+      "p99": 1.3872239738702772
+    },
+    "force_sample_age_ms": {
+      "count": 1397,
+      "max": 255.65569987520576,
+      "mean": 14.275150076581502,
+      "min": 0.5504000000655651,
+      "p50": 15.468650497496128,
+      "p95": 31.445430032908916,
+      "p99": 31.571104004979134
+    },
+    "invalid_reasons": {
+      "robot_state_internal_skew": 1,
+      "robot_state_stale": 2,
+      "robot_wrench_stale": 3,
+      "robot_wrench_stale:0.239199s": 1,
+      "robot_wrench_stale:0.251244s": 1,
+      "robot_wrench_stale:0.255615s": 1
+    },
+    "robot_state_age_ms": {
+      "count": 1397,
+      "max": 235.7758996076882,
+      "mean": 8.679905013663264,
+      "min": 0.16540009528398514,
+      "p50": 8.021699730306864,
+      "p95": 9.319099877029657,
+      "p99": 10.196263659745455
+    },
+    "sample_count": 1397,
+    "sample_hz": 50.0,
+    "software_bias_used": true,
+    "state_internal_skew_ms": {
+      "count": 1397,
+      "max": 247.73789988830686,
+      "mean": 10.692713061199605,
+      "min": 0.5415999330580235,
+      "p50": 8.408849593251944,
+      "p95": 23.447469901293516,
+      "p99": 23.582140114158392
+    },
+    "valid_count": 1394
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "samples_csv": "state_20261105T122358Z.csv",
+  "summary": {
+    "diagnostic": "rt_state_timing",
+    "dropped_frames": 2251,
+    "estimated_rt_update_hz": 49.81275040373015,
+    "exception_count": 0,
+    "invalid_reasons": {},
+    "requested_poll_hz": 50.0,
+    "rt_update_period_ms": {
+      "count": 1494,
+      "max": 64.12580003961921,
+      "mean": 20.075181392214724,
+      "min": 15.31539997085929,
+      "p50": 23.487300146371126,
+      "p95": 24.14473998360336,
+      "p99": 24.364641150459647
+    },
+    "sample_count": 1495,
+    "sample_period_ms": {
+      "count": 1494,
+      "max": 55.0412,
+      "mean": 20.07447516733601,
+      "min": 15.6347,
+      "p50": 23.68685,
+      "p95": 24.1297,
+      "p99": 24.231718
+    },
+    "state_age_ms": {
+      "count": 1495,
+      "max": 39.061699993908405,
+      "mean": 8.002895849404926,
+      "min": 7.448199670761824,
+      "p50": 7.98040023073554,
+      "p95": 8.13655979000032,
+      "p99": 8.243403919041157
+    },
+    "unique_state_frames": 1495,
+    "valid_count": 1495
+  }
+}

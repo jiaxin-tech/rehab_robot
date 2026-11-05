@@ -1,0 +1,108 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "empty_load": true,
+  "empty_load_retiming": {
+    "mode": "empty_load",
+    "source_reference": {
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ],
+      "reference_version_verified": true,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "input_had_time_axis": true,
+      "stage6a_retimed_from_phase": false,
+      "retiming_profile": "provided_by_input",
+      "retimed_timing_is_original": false,
+      "sample_count": 401,
+      "duration_s": 24.0,
+      "source_formal_execution_allowed_all": true
+    },
+    "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_007\\empty_load_reference.csv",
+    "safety_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_007\\empty_load_safety.json",
+    "time_scale": 5.569116480603686,
+    "source_duration_s": 24.0,
+    "retimed_duration_s": 133.65879553448846,
+    "source_peak_speed_m_s": 0.16541930140406988,
+    "source_peak_acceleration_m_s2": 0.1165803773239842,
+    "retimed_peak_speed_m_s": 0.02970297029702958,
+    "retimed_peak_acceleration_m_s2": 0.0037588314655478965,
+    "max_tcp_speed_m_s": 0.03,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "retiming_margin": 1.01,
+    "dummy_leg_required": false,
+    "training_allowed": false
+  },
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_007\\empty_load_reference.csv",
+  "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_007\\empty_load_safety.json",
+  "blockers": [],
+  "reason": "final pre-start runtime safety gate: wrench_sample_stale_or_clock_invalid;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;force_magnitude_n_invalid;torque_magnitude_nm_invalid;wrench_stale;state_wrench_skew_limit_exceeded;force_limit_or_value_unavailable;torque_limit_or_value_unavailable",
+  "robot_timing": {
+    "available": true,
+    "samples": 155,
+    "valid_samples": 22,
+    "recorded_span_s": 3.888578400015831,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 112.52669990062714,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 0,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 22,
+        "mean": 0.8878363508053801,
+        "p50": 0.8433500770479441,
+        "p95": 1.1927002342417836,
+        "p99": 1.2733161123469472,
+        "min": 0.6829998455941677,
+        "max": 1.2944000773131847
+      },
+      "state_age_ms": {
+        "count": 155,
+        "mean": 8.036003240774717,
+        "p50": 8.043500129133463,
+        "p95": 8.575219847261906,
+        "p99": 9.134724047034984,
+        "min": 5.524300038814545,
+        "max": 16.509199980646372
+      },
+      "wrench_age_ms": {
+        "count": 22,
+        "mean": 9.88135912286287,
+        "p50": 10.157724842429161,
+        "p95": 17.0860527548939,
+        "p99": 17.859916710294783,
+        "min": 2.018699888139963,
+        "max": 18.058650195598602
+      },
+      "state_wrench_skew_ms": {
+        "count": 22,
+        "mean": 5.096586378799244,
+        "p50": 5.063324933871627,
+        "p95": 9.596137632615864,
+        "p99": 10.756082534790037,
+        "min": 1.61725003272295,
+        "max": 11.063050013035536
+      }
+    },
+    "invalid_reasons": {
+      "state_wrench_skew_unavailable_or_exceeded": 133,
+      "wrench_not_ready": 133,
+      "wrench_process_not_ready": 133,
+      "wrench_stale_or_unavailable": 133
+    }
+  }
+}

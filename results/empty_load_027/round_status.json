@@ -1,0 +1,110 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "empty_load": true,
+  "empty_load_retiming": {
+    "mode": "empty_load",
+    "source_reference": {
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ],
+      "reference_version_verified": true,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "input_had_time_axis": true,
+      "stage6a_retimed_from_phase": false,
+      "retiming_profile": "provided_by_input",
+      "retimed_timing_is_original": false,
+      "sample_count": 401,
+      "duration_s": 24.0,
+      "source_formal_execution_allowed_all": true
+    },
+    "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_027\\empty_load_reference.csv",
+    "safety_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_027\\empty_load_safety.json",
+    "time_scale": 5.569116480603662,
+    "source_duration_s": 24.0,
+    "retimed_duration_s": 133.6587955344879,
+    "source_peak_speed_m_s": 0.16541930140406916,
+    "source_peak_acceleration_m_s2": 0.11658037732397612,
+    "retimed_peak_speed_m_s": 0.029702970297029563,
+    "retimed_peak_acceleration_m_s2": 0.003758831465546818,
+    "max_tcp_speed_m_s": 0.03,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "retiming_margin": 1.01,
+    "dummy_leg_required": false,
+    "training_allowed": false
+  },
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_027\\empty_load_reference.csv",
+  "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_027\\empty_load_safety.json",
+  "blockers": [],
+  "reason": "realtime schedule cancelled: runtime_watchdog:runtime safety gate: state_stale_or_unavailable;state_stale",
+  "robot_timing": {
+    "available": true,
+    "samples": 2468,
+    "valid_samples": 2327,
+    "recorded_span_s": 54.73662310000509,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 142.5168002024293,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 6,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 2333,
+        "mean": 0.9200357487908234,
+        "p50": 0.8537000976502895,
+        "p95": 1.2143798172473907,
+        "p99": 1.3768920488655536,
+        "min": 0.5916999652981758,
+        "max": 11.188100092113018
+      },
+      "state_age_ms": {
+        "count": 2468,
+        "mean": 7.808671108178335,
+        "p50": 7.770600030198693,
+        "p95": 8.56783501803875,
+        "p99": 9.055258645676076,
+        "min": 1.7817001789808273,
+        "max": 31.59859962761402
+      },
+      "wrench_age_ms": {
+        "count": 2333,
+        "mean": 11.371264292667327,
+        "p50": 10.838900227099657,
+        "p95": 21.041429787874225,
+        "p99": 32.13872591033564,
+        "min": 0.8936994709074497,
+        "max": 53.8956499658525
+      },
+      "state_wrench_skew_ms": {
+        "count": 2333,
+        "mean": 5.963232665631299,
+        "p50": 5.376549903303385,
+        "p95": 13.449180033057935,
+        "p99": 23.934134002774805,
+        "min": 0.017600134015083313,
+        "max": 52.11394978687167
+      }
+    },
+    "invalid_reasons": {
+      "state_freshness_failure": 2,
+      "state_stale_or_unavailable": 2,
+      "state_wrench_skew_unavailable_or_exceeded": 138,
+      "wrench_not_ready": 135,
+      "wrench_process_not_ready": 135,
+      "wrench_stale_or_unavailable": 136
+    }
+  }
+}

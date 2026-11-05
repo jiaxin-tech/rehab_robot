@@ -24,6 +24,10 @@ from control.execution_preflight import (
     ExecutionPreflight,
     audit_execution_trajectory_content,
 )
+from control.realtime_link_diagnostic import (
+    REALTIME_LINK_PROFILE,
+    audit_realtime_link_trajectory,
+)
 from safety.experiment_safety import ExperimentSafetyConfig
 from utils.clock import MonotonicClock, SYSTEM_CLOCK
 from hardware.safety_events import safety_event_block_reason, collision_feedback_allows_motion
@@ -219,6 +223,7 @@ class RokaeMotionExecutor:
         execution_guard=None,
         dispatch_observer=None,
         use_windows_scheduler_priority: bool = False,
+        trajectory_profile: str = "approved_rehab",
     ) -> None:
         self.motion_adapter = motion_adapter
         self.acquisition = acquisition
@@ -227,6 +232,9 @@ class RokaeMotionExecutor:
         self.clock = clock
         self.execution_guard = execution_guard
         self.dispatch_observer = dispatch_observer
+        if trajectory_profile not in ("approved_rehab", REALTIME_LINK_PROFILE):
+            raise ValueError("unsupported trajectory_profile")
+        self.trajectory_profile = trajectory_profile
         if type(use_windows_scheduler_priority) is not bool:
             raise TypeError("use_windows_scheduler_priority must be bool")
         self._use_windows_scheduler_priority = bool(
@@ -686,8 +694,13 @@ class RokaeMotionExecutor:
                 "start_scheduled_timing",
             )
         )
+        trajectory_auditor = (
+            audit_realtime_link_trajectory
+            if self.trajectory_profile == REALTIME_LINK_PROFILE
+            else audit_execution_trajectory_content
+        )
         content_reasons, maximum_speed, maximum_acceleration = (
-            audit_execution_trajectory_content(
+            trajectory_auditor(
                 trajectory,
                 self.safety,
                 expected_trajectory_id=preflight.trajectory_id,
@@ -875,6 +888,29 @@ class RokaeMotionExecutor:
                     "post-hold runtime safety gate: "
                     + ";".join(post_hold_reasons)
                 )
+            pre_admitted_index: int | None = None
+            if callback_scheduled:
+                # Freeze and admit the first non-hold target before arming the
+                # schedule clock.  Otherwise a short first interval can expire
+                # while the main thread is still doing its durable write and
+                # safety check, even though every later target is prepared one
+                # full interval ahead.
+                first_scheduled_row = trajectory.iloc[1]
+                self._persist_command_intent(
+                    first_scheduled_row,
+                    scheduled_poses[1],
+                    latest_finish_s=(
+                        self.clock.now_s() + INITIAL_HOLD_INTENT_TIMEOUT_S
+                    ),
+                )
+                first_post_log_reasons = self._runtime_reasons()
+                if first_post_log_reasons:
+                    raise RuntimeError(
+                        "first post-log runtime safety gate: "
+                        + ";".join(first_post_log_reasons)
+                    )
+                self.motion_adapter.admit_scheduled_target(1)
+                pre_admitted_index = 1
             self._start_runtime_watchdog()
             if callback_scheduled:
                 self.motion_adapter.start_scheduled_timing(
@@ -890,27 +926,30 @@ class RokaeMotionExecutor:
             ):
                 command_deadline_s = schedule_origin_s + float(row["time_s"])
                 pose = scheduled_poses[schedule_index]
-                # Persist the next intent during the interval after the
-                # previous dispatch, rather than beginning disk I/O at the
-                # target instant.  The dispatch deadline itself is unchanged;
-                # every live gate is checked again after the wait below.
-                self._persist_command_intent(
-                    row,
-                    pose,
-                    latest_finish_s=command_deadline_s + lateness_limit_s,
-                )
-                post_log_reasons = self._runtime_reasons()
-                if post_log_reasons:
-                    raise RuntimeError(
-                        "post-log runtime safety gate: "
-                        + ";".join(post_log_reasons)
+                if schedule_index != pre_admitted_index:
+                    # Persist the next intent during the interval after the
+                    # previous dispatch, rather than beginning disk I/O at the
+                    # target instant.  The dispatch deadline itself is
+                    # unchanged; every live gate is checked again after the
+                    # wait below.
+                    self._persist_command_intent(
+                        row,
+                        pose,
+                        latest_finish_s=command_deadline_s + lateness_limit_s,
                     )
+                    post_log_reasons = self._runtime_reasons()
+                    if post_log_reasons:
+                        raise RuntimeError(
+                            "post-log runtime safety gate: "
+                            + ";".join(post_log_reasons)
+                        )
                 if callback_scheduled:
                     # The callback owns the reviewed deadline.  Main-thread
                     # admission occurs only after durable intent logging and a
                     # fresh safety gate; the independent watchdog remains live
                     # until callback dispatch or stop.
-                    self.motion_adapter.admit_scheduled_target(schedule_index)
+                    if schedule_index != pre_admitted_index:
+                        self.motion_adapter.admit_scheduled_target(schedule_index)
                     remaining_s = (
                         command_deadline_s
                         + lateness_limit_s

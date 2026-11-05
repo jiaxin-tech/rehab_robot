@@ -1,0 +1,770 @@
+{
+  "approved_hip_rom": [
+    0.0,
+    120.0
+  ],
+  "approved_knee_rom": [
+    5.0,
+    145.0
+  ],
+  "collision_event_max_age_s": null,
+  "collision_source": "controller",
+  "experiment_mode": "start_anchored_relative",
+  "experiment_safety": {
+    "max_command_lateness_s": 0.02,
+    "max_force_n": 100,
+    "max_start_anchor_orientation_error_rad": 0.05235987755982989,
+    "max_start_anchor_position_error_m": 0.005,
+    "max_state_age_s": 0.025,
+    "max_state_wrench_skew_s": 0.04,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "max_tcp_speed_m_s": 0.03,
+    "max_torque_nm": 200,
+    "max_wrench_age_s": 0.05,
+    "rt_filter_hz": 50,
+    "rt_network_tolerance_percent": 20,
+    "workspace_max_base_m": [
+      1,
+      1,
+      1.2
+    ],
+    "workspace_min_base_m": [
+      0,
+      -0.15,
+      0.1
+    ]
+  },
+  "experiment_safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_safety.json",
+  "git_commit": "1e56d8eef9f733b680524b1c7881be0c03ddc8c2",
+  "logger": {
+    "average_stream_publish_rate_hz": {
+      "aligned_snapshot": 26.93315903749779,
+      "robot_state": 87.57985281424108,
+      "robot_wrench": 2.636812772901882,
+      "trajectory_command": 0.0
+    },
+    "episode_duration_s": 5.3094403,
+    "failed_stream": "trajectory_command",
+    "failure_reason": "trajectory_command:TimeoutError:trajectory command durability deadline missed",
+    "files": {
+      "aligned_snapshot": "aligned_snapshot.csv",
+      "robot_state": "robot_state.csv",
+      "robot_wrench": "robot_wrench.csv",
+      "trajectory_command": "trajectory_command.csv"
+    },
+    "finished_host_time_ns": 3174705439854400,
+    "finished_host_time_s": 3174705.4398544,
+    "healthy": false,
+    "metadata_updated_host_time_ns": 3174705447198600,
+    "metadata_updated_host_time_s": 3174705.4471986,
+    "metadata_write_error": null,
+    "ready": false,
+    "row_counts": {
+      "aligned_snapshot": 143,
+      "robot_state": 465,
+      "robot_wrench": 14,
+      "trajectory_command": 0
+    },
+    "started_host_time_ns": 3174700130414100,
+    "started_host_time_s": 3174700.1304141,
+    "status": "failed",
+    "timestamp_source": "time.perf_counter_ns"
+  },
+  "motion_api_physical_validation": false,
+  "motion_api_static_evidence": "xCoreSDK_0.7.0_realtime_cartesian_pyi_and_vendor_examples",
+  "motion_attachment_confirmed": true,
+  "motion_attachment_host_time_s": 3174705.2398097,
+  "operator_confirmation": "I CONFIRM SUPERVISED SLOW ROBOT MOTION",
+  "parent_reference_id": null,
+  "post_attach_runtime_gate_passed": true,
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_reference.csv",
+  "reference_version": "reference_measured_asymmetric_closed",
+  "rehab_frame": {
+    "R_base_from_rehab": [
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "construction": "x_normalize_then_z_orthogonalize_then_y_equals_z_cross_x",
+    "notes": "",
+    "rehab_x_axis_in_base": [
+      1.0,
+      0.0,
+      0.0
+    ],
+    "rehab_y_axis_in_base": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "rehab_z_axis_in_base": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "reviewed": false
+  },
+  "rehab_frame_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "robot_execution_approved": false,
+  "robot_ip": "192.168.50.103",
+  "robot_local_ip": "192.168.50.209",
+  "robot_state_summary_after_motion_attachment": {
+    "collision_state": null,
+    "collision_state_invalid_reason": "delegated_to_controller_no_host_feedback",
+    "collision_state_query_valid": false,
+    "collision_state_source": "controller",
+    "collision_state_timestamp_source": "unavailable_controller_owned_protection",
+    "connected": true,
+    "joint_position_rad": [
+      -0.2682758626750859,
+      0.5465635465731883,
+      -1.9841883299532017,
+      -3.076104377225476,
+      0.5318356931654159,
+      -1.04442711797781
+    ],
+    "joint_soft_limits_valid": true,
+    "operation_state": "RTCONTROLLING",
+    "robot_metadata": {
+      "collision_source": "controller",
+      "controller_version": "3.2.1",
+      "joint_soft_limit_read_error": null,
+      "joint_soft_limits_rad": [
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        [
+          -2.356194490192345,
+          2.356194490192345
+        ],
+        [
+          -2.96705972839036,
+          2.443460952792061
+        ],
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ]
+      ],
+      "local_ip": "192.168.50.209",
+      "robot_class": "xMateRobot",
+      "robot_ip": "192.168.50.103",
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "safety_event_status": null,
+      "sdk_tool_payload": {
+        "active_hmi_tool_workobject_verified": false,
+        "sdk_available_tool_names": [
+          "g_tool_0",
+          "g_tool_1",
+          "g_tool_10",
+          "g_tool_11",
+          "g_tool_12",
+          "g_tool_13",
+          "g_tool_14",
+          "g_tool_15",
+          "g_tool_2",
+          "g_tool_3",
+          "g_tool_4",
+          "g_tool_5",
+          "g_tool_6",
+          "g_tool_7",
+          "g_tool_8",
+          "g_tool_9",
+          "tool0"
+        ],
+        "sdk_available_workobject_names": [
+          "g_wobj_0",
+          "g_wobj_1",
+          "g_wobj_10",
+          "g_wobj_11",
+          "g_wobj_12",
+          "g_wobj_13",
+          "g_wobj_14",
+          "g_wobj_15",
+          "g_wobj_2",
+          "g_wobj_3",
+          "g_wobj_4",
+          "g_wobj_5",
+          "g_wobj_6",
+          "g_wobj_7",
+          "g_wobj_8",
+          "g_wobj_9",
+          "wobj0"
+        ],
+        "toolset_end_rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "toolset_end_translation_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "toolset_load_cog_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "toolset_load_inertia_kg_m2": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "toolset_load_mass_kg": 0.0,
+        "toolset_ref_rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "toolset_ref_translation_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "state_interval_ms": 8,
+      "xcore_sdk_version": "0.7.0"
+    },
+    "safety_event_status": null,
+    "sdk_tool_payload_read_valid": true,
+    "state_age_ms": 9.364699944853783,
+    "state_host_monotonic_time_s": 3174705.2156967,
+    "state_invalid_reason": "",
+    "state_sequence_id": 503,
+    "state_stream_thread_alive": true,
+    "state_valid": true,
+    "tcp_pose_base_m_rad": [
+      0.7376834597167892,
+      -0.043057813486578334,
+      0.4354316423958608,
+      3.094382691933557,
+      -0.07023199700343133,
+      0.7225499301120534
+    ],
+    "timestamp_source": "host_receive_time_no_robot_device_timestamp"
+  },
+  "robot_state_summary_before_motion": {
+    "collision_state": null,
+    "collision_state_invalid_reason": "delegated_to_controller_no_host_feedback",
+    "collision_state_query_valid": false,
+    "collision_state_source": "controller",
+    "collision_state_timestamp_source": "unavailable_controller_owned_protection",
+    "connected": true,
+    "joint_position_rad": [
+      -0.2682758626750859,
+      0.5465635465731883,
+      -1.9841885696377,
+      -3.076104377225476,
+      0.5318359328499139,
+      -1.0444273576623082
+    ],
+    "joint_soft_limits_valid": true,
+    "operation_state": "RTCONTROLLING",
+    "robot_metadata": {
+      "collision_source": "controller",
+      "controller_version": "3.2.1",
+      "joint_soft_limit_read_error": null,
+      "joint_soft_limits_rad": [
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        [
+          -2.356194490192345,
+          2.356194490192345
+        ],
+        [
+          -2.96705972839036,
+          2.443460952792061
+        ],
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ],
+        [
+          -6.283185307179586,
+          6.283185307179586
+        ]
+      ],
+      "local_ip": "192.168.50.209",
+      "robot_class": "xMateRobot",
+      "robot_ip": "192.168.50.103",
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "safety_event_status": null,
+      "sdk_tool_payload": {
+        "active_hmi_tool_workobject_verified": false,
+        "sdk_available_tool_names": [
+          "g_tool_0",
+          "g_tool_1",
+          "g_tool_10",
+          "g_tool_11",
+          "g_tool_12",
+          "g_tool_13",
+          "g_tool_14",
+          "g_tool_15",
+          "g_tool_2",
+          "g_tool_3",
+          "g_tool_4",
+          "g_tool_5",
+          "g_tool_6",
+          "g_tool_7",
+          "g_tool_8",
+          "g_tool_9",
+          "tool0"
+        ],
+        "sdk_available_workobject_names": [
+          "g_wobj_0",
+          "g_wobj_1",
+          "g_wobj_10",
+          "g_wobj_11",
+          "g_wobj_12",
+          "g_wobj_13",
+          "g_wobj_14",
+          "g_wobj_15",
+          "g_wobj_2",
+          "g_wobj_3",
+          "g_wobj_4",
+          "g_wobj_5",
+          "g_wobj_6",
+          "g_wobj_7",
+          "g_wobj_8",
+          "g_wobj_9",
+          "wobj0"
+        ],
+        "toolset_end_rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "toolset_end_translation_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "toolset_load_cog_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "toolset_load_inertia_kg_m2": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "toolset_load_mass_kg": 0.0,
+        "toolset_ref_rpy_rad": [
+          0.0,
+          -0.0,
+          0.0
+        ],
+        "toolset_ref_translation_m": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "state_interval_ms": 8,
+      "xcore_sdk_version": "0.7.0"
+    },
+    "safety_event_status": null,
+    "sdk_tool_payload_read_valid": true,
+    "state_age_ms": 7.943099830299616,
+    "state_host_monotonic_time_s": 3174704.9519245,
+    "state_invalid_reason": "",
+    "state_sequence_id": 471,
+    "state_stream_thread_alive": true,
+    "state_valid": true,
+    "tcp_pose_base_m_rad": [
+      0.7376834597167803,
+      -0.04305781348657646,
+      0.43543164239585347,
+      3.0943826750911216,
+      -0.07023198569210944,
+      0.7225501701211939
+    ],
+    "timestamp_source": "host_receive_time_no_robot_device_timestamp"
+  },
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "runtime_preflight": {
+    "allowed": true,
+    "anchor_id": "anchor_dd0f04af1c14425dafe12d61529d3d1e",
+    "maximum_tcp_acceleration_m_s2": 0.0037588314655478284,
+    "maximum_tcp_speed_m_s": 0.029702970297029563,
+    "reasons": [],
+    "runtime_robot_summary": {
+      "collision_state": null,
+      "collision_state_invalid_reason": "delegated_to_controller_no_host_feedback",
+      "collision_state_query_valid": false,
+      "collision_state_source": "controller",
+      "collision_state_timestamp_source": "unavailable_controller_owned_protection",
+      "connected": true,
+      "joint_position_rad": [
+        -0.2682758626750859,
+        0.5465635465731883,
+        -1.9841885696377,
+        -3.076104377225476,
+        0.5318359328499139,
+        -1.0444273576623082
+      ],
+      "joint_soft_limits_valid": true,
+      "operation_state": "RTCONTROLLING",
+      "robot_metadata": {
+        "collision_source": "controller",
+        "controller_version": "3.2.1",
+        "joint_soft_limit_read_error": null,
+        "joint_soft_limits_rad": [
+          [
+            -6.283185307179586,
+            6.283185307179586
+          ],
+          [
+            -2.356194490192345,
+            2.356194490192345
+          ],
+          [
+            -2.96705972839036,
+            2.443460952792061
+          ],
+          [
+            -6.283185307179586,
+            6.283185307179586
+          ],
+          [
+            -6.283185307179586,
+            6.283185307179586
+          ],
+          [
+            -6.283185307179586,
+            6.283185307179586
+          ]
+        ],
+        "local_ip": "192.168.50.209",
+        "robot_class": "xMateRobot",
+        "robot_ip": "192.168.50.103",
+        "robot_model": "XMC12-R1300-W7G3B4",
+        "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+        "safety_event_status": null,
+        "sdk_tool_payload": {
+          "active_hmi_tool_workobject_verified": false,
+          "sdk_available_tool_names": [
+            "g_tool_0",
+            "g_tool_1",
+            "g_tool_10",
+            "g_tool_11",
+            "g_tool_12",
+            "g_tool_13",
+            "g_tool_14",
+            "g_tool_15",
+            "g_tool_2",
+            "g_tool_3",
+            "g_tool_4",
+            "g_tool_5",
+            "g_tool_6",
+            "g_tool_7",
+            "g_tool_8",
+            "g_tool_9",
+            "tool0"
+          ],
+          "sdk_available_workobject_names": [
+            "g_wobj_0",
+            "g_wobj_1",
+            "g_wobj_10",
+            "g_wobj_11",
+            "g_wobj_12",
+            "g_wobj_13",
+            "g_wobj_14",
+            "g_wobj_15",
+            "g_wobj_2",
+            "g_wobj_3",
+            "g_wobj_4",
+            "g_wobj_5",
+            "g_wobj_6",
+            "g_wobj_7",
+            "g_wobj_8",
+            "g_wobj_9",
+            "wobj0"
+          ],
+          "toolset_end_rpy_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "toolset_end_translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "toolset_load_cog_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "toolset_load_inertia_kg_m2": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "toolset_load_mass_kg": 0.0,
+          "toolset_ref_rpy_rad": [
+            0.0,
+            -0.0,
+            0.0
+          ],
+          "toolset_ref_translation_m": [
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "state_interval_ms": 8,
+        "xcore_sdk_version": "0.7.0"
+      },
+      "safety_event_status": null,
+      "sdk_tool_payload_read_valid": true,
+      "state_age_ms": 7.943099830299616,
+      "state_host_monotonic_time_s": 3174704.9519245,
+      "state_invalid_reason": "",
+      "state_sequence_id": 471,
+      "state_stream_thread_alive": true,
+      "state_valid": true,
+      "tcp_pose_base_m_rad": [
+        0.7376834597167803,
+        -0.04305781348657646,
+        0.43543164239585347,
+        3.0943826750911216,
+        -0.07023198569210944,
+        0.7225501701211939
+      ],
+      "timestamp_source": "host_receive_time_no_robot_device_timestamp"
+    },
+    "trajectory_id": "reference_measured_asymmetric_closed_slow"
+  },
+  "sdk_version_if_available": "0.7.0",
+  "start_anchor": {
+    "anchor_id": "anchor_dd0f04af1c14425dafe12d61529d3d1e",
+    "capture_host_time_s": 3174663.5428662,
+    "controller_version": "3.2.1",
+    "created_at": "2026-10-31T06:58:24.481+00:00",
+    "notes": "",
+    "reference_start_q_hip": 0.5061580913269217,
+    "reference_start_q_knee": 0.3203519370158654,
+    "reviewed": false,
+    "robot_joint_positions": [
+      -0.2682756629380041,
+      0.5465635465731883,
+      -1.9841885696377,
+      -3.076104377225476,
+      0.5318359328499139,
+      -1.044426878293312
+    ],
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "schema_version": 2,
+    "tcp_orientation": {
+      "representation": "euler_xyz_rad",
+      "strategy": "fixed",
+      "values_rad": [
+        3.094382691933557,
+        -0.07023199700343133,
+        0.7225499301120534
+      ]
+    },
+    "tcp_pose_base": [
+      0.7376834597167892,
+      -0.043057813486578334,
+      0.4354316423958608,
+      3.094382691933557,
+      -0.07023199700343133,
+      0.7225499301120534
+    ],
+    "tcp_position_base_m": [
+      0.7376834597167892,
+      -0.043057813486578334,
+      0.4354316423958608
+    ],
+    "tool_name": null,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "workpiece_name": null
+  },
+  "start_anchor_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\anchor.json",
+  "tcp_orientation_strategy": "fixed",
+  "timestamp_source": "time.perf_counter_ns",
+  "trajectory_audit": {
+    "all_samples_finite": true,
+    "approved_rom_valid": true,
+    "final_relative_displacement_zero": true,
+    "final_target_equals_anchor": true,
+    "first_relative_displacement_zero": true,
+    "first_target_equals_anchor": true,
+    "invalid_reasons": [],
+    "maximum_acceleration_step_m_s2": 0.0010596267684245524,
+    "maximum_position_step_m": 0.008602327937594915,
+    "maximum_velocity_step_m_s": 0.001113513990064849,
+    "no_obvious_acceleration_jump": true,
+    "no_obvious_position_jump": true,
+    "no_obvious_velocity_jump": true,
+    "orientation_constant": true,
+    "pull_forward_kinematics_valid": true,
+    "sample_count": 401,
+    "source_formal_gate_valid": true,
+    "source_samples_valid": true,
+    "theta_shank_definition_valid": true,
+    "time_strictly_increasing": true,
+    "trajectory_id": "reference_measured_asymmetric_closed_slow",
+    "trajectory_valid": true
+  },
+  "trajectory_generation": {
+    "approved_hip_rom_deg": [
+      0.0,
+      120.0
+    ],
+    "approved_knee_rom_deg": [
+      5.0,
+      145.0
+    ],
+    "equivalent_pull_point_geometry": {
+      "L1_hip_to_knee_m": 0.42,
+      "L2_knee_to_equivalent_shank_strap_pull_point_m": 0.3,
+      "matches_approved_first_trial_geometry": true,
+      "physical_scope": "supine passive hip-knee rehabilitation with an equivalent shank strap pull point"
+    },
+    "experiment_mode": "start_anchored_relative",
+    "first_robot_trial_candidate_whitelisted": true,
+    "hip_center_required": false,
+    "model_angle_definition": "theta_shank = q_hip - q_knee",
+    "observed_ankle_used_as_pull_point": false,
+    "parent_reference_id": null,
+    "reference": {
+      "duration_s": 133.65879553448846,
+      "input_had_time_axis": true,
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_003\\empty_load_reference.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "reference_version_verified": true,
+      "retimed_timing_is_original": false,
+      "retiming_profile": "provided_by_input",
+      "sample_count": 401,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "source_formal_execution_allowed_all": true,
+      "stage6a_retimed_from_phase": false,
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ]
+    },
+    "rehab_frame": {
+      "R_base_from_rehab": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "construction": "x_normalize_then_z_orthogonalize_then_y_equals_z_cross_x",
+      "notes": "",
+      "rehab_x_axis_in_base": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "rehab_y_axis_in_base": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "rehab_z_axis_in_base": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "reviewed": false
+    },
+    "rehab_pull_point_formula": "p_R(t)=[x_pull_FK(t),0,z_pull_FK(t)]",
+    "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@(p_R(t)-p_R(0))",
+    "robot_execution_approved": false,
+    "rom_protocol_version": "ROM_PROTOCOL_V2",
+    "start_tcp_pose_base": [
+      0.7376834597167892,
+      -0.043057813486578334,
+      0.4354316423958608,
+      3.094382691933557,
+      -0.07023199700343133,
+      0.7225499301120534
+    ],
+    "tcp_orientation_strategy": "fixed_at_start_anchor",
+    "tool_offset_applied_to_relative_increment": false,
+    "tool_offset_retained_for_mode": "absolute_calibrated",
+    "trajectory_audit": {
+      "all_samples_finite": true,
+      "approved_rom_valid": true,
+      "final_relative_displacement_zero": true,
+      "final_target_equals_anchor": true,
+      "first_relative_displacement_zero": true,
+      "first_target_equals_anchor": true,
+      "invalid_reasons": [],
+      "maximum_acceleration_step_m_s2": 0.0010596267684245524,
+      "maximum_position_step_m": 0.008602327937594915,
+      "maximum_velocity_step_m_s": 0.001113513990064849,
+      "no_obvious_acceleration_jump": true,
+      "no_obvious_position_jump": true,
+      "no_obvious_velocity_jump": true,
+      "orientation_constant": true,
+      "pull_forward_kinematics_valid": true,
+      "sample_count": 401,
+      "source_formal_gate_valid": true,
+      "source_samples_valid": true,
+      "theta_shank_definition_valid": true,
+      "time_strictly_increasing": true,
+      "trajectory_id": "reference_measured_asymmetric_closed_slow",
+      "trajectory_valid": true
+    },
+    "trajectory_id": "reference_measured_asymmetric_closed_slow"
+  },
+  "trajectory_id": "reference_measured_asymmetric_closed_slow"
+}

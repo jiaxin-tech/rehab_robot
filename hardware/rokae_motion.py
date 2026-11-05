@@ -94,10 +94,11 @@ class RokaeCartesianMotionAdapter:
                 poses,
                 times_s,
                 max_lateness_s=max_lateness_s,
-                # Keep vendor callback scheduling at its normal priority by
-                # default. MMCSS registration is host-specific and a failed
-                # registration is treated as a realtime schedule fault.
-                use_windows_callback_priority=False,
+                # Keep the SDK callback and state producer responsive under
+                # Windows scheduling jitter. A failed MMCSS registration is
+                # treated as a realtime schedule fault rather than silently
+                # running without the requested scheduling guarantee.
+                use_windows_callback_priority=True,
             )
 
     def admit_scheduled_target(self, index: int) -> None:

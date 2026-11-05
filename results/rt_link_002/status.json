@@ -1,0 +1,20 @@
+{
+  "status": "FAILED",
+  "motion_commanded": true,
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "step_mm": 1.0,
+  "anchor_id": "anchor_ba2fc9ae268948fc91302c14ad1c974a",
+  "manifest": {
+    "schema_version": 1,
+    "trajectory_id": "realtime_link_smoke_v1",
+    "trajectory_profile": "realtime_link_diagnostic",
+    "anchor_id": "anchor_ba2fc9ae268948fc91302c14ad1c974a",
+    "step_m": 0.001,
+    "maximum_tcp_speed_m_s": 0.0008991699218749982,
+    "maximum_tcp_acceleration_m_s2": 0.00119384765625008,
+    "trajectory_sha256": "70ba85a4f008d0c31763e9e7a49952bd8ee7f9105b553d3686cfa76757cb5e7b",
+    "anchor_sha256": "6fe0ef0e0cca9dfcdf09f2874efc350ef6ed22129b4dfc47d7d889ab15b6ea41",
+    "config_sha256": "500bc527764bd507a7a3e0aecf02c26cfc3a28379a83cb600277c6e66a914db2"
+  },
+  "reason": "post-log runtime safety gate: diagnostic_no_observed_motion:max_positive_z_m=0.000000225"
+}

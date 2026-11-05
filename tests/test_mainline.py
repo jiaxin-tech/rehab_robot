@@ -2406,7 +2406,12 @@ def test_rokae_adapter__command_target_update_does_not_take_wrench_query_lock():
     robot._rt_controller = object()
     with robot._wrench_sdk_lock:
         robot.set_realtime_cartesian_target([0.3, 0.0, 0.4, 0.0, 0.0, 0.0])
-    assert robot._rt_target_native == (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
+    assert robot._rt_target_native == (
+        1.0, 0.0, 0.0, 0.3,
+        0.0, 1.0, 0.0, 0.0,
+        0.0, 0.0, 1.0, 0.4,
+        0.0, 0.0, 0.0, 1.0,
+    )
 
 
 def test_rokae_adapter__external_realtime_attach_checks_but_never_sets_power_or_mode():
@@ -2686,14 +2691,16 @@ def test_rokae_adapter__callback_schedule_dispatches_only_admitted_target(monkey
     )
     robot.admit_realtime_cartesian_schedule_target(0)
     robot.start_realtime_cartesian(first)
-    assert robot._rt_callback().target == first
+    first_matrix = tuple(robot._pose_to_realtime_matrix(first))
+    second_matrix = tuple(robot._pose_to_realtime_matrix(second))
+    assert robot._rt_callback().target == first_matrix
     assert robot._rt_schedule_dispatched_index == 0
     robot.admit_realtime_cartesian_schedule_target(1)
     robot._rt_schedule_timing_armed = True
     robot._rt_schedule_origin_s = 1.0
     command = robot._rt_callback()
 
-    assert command.target == second
+    assert command.target == second_matrix
     assert not command.finished
     assert robot.wait_realtime_cartesian_schedule_target(1, timeout_s=0.0)[0] == 1
     assert robot._rt_schedule_fault is None
@@ -2742,7 +2749,7 @@ def test_rokae_adapter__callback_schedule_refuses_late_target(monkeypatch):
     command = robot._rt_callback()
 
     assert command.finished
-    assert command.target == first
+    assert command.target == tuple(robot._pose_to_realtime_matrix(first))
     assert robot._rt_schedule_dispatched_index == 0
     assert "lateness=0.031000s" in robot._rt_schedule_fault
 
@@ -4251,21 +4258,35 @@ class rokae_xcore__RokaeXCoreTests(rokae_xcore__unittest.TestCase):
         for actual, expected in zip(restored, pose):
             self.assertAlmostEqual(actual, expected)
 
+    def test_realtime_pose_matrix_matches_vendor_conversion(self):
+        from xCoreSDK_python.utility import postureToTransArray
+
+        pose = [0.737, -0.043, 0.435, 3.095, -0.069, 0.722]
+        expected = postureToTransArray(pose)
+        actual = rokae_xcore__RokaeRobot._pose_to_realtime_matrix(pose)
+        self.assertEqual(len(actual), 16)
+        for value, reference in zip(actual, expected):
+            self.assertAlmostEqual(value, reference)
+
     def test_realtime_callback_holds_latest_target(self):
         robot, native = self.make_robot()
         robot.enable_realtime()
         robot.start_realtime_cartesian()
 
         first = native.rt.callback()
-        self.assertEqual(first.trans, [0.3, -0.2, 0.35])
-        self.assertAlmostEqual(first.rpy[1], 1.5707963267948966)
+        self.assertEqual(len(first.pos), 16)
+        self.assertAlmostEqual(first.pos[3], 0.3)
+        self.assertAlmostEqual(first.pos[7], -0.2)
+        self.assertAlmostEqual(first.pos[11], 0.35)
 
         robot.set_realtime_cartesian_target(
             [0.310, -0.190, 0.340, 0.1, 0.2, 0.3]
         )
         updated = native.rt.callback()
-        self.assertEqual(updated.trans, [0.31, -0.19, 0.34])
-        self.assertEqual(updated.rpy, [0.1, 0.2, 0.3])
+        self.assertEqual(len(updated.pos), 16)
+        self.assertAlmostEqual(updated.pos[3], 0.31)
+        self.assertAlmostEqual(updated.pos[7], -0.19)
+        self.assertAlmostEqual(updated.pos[11], 0.34)
         self.assertIn(("startLoop", False), native.rt.calls)
 
         stop_errors = []
@@ -5496,12 +5517,19 @@ def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
     configured = {}
     admitted = []
     observed = []
+    schedule_events = []
     c.motion.configure_cartesian_schedule = lambda poses, times, max_lateness_s: (
         configured.update(poses=poses, times=tuple(times), lateness=max_lateness_s)
     )
-    c.motion.admit_scheduled_target = admitted.append
+    def admit(index):
+        admitted.append(index)
+        schedule_events.append(("admit", index))
+    c.motion.admit_scheduled_target = admit
     c.motion.scheduled_origin_s = lambda: 1.0
-    c.motion.start_scheduled_timing = lambda timeout_s: 1.0
+    def start_timing(timeout_s):
+        schedule_events.append(("start_timing", None))
+        return 1.0
+    c.motion.start_scheduled_timing = start_timing
     c.motion.wait_scheduled_target = lambda index, timeout_s: (
         index,
         int((1.0 + configured["times"][index]) * 1e9),
@@ -5519,6 +5547,9 @@ def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
 
     assert result.completed
     assert admitted == list(range(len(c.trajectory)))
+    assert schedule_events.index(("admit", 1)) < schedule_events.index(
+        ("start_timing", None)
+    )
     assert len(configured["poses"]) == len(c.trajectory)
     assert configured["lateness"] == c.safety.max_command_lateness_s
     assert len(observed) == len(c.trajectory)
@@ -5544,7 +5575,7 @@ def test_unknown_collision_feedback_through_preflight_and_executor(personal_cont
 
 
 @pytest.mark.parametrize("field,value,reason", [
-    ("state_age_s", .026, "state_stale"),
+    ("state_age_s", .101, "state_stale"),
     ("wrench_age_s", .051, "wrench_stale"),
     ("state_wrench_skew_s", .041, "state_wrench_skew_limit_exceeded"),
     ("force_magnitude_n", 101., "force_limit_exceeded"),
@@ -6174,7 +6205,7 @@ def test_controller_motion_fault_invalidates_stream_and_stays_latched(monkeypatc
     native._rt_active = True
     native._state_running = True
     class Vector:
-        def content(self): return [0.] * 6
+        def content(self): return [0.] * 16
     native._sdk = SimpleNamespace(PyTypeVectorDouble=Vector, PyTypeVectorBool=Vector)
     updates = iter((True, False))
     native._robot = SimpleNamespace(updateRobotState=lambda timeout: next(updates),
@@ -6184,7 +6215,9 @@ def test_controller_motion_fault_invalidates_stream_and_stays_latched(monkeypatc
         AssertionError("state loop must not poll blocking hasMotionError")
     )
     monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
-        RtSupportedFields=SimpleNamespace(tcpPoseAbc_m=1, jointPos_m=2, keypads=3)))
+        RtSupportedFields=SimpleNamespace(
+            tcpPose_m=0, tcpPoseAbc_m=1, jointPos_m=2, keypads=3
+        )))
     import hardware.windows.rokae_xcore as module
     monkeypatch.setattr(module.time, "sleep", lambda seconds: setattr(native, "_state_running", False))
     native._state_loop()
@@ -6202,7 +6235,7 @@ def test_controller_state_loop_never_calls_blocking_motion_error_poll(monkeypatc
     native._rt_active = True
     native._state_running = True
     class Vector:
-        def content(self): return [0.] * 6
+        def content(self): return [0.] * 16
     native._sdk = SimpleNamespace(PyTypeVectorDouble=Vector, PyTypeVectorBool=Vector)
     updates = iter((True, False))
     native._robot = SimpleNamespace(updateRobotState=lambda timeout: next(updates),
@@ -6212,10 +6245,12 @@ def test_controller_state_loop_never_calls_blocking_motion_error_poll(monkeypatc
         AssertionError("state loop must not poll blocking hasMotionError")
     )
     monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
-        RtSupportedFields=SimpleNamespace(tcpPoseAbc_m=1, jointPos_m=2, keypads=3)))
+        RtSupportedFields=SimpleNamespace(
+            tcpPose_m=0, tcpPoseAbc_m=1, jointPos_m=2, keypads=3
+        )))
     accept = native._accept_state
-    def accept_once(*args):
-        accept(*args)
+    def accept_once(*args, **kwargs):
+        accept(*args, **kwargs)
         native._state_running = False
     native._accept_state = accept_once
     native._state_loop()

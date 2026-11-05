@@ -1,0 +1,109 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "empty_load": true,
+  "empty_load_retiming": {
+    "mode": "empty_load",
+    "source_reference": {
+      "path": "C:\\Users\\liumai\\fjx\\rehab_robot\\.cache\\data\\repository\\reference_release\\reference_measured_asymmetric_closed_slow.csv",
+      "reference_version": "reference_measured_asymmetric_closed",
+      "supported_reference_versions": [
+        "reference_measured_asymmetric_closed",
+        "reference_closed_c2",
+        "reference_closed_symmetric"
+      ],
+      "reference_version_verified": true,
+      "source_approved_hip_rom_deg": [
+        0.0,
+        120.0
+      ],
+      "source_approved_knee_rom_deg": [
+        5.0,
+        145.0
+      ],
+      "source_approved_rom_normalized": true,
+      "input_had_time_axis": true,
+      "stage6a_retimed_from_phase": false,
+      "retiming_profile": "provided_by_input",
+      "retimed_timing_is_original": false,
+      "sample_count": 401,
+      "duration_s": 24.0,
+      "source_formal_execution_allowed_all": true
+    },
+    "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_012\\empty_load_reference.csv",
+    "safety_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_012\\empty_load_safety.json",
+    "time_scale": 5.569116480603691,
+    "source_duration_s": 24.0,
+    "retimed_duration_s": 133.6587955344886,
+    "source_peak_speed_m_s": 0.16541930140407002,
+    "source_peak_acceleration_m_s2": 0.1165803773239842,
+    "retimed_peak_speed_m_s": 0.02970297029703113,
+    "retimed_peak_acceleration_m_s2": 0.003758831465546625,
+    "max_tcp_speed_m_s": 0.03,
+    "max_tcp_acceleration_m_s2": 0.01,
+    "retiming_margin": 1.01,
+    "dummy_leg_required": false,
+    "training_allowed": false
+  },
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_012\\empty_load_reference.csv",
+  "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\empty_load_012\\empty_load_safety.json",
+  "blockers": [],
+  "reason": "runtime safety gate: state_wrench_skew_failure;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;force_magnitude_n_invalid;torque_magnitude_nm_invalid;wrench_stale;state_wrench_skew_limit_exceeded;force_limit_or_value_unavailable;torque_limit_or_value_unavailable",
+  "robot_timing": {
+    "available": true,
+    "samples": 150,
+    "valid_samples": 1,
+    "recorded_span_s": 3.784131499938667,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 168.11659978702664,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 18,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 19,
+        "mean": 0.9912578143963688,
+        "p50": 0.9822999127209187,
+        "p95": 1.0169899091124528,
+        "p99": 1.266757883131504,
+        "min": 0.8056000806391239,
+        "max": 1.3291998766362667
+      },
+      "state_age_ms": {
+        "count": 150,
+        "mean": 7.985747332374255,
+        "p50": 8.04974976927042,
+        "p95": 8.452969999052584,
+        "p99": 8.580492138862608,
+        "min": 6.709999870508909,
+        "max": 8.67380015552044
+      },
+      "wrench_age_ms": {
+        "count": 19,
+        "mean": 317.5824396312237,
+        "p50": 244.19945012778044,
+        "p95": 609.045180119574,
+        "p99": 643.6961160227656,
+        "min": 23.34860060364008,
+        "max": 652.3588499985635
+      },
+      "state_wrench_skew_ms": {
+        "count": 19,
+        "mean": 309.6814079847383,
+        "p50": 235.99574994295835,
+        "p95": 601.8845002632587,
+        "p99": 636.0027799662203,
+        "min": 15.054900199174881,
+        "max": 644.5323498919606
+      }
+    },
+    "invalid_reasons": {
+      "state_wrench_skew_failure": 17,
+      "state_wrench_skew_unavailable_or_exceeded": 149,
+      "wrench_not_ready": 131,
+      "wrench_process_not_ready": 131,
+      "wrench_stale_or_unavailable": 149
+    }
+  }
+}

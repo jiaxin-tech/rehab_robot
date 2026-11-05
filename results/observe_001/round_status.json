@@ -1,0 +1,57 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "motion_commanded": false,
+  "reason": "'expected_identity'",
+  "robot_timing": {
+    "available": true,
+    "samples": 0,
+    "valid_samples": 0,
+    "recorded_span_s": 0.0,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": null,
+    "includes_startup": true,
+    "ever_ready": false,
+    "invalid_after_ready": null,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_age_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "wrench_age_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_wrench_skew_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      }
+    },
+    "invalid_reasons": {}
+  }
+}

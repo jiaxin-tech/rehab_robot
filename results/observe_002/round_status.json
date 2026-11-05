@@ -1,0 +1,62 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "motion_commanded": false,
+  "reason": "acquisition did not become ready: wrench_process_not_ready;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;wrench_not_ready",
+  "robot_timing": {
+    "available": true,
+    "samples": 125,
+    "valid_samples": 0,
+    "recorded_span_s": 3.007885599974543,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 71.99040008708835,
+    "includes_startup": true,
+    "ever_ready": false,
+    "invalid_after_ready": null,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_age_ms": {
+        "count": 125,
+        "mean": 7.906055178493261,
+        "p50": 7.9020000994205475,
+        "p95": 8.394580241292715,
+        "p99": 8.547947835177183,
+        "min": 6.8882000632584095,
+        "max": 8.561199996620417
+      },
+      "wrench_age_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_wrench_skew_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      }
+    },
+    "invalid_reasons": {
+      "state_wrench_skew_unavailable_or_exceeded": 125,
+      "wrench_not_ready": 125,
+      "wrench_process_not_ready": 125,
+      "wrench_stale_or_unavailable": 125
+    }
+  }
+}

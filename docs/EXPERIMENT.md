@@ -75,7 +75,8 @@ observe 的完成只表示观测结束；它没有轨迹发送记录，不能直
 | motion.rt_network_tolerance_percent | 20% | SDK 网络包丢失容差；不是20毫秒，不能补偿力查询阻塞 |
 | motion.max_start_anchor_position_error_m | 0.005 m | 捕获起点至启动时允许的位置变化 |
 | motion.max_start_anchor_orientation_error_rad | 0.05236 rad，约3° | 同上，允许的朝向变化 |
-| motion.max_command_lateness_s | 0.03 s | 主机轨迹命令迟到预算 |
+| motion.max_command_lateness_s | 0.1 s | 主机轨迹命令迟到预算；当前为现场诊断临时放宽值 |
+| motion.max_state_age_s / acquisition.budgets.state_age_s | 0.1 s | 机器人状态时龄门限；全局配置当前采用现场确认后的空载诊断放宽值，正式或负载运行前必须重新评审 |
 | acquisition.max_leg_start_age_s | 0.05 s | 起始假腿读数时龄；需结合现场抖动复核 |
 | acquisition.max_start_angle_error_deg | 2° | 假腿实际角度与参考起始角的容差 |
 
@@ -163,3 +164,7 @@ observe、run 的现有 report.md 会直接显示机器人快照有效数、是�
 拿到动态数据后再填9项 analysis 参数并 train；缺完整发送记录、长数据缺口、错误时延或导数设置仍会阻止辨识。当前只有一个参考候选，需要有可比较的真实重复轮次和候选轨迹，才能汇报优化收益。
 
 导师汇报可用：“目前完成机器人与假腿采集链路整合，并将力查询放入独立进程，减少阻塞对主链的影响。10月25日后期短片段中力查询最大约1.2～3.7毫秒，但状态最大时龄仍达360毫秒，尚未完成完整动态实验。软件已进一步分离实时状态与写盘，碰撞反馈缺失交由控制器自身保护。下一步先做长时间同步观测，再完成空载及假腿动态重复采集，最后进行六参数辨识和轨迹比较；目前不把离线测试或单候选结果当作优化有效的证据。”
+
+## 实时链路小步测试
+
+完整空载轨迹之前可使用 `scripts.test_realtime_motion` 做独立的反馈闭环检查。`prepare` 只捕获起点并生成固定的基坐标系 +Z 毫米级闭合轨迹；`run` 需要 `--live`、`--confirm-unloaded` 和精确的操作者确认文本。轨迹硬限制为 0.5--2.0 mm，默认 1 mm，且必须从机器人反馈确认到达远端并返回起点，否则停止并报告失败。命令和现场检查见 [空载实验现场清单](EMPTY_LOAD_LAB_CHECKLIST.md#7-实时运动链路毫米级确认)。

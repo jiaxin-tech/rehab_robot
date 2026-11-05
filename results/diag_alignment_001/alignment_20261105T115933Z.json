@@ -1,0 +1,60 @@
+{
+  "samples_csv": "alignment_20261105T115933Z.csv",
+  "summary": {
+    "base_rotation_config_verified": true,
+    "diagnostic": "snapshot_alignment",
+    "force_query_duration_ms": {
+      "count": 1358,
+      "max": 239.93050027638674,
+      "mean": 1.5160440349339648,
+      "min": 0.6302003748714924,
+      "p50": 1.0041003115475178,
+      "p95": 1.1239000596106052,
+      "p99": 1.2285001575946808
+    },
+    "force_sample_age_ms": {
+      "count": 1358,
+      "max": 408.0503499135375,
+      "mean": 14.14660006845219,
+      "min": 0.4735998809337616,
+      "p50": 15.440199989825487,
+      "p95": 31.43842206336558,
+      "p99": 31.581032308749855
+    },
+    "invalid_reasons": {
+      "base_wrench_unavailable": 1358,
+      "robot_state_internal_skew": 3,
+      "robot_state_stale": 4,
+      "robot_wrench_stale": 6,
+      "robot_wrench_stale:0.246014s": 1,
+      "robot_wrench_stale:0.247206s": 1,
+      "robot_wrench_stale:0.258411s": 1,
+      "robot_wrench_stale:0.365730s": 1,
+      "robot_wrench_stale:0.392322s": 1,
+      "robot_wrench_stale:0.408016s": 1,
+      "software_force_bias_not_ready": 1358
+    },
+    "robot_state_age_ms": {
+      "count": 1358,
+      "max": 253.70449991896749,
+      "mean": 9.07960832695064,
+      "min": 0.1217997632920742,
+      "p50": 8.041700115427375,
+      "p95": 9.299470065161586,
+      "p99": 10.229386142455041
+    },
+    "sample_count": 1358,
+    "sample_hz": 50.0,
+    "software_bias_used": false,
+    "state_internal_skew_ms": {
+      "count": 1358,
+      "max": 400.39055002853274,
+      "mean": 11.079052429226541,
+      "min": 0.48655038699507713,
+      "p50": 8.445999817922711,
+      "p95": 23.43206985387951,
+      "p99": 23.622190067544583
+    },
+    "valid_count": 0
+  }
+}
