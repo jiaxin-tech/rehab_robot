@@ -1,6 +1,6 @@
 {
-  "status": "PREPARED",
-  "motion_commanded": false,
+  "status": "COMPLETE",
+  "motion_commanded": true,
   "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
   "step_mm": 1.0,
   "anchor_id": "anchor_c5ab4421694b4fb5a223080f75eaf3f4",
@@ -15,5 +15,26 @@
     "trajectory_sha256": "f1b17147bc2828b97bf552bc404f96f379861a09dbe0aa6ec1144ccb3a2e990a",
     "anchor_sha256": "c93e8a5f760f6193d26525bde33981e32662e252376a236323766d60cd190f6f",
     "config_sha256": "500bc527764bd507a7a3e0aecf02c26cfc3a28379a83cb600277c6e66a914db2"
+  },
+  "result": {
+    "completed": true,
+    "trajectory_id": "realtime_link_smoke_v1",
+    "commands_dispatched": 45,
+    "stop_reason": "trajectory_completed",
+    "tracking_verification": {
+      "samples": 755,
+      "latest_trajectory_time_s": 11.0,
+      "max_displacement_m": 0.0010059628013515036,
+      "max_absolute_displacement_m": 0.0012022482165815385,
+      "max_positive_z_m": 0.0010059584310858627,
+      "max_lateral_m": 1.0285275339460598e-05,
+      "last_displacement_m": 6.157213181061321e-07,
+      "settle_displacement_m": 0.0011949460958572658,
+      "settled_baseline_captured": true,
+      "far_verified": true,
+      "return_verified": true,
+      "step_m": 0.001
+    },
+    "same_session_realtime_cleanup_completed": true
   }
 }
