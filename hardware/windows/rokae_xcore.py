@@ -123,6 +123,8 @@ class RokaeRobot:
         self._rt_stop_requested = threading.Event()
         self._rt_finish_issued = threading.Event()
         self._rt_callback_count = 0
+        self._rt_loop_stopped = True
+        self._rt_move_stopped = True
         self._rt_schedule_native: tuple[tuple[float, ...], ...] | None = None
         self._rt_schedule_times_s: tuple[float, ...] | None = None
         self._rt_schedule_lateness_s: float | None = None
@@ -845,7 +847,6 @@ class RokaeRobot:
                             "initial realtime schedule target was not admitted"
                         )
                     else:
-                        self._rt_schedule_origin_s = now_s - schedule_times[0]
                         self._rt_schedule_dispatched_index = 0
                         self._rt_target_native = schedule[0]
                         target = schedule[0]
@@ -856,8 +857,9 @@ class RokaeRobot:
                 elif not self._rt_schedule_timing_armed:
                     pass
                 elif self._rt_schedule_origin_s is None:
-                    self._rt_schedule_origin_s = now_s - schedule_times[0]
-                    self._rt_schedule_event.set()
+                    self._rt_schedule_fault = (
+                        "realtime schedule timing was armed without an origin"
+                    )
                 else:
                     next_index = self._rt_schedule_dispatched_index + 1
                     if next_index < len(schedule):
@@ -923,6 +925,8 @@ class RokaeRobot:
                     False,
                 )
                 move_attempted = True
+                self._rt_loop_stopped = False
+                self._rt_move_stopped = False
                 self._rt_controller.startMove(
                     self._sdk.RtControllerMode.cartesianPosition
                 )
@@ -1098,9 +1102,14 @@ class RokaeRobot:
     def start_realtime_cartesian_schedule_timing(self, *, timeout_s: float) -> float:
         if self._rt_schedule_dispatched_index != 0:
             raise RuntimeError("initial scheduled hold was not dispatched")
+        # The initial target is a settled hold. Establish trajectory time only
+        # after that target has been observed by the callback, so startup and
+        # acquisition recovery time cannot consume the first trajectory gap.
+        self._rt_schedule_origin_s = time.perf_counter()
         self._rt_schedule_timing_armed = True
+        self._rt_schedule_event.set()
         deadline_s = time.perf_counter() + max(0.0, float(timeout_s))
-        while self._rt_schedule_origin_s is None:
+        while self._rt_schedule_dispatched_index < 0:
             fault = self._rt_schedule_fault
             if fault is not None:
                 raise RuntimeError(fault)
@@ -1187,8 +1196,14 @@ class RokaeRobot:
             self._rt_active = False
             self._rt_callback = None
             self._rt_target_native = None
+            self._rt_schedule_native = None
+            self._rt_schedule_times_s = None
+            self._rt_schedule_lateness_s = None
+            self._rt_schedule_event.set()
             self._rt_stop_requested.clear()
             self._rt_finish_issued.clear()
+            self._rt_loop_stopped = True
+            self._rt_move_stopped = True
             return
 
         failures: list[str] = []
@@ -1204,6 +1219,31 @@ class RokaeRobot:
                         "Unable to confirm callback-driven xCoreSDK realtime stop: %s",
                         exc,
                     )
+            if not failures:
+                # xCoreSDK requires both paired calls after startLoop(False)
+                # and startMove(). setFinished() ends the callback command;
+                # it does not replace these controller lifecycle calls.
+                for action_name, action, completed in (
+                    ("stopLoop", controller.stopLoop, self._rt_loop_stopped),
+                    ("stopMove", controller.stopMove, self._rt_move_stopped),
+                ):
+                    if completed:
+                        continue
+                    try:
+                        action()
+                        if action_name == "stopLoop":
+                            self._rt_loop_stopped = True
+                        else:
+                            self._rt_move_stopped = True
+                    except Exception as exc:
+                        failures.append(
+                            f"{action_name}:{type(exc).__name__}:{exc}"
+                        )
+                        logger.warning(
+                            "Unable to complete xCoreSDK realtime %s: %s",
+                            action_name,
+                            exc,
+                        )
         if failures:
             # The callback may still be running when its finish handshake fails.
             # Preserve its finite hold target and keep the state retryable.
@@ -1223,6 +1263,8 @@ class RokaeRobot:
         self._rt_schedule_event.set()
         self._rt_stop_requested.clear()
         self._rt_finish_issued.clear()
+        self._rt_loop_stopped = True
+        self._rt_move_stopped = True
 
     def _stop_realtime_best_effort(self) -> None:
         self._stop_realtime_impl(raise_on_error=False)

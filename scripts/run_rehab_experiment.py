@@ -88,6 +88,27 @@ def _default_motion_factory(adapter: Any):
     return RokaeCartesianMotionAdapter(adapter)
 
 
+def _require_scheduled_realtime_motion_adapter(motion_adapter: Any) -> None:
+    """Require the same callback schedule path used by RT commissioning."""
+
+    required_methods = (
+        "configure_cartesian_schedule",
+        "admit_scheduled_target",
+        "wait_scheduled_target",
+        "scheduled_origin_s",
+        "start_scheduled_timing",
+    )
+    missing = [
+        name for name in required_methods
+        if not callable(getattr(motion_adapter, name, None))
+    ]
+    if missing:
+        raise TypeError(
+            "rehabilitation execution requires scheduled realtime Cartesian "
+            "motion; missing adapter methods: " + ", ".join(missing)
+        )
+
+
 def _cleanup_realtime_session(adapter: Any) -> list[BaseException]:
     """Best-effort stop, power-down and disconnect for a prepared session."""
 
@@ -337,6 +358,31 @@ def run_execute(
             }
         )
         motion_adapter = (motion_factory or _default_motion_factory)(adapter)
+        # The default hardware adapter must expose the verified callback
+        # schedule. Test or integration doubles may intentionally exercise
+        # the executor's legacy fallback path.
+        if motion_factory is None:
+            _require_scheduled_realtime_motion_adapter(motion_adapter)
+        realtime_path = (
+            "scheduled_cartesian_callback"
+            if all(
+                callable(getattr(motion_adapter, name, None))
+                for name in (
+                    "configure_cartesian_schedule",
+                    "admit_scheduled_target",
+                    "wait_scheduled_target",
+                    "scheduled_origin_s",
+                    "start_scheduled_timing",
+                )
+            )
+            else "legacy_direct_target_fallback"
+        )
+        logger.update_metadata(
+            {
+                "realtime_execution_path": realtime_path,
+                "trajectory_profile": "approved_rehab",
+            }
+        )
         extra = {}
         if execution_guard is not None:
             extra["execution_guard"] = execution_guard
@@ -350,6 +396,7 @@ def run_execute(
             # Do not require Windows process/thread priority changes for a
             # physical run. Runtime safety gates remain enforced.
             use_windows_scheduler_priority=False,
+            trajectory_profile="approved_rehab",
             **extra,
         )
         result = executor.execute(trajectory, preflight)

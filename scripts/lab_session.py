@@ -1,6 +1,7 @@
 """Single entry point for recording and analyzing dummy-leg experiments."""
 from __future__ import annotations
 import argparse
+import inspect
 import json
 import os
 from pathlib import Path
@@ -58,8 +59,8 @@ def _empty_load_motion(c):
     return motion
 
 
-def check_config(config_path=BUNDLE_PATH, *, empty_load=False):
-    """Validate actual device settings and limits without connecting hardware."""
+def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_files=False):
+    """Validate configuration; optionally require files on the lab computer."""
     problems = []
     try:
         c = configuration(config_path)
@@ -76,7 +77,7 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False):
     check("collision", lambda: validate_collision_source(c["robot"]["collision_source"], c["robot"]["collision_event_max_age_s"]))
     if not empty_load:
         check("ADS", lambda: validate_config(load_section("twincat_leg_capture", config_path=config_path)))
-        if not Path(load_section("twincat_leg_capture", config_path=config_path)["ads_dll_path"]).is_file():
+        if require_physical_files and not Path(load_section("twincat_leg_capture", config_path=config_path)["ads_dll_path"]).is_file():
             problems.append("leg.ads_dll_path: DLL not found")
     acquisition_fields = (("wrench_hz",) if empty_load else
         ("pre_roll_s", "post_roll_s", "wrench_hz", "max_leg_start_age_s", "max_start_angle_error_deg"))
@@ -94,6 +95,19 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False):
         check("analysis", lambda: validate_analysis(c["analysis"], {"joints": c["calibration"]}))
         check("training.timeout_s", lambda: positive(c["training"]["timeout_s"], "timeout_s"))
     return problems
+
+
+def _check_config_for_operation(config_path, *, empty_load=False):
+    """Run the physical check while keeping simple test doubles compatible."""
+
+    parameters = inspect.signature(check_config).parameters
+    if "require_physical_files" in parameters:
+        return check_config(
+            config_path,
+            empty_load=empty_load,
+            require_physical_files=True,
+        )
+    return check_config(config_path)
 
 
 def report(directory, state):
@@ -302,8 +316,7 @@ def prepare(config_path, directory, *, capture_fn=run_capture, empty_load=False)
             state["safety_config_path"] = empty_load_metadata["safety_path"]
         preview_trajectory(anchor=directory / "anchor.json", frame_config=config_path,
                            reference=reference, output_dir=directory / "preview")
-        blockers = (check_config(config_path, empty_load=True) if empty_load
-                    else check_config(config_path))
+        blockers = _check_config_for_operation(config_path, empty_load=empty_load)
         state.update(status="PREPARED", blockers=blockers)
     except BaseException as exc:
         state.update(status="FAILED", reason=str(exc))
@@ -370,8 +383,9 @@ def _run(directory, *, live=False, empty_load=False, capture_factory=LegCaptureP
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
     c = configuration(config_path)
-    blockers = (check_config(state["config_path"], empty_load=True) if empty_load
-                else check_config(state["config_path"]))
+    blockers = _check_config_for_operation(
+        state["config_path"], empty_load=empty_load
+    )
     if blockers:
         state["blockers"] = blockers
         report(directory, state)
@@ -491,8 +505,7 @@ def run_from_current(config_path, directory, *, live=False, empty_load=False):
     """Capture this run's current pose, then execute its relative trajectory."""
     if live is not True:
         raise PermissionError("run --from-current --live explicitly starts robot motion")
-    blockers = (check_config(config_path, empty_load=True) if empty_load
-                else check_config(config_path))
+    blockers = _check_config_for_operation(config_path, empty_load=empty_load)
     if blockers:
         raise ValueError("complete physical parameters: " + "; ".join(blockers))
     if empty_load:
@@ -518,7 +531,7 @@ def main(argv=None):
     if args.empty_load and args.action not in ("prepare", "run"):
         parser.error("--empty-load requires prepare or run")
     if args.action == "check":
-        problems = check_config(args.config)
+        problems = check_config(args.config, require_physical_files=True)
         print("\n".join(problems) if problems else "READY")
         return int(bool(problems))
     if args.session is None:

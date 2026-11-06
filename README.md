@@ -1,19 +1,40 @@
-# 假腿实验
+# 假腿实验仓库
 
-目标：获得可对齐的真实机器人与假腿数据，完成六参数辨识，再比较轨迹效果。
+本仓库用于采集真实 ROKAE 机器人与假腿数据，完成六参数辨识、轨迹执行和结果分析。
 
-只编辑 [config/experiment.json](config/experiment.json)。先做不发送轨迹的同步观测：
+## 真机入口
+
+详细的现场操作顺序、SDK 控制链路、实时诊断、空载实验、假腿正式实验、停止流程和证据归档见：
+
+[真机实验操作手册](docs/REAL_ROBOT_RUNBOOK.md)
+
+基本流程是：
+
+1. 修改并检查 config/experiment.json。
+2. 用 observe 做不发送运动的同步观测。
+3. 用 prepare 生成新 session 和预览。
+4. 先完成 1 mm 实时链路诊断。
+5. 再做空载实验。
+6. 最后安装假腿并运行正式实验。
+
+正式运行示例：
 
 ~~~powershell
 $env:PYTHONUTF8 = '1'
-.\.venv\Scripts\python.exe -m scripts.lab_session observe --session results/observe_001 --duration 10
+python -m scripts.lab_session check --config config/experiment.json
+python -m scripts.lab_session prepare --config config/experiment.json --session results/round_YYYYMMDD_01
+python -m scripts.lab_session run --config config/experiment.json --session results/round_YYYYMMDD_01 --live
 ~~~
 
-配置好实验电脑的机器人连接和 ADS DLL 后使用。运动实验依次执行 check → prepare → run --live，采集完成后再 train。
+## 其他文档
 
-- [实验指南](docs/EXPERIMENT.md)：安装、最短操作、结果和当前进展。
-- [代码地图](docs/CODE_MAP.md)：架构和逐文件用途。
-- [主线测试](tests/test_mainline.py)：离线采集、设备适配、停止和算法验证。
-- [历史汇总](data/experiment_summary.csv)与[数据包](data/experiment_data.zip)：原始记录、参考轨迹和模型。
+- [实验指南](docs/EXPERIMENT.md)
+- [空载实验清单](docs/EMPTY_LOAD_LAB_CHECKLIST.md)
+- [代码地图](docs/CODE_MAP.md)
+- [xCoreSDK Windows 运行时说明](hardware/windows/xcoresdk/README.md)
 
-每轮只看该会话的 report.md；机器可读结果集中在 round_status.json。当前只有一个参考候选，尚不能据此证明优化收益。
+修改代码后，在连接真机前运行：
+
+~~~powershell
+python -m pytest -c pytest-core.ini -q
+~~~

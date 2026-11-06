@@ -2599,6 +2599,12 @@ def test_rokae_adapter__start_and_stop_share_one_atomic_native_lifecycle_lock():
             start_entered.set()
             assert allow_start_return.wait(timeout=1.0)
 
+        def stopLoop(self):
+            self.calls.append("stopLoop")
+
+        def stopMove(self):
+            self.calls.append("stopMove")
+
     robot = rokae_adapter__RokaeRobot("192.0.2.1")
     controller = Controller()
     robot._sdk = rokae_adapter__SimpleNamespace(
@@ -2646,6 +2652,8 @@ def test_rokae_adapter__start_and_stop_share_one_atomic_native_lifecycle_lock():
         "setControlLoopCar",
         "startMove",
         "startLoop",
+        "stopLoop",
+        "stopMove",
     ]
     assert robot._rt_active is False
 
@@ -4302,8 +4310,8 @@ class rokae_xcore__RokaeXCoreTests(rokae_xcore__unittest.TestCase):
         stopper.join(timeout=1.0)
         self.assertFalse(stopper.is_alive())
         self.assertEqual(stop_errors, [])
-        self.assertNotIn(("stopLoop",), native.rt.calls)
-        self.assertNotIn(("stopMove",), native.rt.calls)
+        self.assertIn(("stopLoop",), native.rt.calls)
+        self.assertIn(("stopMove",), native.rt.calls)
 
     def test_realtime_requires_local_ip(self):
         robot, _ = self.make_robot(local_ip="")
