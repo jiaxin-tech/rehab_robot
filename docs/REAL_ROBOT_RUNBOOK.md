@@ -1,12 +1,12 @@
 # 真机实验操作手册
 
-更新时间：2026-11-06
+更新时间：2026-11-07
 
 所有命令在仓库根目录的 PowerShell 中执行。真机实验必须由现场操作员执行，运动区域清空，急停可用，机器人状态和控制器报警可见。
 
 ## 1. 当前控制链路
 
-当前使用仓库内置的 ROKAE xCoreSDK 0.7.0 Windows 运行时。轨迹先经过起始锚点、安全审核和 TCP 位姿生成，再转换成 16 元素齐次矩阵，进入实时 Cartesian schedule。SDK 通过 setControlLoopCar(callback)、startMove(cartesianPosition) 和 startLoop(False) 启动控制器 callback；callback 按时间发送目标，状态流读取实际 TCP 位姿。结束时依次执行 setFinished、等待 callback 静止、stopLoop、stopMove。
+当前使用仓库内置的 ROKAE xCoreSDK 0.7.0 Windows 运行时。轨迹先经过起始锚点、安全审核和 TCP 位姿生成，再转换成 16 元素齐次矩阵，进入实时 Cartesian schedule。SDK 通过 setControlLoopCar(callback)、startMove(cartesianPosition) 和 startLoop(False) 启动 1 ms callback；callback 按当前轨迹时间在相邻、已持久化且已准入的目标之间连续插值平移，姿态必须固定，状态流读取实际 TCP 位姿。主线程会在前一端点到达前持久化并准入下一端点，未准入时 callback 不得向该端点插值。状态接收使用零超时 SDK 队列轮询，避免正超时的 pybind 调用占住 GIL 并饿死 1 kHz callback。结束时依次执行 setFinished、等待 callback 静止、stopLoop、stopMove。
 
 这是 TCP 笛卡尔位置控制，不是关节角控制、普通 NRT moveAppend 控制，也不是力控制。
 
@@ -49,6 +49,8 @@ python -m scripts.lab_session prepare --config config/experiment.json --session 
 ~~~
 
 检查 round_status.json 为 PREPARED 且 blockers 为空；检查 preview/trajectory_preview.csv 的起点、终点、方向、范围和 TCP 朝向。prepare 后不要移动机器人，不要改变 TCP、工具、负载或假腿安装状态；有任何变化都要新建 session 并重新 prepare。
+
+轨迹方向由 `config/experiment.json` 的 `frame` 定义。两条配置向量表示康复坐标正 X、正 Z 在机器人基坐标系中的方向；实际运动方向还取决于预览中的 `delta_x_R/delta_z_R` 正负。当前参考主行程 `delta_x_R<0`，所以 `[0,-1,0]` 将主行程映射为基座 `Y+`。方向调整后必须核对预览中 `tcp_x_base/tcp_y_base/tcp_z_base` 的最小值、最大值和首段变化，再新建毫米级或空载会话验证。
 
 ## 5. 实时链路诊断
 
@@ -108,6 +110,10 @@ python -m scripts.lab_session run --config config/experiment.json --from-current
 ## 8. 停止、故障和证据
 
 状态或力过期、碰撞事件、假腿采样过期、实时目标迟到、日志故障或 SDK 错误都应停止本轮。软件停止不能替代急停和控制器保护，不要在真机运动中主动制造断网或 SDK 故障。
+
+若出现 `19-kInstabilityDetection`，含义是控制器连续多个周期未收到新命令。`motion.max_command_lateness_s` 是主机端轨迹端点门限，不能替代控制器的 1 ms 供包要求；不要通过增大 100 N 力限或盲目提高网络容差继续运行。保留该 session，检查 `dispatch.csv` 的端点迟到、机器人状态查询耗时和系统负载，并用新 session 复测。
+
+若一轮被现场急停、需要回到该轮保存的起始 TCP，不要发一个跨越数百毫米的直接 jog。使用 `scripts.restore_session_tcp prepare` 重新读取当前位置，要求当前位置在该轮冻结预览路径 10 mm 内，然后生成不超过 4 mm 的逆序 MoveL 分段。若当前位置不在旧路径附近、但当前位置和整条直线走廊都已确认位于无障碍的受审工作空间，可在 `prepare` 时显式增加 `--direct`，从实测位置生成通往源会话 TCP 的直线小分段；该模式不提供避障，也不会接受与目标工具朝向相差超过 0.02 rad 的起点。`run` 固定使用 10% 速度，切换 NRT 模式后会重新建立状态流；每段下发冻结的绝对路点，并且只有新状态序列确认 TCP 到位后才允许进入下一段。每段前后还会复核状态、工作空间和 100 N/200 Nm 主机力门限；控制器碰撞保护和现场急停仍必须有效。回位会话同样单次使用，prepare 后位置变化需新建会话。
 
 正常结束顺序是：callback 返回 setFinished，等待 callback 确认和静止，调用 stopLoop，再调用 stopMove，然后退出 RT、下电并断开。
 

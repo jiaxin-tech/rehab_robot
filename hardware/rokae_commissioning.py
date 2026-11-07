@@ -47,6 +47,7 @@ _CONFIRMATION_ACTIONS = frozenset(
         "reset",
         "jog_joint",
         "jog_cartesian",
+        "move_cartesian_absolute",
         "hold_pose",
         "prepare_realtime",
         "end_realtime",
@@ -407,11 +408,63 @@ class RokaeCommissioningConsole:
             raise CommissioningError(
                 f"speed_ratio must be between 1 and {self.limits.max_speed_ratio}"
             )
-        self.native.enable(load=0.0)
-        self.native.set_speed(ratio)
-        self._powered = True
-        self.audit.append(action="power_on", speed_ratio=ratio, ok=True)
-        return {"powered": True, "speed_ratio": ratio, "mode": self.native.get_robot_mode()}
+        # xCoreSDK 0.7.0 invalidates the receive-state subscription when the
+        # motion-control mode changes.  A still-alive producer thread can then
+        # keep serving the last pre-switch frame.  Stop the subscription before
+        # selecting NRT mode and establish a fresh one after power-on.
+        restart_state_stream = self._state_stream_started
+        failure: str | None = None
+        cleanup_errors: list[str] = []
+        try:
+            if restart_state_stream:
+                self.adapter.stop_state_stream()
+                self._state_stream_started = False
+            self.native.enable(load=0.0)
+            self._powered = True
+            self.native.set_speed(ratio)
+            if restart_state_stream:
+                self.adapter.start_state_stream()
+                self._state_stream_started = True
+            post_summary = self._live_summary()
+            self._require_healthy_state(post_summary)
+            if not isinstance(post_summary.get("state_sequence_id"), int):
+                raise CommissioningError("fresh state stream has no sequence id")
+            result = {
+                "powered": True,
+                "speed_ratio": ratio,
+                "mode": self.native.get_robot_mode(),
+                "state_sequence_id": post_summary["state_sequence_id"],
+            }
+        except Exception as exc:
+            failure = f"{type(exc).__name__}:{exc}"
+            if self._powered:
+                try:
+                    self.native.stop()
+                except Exception as cleanup_exc:
+                    cleanup_errors.append(f"stop:{type(cleanup_exc).__name__}:{cleanup_exc}")
+                try:
+                    self.native.disable()
+                except Exception as cleanup_exc:
+                    cleanup_errors.append(f"disable:{type(cleanup_exc).__name__}:{cleanup_exc}")
+                self._powered = False
+            if restart_state_stream and not self._state_stream_started:
+                try:
+                    self.adapter.start_state_stream()
+                    self._state_stream_started = True
+                except Exception as cleanup_exc:
+                    cleanup_errors.append(
+                        f"restart_state_stream:{type(cleanup_exc).__name__}:{cleanup_exc}"
+                    )
+            raise
+        finally:
+            self.audit.append(
+                action="power_on",
+                speed_ratio=ratio,
+                ok=failure is None,
+                failure=failure,
+                cleanup_errors=cleanup_errors,
+            )
+        return result
 
     def power_off(self, *, confirmation: str | None = None) -> dict[str, Any]:
         self._require_confirmation("power_off", confirmation)
@@ -692,6 +745,133 @@ class RokaeCommissioningConsole:
             "from_pose_base_m_rad": list(pose),
             "target_pose_base_m_rad": list(target),
             "delta_xyz_m": list(delta),
+        }
+
+    def move_cartesian_absolute(
+        self,
+        target_pose_base_m_rad: Sequence[float],
+        *,
+        confirmation: str | None = None,
+        position_tolerance_m: float = 0.001,
+        orientation_tolerance_rad: float = 0.01,
+        feedback_timeout_s: float = 2.0,
+    ) -> dict[str, Any]:
+        """Move to one nearby absolute TCP waypoint and verify fresh feedback.
+
+        This is intended for a pre-audited sequence of small recovery waypoints.
+        It never derives the command target from cached feedback: the supplied
+        absolute pose is sent unchanged, then a newer state sequence must report
+        that the target was reached within the requested tolerances.
+        """
+
+        self._require_confirmation("move_cartesian_absolute", confirmation)
+        if not self._connected or not self._powered:
+            raise CommissioningError("power_on before move_cartesian_absolute")
+        target = _finite(target_pose_base_m_rad, 6, "target_pose_base_m_rad")
+        for name, value in (
+            ("position_tolerance_m", position_tolerance_m),
+            ("orientation_tolerance_rad", orientation_tolerance_rad),
+            ("feedback_timeout_s", feedback_timeout_s),
+        ):
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise ValueError(f"{name} must be a positive finite number")
+            if not math.isfinite(float(value)) or float(value) <= 0.0:
+                raise ValueError(f"{name} must be a positive finite number")
+
+        summary = self._live_summary()
+        self._require_healthy_state(summary)
+        sequence_id = summary.get("state_sequence_id")
+        if not isinstance(sequence_id, int):
+            raise CommissioningError("robot state sequence id is unavailable")
+        current = _finite(
+            summary.get("tcp_pose_base_m_rad") or (), 6, "tcp_pose_base_m_rad"
+        )
+        translation_m = math.dist(current[:3], target[:3])
+        if translation_m > self.limits.max_cartesian_step_m + 1e-12:
+            raise CommissioningError(
+                f"absolute Cartesian step {translation_m:.6f} m exceeds per-command "
+                f"limit {self.limits.max_cartesian_step_m} m"
+            )
+        orientation_delta = tuple(
+            math.atan2(math.sin(a - b), math.cos(a - b))
+            for a, b in zip(target[3:], current[3:])
+        )
+        orientation_change_rad = math.sqrt(sum(value * value for value in orientation_delta))
+        if orientation_change_rad > float(orientation_tolerance_rad):
+            raise CommissioningError(
+                "absolute Cartesian recovery waypoint attempts an orientation change"
+            )
+        if self.limits.workspace_min_base_m is not None and self.limits.workspace_max_base_m is not None:
+            for index, (low, high) in enumerate(
+                zip(self.limits.workspace_min_base_m, self.limits.workspace_max_base_m)
+            ):
+                if not low <= target[index] <= high:
+                    raise CommissioningError(
+                        f"target axis {index} = {target[index]:.6f} m is outside the reviewed "
+                        f"workspace [{low}, {high}]"
+                    )
+
+        context: dict[str, Any] = {
+            "from_pose": list(current),
+            "target_pose": list(target),
+            "translation_m": translation_m,
+            "pre_state_sequence_id": sequence_id,
+        }
+
+        def confirm_target() -> None:
+            deadline = time.monotonic() + float(feedback_timeout_s)
+            last_summary: dict[str, Any] | None = None
+            while time.monotonic() < deadline:
+                candidate = self._live_summary()
+                last_summary = candidate
+                candidate_sequence = candidate.get("state_sequence_id")
+                candidate_pose = candidate.get("tcp_pose_base_m_rad") or ()
+                try:
+                    observed = _finite(candidate_pose, 6, "tcp_pose_base_m_rad")
+                except ValueError:
+                    time.sleep(0.01)
+                    continue
+                if isinstance(candidate_sequence, int) and candidate_sequence > sequence_id:
+                    position_error = math.dist(observed[:3], target[:3])
+                    angular_delta = tuple(
+                        math.atan2(math.sin(a - b), math.cos(a - b))
+                        for a, b in zip(observed[3:], target[3:])
+                    )
+                    orientation_error = math.sqrt(
+                        sum(value * value for value in angular_delta)
+                    )
+                    context.update(
+                        post_state_sequence_id=candidate_sequence,
+                        observed_pose=list(observed),
+                        position_error_m=position_error,
+                        orientation_error_rad=orientation_error,
+                    )
+                    if (
+                        candidate.get("state_valid") is True
+                        and position_error <= float(position_tolerance_m)
+                        and orientation_error <= float(orientation_tolerance_rad)
+                    ):
+                        return
+                time.sleep(0.01)
+            context["last_state_summary"] = last_summary
+            raise TimeoutError(
+                "fresh robot feedback did not confirm the absolute Cartesian target"
+            )
+
+        self._issue_and_confirm(
+            "move_cartesian_absolute",
+            lambda: self.native.move_l(target),
+            context=context,
+            after=confirm_target,
+        )
+        return {
+            "from_pose_base_m_rad": list(current),
+            "target_pose_base_m_rad": list(target),
+            "translation_m": translation_m,
+            "post_state_sequence_id": context["post_state_sequence_id"],
+            "observed_pose_base_m_rad": context["observed_pose"],
+            "position_error_m": context["position_error_m"],
+            "orientation_error_rad": context["orientation_error_rad"],
         }
 
     def hold_pose(self, *, confirmation: str | None = None, seconds: float = 1.0) -> dict[str, Any]:

@@ -888,7 +888,7 @@ class RokaeMotionExecutor:
                     "post-hold runtime safety gate: "
                     + ";".join(post_hold_reasons)
                 )
-            pre_admitted_index: int | None = None
+            admitted_through: int | None = None
             if callback_scheduled:
                 # Freeze and admit the first non-hold target before arming the
                 # schedule clock.  Otherwise a short first interval can expire
@@ -910,7 +910,7 @@ class RokaeMotionExecutor:
                         + ";".join(first_post_log_reasons)
                     )
                 self.motion_adapter.admit_scheduled_target(1)
-                pre_admitted_index = 1
+                admitted_through = 1
             self._start_runtime_watchdog()
             if callback_scheduled:
                 self.motion_adapter.start_scheduled_timing(
@@ -926,30 +926,41 @@ class RokaeMotionExecutor:
             ):
                 command_deadline_s = schedule_origin_s + float(row["time_s"])
                 pose = scheduled_poses[schedule_index]
-                if schedule_index != pre_admitted_index:
-                    # Persist the next intent during the interval after the
-                    # previous dispatch, rather than beginning disk I/O at the
-                    # target instant.  The dispatch deadline itself is
-                    # unchanged; every live gate is checked again after the
-                    # wait below.
-                    self._persist_command_intent(
-                        row,
-                        pose,
-                        latest_finish_s=command_deadline_s + lateness_limit_s,
-                    )
-                    post_log_reasons = self._runtime_reasons()
-                    if post_log_reasons:
-                        raise RuntimeError(
-                            "post-log runtime safety gate: "
-                            + ";".join(post_log_reasons)
-                        )
                 if callback_scheduled:
-                    # The callback owns the reviewed deadline.  Main-thread
-                    # admission occurs only after durable intent logging and a
-                    # fresh safety gate; the independent watchdog remains live
-                    # until callback dispatch or stop.
-                    if schedule_index != pre_admitted_index:
-                        self.motion_adapter.admit_scheduled_target(schedule_index)
+                    if admitted_through is None or admitted_through < schedule_index:
+                        raise RuntimeError(
+                            "realtime interpolation target was not admitted ahead "
+                            f"of its segment: index={schedule_index}"
+                        )
+                    lookahead_index = schedule_index + 1
+                    if (
+                        lookahead_index < len(trajectory)
+                        and admitted_through < lookahead_index
+                    ):
+                        # The 1 kHz callback interpolates through segment
+                        # [schedule_index, lookahead_index].  Persist and admit
+                        # its endpoint before schedule_index is reached, so the
+                        # callback never has to pause or jump while waiting for
+                        # main-thread disk I/O.
+                        lookahead_row = trajectory.iloc[lookahead_index]
+                        lookahead_pose = scheduled_poses[lookahead_index]
+                        self._persist_command_intent(
+                            lookahead_row,
+                            lookahead_pose,
+                            latest_finish_s=command_deadline_s,
+                        )
+                        lookahead_post_log_reasons = self._runtime_reasons()
+                        if lookahead_post_log_reasons:
+                            raise RuntimeError(
+                                "lookahead post-log runtime safety gate: "
+                                + ";".join(lookahead_post_log_reasons)
+                            )
+                        self.motion_adapter.admit_scheduled_target(lookahead_index)
+                        admitted_through = lookahead_index
+                    # The callback owns the reviewed deadline.  Every segment
+                    # endpoint is already durably logged and admitted before
+                    # interpolation toward it begins; the independent watchdog
+                    # remains live until callback dispatch or stop.
                     remaining_s = (
                         command_deadline_s
                         + lateness_limit_s
@@ -977,6 +988,20 @@ class RokaeMotionExecutor:
                         )
                     dispatched += 1
                     continue
+
+                # Non-callback adapters persist each intent during the interval
+                # after the previous dispatch, before the target deadline.
+                self._persist_command_intent(
+                    row,
+                    pose,
+                    latest_finish_s=command_deadline_s + lateness_limit_s,
+                )
+                post_log_reasons = self._runtime_reasons()
+                if post_log_reasons:
+                    raise RuntimeError(
+                        "post-log runtime safety gate: "
+                        + ";".join(post_log_reasons)
+                    )
                 self._wait_until(command_deadline_s)
                 lateness_s = self.clock.now_s() - command_deadline_s
                 if lateness_s > lateness_limit_s:

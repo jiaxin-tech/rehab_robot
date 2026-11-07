@@ -49,6 +49,16 @@ def _empty_load_settings(c):
     return speed, acceleration, margin
 
 
+def _empty_load_target_peak_z(c):
+    settings = c.get("empty_load")
+    if not isinstance(settings, dict):
+        raise ValueError("empty_load settings required")
+    value = settings.get("target_peak_tcp_z_base_m")
+    if value is None:
+        return None
+    return positive(value, "target_peak_tcp_z_base_m")
+
+
 def _empty_load_motion(c):
     speed, acceleration, _ = _empty_load_settings(c)
     motion = dict(c["motion"])
@@ -220,6 +230,32 @@ def _prepare_empty_load_artifacts(config_path, directory):
     )
     if not audit.trajectory_valid:
         raise ValueError("empty-load source trajectory is invalid")
+    target_peak_z = _empty_load_target_peak_z(c)
+    rehab_z_scale = 1.0
+    if target_peak_z is not None:
+        frame_z = frame.rotation_base_from_rehab[:, 2]
+        if not np.allclose(frame_z, np.array([0.0, 0.0, 1.0]), atol=1e-12, rtol=0.0):
+            raise ValueError(
+                "target_peak_tcp_z_base_m requires rehab Z aligned with base +Z"
+            )
+        source_peak_delta_z = float(baseline["delta_z_R"].max())
+        requested_delta_z = float(target_peak_z - anchor.tcp_pose_base[2])
+        if source_peak_delta_z <= 0.0 or requested_delta_z <= 0.0:
+            raise ValueError("target peak Z must be above the captured TCP origin")
+        rehab_z_scale = requested_delta_z / source_peak_delta_z
+        baseline, audit, _ = build_start_anchored_relative_trajectory(
+            reference,
+            current_tcp_start_pose=anchor.tcp_pose_base,
+            rehab_frame=frame,
+            rehab_z_scale=rehab_z_scale,
+        )
+        actual_peak_z = float(baseline["tcp_z_base"].max())
+        if not np.isclose(actual_peak_z, target_peak_z, atol=1e-12, rtol=0.0):
+            raise ValueError("scaled empty-load trajectory does not reach target peak Z")
+        workspace_max_z = float(c["motion"]["workspace_max_base_m"][2])
+        workspace_min_z = float(c["motion"]["workspace_min_base_m"][2])
+        if actual_peak_z > workspace_max_z or float(baseline["tcp_z_base"].min()) < workspace_min_z:
+            raise ValueError("scaled empty-load trajectory exceeds configured Z workspace")
     velocity = baseline[["tcp_vx_base", "tcp_vy_base", "tcp_vz_base"]].to_numpy(float)
     acceleration = baseline[["tcp_ax_base", "tcp_ay_base", "tcp_az_base"]].to_numpy(float)
     source_peak_speed = float(np.linalg.norm(velocity, axis=1).max())
@@ -258,6 +294,7 @@ def _prepare_empty_load_artifacts(config_path, directory):
         reference_path,
         current_tcp_start_pose=anchor.tcp_pose_base,
         rehab_frame=frame,
+        rehab_z_scale=rehab_z_scale,
     )
     retimed_velocity = retimed_trajectory[
         ["tcp_vx_base", "tcp_vy_base", "tcp_vz_base"]
@@ -288,6 +325,10 @@ def _prepare_empty_load_artifacts(config_path, directory):
         "max_tcp_speed_m_s": speed_limit,
         "max_tcp_acceleration_m_s2": acceleration_limit,
         "retiming_margin": margin,
+        "target_peak_tcp_z_base_m": target_peak_z,
+        "actual_peak_tcp_z_base_m": float(retimed_trajectory["tcp_z_base"].max()),
+        "minimum_tcp_z_base_m": float(retimed_trajectory["tcp_z_base"].min()),
+        "rehab_z_scale": float(rehab_z_scale),
         "dummy_leg_required": False,
         "training_allowed": False,
     }
@@ -314,8 +355,17 @@ def prepare(config_path, directory, *, capture_fn=run_capture, empty_load=False)
             state["empty_load_retiming"] = empty_load_metadata
             state["reference_path"] = str(reference.resolve())
             state["safety_config_path"] = empty_load_metadata["safety_path"]
-        preview_trajectory(anchor=directory / "anchor.json", frame_config=config_path,
-                           reference=reference, output_dir=directory / "preview")
+        preview_trajectory(
+            anchor=directory / "anchor.json",
+            frame_config=config_path,
+            reference=reference,
+            output_dir=directory / "preview",
+            rehab_z_scale=(
+                float(empty_load_metadata["rehab_z_scale"])
+                if empty_load
+                else 1.0
+            ),
+        )
         blockers = _check_config_for_operation(config_path, empty_load=empty_load)
         state.update(status="PREPARED", blockers=blockers)
     except BaseException as exc:
@@ -443,6 +493,11 @@ def _run(directory, *, live=False, empty_load=False, capture_factory=LegCaptureP
             trajectory_id=reference.trajectory_id.iloc[0], enable_motion=True,
             operator_confirmation=OPERATOR_CONFIRMATION,
             reference_path_override=reference_path if empty_load else None,
+            rehab_z_scale=(
+                float(state["empty_load_retiming"]["rehab_z_scale"])
+                if empty_load
+                else 1.0
+            ),
             live_wrench_config=load_live_wrench_config(config_path),
             adapter_factory=_configured_adapter_factory(local_ip=robot["local_ip"], robot_class=robot["robot_class"],
                 state_interval_ms=None, collision_source=robot["collision_source"], collision_event_max_age_s=robot["collision_event_max_age_s"]),

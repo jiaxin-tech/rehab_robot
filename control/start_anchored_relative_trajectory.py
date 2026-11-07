@@ -268,6 +268,7 @@ def build_start_anchored_relative_trajectory(
     *,
     current_tcp_start_pose: Sequence[float],
     rehab_frame: RehabFrameConfig,
+    rehab_z_scale: float = 1.0,
     numerical_tolerance: float = DEFAULT_NUMERICAL_TOLERANCE,
 ) -> tuple[pd.DataFrame, RelativeTrajectoryAudit, dict[str, object]]:
     """Build ``p_tcp_B = p_tcp_start_B + R_B_R @ (p_R-p_R(0))``.
@@ -280,6 +281,9 @@ def build_start_anchored_relative_trajectory(
     tolerance = float(numerical_tolerance)
     if not math.isfinite(tolerance) or tolerance <= 0.0:
         raise ValueError("numerical_tolerance must be finite and positive")
+    z_scale = float(rehab_z_scale)
+    if not math.isfinite(z_scale) or z_scale <= 0.0:
+        raise ValueError("rehab_z_scale must be finite and positive")
     anchor_pose = _finite_vector(current_tcp_start_pose, 6, "current_tcp_start_pose")
     source, source_metadata = _reference_and_metadata(reference)
     if len(source) < 3:
@@ -300,6 +304,7 @@ def build_start_anchored_relative_trajectory(
     relative_rehab = pull_rehab - pull_rehab[0]
     endpoint_error_m = float(np.linalg.norm(relative_rehab[-1]))
     source_closed = endpoint_error_m <= tolerance
+    relative_rehab[:, 2] *= z_scale
     relative_rehab[0] = 0.0
     if source_closed:
         relative_rehab[-1] = 0.0
@@ -493,7 +498,8 @@ def build_start_anchored_relative_trajectory(
         "rehab_frame": rehab_frame.as_metadata(),
         "start_tcp_pose_base": anchor_pose.tolist(),
         "tcp_orientation_strategy": "fixed_at_start_anchor",
-        "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@(p_R(t)-p_R(0))",
+        "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@S_z@(p_R(t)-p_R(0))",
+        "rehab_z_scale": z_scale,
         "rehab_pull_point_formula": "p_R(t)=[x_pull_FK(t),0,z_pull_FK(t)]",
         "equivalent_pull_point_geometry": {
             "L1_hip_to_knee_m": float(L1),

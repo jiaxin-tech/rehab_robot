@@ -160,6 +160,7 @@ def run_execute(
     safety_config_path: str | Path,
     trajectory_id: str,
     reference_path_override: str | Path | None = None,
+    rehab_z_scale: float = 1.0,
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
@@ -194,6 +195,7 @@ def run_execute(
         reference_path,
         current_tcp_start_pose=anchor.tcp_pose_base,
         rehab_frame=frame,
+        rehab_z_scale=rehab_z_scale,
     )
     offline = evaluate_offline_execution_request(
         mode="execute",
@@ -380,6 +382,9 @@ def run_execute(
         logger.update_metadata(
             {
                 "realtime_execution_path": realtime_path,
+                "realtime_schedule_interpolation": getattr(
+                    motion_adapter, "schedule_interpolation_mode", None
+                ),
                 "trajectory_profile": "approved_rehab",
             }
         )

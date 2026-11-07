@@ -2691,7 +2691,15 @@ def test_rokae_adapter__callback_schedule_dispatches_only_admitted_target(monkey
     robot.is_connected = True
     first = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
     second = (0.31, 0.0, 0.4, 0.0, 0.0, 0.0)
-    ticks = iter((1_000_000_000, 1_000_001_000, 1_018_000_000, 1_018_001_000))
+    ticks = iter(
+        (
+            1_000_000_000,
+            1_000_001_000,
+            1_010_000_000,
+            1_020_000_000,
+            1_020_001_000,
+        )
+    )
     monkeypatch.setattr(module.time, "perf_counter_ns", lambda: next(ticks))
 
     robot.configure_realtime_cartesian_schedule(
@@ -2706,12 +2714,111 @@ def test_rokae_adapter__callback_schedule_dispatches_only_admitted_target(monkey
     robot.admit_realtime_cartesian_schedule_target(1)
     robot._rt_schedule_timing_armed = True
     robot._rt_schedule_origin_s = 1.0
+    midpoint = robot._rt_callback()
+    assert midpoint.target[3] == rokae_adapter__pytest.approx(0.305)
+    assert midpoint.target[7] == rokae_adapter__pytest.approx(0.0)
+    assert midpoint.target[11] == rokae_adapter__pytest.approx(0.4)
+    assert robot._rt_schedule_dispatched_index == 0
     command = robot._rt_callback()
 
     assert command.target == second_matrix
     assert not command.finished
     assert robot.wait_realtime_cartesian_schedule_target(1, timeout_s=0.0)[0] == 1
     assert robot._rt_schedule_fault is None
+
+
+def test_rokae_adapter__callback_schedule_rejects_orientation_interpolation():
+    robot = rokae_adapter__RokaeRobot("192.0.2.1")
+    robot._rt_controller = object()
+    first = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
+    rotated = (0.31, 0.0, 0.4, 0.1, 0.0, 0.0)
+
+    with rokae_adapter__pytest.raises(ValueError, match="fixed orientation"):
+        robot.configure_realtime_cartesian_schedule(
+            (first, rotated), (0.0, 0.02), max_lateness_s=0.03
+        )
+
+
+def test_rokae_adapter__callback_does_not_interpolate_toward_unadmitted_target(
+    monkeypatch,
+):
+    import hardware.windows.rokae_xcore as module
+
+    class Command:
+        def __init__(self, target):
+            self.target = tuple(target)
+            self.finished = False
+
+        def setFinished(self):
+            self.finished = True
+
+    class Controller:
+        def setControlLoopCar(self, callback, priority, use_state):
+            self.callback = callback
+
+        def startMove(self, mode): pass
+        def startLoop(self, blocking): pass
+
+    robot = rokae_adapter__RokaeRobot("192.0.2.1")
+    robot._sdk = rokae_adapter__SimpleNamespace(
+        CartesianPosition=Command,
+        RtControllerMode=rokae_adapter__SimpleNamespace(
+            cartesianPosition="cartesianPosition"
+        ),
+    )
+    robot._robot = object()
+    robot._rt_controller = Controller()
+    robot.is_connected = True
+    first = (0.3, 0.0, 0.4, 0.0, 0.0, 0.0)
+    second = (0.31, 0.0, 0.4, 0.0, 0.0, 0.0)
+    ticks = iter((1_000_000_000, 1_000_001_000, 1_010_000_000))
+    monkeypatch.setattr(module.time, "perf_counter_ns", lambda: next(ticks))
+
+    robot.configure_realtime_cartesian_schedule(
+        (first, second), (0.0, 0.02), max_lateness_s=0.03
+    )
+    robot.admit_realtime_cartesian_schedule_target(0)
+    robot.start_realtime_cartesian(first)
+    first_matrix = tuple(robot._pose_to_realtime_matrix(first))
+    assert robot._rt_callback().target == first_matrix
+    robot._rt_schedule_timing_armed = True
+    robot._rt_schedule_origin_s = 1.0
+
+    assert robot._rt_callback().target == first_matrix
+    assert robot._rt_schedule_dispatched_index == 0
+    assert robot._rt_schedule_fault is None
+
+
+def test_rokae_adapter__millisecond_translation_interpolation_is_continuous():
+    start = tuple(
+        rokae_adapter__RokaeRobot._pose_to_realtime_matrix(
+            (0.3, 0.0, 0.4, 0.1, -0.2, 0.3)
+        )
+    )
+    end = list(start)
+    end[3] += 0.0086
+    end[11] -= 0.002
+    samples = [
+        rokae_adapter__RokaeRobot._interpolate_realtime_translation(
+            start, end, index / 300.0
+        )
+        for index in range(301)
+    ]
+
+    assert samples[0] == start
+    assert samples[-1] == tuple(end)
+    assert max(
+        sum(
+            (right[index] - left[index]) ** 2
+            for index in (3, 7, 11)
+        ) ** 0.5
+        for left, right in zip(samples, samples[1:])
+    ) < 0.00003
+    assert all(
+        sample[index] == start[index]
+        for sample in samples
+        for index in (0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15)
+    )
 
 
 def test_rokae_adapter__callback_schedule_refuses_late_target(monkeypatch):
@@ -2906,6 +3013,7 @@ class rokae_commissioning__FakeAdapter:
         self.calls = []
         self.connected = False
         self.streaming = False
+        self._sequence_id = 0
 
     @property
     def native_robot(self):
@@ -2922,6 +3030,7 @@ class rokae_commissioning__FakeAdapter:
     def start_state_stream(self):
         self.calls.append("start_state_stream")
         self.streaming = True
+        self._sequence_id = 1
 
     def stop_state_stream(self):
         self.calls.append("stop_state_stream")
@@ -2944,12 +3053,15 @@ class rokae_commissioning__FakeAdapter:
         return rokae_commissioning__SimpleNamespace(valid=True)
 
     def get_robot_state_summary(self):
+        if self.streaming:
+            self._sequence_id += 1
         return {
             "connected": self.connected,
             "state_stream_thread_alive": self.streaming,
             "state_valid": True,
             "state_invalid_reason": "",
             "state_age_ms": 1.0,
+            "state_sequence_id": self._sequence_id,
             "tcp_pose_base_m_rad": list(self._native.get_cartesian_pose()),
             "joint_position_rad": list(self._native.get_joint_angles()),
             "operation_state": self._native.get_robot_mode(),
@@ -3057,6 +3169,76 @@ def test_rokae_commissioning__cartesian_jog_respects_step_limit_and_workspace():
     wide_console.power_on(confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION)
     with rokae_commissioning__pytest.raises(rokae_commissioning__CommissioningError, match="outside the reviewed workspace"):
         wide_console.jog_cartesian((0.0, 0.0, 0.6), confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION)
+
+
+def test_rokae_commissioning__absolute_cartesian_move_uses_frozen_target_and_fresh_feedback():
+    limits = rokae_commissioning__CommissioningLimits(
+        max_cartesian_step_m=0.01,
+        workspace_min_base_m=(0.2, -0.5, 0.0),
+        workspace_max_base_m=(0.8, 0.5, 0.6),
+    )
+    native = rokae_commissioning__FakeNative()
+    adapter = rokae_commissioning__FakeAdapter(native)
+    console = rokae_commissioning__RokaeCommissioningConsole(adapter, limits=limits)
+    console.connect()
+    console.power_on(confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION)
+    target = (0.404, 0.0, 0.302, 0.0, 0.0, 0.0)
+
+    result = console.move_cartesian_absolute(
+        target,
+        confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION,
+    )
+
+    issued = [call for call in native.calls if isinstance(call, tuple) and call[0] == "move_l"]
+    assert issued[-1][1] == list(target)
+    assert result["target_pose_base_m_rad"] == list(target)
+    assert result["position_error_m"] == rokae_commissioning__pytest.approx(0.0)
+    assert result["post_state_sequence_id"] > 0
+
+
+def test_rokae_commissioning__absolute_cartesian_move_rejects_oversized_step():
+    console, adapter, native = rokae_commissioning__make_console()
+    console.connect()
+    console.power_on(confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION)
+
+    with rokae_commissioning__pytest.raises(
+        rokae_commissioning__CommissioningError, match="exceeds per-command limit"
+    ):
+        console.move_cartesian_absolute(
+            (0.5, 0.0, 0.3, 0.0, 0.0, 0.0),
+            confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION,
+        )
+
+    assert not any(
+        isinstance(call, tuple) and call[0] == "move_l" for call in native.calls
+    )
+
+
+def test_rokae_commissioning__absolute_cartesian_move_requires_new_state_sequence():
+    console, adapter, native = rokae_commissioning__make_console()
+    console.connect()
+    console.power_on(confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION)
+    original_summary = adapter.get_robot_state_summary
+
+    def frozen_summary():
+        was_streaming = adapter.streaming
+        adapter.streaming = False
+        try:
+            summary = original_summary()
+            summary["state_stream_thread_alive"] = True
+            return summary
+        finally:
+            adapter.streaming = was_streaming
+
+    adapter.get_robot_state_summary = frozen_summary
+    with rokae_commissioning__pytest.raises(
+        TimeoutError, match="fresh robot feedback did not confirm"
+    ):
+        console.move_cartesian_absolute(
+            (0.404, 0.0, 0.3, 0.0, 0.0, 0.0),
+            confirmation=rokae_commissioning__COMMISSIONING_CONFIRMATION,
+            feedback_timeout_s=0.02,
+        )
 
 
 def test_rokae_commissioning__stop_motion_needs_no_confirmation_and_is_audited(tmp_path: rokae_commissioning__Path):
@@ -5538,11 +5720,14 @@ def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
         schedule_events.append(("start_timing", None))
         return 1.0
     c.motion.start_scheduled_timing = start_timing
-    c.motion.wait_scheduled_target = lambda index, timeout_s: (
-        index,
-        int((1.0 + configured["times"][index]) * 1e9),
-        int((1.0 + configured["times"][index]) * 1e9) + 1000,
-    )
+    def wait_scheduled(index, timeout_s):
+        schedule_events.append(("wait", index))
+        return (
+            index,
+            int((1.0 + configured["times"][index]) * 1e9),
+            int((1.0 + configured["times"][index]) * 1e9) + 1000,
+        )
+    c.motion.wait_scheduled_target = wait_scheduled
     c.motion.send_cartesian_target = lambda pose: pytest.fail(
         "main thread dispatched instead of realtime callback"
     )
@@ -5557,6 +5742,9 @@ def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
     assert admitted == list(range(len(c.trajectory)))
     assert schedule_events.index(("admit", 1)) < schedule_events.index(
         ("start_timing", None)
+    )
+    assert schedule_events.index(("admit", 2)) < schedule_events.index(
+        ("wait", 1)
     )
     assert len(configured["poses"]) == len(c.trajectory)
     assert configured["lateness"] == c.safety.max_command_lateness_s
@@ -6051,7 +6239,7 @@ def test_unified_config_readers_need_no_generated_sections(tmp_path, monkeypatch
     def no_cache(*args, **kwargs):
         raise AssertionError("configuration must not generate section files")
     monkeypatch.setattr(bundle, "section_path", no_cache)
-    assert load_rehab_frame_config(path).rehab_x_axis_in_base == (1., 0., 0.)
+    assert load_rehab_frame_config(path).rehab_x_axis_in_base == (0., -1., 0.)
     assert ExperimentSafetyConfig.load_json(path).max_force_n == config["motion"]["max_force_n"]
     assert read_json(path)["image_bytes"] == 1366
     assert Path(read_json(path)["ads_dll_path"]).is_absolute()
@@ -6265,6 +6453,38 @@ def test_controller_state_loop_never_calls_blocking_motion_error_poll(monkeypatc
     assert native.get_state_frame().host_monotonic_time_s == 1.
 
 
+def test_controller_state_loop_uses_only_zero_timeout_sdk_polls(monkeypatch):
+    import sys
+    from datetime import timedelta
+    from types import SimpleNamespace
+    import hardware.windows.rokae_xcore as module
+
+    native = module.RokaeRobot("192.0.2.1", collision_source="controller")
+    native._state_running = True
+    native._rt_schedule_use_windows_callback_priority = False
+    observed_timeouts = []
+
+    def update(timeout):
+        observed_timeouts.append(timeout)
+        return False
+
+    native._robot = SimpleNamespace(updateRobotState=update)
+    monkeypatch.setitem(sys.modules, "xCoreSDK_python", SimpleNamespace(
+        RtSupportedFields=SimpleNamespace(
+            tcpPose_m=0, tcpPoseAbc_m=1, jointPos_m=2, keypads=3
+        )
+    ))
+    monkeypatch.setattr(
+        module.time,
+        "sleep",
+        lambda seconds: setattr(native, "_state_running", False),
+    )
+
+    native._state_loop()
+
+    assert observed_timeouts == [timedelta(milliseconds=0)]
+
+
 def test_controller_collision_watcher_latches_true_without_querying_initial_state(monkeypatch):
     native = rokae_safety_events__Native()
     robot = rokae_safety_events__rokae_xcore.RokaeRobot(
@@ -6377,6 +6597,30 @@ def test_current_origin_translates_path_and_preserves_captured_orientation(perso
     assert np.allclose(trajectory[["q_hip_ref", "q_knee_ref"]], c.trajectory[["q_hip_ref", "q_knee_ref"]])
 
 
+def test_rehab_z_scale_changes_only_vertical_relative_component(personal_context):
+    c = personal_context
+    trajectory, audit, metadata = build_start_anchored_relative_trajectory(
+        current_tcp_start_pose=c.anchor.tcp_pose_base,
+        rehab_frame=c.frame,
+        rehab_z_scale=2.5,
+    )
+    assert audit.trajectory_valid
+    assert metadata["rehab_z_scale"] == 2.5
+    assert np.allclose(trajectory["delta_x_R"], c.trajectory["delta_x_R"])
+    assert np.allclose(trajectory["delta_y_R"], c.trajectory["delta_y_R"])
+    assert np.allclose(trajectory["delta_z_R"], c.trajectory["delta_z_R"] * 2.5)
+
+
+@pytest.mark.parametrize("scale", [0.0, -1.0, float("nan"), float("inf")])
+def test_rehab_z_scale_must_be_finite_and_positive(personal_context, scale):
+    with pytest.raises(ValueError, match="rehab_z_scale"):
+        build_start_anchored_relative_trajectory(
+            current_tcp_start_pose=personal_context.anchor.tcp_pose_base,
+            rehab_frame=personal_context.frame,
+            rehab_z_scale=scale,
+        )
+
+
 def test_from_current_captures_fresh_pose_before_running(tmp_path, monkeypatch):
     calls = []
     monkeypatch.setattr(personal_round, "check_config", lambda config: [])
@@ -6455,6 +6699,18 @@ def test_empty_load_retiming_uses_independent_slow_limits(tmp_path, personal_con
     safety = json.loads((tmp_path / "empty_load_safety.json").read_text(encoding="utf-8"))
     assert safety["max_tcp_speed_m_s"] == .03
     assert safety["max_tcp_acceleration_m_s2"] == .01
+
+
+def test_empty_load_target_peak_z_is_frozen_into_retiming(tmp_path, personal_context):
+    config = personal_round.configuration()
+    config["empty_load"]["target_peak_tcp_z_base_m"] = 0.9
+    config_path = tmp_path / "experiment.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    personal_context.anchor.save_json(tmp_path / "anchor.json")
+    metadata = personal_round._prepare_empty_load_artifacts(config_path, tmp_path)
+    assert metadata["rehab_z_scale"] > 1.0
+    assert metadata["actual_peak_tcp_z_base_m"] == pytest.approx(0.9, abs=1e-12)
+    assert metadata["minimum_tcp_z_base_m"] >= config["motion"]["workspace_min_base_m"][2]
 
 
 def test_empty_load_run_skips_dummy_leg_and_training(tmp_path, monkeypatch, personal_context):

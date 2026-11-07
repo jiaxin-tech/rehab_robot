@@ -96,8 +96,8 @@
   },
   "frame": {
     "rehab_x_axis_in_base": [
-      1,
       0,
+      -1,
       0
     ],
     "rehab_z_axis_in_base": [
@@ -135,7 +135,8 @@
   "empty_load": {
     "max_tcp_speed_m_s": 0.03,
     "max_tcp_acceleration_m_s2": 0.01,
-    "retiming_margin": 1.01
+    "retiming_margin": 1.01,
+    "target_peak_tcp_z_base_m": 0.9
   },
   "training": {
     "enabled": false,

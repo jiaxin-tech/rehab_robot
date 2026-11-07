@@ -41,11 +41,7 @@ _DLL_DIRECTORY_HANDLE = None
 _RT_FINISH_ACK_TIMEOUT_S = 0.25
 _RT_FINISH_QUIET_S = 0.02
 _RT_FINISH_POLL_S = 0.002
-# Arm each already-reviewed target just before its nominal timestamp.  The
-# callback still measures lateness against the unshifted timestamp and refuses
-# anything beyond the configured limit.  A common 2 ms lead preserves all
-# inter-target intervals while avoiding a timer-boundary miss.
-_RT_SCHEDULE_DISPATCH_LEAD_S = 0.002
+_STATE_NONBLOCKING_POLL_S = 0.001
 
 
 def _load_sdk():
@@ -431,7 +427,15 @@ class RokaeRobot:
     def _state_loop(self) -> None:
         from xCoreSDK_python import RtSupportedFields
 
-        timeout = timedelta(milliseconds=max(1, self.state_interval_ms * 2))
+        # Do not use a positive updateRobotState timeout here.  The pybind call
+        # may retain CPython's GIL for the whole timeout (16 ms with the normal
+        # 8 ms state stream), which prevents xCoreSDK's Python 1 kHz command
+        # callback from producing fresh commands and can trip controller error
+        # 19-kInstabilityDetection.  The SDK already supports a zero-timeout
+        # queue probe (also used below to drain old frames).  Poll it and sleep
+        # outside the extension when empty: time.sleep releases the GIL while
+        # preserving the independent state/safety stream.
+        nonblocking_timeout = timedelta(milliseconds=0)
         try:
             while self._state_running:
                 if (
@@ -447,8 +451,9 @@ class RokaeRobot:
                         return
                 try:
                     with self._state_sdk_lock:
-                        updated = self._robot.updateRobotState(timeout)
+                        updated = self._robot.updateRobotState(nonblocking_timeout)
                         if not updated:
+                            time.sleep(_STATE_NONBLOCKING_POLL_S)
                             continue
                         # The SDK queue does not overwrite old frames. Drain every
                         # immediately available frame before reading fields so the
@@ -594,6 +599,22 @@ class RokaeRobot:
             rotation[2][0], rotation[2][1], rotation[2][2], values[2],
             0.0, 0.0, 0.0, 1.0,
         ]
+
+    @staticmethod
+    def _interpolate_realtime_translation(
+        start: Sequence[float], end: Sequence[float], fraction: float
+    ) -> tuple[float, ...]:
+        """Interpolate translation while preserving a reviewed fixed rotation."""
+
+        alpha = min(1.0, max(0.0, float(fraction)))
+        if alpha <= 0.0:
+            return tuple(start)
+        if alpha >= 1.0:
+            return tuple(end)
+        result = list(start)
+        for index in (3, 7, 11):
+            result[index] = start[index] + alpha * (end[index] - start[index])
+        return tuple(result)
 
     def clear_error(self) -> None:
         self._require_connected()
@@ -866,7 +887,7 @@ class RokaeRobot:
                         deadline_s = (
                             self._rt_schedule_origin_s + schedule_times[next_index]
                         )
-                        if now_s >= deadline_s - _RT_SCHEDULE_DISPATCH_LEAD_S:
+                        if now_s >= deadline_s:
                             lateness_s = now_s - deadline_s
                             if self._rt_schedule_admitted_index < next_index:
                                 self._rt_schedule_fault = (
@@ -894,6 +915,26 @@ class RokaeRobot:
                                     )
                                 )
                                 self._rt_schedule_event.set()
+                        elif self._rt_schedule_admitted_index >= next_index:
+                            segment_start_s = (
+                                self._rt_schedule_origin_s
+                                + schedule_times[self._rt_schedule_dispatched_index]
+                            )
+                            segment_duration_s = deadline_s - segment_start_s
+                            if segment_duration_s <= 0.0:
+                                self._rt_schedule_fault = (
+                                    "realtime schedule interpolation interval is invalid"
+                                )
+                            else:
+                                fraction = (
+                                    now_s - segment_start_s
+                                ) / segment_duration_s
+                                target = self._interpolate_realtime_translation(
+                                    schedule[self._rt_schedule_dispatched_index],
+                                    schedule[next_index],
+                                    fraction,
+                                )
+                                self._rt_target_native = target
             command = sdk.CartesianPosition(target)
             self._rt_callback_count += 1
             if self._rt_stop_requested.is_set() or self._rt_schedule_fault is not None:
@@ -988,7 +1029,7 @@ class RokaeRobot:
         max_lateness_s: float,
         use_windows_callback_priority: bool = False,
     ) -> None:
-        """Preload targets; callback dispatch remains blocked until admission."""
+        """Preload fixed-orientation targets for 1 kHz translation interpolation."""
         if self._rt_active:
             raise RuntimeError("cannot configure an active realtime schedule")
         if self._rt_controller is None:
@@ -1004,12 +1045,28 @@ class RokaeRobot:
             later > earlier for earlier, later in zip(times, times[1:])
         ):
             raise ValueError("realtime schedule times must be finite and increasing")
+        if not math.isclose(times[0], 0.0, rel_tol=0.0, abs_tol=1e-12):
+            raise ValueError("realtime schedule must start at time zero")
         if not math.isfinite(lateness) or lateness <= 0.0:
             raise ValueError("max_lateness_s must be finite and positive")
         if type(use_windows_callback_priority) is not bool:
             raise TypeError("use_windows_callback_priority must be bool")
         if not all(all(math.isfinite(value) for value in pose) for pose in native):
             raise ValueError("realtime schedule targets must be finite")
+        fixed_matrix_indices = (0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14, 15)
+        reference = native[0]
+        if any(
+            not all(
+                math.isclose(
+                    pose[index], reference[index], rel_tol=0.0, abs_tol=1e-12
+                )
+                for index in fixed_matrix_indices
+            )
+            for pose in native[1:]
+        ):
+            raise ValueError(
+                "realtime schedule interpolation requires a fixed orientation"
+            )
         self._rt_schedule_native = native
         self._rt_schedule_times_s = times
         self._rt_schedule_lateness_s = lateness

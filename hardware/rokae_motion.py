@@ -17,6 +17,10 @@ from typing import Any, Sequence
 class RokaeCartesianMotionAdapter:
     """Motion-only facade around a connected observation adapter's wrapper."""
 
+    schedule_interpolation_mode = (
+        "linear_translation_in_sdk_1ms_callback_fixed_orientation"
+    )
+
     def __init__(self, read_adapter: Any) -> None:
         native = getattr(read_adapter, "native_robot", None)
         if native is None:

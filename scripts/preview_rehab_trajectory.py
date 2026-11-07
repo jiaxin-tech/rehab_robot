@@ -103,6 +103,7 @@ def preview_trajectory(
     frame_config: str | Path,
     reference: str | Path = DEFAULT_REFERENCE_PATH,
     output_dir: str | Path,
+    rehab_z_scale: float = 1.0,
     reference_start_tolerance_rad: float = 1e-9,
 ) -> dict[str, Any]:
     """Generate review artifacts without importing or touching hardware."""
@@ -114,6 +115,7 @@ def preview_trajectory(
         reference,
         current_tcp_start_pose=resolved_anchor.tcp_pose_base,
         rehab_frame=frame,
+        rehab_z_scale=rehab_z_scale,
     )
     if audit.trajectory_id != resolved_anchor.trajectory_id:
         raise ValueError(
@@ -173,12 +175,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--frame-config", default=str(DEFAULT_FRAME_CONFIG))
     parser.add_argument("--reference", default=str(DEFAULT_REFERENCE_PATH))
     parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--rehab-z-scale", type=float, default=1.0)
     args = parser.parse_args(argv)
     summary = preview_trajectory(
         anchor=args.anchor,
         frame_config=args.frame_config,
         reference=args.reference,
         output_dir=args.output_dir,
+        rehab_z_scale=args.rehab_z_scale,
     )
     print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
     return 0 if summary["trajectory_valid"] else 1
