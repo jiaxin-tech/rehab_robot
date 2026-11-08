@@ -44,6 +44,8 @@ class ExecutionPreflight:
     maximum_tcp_speed_m_s: float | None
     maximum_tcp_acceleration_m_s2: float | None
     runtime_robot_summary: dict | None = None
+    rehab_z_scale: float = 1.0
+    joint_limits_deg: tuple[tuple[float, float], tuple[float, float]] | None = None
 
     def require_allowed(self):
         if not self.allowed:
@@ -129,6 +131,8 @@ def audit_execution_trajectory_content(
     expected_trajectory_id: str | None = None,
     frame: RehabFrameConfig | None = None,
     anchor: StartAnchor | None = None,
+    rehab_z_scale: float = 1.0,
+    joint_limits_deg: Mapping[str, Sequence[float]] | None = None,
     require_official_reference: bool = False,
 ) -> tuple[tuple[str, ...], float | None, float | None]:
     """Independently audit the exact table that may reach the scheduler."""
@@ -160,6 +164,9 @@ def audit_execution_trajectory_content(
         "q_hip_ref",
         "q_knee_ref",
         "theta_shank_ref",
+        "source_q_hip_ref",
+        "source_q_knee_ref",
+        "source_theta_shank_ref",
         "trajectory_valid",
         "experiment_mode",
         "tcp_orientation_strategy",
@@ -243,6 +250,9 @@ def audit_execution_trajectory_content(
         "q_hip_ref",
         "q_knee_ref",
         "theta_shank_ref",
+        "source_q_hip_ref",
+        "source_q_knee_ref",
+        "source_theta_shank_ref",
     ]
     try:
         numeric = trajectory[numeric_columns].to_numpy(dtype=float)
@@ -261,21 +271,75 @@ def audit_execution_trajectory_content(
     q_hip = trajectory["q_hip_ref"].to_numpy(dtype=float)
     q_knee = trajectory["q_knee_ref"].to_numpy(dtype=float)
     theta = trajectory["theta_shank_ref"].to_numpy(dtype=float)
+    source_q_hip = trajectory["source_q_hip_ref"].to_numpy(dtype=float)
+    source_q_knee = trajectory["source_q_knee_ref"].to_numpy(dtype=float)
+    source_theta = trajectory["source_theta_shank_ref"].to_numpy(dtype=float)
     hip_min, hip_max = np.deg2rad(APPROVED_HIP_ROM_DEG)
     knee_min, knee_max = np.deg2rad(APPROVED_KNEE_ROM_DEG)
     tolerance = 1e-10
     block(
         not bool(
-            ((q_hip >= hip_min - tolerance) & (q_hip <= hip_max + tolerance)).all()
-            and ((q_knee >= knee_min - tolerance) & (q_knee <= knee_max + tolerance)).all()
+            ((source_q_hip >= hip_min - tolerance)
+             & (source_q_hip <= hip_max + tolerance)).all()
+            and ((source_q_knee >= knee_min - tolerance)
+                 & (source_q_knee <= knee_max + tolerance)).all()
         ),
         "approved_rom_invalid",
+    )
+    block(
+        not bool(
+            np.allclose(
+                source_theta,
+                source_q_hip - source_q_knee,
+                rtol=0.0,
+                atol=tolerance,
+            )
+        ),
+        "source_theta_shank_definition_invalid",
     )
     block(
         not bool(np.allclose(theta, q_hip - q_knee, rtol=0.0, atol=tolerance)),
         "theta_shank_definition_invalid",
     )
+    if joint_limits_deg is None:
+        planned_hip_limits = APPROVED_HIP_ROM_DEG
+        planned_knee_limits = APPROVED_KNEE_ROM_DEG
+    else:
+        try:
+            planned_hip_limits = tuple(map(float, joint_limits_deg["hip"]))
+            planned_knee_limits = tuple(map(float, joint_limits_deg["knee"]))
+        except (KeyError, TypeError, ValueError):
+            planned_hip_limits = planned_knee_limits = (math.nan, math.nan)
+        block(
+            len(planned_hip_limits) != 2
+            or len(planned_knee_limits) != 2
+            or not np.isfinite(
+                [*planned_hip_limits, *planned_knee_limits]
+            ).all()
+            or planned_hip_limits[0] >= planned_hip_limits[1]
+            or planned_knee_limits[0] >= planned_knee_limits[1],
+            "trajectory_joint_limits_invalid",
+        )
+    planned_hip_min, planned_hip_max = np.deg2rad(planned_hip_limits)
+    planned_knee_min, planned_knee_max = np.deg2rad(planned_knee_limits)
+    block(
+        not bool(
+            ((q_hip >= planned_hip_min - tolerance)
+             & (q_hip <= planned_hip_max + tolerance)).all()
+            and ((q_knee >= planned_knee_min - tolerance)
+                 & (q_knee <= planned_knee_max + tolerance)).all()
+        ),
+        "planned_joint_range_invalid",
+    )
 
+    try:
+        z_scale = float(rehab_z_scale)
+    except (TypeError, ValueError):
+        z_scale = math.nan
+    block(
+        not math.isfinite(z_scale) or z_scale <= 0.0,
+        "trajectory_rehab_z_scale_invalid",
+    )
     delta = trajectory[["delta_x_R", "delta_y_R", "delta_z_R"]].to_numpy(float)
     block(not bool(np.allclose(delta[0], 0.0, rtol=0.0, atol=tolerance)), "relative_start_not_zero")
     block(not bool(np.allclose(delta[-1], 0.0, rtol=0.0, atol=tolerance)), "trajectory_not_closed")
@@ -287,6 +351,8 @@ def audit_execution_trajectory_content(
             np.asarray(pull_z, dtype=float) - float(pull_z[0]),
         )
     )
+    if math.isfinite(z_scale) and z_scale > 0.0:
+        expected_delta[:, 2] *= z_scale
     if np.linalg.norm(expected_delta[-1]) <= tolerance:
         expected_delta[-1] = 0.0
     block(
@@ -377,7 +443,8 @@ def audit_execution_trajectory_content(
 
 
 def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirmation,
-        requested_anchor_id, frame, anchor, safety, trajectory, audit):
+        requested_anchor_id, frame, anchor, safety, trajectory, audit,
+        rehab_z_scale=1.0, joint_limits_deg=None):
     reasons = list(safety.execution_block_reasons())
     if mode != "execute" or enable_motion is not True or operator_confirmation != OPERATOR_CONFIRMATION:
         reasons.append("explicit motion confirmation required")
@@ -385,11 +452,29 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
         reasons.append("start anchor does not match this trajectory")
     content, speed, acceleration = audit_execution_trajectory_content(
         trajectory, safety, expected_trajectory_id=audit.trajectory_id, frame=frame, anchor=anchor,
+        rehab_z_scale=rehab_z_scale,
+        joint_limits_deg=joint_limits_deg,
         require_official_reference=False)
     reasons.extend(content)
     if not audit.trajectory_valid:
         reasons.append("invalid trajectory")
-    return ExecutionPreflight(not reasons, tuple(reasons), audit.trajectory_id, anchor.anchor_id, speed, acceleration)
+    return ExecutionPreflight(
+        allowed=not reasons,
+        reasons=tuple(reasons),
+        trajectory_id=audit.trajectory_id,
+        anchor_id=anchor.anchor_id,
+        maximum_tcp_speed_m_s=speed,
+        maximum_tcp_acceleration_m_s2=acceleration,
+        rehab_z_scale=float(rehab_z_scale),
+        joint_limits_deg=(
+            None
+            if joint_limits_deg is None
+            else (
+                tuple(map(float, joint_limits_deg["hip"])),
+                tuple(map(float, joint_limits_deg["knee"])),
+            )
+        ),
+    )
 
 
 def evaluate_execution_preflight(*, acquisition_health, logger, robot_adapter, current_tcp_pose_base, **request):
@@ -423,5 +508,14 @@ def evaluate_execution_preflight(*, acquisition_health, logger, robot_adapter, c
                          (health.torque_magnitude_nm, safety.max_torque_nm)):
         if value is None or not math.isfinite(value) or value < 0 or limit is None or value > limit:
             reasons.append("measurement missing, stale or over limit")
-    return ExecutionPreflight(not reasons, tuple(reasons), result.trajectory_id, result.anchor_id,
-                              result.maximum_tcp_speed_m_s, result.maximum_tcp_acceleration_m_s2, summary)
+    return ExecutionPreflight(
+        allowed=not reasons,
+        reasons=tuple(reasons),
+        trajectory_id=result.trajectory_id,
+        anchor_id=result.anchor_id,
+        maximum_tcp_speed_m_s=result.maximum_tcp_speed_m_s,
+        maximum_tcp_acceleration_m_s2=result.maximum_tcp_acceleration_m_s2,
+        rehab_z_scale=result.rehab_z_scale,
+        joint_limits_deg=result.joint_limits_deg,
+        runtime_robot_summary=summary,
+    )

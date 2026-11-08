@@ -104,6 +104,9 @@ def preview_trajectory(
     reference: str | Path = DEFAULT_REFERENCE_PATH,
     output_dir: str | Path,
     rehab_z_scale: float = 1.0,
+    joint_start_rad: Sequence[float] | None = None,
+    hip_delta_scale: float = 1.0,
+    knee_phase_shift_s: float = 0.0,
     reference_start_tolerance_rad: float = 1e-9,
 ) -> dict[str, Any]:
     """Generate review artifacts without importing or touching hardware."""
@@ -116,14 +119,17 @@ def preview_trajectory(
         current_tcp_start_pose=resolved_anchor.tcp_pose_base,
         rehab_frame=frame,
         rehab_z_scale=rehab_z_scale,
+        joint_start_rad=joint_start_rad,
+        hip_delta_scale=hip_delta_scale,
+        knee_phase_shift_s=knee_phase_shift_s,
     )
     if audit.trajectory_id != resolved_anchor.trajectory_id:
         raise ValueError(
             "anchor trajectory_id does not match preview reference: "
             f"{resolved_anchor.trajectory_id!r} != {audit.trajectory_id!r}"
         )
-    q_hip_start = float(trajectory.iloc[0]["q_hip_ref"])
-    q_knee_start = float(trajectory.iloc[0]["q_knee_ref"])
+    q_hip_start = float(trajectory.iloc[0]["source_q_hip_ref"])
+    q_knee_start = float(trajectory.iloc[0]["source_q_knee_ref"])
     if not np.isclose(
         resolved_anchor.reference_start_q_hip,
         q_hip_start,

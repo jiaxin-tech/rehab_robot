@@ -269,6 +269,9 @@ def build_start_anchored_relative_trajectory(
     current_tcp_start_pose: Sequence[float],
     rehab_frame: RehabFrameConfig,
     rehab_z_scale: float = 1.0,
+    joint_start_rad: Sequence[float] | None = None,
+    hip_delta_scale: float = 1.0,
+    knee_phase_shift_s: float = 0.0,
     numerical_tolerance: float = DEFAULT_NUMERICAL_TOLERANCE,
 ) -> tuple[pd.DataFrame, RelativeTrajectoryAudit, dict[str, object]]:
     """Build ``p_tcp_B = p_tcp_start_B + R_B_R @ (p_R-p_R(0))``.
@@ -291,12 +294,54 @@ def build_start_anchored_relative_trajectory(
 
     trajectory_id = _unique_string(source, "trajectory_id")
     time_s = source["time_s"].to_numpy(dtype=float)
-    q_hip = source["q_hip_rad"].to_numpy(dtype=float)
-    q_knee = source["q_knee_rad"].to_numpy(dtype=float)
+    source_q_hip = source["q_hip_rad"].to_numpy(dtype=float)
+    source_q_knee = source["q_knee_rad"].to_numpy(dtype=float)
     theta_source = source["theta_shank_rad"].to_numpy(dtype=float)
     source_valid = _bool_column(source, "trajectory_sample_valid")
     formal_valid = _bool_column(source, "formal_execution_allowed")
 
+    profile_transformed = joint_start_rad is not None
+    scale_hip = float(hip_delta_scale)
+    phase_shift = float(knee_phase_shift_s)
+    if not math.isfinite(scale_hip) or scale_hip <= 0.0:
+        raise ValueError("hip_delta_scale must be finite and positive")
+    if not math.isfinite(phase_shift) or phase_shift < 0.0:
+        raise ValueError("knee_phase_shift_s must be finite and nonnegative")
+    if profile_transformed:
+        joint_start = _finite_vector(joint_start_rad, 2, "joint_start_rad")
+        duration_s = float(time_s[-1] - time_s[0])
+        if duration_s <= 0.0 or phase_shift >= duration_s:
+            raise ValueError("knee_phase_shift_s must be less than trajectory duration")
+        source_time = time_s - time_s[0]
+        shifted_time = np.mod(source_time - phase_shift, duration_s)
+        knee_at_shifted_time = np.interp(
+            shifted_time,
+            source_time,
+            source_q_knee,
+        )
+        knee_at_start = float(
+            np.interp(
+                np.mod(-phase_shift, duration_s),
+                source_time,
+                source_q_knee,
+            )
+        )
+        q_hip = joint_start[0] + scale_hip * (source_q_hip - source_q_hip[0])
+        q_knee = joint_start[1] + knee_at_shifted_time - knee_at_start
+        q_hip[-1] = q_hip[0]
+        q_knee[-1] = q_knee[0]
+    else:
+        if not math.isclose(scale_hip, 1.0, rel_tol=0.0, abs_tol=1e-12):
+            raise ValueError("hip_delta_scale requires joint_start_rad")
+        if not math.isclose(phase_shift, 0.0, rel_tol=0.0, abs_tol=1e-12):
+            raise ValueError("knee_phase_shift_s requires joint_start_rad")
+        joint_start = np.array([source_q_hip[0], source_q_knee[0]], dtype=float)
+        q_hip = source_q_hip.copy()
+        q_knee = source_q_knee.copy()
+
+    _, _, source_x_pull, source_z_pull = forward_kinematics(
+        source_q_hip, source_q_knee, L1, L2
+    )
     _, _, x_pull, z_pull = forward_kinematics(q_hip, q_knee, L1, L2)
     pull_rehab = np.column_stack(
         (np.asarray(x_pull, dtype=float), np.zeros(len(source)), np.asarray(z_pull, dtype=float))
@@ -318,23 +363,25 @@ def build_start_anchored_relative_trajectory(
     orientation = np.repeat(anchor_pose[None, 3:], len(source), axis=0)
 
     finite_source = np.isfinite(
-        np.column_stack((time_s, q_hip, q_knee, theta_source, pull_rehab))
+        np.column_stack((time_s, q_hip, q_knee, source_q_hip,
+                         source_q_knee, theta_source, pull_rehab))
     ).all(axis=1)
     hip_min, hip_max = np.deg2rad(APPROVED_HIP_ROM_DEG)
     knee_min, knee_max = np.deg2rad(APPROVED_KNEE_ROM_DEG)
     rom_valid = (
-        (q_hip >= hip_min - tolerance)
-        & (q_hip <= hip_max + tolerance)
-        & (q_knee >= knee_min - tolerance)
-        & (q_knee <= knee_max + tolerance)
+        (source_q_hip >= hip_min - tolerance)
+        & (source_q_hip <= hip_max + tolerance)
+        & (source_q_knee >= knee_min - tolerance)
+        & (source_q_knee <= knee_max + tolerance)
     )
     theta_valid_rows = np.isclose(
-        theta_source, q_hip - q_knee, atol=tolerance, rtol=0.0
+        theta_source, source_q_hip - source_q_knee,
+        atol=tolerance, rtol=0.0
     )
 
     if "x_pull_m" in source and "z_pull_m" in source:
         stored_pull = source[["x_pull_m", "z_pull_m"]].to_numpy(dtype=float)
-        fk_pull = pull_rehab[:, (0, 2)]
+        fk_pull = np.column_stack((source_x_pull, source_z_pull))
         fk_valid_rows = np.linalg.norm(stored_pull - fk_pull, axis=1) <= tolerance
     else:
         fk_valid_rows = np.ones(len(source), dtype=bool)
@@ -428,6 +475,9 @@ def build_start_anchored_relative_trajectory(
             "q_hip_ref": q_hip,
             "q_knee_ref": q_knee,
             "theta_shank_ref": q_hip - q_knee,
+            "source_q_hip_ref": source_q_hip,
+            "source_q_knee_ref": source_q_knee,
+            "source_theta_shank_ref": theta_source,
             "trajectory_valid": sample_valid,
             "invalid_reason": [";".join(reasons) for reasons in row_reasons],
             "experiment_mode": START_ANCHORED_RELATIVE_MODE,
@@ -500,6 +550,19 @@ def build_start_anchored_relative_trajectory(
         "tcp_orientation_strategy": "fixed_at_start_anchor",
         "relative_formula": "p_tcp_B(t)=p_tcp_start_B+R_base_from_rehab@S_z@(p_R(t)-p_R(0))",
         "rehab_z_scale": z_scale,
+        "joint_profile_transform": {
+            "enabled": profile_transformed,
+            "joint_start_rad": joint_start.tolist(),
+            "joint_start_deg": np.rad2deg(joint_start).tolist(),
+            "hip_delta_scale": scale_hip,
+            "knee_phase_shift_s": phase_shift,
+            "planned_hip_range_deg": np.rad2deg(
+                [float(np.min(q_hip)), float(np.max(q_hip))]
+            ).tolist(),
+            "planned_knee_range_deg": np.rad2deg(
+                [float(np.min(q_knee)), float(np.max(q_knee))]
+            ).tolist(),
+        },
         "rehab_pull_point_formula": "p_R(t)=[x_pull_FK(t),0,z_pull_FK(t)]",
         "equivalent_pull_point_geometry": {
             "L1_hip_to_knee_m": float(L1),

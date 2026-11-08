@@ -694,18 +694,31 @@ class RokaeMotionExecutor:
                 "start_scheduled_timing",
             )
         )
-        trajectory_auditor = (
-            audit_realtime_link_trajectory
-            if self.trajectory_profile == REALTIME_LINK_PROFILE
-            else audit_execution_trajectory_content
-        )
-        content_reasons, maximum_speed, maximum_acceleration = (
-            trajectory_auditor(
+        if self.trajectory_profile == REALTIME_LINK_PROFILE:
+            content_reasons, maximum_speed, maximum_acceleration = (
+                audit_realtime_link_trajectory(
+                    trajectory,
+                    self.safety,
+                    expected_trajectory_id=preflight.trajectory_id,
+                )
+            )
+        else:
+            content_reasons, maximum_speed, maximum_acceleration = (
+                audit_execution_trajectory_content(
                 trajectory,
                 self.safety,
                 expected_trajectory_id=preflight.trajectory_id,
+                    rehab_z_scale=preflight.rehab_z_scale,
+                    joint_limits_deg=(
+                        None
+                        if preflight.joint_limits_deg is None
+                        else {
+                            "hip": preflight.joint_limits_deg[0],
+                            "knee": preflight.joint_limits_deg[1],
+                        }
+                    ),
+                )
             )
-        )
         if content_reasons:
             raise PermissionError(
                 "real robot execution blocked by scheduler trajectory audit: "

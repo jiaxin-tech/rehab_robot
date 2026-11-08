@@ -52,6 +52,10 @@ python -m scripts.lab_session prepare --config config/experiment.json --session 
 
 轨迹方向由 `config/experiment.json` 的 `frame` 定义。两条配置向量表示康复坐标正 X、正 Z 在机器人基坐标系中的方向；实际运动方向还取决于预览中的 `delta_x_R/delta_z_R` 正负。当前参考主行程 `delta_x_R<0`，所以 `[0,-1,0]` 将主行程映射为基座 `Y+`。方向调整后必须核对预览中 `tcp_x_base/tcp_y_base/tcp_z_base` 的最小值、最大值和首段变化，再新建毫米级或空载会话验证。
 
+`config/experiment.json` 的 `trajectory.target_peak_tcp_z_base_m` 是基座坐标系绝对 Z 峰值，单位为米。TCP 原点由每次 `prepare` 只读捕获。空载模式可据此冻结单轴 `rehab_z_scale`；连接假腿时禁止单独放大 Z，因为它会破坏两连杆正运动学，普通联动必须改用经过审核的几何一致关节轨迹。改峰值、移动机器人或改变 TCP 后必须新建会话并重新准备，禁止只改旧会话 CSV。假腿“当前原点”应保存为独立的实验相对原点记录，不能覆盖 `calibration.*.zero_counts` 的编码器/解剖标定。
+
+当前普通联动从准备时实测物理髋膝角出发，在 `22.2～22.55 s` 内自动求膝轨迹周期平移量并保留完整角度行程；计划膝最低角必须比 `-10°` 物理下限高出 2° 跟踪门限及额外 0.5° 余量。随后程序在配置上限内二分求解髋幅值以达到 0.900 m。生成结果必须同时满足髋 `[-5°,145°]`、膝 `[-10°,145°]`、完整 XYZ 工作空间、速度和加速度限制；变换参数冻结在 `trajectory_adjustment.json`，预览、外层预检和调度器内层审计必须一致。
+
 ## 5. 实时链路诊断
 
 完整实验前必须先做 0.5--2.0 mm 的独立诊断，推荐 1 mm。
@@ -106,6 +110,10 @@ python -m scripts.lab_session run --config config/experiment.json --from-current
 ~~~
 
 该入口会新建 session、捕获当前位姿并生成相对轨迹，不要复用旧 session。
+
+连接假腿的普通 `prepare` 会同时冻结当前轴1/轴4为该 session 的轨迹起点，证据写入 `leg_start_origin.json`。它不重写全局编码器零点；运行前同时检查全局物理角度范围和 session 轨迹起点误差。若准备后假腿被拖动，必须换新 session 重新准备，不能通过增大 `max_start_angle_error_deg` 继续。
+
+运动过程中还会按最近已下发的轨迹时刻检查髋、膝跟踪误差。`acquisition.max_tracking_error_deg` 当前为 2°；超过后立即取消实时调度，不能用放宽物理角度范围代替跟踪误差修复。
 
 ## 8. 停止、故障和证据
 

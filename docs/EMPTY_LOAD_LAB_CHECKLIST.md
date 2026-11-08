@@ -78,6 +78,7 @@ git diff -- hardware/rokae_motion.py scripts/run_rehab_experiment.py
 | --- | --- | --- |
 | `empty_load.max_tcp_speed_m_s` | 0.03 | 链路健康、可稳定启动后，可单独降低到 0.015 比较；不是已验证推荐值 |
 | `empty_load.max_tcp_acceleration_m_s2` | 0.01 | 另起一轮可单独降低到 0.005 比较；不能解决通信或启动门禁 |
+| `trajectory.target_peak_tcp_z_base_m` | 0.9 | 空载的基座坐标系绝对 Z 峰值，单位 m；每次改值或移动 TCP 后必须新建会话重新 `prepare`，核对完整 XYZ 预览和工作空间；普通联动禁止单轴 Z 缩放 |
 | `motion.rt_filter_hz` | 50 | 先保持；不是力数据滤波，不能解除力查询阻塞 |
 | `motion.rt_network_tolerance_percent` | 20 | 先保持；不是 20 ms，不控制力查询阻塞 |
 | `motion.max_command_lateness_s` | 0.1 | 现场诊断临时放宽；超过 100 ms 仍拒绝下发，并结合回调和发送时序继续定位 |

@@ -6074,6 +6074,7 @@ def test_personal_run_requires_live_before_io(tmp_path):
 def test_personal_round_capture_and_cleanup(tmp_path, monkeypatch, personal_context, fails, collision_source):
     c = personal_context
     config = personal_round.configuration()
+    config.pop("trajectory", None)
     config["acquisition"].update(pre_roll_s=.0001, post_roll_s=.0001, max_leg_start_age_s=1., max_start_angle_error_deg=1.)
     config["training"]["enabled"] = False
     config["robot"].update(collision_source=collision_source,
@@ -6088,7 +6089,10 @@ def test_personal_round_capture_and_cleanup(tmp_path, monkeypatch, personal_cont
     class Capture:
         def __init__(self, *args): pass
         def start(self): pass
-        def stop(self): stopped.append(True)
+        def stop(self):
+            stopped.append(True)
+            if fails:
+                raise RuntimeError("synthetic ADS cleanup fault")
         def health_reason(self): return None
         def snapshot(self):
             import time
@@ -6112,6 +6116,104 @@ def test_personal_round_capture_and_cleanup(tmp_path, monkeypatch, personal_cont
     assert (tmp_path / "dispatch.csv").is_file()
     saved = json.loads((tmp_path / "round_status.json").read_text(encoding="utf8"))
     assert saved["status"] == ("FAILED" if fails else "CAPTURE_COMPLETE")
+    if fails:
+        assert saved["reason"] == "synthetic motion fault"
+        assert "synthetic ADS cleanup fault" in saved["capture_cleanup_error"]
+
+
+def test_personal_round_accepts_frozen_current_leg_as_session_start(
+    tmp_path, monkeypatch, personal_context
+):
+    config = personal_round.configuration()
+    config["acquisition"].update(
+        pre_roll_s=0.0001,
+        post_roll_s=0.0001,
+        max_leg_start_age_s=1.0,
+        max_start_angle_error_deg=2.0,
+    )
+    config["training"]["enabled"] = False
+    config_path = tmp_path / "experiment.json"
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+    rows = []
+    for _ in range(20):
+        rows.append(
+            {
+                "axis1_position_raw": -117326,
+                "axis1_statusword_hex": "0x0231",
+                "axis1_operation_enabled": False,
+                "axis1_fault": False,
+                "axis1_error_code_hex": "0x0000",
+                "axis4_position_raw": -2696206,
+                "axis4_statusword_hex": "0x0231",
+                "axis4_operation_enabled": False,
+                "axis4_fault": False,
+                "axis4_error_code_hex": "0x0000",
+            }
+        )
+    origin = personal_round._build_leg_start_origin(config, rows)
+    origin_path = tmp_path / "leg_start_origin.json"
+    personal_round.atomic_json(origin_path, origin)
+    personal_context.anchor.save_json(tmp_path / "anchor.json")
+    frame = personal_round.load_rehab_frame_config(personal_round.BUNDLE_PATH)
+    linked, _, adjustment = personal_round._linked_trajectory_adjustment(
+        config,
+        personal_context.anchor,
+        frame,
+        origin,
+    )
+    analysis_reference = pd.read_csv(personal_round.DEFAULT_REFERENCE_PATH)
+    analysis_reference["q_hip_rad"] = linked["q_hip_ref"]
+    analysis_reference["q_knee_rad"] = linked["q_knee_ref"]
+    analysis_reference_path = tmp_path / "linked_joint_reference.csv"
+    analysis_reference.to_csv(analysis_reference_path, index=False)
+    personal_round.report(
+        tmp_path,
+        {
+            "status": "PREPARED",
+            "config_path": str(config_path),
+            "empty_load": False,
+            "leg_start_origin_path": str(origin_path),
+            "analysis_reference_path": str(analysis_reference_path),
+            "trajectory_adjustment": adjustment,
+        },
+    )
+    monkeypatch.setattr(personal_round, "check_config", lambda *args, **kwargs: [])
+    monkeypatch.setattr(personal_round, "inspect_file", lambda *args, **kwargs: {"rows": 3})
+
+    class Capture:
+        def __init__(self, *args):
+            pass
+
+        def start(self):
+            pass
+
+        def stop(self):
+            pass
+
+        def health_reason(self):
+            return None
+
+        def snapshot(self):
+            return {
+                "last_sample_ns": time.perf_counter_ns(),
+                "latest": {
+                    "axis1_position_raw": -117326,
+                    "axis4_position_raw": -2696206,
+                },
+            }
+
+    def execute(**kwargs):
+        assert kwargs["execution_guard"]() is None
+        kwargs["dispatch_observer"](0.0, 1, 2)
+        return {"completed": True, "same_session_realtime_cleanup_completed": True}
+
+    result = personal_round.run(
+        tmp_path,
+        live=True,
+        capture_factory=Capture,
+        execute_fn=execute,
+    )
+    assert result["status"] == "CAPTURE_COMPLETE"
 
 
 def test_personal_algorithm_runs_without_hash_manifest(tmp_path):
@@ -6216,6 +6318,48 @@ def test_personal_ads_compact_configuration_decodes():
     decoded = decode_image(image, config)
     assert decoded["axis1_position_raw"] == 123
     assert decoded["axis4_torque_3c1a_nm"] == 2.5
+
+
+def test_personal_ads_process_preserves_worker_failure_detail(tmp_path):
+    import threading
+    from collection.twincat_leg import LegCaptureProcess
+
+    class ExitedProcess:
+        returncode = 1
+
+        @staticmethod
+        def poll():
+            return 1
+
+    class Reader:
+        @staticmethod
+        def join(timeout=None):
+            return None
+
+    class Stderr:
+        @staticmethod
+        def close():
+            return None
+
+    capture = object.__new__(LegCaptureProcess)
+    capture.process = ExitedProcess()
+    capture.status = {
+        "state": "failed",
+        "error": "TimeoutError: input toggle stopped changing",
+    }
+    capture._lock = threading.Lock()
+    capture._error = None
+    capture._reader = Reader()
+    capture._stderr = Stderr()
+
+    assert capture.health_reason() == (
+        "leg_capture_failed:TimeoutError: input toggle stopped changing"
+    )
+    with pytest.raises(
+        RuntimeError,
+        match="input toggle stopped changing.*partial CSV excluded",
+    ):
+        capture.stop()
 
 
 @pytest.mark.parametrize("value", [float("nan"), -1., None])
@@ -6597,6 +6741,120 @@ def test_current_origin_translates_path_and_preserves_captured_orientation(perso
     assert np.allclose(trajectory[["q_hip_ref", "q_knee_ref"]], c.trajectory[["q_hip_ref", "q_knee_ref"]])
 
 
+def test_leg_session_origin_preserves_physical_calibration(personal_context):
+    config = personal_round.configuration()
+    rows = []
+    for index in range(20):
+        rows.append(
+            {
+                "axis1_position_raw": -117326 + index % 2,
+                "axis1_statusword_hex": "0x0231",
+                "axis1_operation_enabled": False,
+                "axis1_fault": False,
+                "axis1_error_code_hex": "0x0000",
+                "axis4_position_raw": -2696206 + index % 2,
+                "axis4_statusword_hex": "0x0231",
+                "axis4_operation_enabled": False,
+                "axis4_fault": False,
+                "axis4_error_code_hex": "0x0000",
+            }
+        )
+    origin = personal_round._build_leg_start_origin(config, rows)
+    assert origin["usable_for_motion"]
+    assert origin["calibration_zero_counts_changed"] is False
+    for name in ("hip", "knee"):
+        conversion = personal_round._joint_calibration(
+            origin["session_calibration"][name]
+        )
+        actual = conversion.to_degrees(origin["axes"][name]["position_origin_raw"])
+        expected = personal_round._joint_calibration(
+            config["calibration"][name]
+        ).to_degrees(origin["axes"][name]["position_origin_raw"])
+        assert actual == pytest.approx(expected)
+
+
+def test_leg_session_origin_rejects_faulted_axis(personal_context):
+    rows = [
+        {
+            "axis1_position_raw": -117326,
+            "axis1_statusword_hex": "0x0218",
+            "axis1_operation_enabled": False,
+            "axis1_fault": True,
+            "axis1_error_code_hex": "0x0022",
+            "axis4_position_raw": -2696206,
+            "axis4_statusword_hex": "0x0231",
+            "axis4_operation_enabled": False,
+            "axis4_fault": False,
+            "axis4_error_code_hex": "0x0000",
+        }
+    ]
+    origin = personal_round._build_leg_start_origin(
+        personal_round.configuration(), rows
+    )
+    assert not origin["usable_for_motion"]
+    assert "axis1_fault" in origin["blocking_reasons"]
+
+
+def test_leg_status_heartbeat_has_margin_below_start_age_limit():
+    config = personal_round.configuration()
+    personal_round._validate_leg_start_freshness(config)
+    config["leg"]["heartbeat_s"] = config["acquisition"]["max_leg_start_age_s"]
+    with pytest.raises(ValueError, match="at most half"):
+        personal_round._validate_leg_start_freshness(config)
+
+
+def test_runtime_leg_tracking_gate_detects_opposite_knee_motion(personal_context):
+    config = personal_round.configuration()
+    rows = [
+        {
+            "axis1_position_raw": -117326,
+            "axis1_statusword_hex": "0x0231",
+            "axis1_operation_enabled": False,
+            "axis1_fault": False,
+            "axis1_error_code_hex": "0x0000",
+            "axis4_position_raw": -2696206,
+            "axis4_statusword_hex": "0x0231",
+            "axis4_operation_enabled": False,
+            "axis4_fault": False,
+            "axis4_error_code_hex": "0x0000",
+        }
+        for _ in range(20)
+    ]
+    origin = personal_round._build_leg_start_origin(config, rows)
+    frame = personal_round.load_rehab_frame_config(personal_round.BUNDLE_PATH)
+    linked, _, _ = personal_round._linked_trajectory_adjustment(
+        config, personal_context.anchor, frame, origin
+    )
+    reference = pd.DataFrame(
+        {
+            "time_s": linked["time_s"],
+            "q_hip_rad": linked["q_hip_ref"],
+            "q_knee_rad": linked["q_knee_ref"],
+        }
+    )
+    conversions = {
+        name: personal_round._joint_calibration(values)
+        for name, values in origin["session_calibration"].items()
+    }
+    latest = {
+        "axis1_position_raw": rows[0]["axis1_position_raw"],
+        # About 3 degrees of extension from the captured session start.
+        "axis4_position_raw": (
+            rows[0]["axis4_position_raw"]
+            - 3.0 * config["calibration"]["knee"]["counts_per_degree"]
+        ),
+    }
+    reason = personal_round._tracking_error_reason(
+        reference,
+        conversions,
+        latest,
+        trajectory_time_s=0.884,
+        max_tracking_error_deg=2.0,
+    )
+    assert reason is not None
+    assert reason.startswith("knee tracking error")
+
+
 def test_rehab_z_scale_changes_only_vertical_relative_component(personal_context):
     c = personal_context
     trajectory, audit, metadata = build_start_anchored_relative_trajectory(
@@ -6619,6 +6877,76 @@ def test_rehab_z_scale_must_be_finite_and_positive(personal_context, scale):
             rehab_frame=personal_context.frame,
             rehab_z_scale=scale,
         )
+
+
+def test_execution_audit_binds_scaled_z_to_declared_scale(personal_context):
+    c = personal_context
+    scale = 2.5
+    trajectory, audit, _ = build_start_anchored_relative_trajectory(
+        current_tcp_start_pose=c.anchor.tcp_pose_base,
+        rehab_frame=c.frame,
+        rehab_z_scale=scale,
+    )
+    request = c.request | {
+        "trajectory": trajectory,
+        "audit": audit,
+        "rehab_z_scale": scale,
+    }
+    preflight = evaluate_offline_execution_request(**request)
+    assert preflight.allowed
+    assert preflight.rehab_z_scale == scale
+    executor, _ = personal_executor(c)
+    assert executor.execute(trajectory, preflight).completed
+    wrong = evaluate_offline_execution_request(
+        **(request | {"rehab_z_scale": 1.0})
+    )
+    assert not wrong.allowed
+    assert "trajectory_pull_point_fk_mismatch" in wrong.reasons
+
+
+def test_geometry_consistent_linked_profile_passes_both_execution_audits(
+    personal_context,
+):
+    config = personal_round.configuration()
+    rows = [
+        {
+            "axis1_position_raw": -117326,
+            "axis1_statusword_hex": "0x0231",
+            "axis1_operation_enabled": False,
+            "axis1_fault": False,
+            "axis1_error_code_hex": "0x0000",
+            "axis4_position_raw": -2696206,
+            "axis4_statusword_hex": "0x0231",
+            "axis4_operation_enabled": False,
+            "axis4_fault": False,
+            "axis4_error_code_hex": "0x0000",
+        }
+        for _ in range(20)
+    ]
+    origin = personal_round._build_leg_start_origin(config, rows)
+    trajectory, audit, metadata = personal_round._linked_trajectory_adjustment(
+        config,
+        personal_context.anchor,
+        personal_context.frame,
+        origin,
+    )
+    limits = {
+        name: [values["safe_min_deg"], values["safe_max_deg"]]
+        for name, values in config["calibration"].items()
+    }
+    request = personal_context.request | {
+        "trajectory": trajectory,
+        "audit": audit,
+        "rehab_z_scale": 1.0,
+        "joint_limits_deg": limits,
+    }
+    preflight = evaluate_offline_execution_request(**request)
+    assert preflight.allowed, preflight.reasons
+    assert metadata["actual_peak_tcp_z_base_m"] == pytest.approx(0.9)
+    assert metadata["rehab_z_scale"] == 1.0
+    assert metadata["planned_joint_range_deg"]["knee"][0] >= -10.0
+    executor, _ = personal_executor(personal_context)
+    assert executor.execute(trajectory, preflight).completed
 
 
 def test_from_current_captures_fresh_pose_before_running(tmp_path, monkeypatch):
@@ -6703,7 +7031,7 @@ def test_empty_load_retiming_uses_independent_slow_limits(tmp_path, personal_con
 
 def test_empty_load_target_peak_z_is_frozen_into_retiming(tmp_path, personal_context):
     config = personal_round.configuration()
-    config["empty_load"]["target_peak_tcp_z_base_m"] = 0.9
+    config["trajectory"]["target_peak_tcp_z_base_m"] = 0.9
     config_path = tmp_path / "experiment.json"
     config_path.write_text(json.dumps(config), encoding="utf-8")
     personal_context.anchor.save_json(tmp_path / "anchor.json")
@@ -6711,6 +7039,18 @@ def test_empty_load_target_peak_z_is_frozen_into_retiming(tmp_path, personal_con
     assert metadata["rehab_z_scale"] > 1.0
     assert metadata["actual_peak_tcp_z_base_m"] == pytest.approx(0.9, abs=1e-12)
     assert metadata["minimum_tcp_z_base_m"] >= config["motion"]["workspace_min_base_m"][2]
+
+
+def test_linked_trajectory_refuses_anisotropic_z_scaling(personal_context):
+    config = personal_round.configuration()
+    frame = personal_round.load_rehab_frame_config(personal_round.BUNDLE_PATH)
+    with pytest.raises(ValueError, match="geometry-consistent joint trajectory"):
+        personal_round._target_peak_adjustment(
+            config,
+            personal_context.anchor,
+            frame,
+            enforce_motion_limits=True,
+        )
 
 
 def test_empty_load_run_skips_dummy_leg_and_training(tmp_path, monkeypatch, personal_context):
@@ -6730,6 +7070,7 @@ def test_empty_load_run_skips_dummy_leg_and_training(tmp_path, monkeypatch, pers
         assert "execution_guard" not in kwargs
         assert kwargs["reference_path_override"] == Path(metadata["reference_path"])
         assert kwargs["safety_config_path"] == metadata["safety_path"]
+        assert kwargs["rehab_z_scale"] == metadata["rehab_z_scale"]
         kwargs["dispatch_observer"](0., 1, 2)
         return {"completed": True, "same_session_realtime_cleanup_completed": True}
     state = personal_round.run(tmp_path, live=True, empty_load=True,

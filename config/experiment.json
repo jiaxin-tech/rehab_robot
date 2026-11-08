@@ -51,7 +51,7 @@
     "startup_timeout_s": 5,
     "max_progress_age_s": 0.25,
     "shutdown_timeout_s": 5,
-    "heartbeat_s": 0.05,
+    "heartbeat_s": 0.01,
     "no_new_sample_timeout_s": 0.1,
     "poll_interval_s": 0.0005,
     "guards": {
@@ -70,7 +70,7 @@
       "counts_per_degree": 993.5884722910836,
       "zero_counts": -121084.4218312675,
       "flexion_sign": -1,
-      "safe_min_deg": 15,
+      "safe_min_deg": -5,
       "safe_max_deg": 145,
       "torque_sign_to_inverse_dynamics": -1
     },
@@ -78,7 +78,7 @@
       "counts_per_degree": 36794.035628458296,
       "zero_counts": -2615016.5409129467,
       "flexion_sign": 1,
-      "safe_min_deg": 15,
+      "safe_min_deg": -10,
       "safe_max_deg": 145,
       "torque_sign_to_inverse_dynamics": 1
     }
@@ -130,13 +130,20 @@
       "skew_s": 0.04,
       "runtime_stale_grace_s": 0.3
     },
-    "max_start_angle_error_deg": 2
+    "max_start_angle_error_deg": 2,
+    "max_tracking_error_deg": 2
+  },
+  "trajectory": {
+    "target_peak_tcp_z_base_m": 0.9,
+    "linked_knee_phase_shift_min_s": 22.2,
+    "linked_knee_phase_shift_max_s": 22.55,
+    "linked_physical_limit_extra_margin_deg": 0.5,
+    "linked_hip_delta_scale_max": 1.6
   },
   "empty_load": {
     "max_tcp_speed_m_s": 0.03,
     "max_tcp_acceleration_m_s2": 0.01,
-    "retiming_margin": 1.01,
-    "target_peak_tcp_z_base_m": 0.9
+    "retiming_margin": 1.01
   },
   "training": {
     "enabled": false,

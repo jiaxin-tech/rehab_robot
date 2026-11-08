@@ -257,6 +257,8 @@ class LegCaptureProcess:
             state, error = dict(self.status), self._error
         if error:
             return "leg_capture_protocol_error:" + error
+        if state.get("state") == "failed":
+            return "leg_capture_failed:" + str(state.get("error", "unknown worker failure"))
         if self.process is None or self.process.poll() is not None:
             return "leg_capture_process_not_running"
         if state.get("state") != "recording":
@@ -284,9 +286,24 @@ class LegCaptureProcess:
                     raise TimeoutError("ADS worker did not close CSV; partial data excluded")
             self._reader.join(timeout=1)
             with self._lock:
-                completed = self.status.get("state") == "completed"
+                state = dict(self.status)
+                protocol_error = self._error
+            completed = state.get("state") == "completed"
             if self.process.returncode != 0 or not completed:
-                raise RuntimeError("ADS capture did not acknowledge a completed, closed CSV")
+                if protocol_error:
+                    detail = "protocol error: " + protocol_error
+                elif state.get("state") == "failed":
+                    detail = str(state.get("error", "unknown worker failure"))
+                else:
+                    detail = (
+                        f"worker exit code {self.process.returncode}; "
+                        f"last state {state.get('state', 'unavailable')}"
+                    )
+                raise RuntimeError(
+                    "ADS capture failed before a completed, closed CSV was acknowledged: "
+                    + detail
+                    + "; partial CSV excluded"
+                )
         finally:
             self._stderr.close()
 

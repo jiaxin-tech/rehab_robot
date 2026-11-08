@@ -161,6 +161,8 @@ def run_execute(
     trajectory_id: str,
     reference_path_override: str | Path | None = None,
     rehab_z_scale: float = 1.0,
+    joint_profile_transform: dict[str, Any] | None = None,
+    joint_limits_deg: dict[str, Sequence[float]] | None = None,
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
@@ -191,11 +193,15 @@ def run_execute(
     )
     if prepare_realtime and (live_wrench_config is None or "rtcontrolling" not in live_wrench_config.get("allowed_operation_states", [])):
         raise ValueError("RT acquisition configuration required")
+    transform = joint_profile_transform or {}
     trajectory, audit, trajectory_metadata = build_start_anchored_relative_trajectory(
         reference_path,
         current_tcp_start_pose=anchor.tcp_pose_base,
         rehab_frame=frame,
         rehab_z_scale=rehab_z_scale,
+        joint_start_rad=transform.get("joint_start_rad"),
+        hip_delta_scale=transform.get("hip_delta_scale", 1.0),
+        knee_phase_shift_s=transform.get("knee_phase_shift_s", 0.0),
     )
     offline = evaluate_offline_execution_request(
         mode="execute",
@@ -207,6 +213,8 @@ def run_execute(
         safety=safety,
         trajectory=trajectory,
         audit=audit,
+        rehab_z_scale=rehab_z_scale,
+        joint_limits_deg=joint_limits_deg,
     )
     # This is deliberately before adapter construction and before logging: a
     # bad flag/review/reference request cannot even attempt a robot connection.
@@ -337,6 +345,8 @@ def run_execute(
             safety=safety,
             trajectory=trajectory,
             audit=audit,
+            rehab_z_scale=rehab_z_scale,
+            joint_limits_deg=joint_limits_deg,
             acquisition_health=health,
             logger=logger,
             robot_adapter=adapter,
