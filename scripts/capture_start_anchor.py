@@ -40,15 +40,21 @@ def run_capture(
     workpiece_name: str | None = None,
     notes: str = "",
     adapter_factory: AdapterFactory | None = None,
+    independent_tcp: bool = False,
 ) -> dict[str, Any]:
-    reference_frame, reference_metadata = load_closed_reference_trajectory(reference)
-    trajectory_ids = reference_frame["trajectory_id"].astype(str).unique().tolist()
-    if trajectory_ids != [FIRST_ROBOT_TRIAL_TRAJECTORY_ID]:
+    if independent_tcp:
+        from control.independent_tcp_trajectory import TRAJECTORY_ID
+        trajectory_ids = [TRAJECTORY_ID]
+        first = {"q_hip_rad": 0., "q_knee_rad": 0.}
+    else:
+        reference_frame, reference_metadata = load_closed_reference_trajectory(reference)
+        trajectory_ids = reference_frame["trajectory_id"].astype(str).unique().tolist()
+        first = reference_frame.iloc[0]
+    if not independent_tcp and trajectory_ids != [FIRST_ROBOT_TRIAL_TRAJECTORY_ID]:
         raise ValueError(
             "first anchor capture accepts only "
             f"{FIRST_ROBOT_TRIAL_TRAJECTORY_ID}"
         )
-    first = reference_frame.iloc[0]
     adapter = (adapter_factory or _default_adapter_factory)(robot_ip)
     connect_attempted = False
     stream_attempted = False

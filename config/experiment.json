@@ -134,7 +134,14 @@
     "max_tracking_error_deg": 2
   },
   "trajectory": {
+    "mode": "independent_tcp",
     "target_peak_tcp_z_base_m": 0.9,
+    "horizontal_displacement_m": -0.2,
+    "lift_duration_s": 80,
+    "return_duration_s": 80,
+    "start_hold_s": 2,
+    "peak_hold_s": 2,
+    "sample_period_s": 0.1,
     "linked_knee_phase_shift_min_s": 22.2,
     "linked_knee_phase_shift_max_s": 22.55,
     "linked_physical_limit_extra_margin_deg": 0.5,

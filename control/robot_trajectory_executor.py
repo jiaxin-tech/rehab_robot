@@ -232,7 +232,7 @@ class RokaeMotionExecutor:
         self.clock = clock
         self.execution_guard = execution_guard
         self.dispatch_observer = dispatch_observer
-        if trajectory_profile not in ("approved_rehab", REALTIME_LINK_PROFILE):
+        if trajectory_profile not in ("approved_rehab", "independent_tcp", REALTIME_LINK_PROFILE):
             raise ValueError("unsupported trajectory_profile")
         self.trajectory_profile = trajectory_profile
         if type(use_windows_scheduler_priority) is not bool:
@@ -585,8 +585,8 @@ class RokaeMotionExecutor:
             tcp_target_rx=pose[3],
             tcp_target_ry=pose[4],
             tcp_target_rz=pose[5],
-            q_hip_ref=float(row["q_hip_ref"]),
-            q_knee_ref=float(row["q_knee_ref"]),
+            q_hip_ref=float(row["q_hip_ref"]) if "q_hip_ref" in row else None,
+            q_knee_ref=float(row["q_knee_ref"]) if "q_knee_ref" in row else None,
             command_valid=True,
             invalid_reason="",
         )
@@ -657,6 +657,12 @@ class RokaeMotionExecutor:
                 )
             self._used = True
         preflight.require_allowed()
+        from control.independent_tcp_trajectory import TRAJECTORY_ID, trajectory_digest
+        if preflight.trajectory_id == TRAJECTORY_ID and (
+            not preflight.tcp_trajectory_digest
+            or trajectory_digest(trajectory) != preflight.tcp_trajectory_digest
+        ):
+            raise PermissionError("TCP trajectory changed after preflight")
         self.safety.require_execute_allowed()
         self.logger.assert_healthy()
         if len(trajectory) < 2:
@@ -669,8 +675,6 @@ class RokaeMotionExecutor:
             "tcp_rx",
             "tcp_ry",
             "tcp_rz",
-            "q_hip_ref",
-            "q_knee_ref",
             "trajectory_valid",
         }
         missing = required.difference(trajectory.columns)
@@ -705,9 +709,9 @@ class RokaeMotionExecutor:
         else:
             content_reasons, maximum_speed, maximum_acceleration = (
                 audit_execution_trajectory_content(
-                trajectory,
-                self.safety,
-                expected_trajectory_id=preflight.trajectory_id,
+                    trajectory,
+                    self.safety,
+                    expected_trajectory_id=preflight.trajectory_id,
                     rehab_z_scale=preflight.rehab_z_scale,
                     joint_limits_deg=(
                         None

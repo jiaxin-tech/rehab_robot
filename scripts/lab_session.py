@@ -458,7 +458,28 @@ def _capture_leg_start_origin(config_path, output_path, *, sample_count=20):
             time.sleep(0.01)
     finally:
         source.close()
-    payload = _build_leg_start_origin(c, rows)
+    if c.get("trajectory", {}).get("mode") == "independent_tcp":
+        payload = {"origin_role": "passive_leg_start_check", "axes": {},
+                   "session_calibration": c["calibration"],
+                   "calibration_zero_counts_changed": False, "blocking_reasons": []}
+        for name, axis in (("hip", 1), ("knee", 4)):
+            conversion = _joint_calibration(c["calibration"][name])
+            raw = np.asarray([row[f"axis{axis}_position_raw"] for row in rows], float)
+            angle = float(conversion.to_degrees(float(np.median(raw))))
+            payload["axes"][name] = {"physical_angle_deg": angle,
+                "position_origin_raw": float(np.median(raw))}
+            if (not np.isfinite(raw).all() or not np.isfinite(angle)
+                or not conversion.safe_min_deg <= angle <= conversion.safe_max_deg
+                or np.ptp(raw)/conversion.counts_per_degree > 0.1):
+                payload["blocking_reasons"].append(name + " invalid or unstable start")
+            for row in rows:
+                if (row[f"axis{axis}_fault"] or row[f"axis{axis}_operation_enabled"]
+                    or row[f"axis{axis}_error_code_hex"] != "0x0000"):
+                    payload["blocking_reasons"].append(name + " not passive or drive fault")
+                    break
+        payload["usable_for_motion"] = not payload["blocking_reasons"]
+    else:
+        payload = _build_leg_start_origin(c, rows)
     atomic_json(output_path, payload)
     if not payload["usable_for_motion"]:
         raise RuntimeError(
@@ -492,6 +513,11 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
     acquisition_fields = (("wrench_hz",) if empty_load else
         ("pre_roll_s", "post_roll_s", "wrench_hz", "max_leg_start_age_s",
          "max_start_angle_error_deg", "max_tracking_error_deg"))
+    independent = c.get("trajectory", {}).get("mode") == "independent_tcp"
+    if independent:
+        acquisition_fields = tuple(key for key in acquisition_fields if key != "max_tracking_error_deg")
+        if c["training"]["enabled"]:
+            problems.append("independent TCP uses measured-response analysis; joint-reference training must be disabled")
     for name in acquisition_fields:
         check("acquisition." + name, lambda name=name: positive(c["acquisition"].get(name), name))
     check("wrench", lambda: load_live_wrench_config(config_path))
@@ -719,6 +745,186 @@ def _prepare_empty_load_artifacts(config_path, directory):
     return metadata
 
 
+def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
+                           leg_origin_capture_fn, trajectory_settings=None,
+                           parent_session=None, repeat_index=None):
+    from control.independent_tcp_trajectory import build_tcp_trajectory, audit_tcp_trajectory
+    anchor = load_start_anchor(directory / "anchor.json")
+    frame = load_rehab_frame_config(config_path)
+    settings = dict(trajectory_settings or c["trajectory"])
+    settings.pop("mode", None)
+    # Both modes use the same conservative limits and Cartesian geometry.
+    motion = dict(c["motion"])
+    speed, acceleration, margin = _empty_load_settings(c)
+    motion["max_tcp_speed_m_s"] = min(speed, motion["max_tcp_speed_m_s"])
+    motion["max_tcp_acceleration_m_s2"] = min(acceleration, motion["max_tcp_acceleration_m_s2"])
+    table, _, _ = build_tcp_trajectory(settings,
+        current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
+    v = np.linalg.norm(table[[f"tcp_v{a}_base" for a in "xyz"]], axis=1).max()
+    a = np.linalg.norm(table[[f"tcp_a{axis}_base" for axis in "xyz"]], axis=1).max()
+    scale = max(1., margin*v/motion["max_tcp_speed_m_s"],
+                np.sqrt(margin*a/motion["max_tcp_acceleration_m_s2"]))
+    for key in ("lift_duration_s", "return_duration_s"):
+        settings[key] *= scale
+    table, audit, metadata = build_tcp_trajectory(settings,
+        current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
+    metadata["anchor"] = anchor.to_dict()
+    safety = ExperimentSafetyConfig(**motion)
+    safety.require_execute_allowed()
+    reasons, _, _ = audit_tcp_trajectory(table, safety,
+        expected_trajectory_id=anchor.trajectory_id, frame=frame, anchor=anchor)
+    if reasons:
+        raise ValueError("TCP trajectory blocked: " + ";".join(reasons))
+    table.to_csv(directory / "tcp_trajectory.csv", index=False)
+    atomic_json(directory / "tcp_plan.json", metadata)
+    atomic_json(directory / "tcp_safety.json", motion)
+    atomic_json(directory / "prepared_config.json", c)
+    if not empty_load:
+        leg_path = directory / "leg_start_origin.json"
+        origin = leg_origin_capture_fn(config_path, leg_path)
+        state.update(leg_start_origin_path=str(leg_path), leg_start_origin=origin)
+    preview_trajectory(anchor=anchor, frame_config=config_path,
+        output_dir=directory / "preview", tcp_trajectory_settings=metadata["tcp_settings"])
+    state.update(trajectory_mode="independent_tcp", tcp_plan=metadata,
+        reference_path=str(directory / "tcp_trajectory.csv"),
+        safety_config_path=str(directory / "tcp_safety.json"),
+        **({"parent_session": str(parent_session), "repeat_index": int(repeat_index)}
+           if parent_session is not None else {}),
+        status="PREPARED", blockers=_check_config_for_operation(config_path, empty_load=empty_load))
+
+
+def _passive_leg_guard(capture, c, origin, *, before_motion=False):
+    reason = capture.health_reason()
+    if reason:
+        return reason
+    snapshot = capture.snapshot()
+    age = (time.perf_counter_ns() - snapshot["last_sample_ns"]) / 1e9
+    if not np.isfinite(age) or not 0 <= age <= c["acquisition"]["max_leg_start_age_s"]:
+        return "leg sample stale"
+    for name, axis in (("hip", 1), ("knee", 4)):
+        row = snapshot["latest"]
+        if row[f"axis{axis}_fault"] or row[f"axis{axis}_error_code_hex"] != "0x0000":
+            return name + " drive fault"
+        if row[f"axis{axis}_operation_enabled"]:
+            return name + " drive enabled during passive experiment"
+        conversion = _joint_calibration(c["calibration"][name])
+        angle = conversion.to_degrees(row[f"axis{axis}_position_raw"])
+        if not np.isfinite(angle) or not conversion.safe_min_deg <= angle <= conversion.safe_max_deg:
+            return name + " outside physical calibrated range"
+        if before_motion and abs(angle-origin["axes"][name]["physical_angle_deg"]) > c["acquisition"]["max_start_angle_error_deg"]:
+            return name + " moved since prepare; prepare a new session"
+    return None
+
+
+def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
+    from control.independent_tcp_trajectory import build_tcp_trajectory, audit_tcp_trajectory
+    if bool(state.get("empty_load")) != bool(empty_load):
+        raise ValueError("prepared session mode does not match requested run mode")
+    config_path = state["config_path"]
+    c = configuration(config_path)
+    if c != json.loads((directory / "prepared_config.json").read_text(encoding="utf-8")):
+        raise ValueError("configuration changed; prepare a new TCP session")
+    blockers = _check_config_for_operation(config_path, empty_load=empty_load)
+    if blockers:
+        raise ValueError("complete physical parameters: " + "; ".join(blockers))
+    anchor = load_start_anchor(directory / "anchor.json")
+    plan = json.loads((directory / "tcp_plan.json").read_text(encoding="utf-8"))
+    if plan != state["tcp_plan"] or plan["anchor"] != anchor.to_dict():
+        raise ValueError("prepared TCP plan or anchor changed; prepare a new session")
+    frame = load_rehab_frame_config(config_path)
+    table, _, _ = build_tcp_trajectory(plan["tcp_settings"],
+        current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
+    frozen = pd.read_csv(directory / "tcp_trajectory.csv")
+    pd.testing.assert_frame_equal(table, frozen, check_exact=False, atol=1e-12, rtol=0)
+    expected_motion = dict(c["motion"])
+    for key in ("max_tcp_speed_m_s", "max_tcp_acceleration_m_s2"):
+        expected_motion[key] = min(c["empty_load"][key], expected_motion[key])
+    actual_motion = json.loads((directory / "tcp_safety.json").read_text(encoding="utf-8"))
+    if actual_motion != expected_motion:
+        raise ValueError("prepared TCP safety settings changed")
+    reasons, _, _ = audit_tcp_trajectory(frozen, ExperimentSafetyConfig(**actual_motion),
+        expected_trajectory_id=anchor.trajectory_id, anchor=anchor, frame=frame)
+    if reasons:
+        raise ValueError("prepared TCP trajectory invalid: " + ";".join(reasons))
+    capture, dispatches, failure = None, [], None
+    robot, acquisition = c["robot"], c["acquisition"]
+    state.update(status="RUNNING", blockers=[])
+    report(directory, state)
+    try:
+        guard = None
+        if not empty_load:
+            origin = json.loads((directory / "leg_start_origin.json").read_text(encoding="utf-8"))
+            if not origin.get("usable_for_motion"):
+                raise ValueError("passive leg start check failed")
+            capture = capture_factory(config_path, directory / "leg")
+            capture.start()
+            def guard():
+                return _passive_leg_guard(capture, c, origin, before_motion=not dispatches)
+            deadline = time.perf_counter() + acquisition["pre_roll_s"]
+            while time.perf_counter() < deadline:
+                reason = guard()
+                if reason:
+                    raise RuntimeError(reason)
+                time.sleep(.01)
+        def dispatched(t, start, end):
+            dispatches.append(dict(trajectory_time_s=t, dispatch_start_ns=start, dispatch_end_ns=end))
+        kwargs = dict(robot_ip=robot["ip"], local_ip=robot["local_ip"],
+            episode_dir=directory / "robot", anchor_path=directory / "anchor.json",
+            requested_anchor_id=anchor.anchor_id, frame_config_path=config_path,
+            safety_config_path=directory / "tcp_safety.json", trajectory_id=anchor.trajectory_id,
+            tcp_trajectory_settings=plan["tcp_settings"], enable_motion=True,
+            operator_confirmation=OPERATOR_CONFIRMATION,
+            live_wrench_config=load_live_wrench_config(config_path),
+            adapter_factory=_configured_adapter_factory(local_ip=robot["local_ip"], robot_class=robot["robot_class"],
+                state_interval_ms=None, collision_source=robot["collision_source"], collision_event_max_age_s=robot["collision_event_max_age_s"]),
+            wrench_hz=acquisition["wrench_hz"], collision_source=robot["collision_source"],
+            collision_event_max_age_s=robot["collision_event_max_age_s"],
+            prepare_realtime=True, dispatch_observer=dispatched)
+        if guard is not None:
+            kwargs["execution_guard"] = guard
+        result = execute_fn(**kwargs)
+        if result.get("completed") is not True or not dispatches:
+            raise RuntimeError("robot did not complete the TCP trajectory")
+        if capture is not None:
+            deadline = time.perf_counter() + acquisition["post_roll_s"]
+            while time.perf_counter() < deadline:
+                reason = guard()
+                if reason:
+                    raise RuntimeError(reason)
+                time.sleep(.01)
+            capture.stop()
+            capture = None
+        state.update(status="EMPTY_LOAD_COMPLETE" if empty_load else "CAPTURE_COMPLETE", execution=result)
+    except BaseException as exc:
+        failure = exc
+        state.update(status="FAILED", reason=str(exc))
+        raise
+    finally:
+        try:
+            if capture is not None:
+                capture.stop()
+        except BaseException as exc:
+            state["capture_cleanup_error"] = str(exc)
+            if failure is None:
+                state.update(status="FAILED", reason="capture cleanup: " + str(exc))
+                raise
+        finally:
+            if dispatches:
+                pd.DataFrame(dispatches).to_csv(directory / "dispatch.csv", index=False)
+            report(directory, state)
+    if not empty_load:
+        try:
+            state["quality"] = inspect_file(directory / "leg/leg.csv", expected_hz=c["leg"]["expected_hz"])
+            from measurement_validation.passive_response import analyze_passive_response
+            state["passive_response"] = analyze_passive_response(directory, c)
+        except Exception as exc:
+            state["response_analysis_error"] = str(exc)
+            raise
+        finally:
+            report(directory, state)
+    return state
+
+
 def prepare(
     config_path,
     directory,
@@ -726,6 +932,9 @@ def prepare(
     capture_fn=run_capture,
     leg_origin_capture_fn=_capture_leg_start_origin,
     empty_load=False,
+    trajectory_settings=None,
+    parent_session=None,
+    repeat_index=None,
 ):
     directory = Path(directory).resolve()
     directory.mkdir(parents=True, exist_ok=False)
@@ -735,9 +944,16 @@ def prepare(
     report(directory, state)
     try:
         r = c["robot"]
+        independent = c.get("trajectory", {}).get("mode") == "independent_tcp"
         capture_fn(robot_ip=r["ip"], output_path=directory / "anchor.json",
+                   **({"independent_tcp": True} if independent else {}),
                    adapter_factory=_configured_adapter_factory(local_ip=r["local_ip"], robot_class=r["robot_class"], state_interval_ms=None,
                        collision_source=r["collision_source"], collision_event_max_age_s=r["collision_event_max_age_s"]))
+        if independent:
+            _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
+                                   leg_origin_capture_fn, trajectory_settings,
+                                   parent_session, repeat_index)
+            return state
         reference = DEFAULT_REFERENCE_PATH
         if empty_load:
             empty_load_metadata = _prepare_empty_load_artifacts(config_path, directory)
@@ -843,6 +1059,12 @@ def analyze(directory):
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
     if state["status"] not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE"):
         raise ValueError("a completed recording is required")
+    if state.get("trajectory_mode") == "independent_tcp":
+        from measurement_validation.passive_response import analyze_passive_response
+        state["passive_response"] = analyze_passive_response(directory, configuration(state["config_path"]))
+        state["analysis_status"] = "COMPLETE"
+        report(directory, state)
+        return state
     try:
         c = configuration(state["config_path"])
         positive(c["training"]["timeout_s"], "training.timeout_s")
@@ -887,10 +1109,15 @@ def _run(directory, *, live=False, empty_load=False, capture_factory=LegCaptureP
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
     if state["status"] != "PREPARED":
         raise ValueError("prepare a new session before running")
+    if state.get("trajectory_mode") == "independent_tcp":
+        return _run_tcp(directory, state, empty_load=empty_load,
+                        capture_factory=capture_factory, execute_fn=execute_fn)
     if bool(state.get("empty_load", False)) != bool(empty_load):
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
     c = configuration(config_path)
+    if c.get("trajectory", {}).get("mode") == "independent_tcp":
+        raise ValueError("legacy session cannot run in independent TCP mode; prepare a new session")
     blockers = _check_config_for_operation(
         state["config_path"], empty_load=empty_load
     )
@@ -1111,21 +1338,90 @@ def run_from_current(config_path, directory, *, live=False, empty_load=False):
     return run(directory, live=True)
 
 
+def repeat(source_directory, directory, *, live=False, empty_load=None,
+           capture_fn=run_capture, leg_origin_capture_fn=_capture_leg_start_origin,
+           capture_factory=LegCaptureProcess, execute_fn=run_execute):
+    """Create a new anchored session with the source TCP plan and optionally run it."""
+    source_directory = Path(source_directory).resolve()
+    target_directory = Path(directory).resolve()
+    source_state = json.loads((source_directory / "round_status.json").read_text(encoding="utf-8"))
+    completed = {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"}
+    if source_state.get("status") not in completed:
+        raise ValueError("repeat source must be a completed session")
+    if source_state.get("trajectory_mode") != "independent_tcp":
+        raise ValueError("repeat currently requires an independent TCP source session")
+    source_plan = source_state.get("tcp_plan")
+    if not isinstance(source_plan, dict) or not isinstance(source_plan.get("tcp_settings"), dict):
+        raise ValueError("repeat source is missing frozen TCP plan")
+    source_config = Path(source_state["config_path"])
+    config = configuration(source_config)
+    prepared = source_directory / "prepared_config.json"
+    if not prepared.is_file() or configuration(prepared) != config:
+        raise ValueError("repeat source configuration changed; use a reviewed source session")
+    mode_empty = bool(source_state.get("empty_load", False)) if empty_load is None else bool(empty_load)
+    if mode_empty != bool(source_state.get("empty_load", False)):
+        raise ValueError("repeat mode must match the source session")
+    repeat_index = int(source_state.get("repeat_index", 0)) + 1
+    prepare(source_config, target_directory, empty_load=mode_empty,
+            trajectory_settings=source_plan["tcp_settings"],
+            parent_session=source_directory, repeat_index=repeat_index,
+            capture_fn=capture_fn, leg_origin_capture_fn=leg_origin_capture_fn)
+    if live:
+        return run(target_directory, live=True, empty_load=mode_empty,
+                   capture_factory=capture_factory, execute_fn=execute_fn)
+    return json.loads((target_directory / "round_status.json").read_text(encoding="utf-8"))
+
+
+def complete(directory):
+    """Promote a successful recording to a final, reviewable COMPLETE state."""
+    directory = Path(directory).resolve()
+    state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+    if state.get("status") == "COMPLETE":
+        return state
+    if state.get("status") not in {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE"}:
+        raise ValueError("complete requires a successful executed or analyzed session")
+    execution = state.get("execution", {})
+    if execution and (execution.get("completed") is not True or
+                      execution.get("same_session_realtime_cleanup_completed") is not True):
+        raise ValueError("execution completion and realtime cleanup evidence are required")
+    if state.get("trajectory_mode") == "independent_tcp":
+        if state.get("empty_load"):
+            required = (directory / "robot/robot_state.csv", directory / "robot/robot_wrench.csv",
+                        directory / "robot/trajectory_command.csv", directory / "tcp_trajectory.csv")
+        else:
+            if not (directory / "passive_response_summary.json").is_file():
+                analyze(directory)
+            required = (directory / "leg/leg.csv", directory / "passive_response.csv",
+                        directory / "passive_response_summary.json")
+        missing = [str(path.relative_to(directory)) for path in required if not path.is_file()]
+        if missing:
+            raise ValueError("completion evidence missing: " + ", ".join(missing))
+    state["status"] = "COMPLETE"
+    state["completion"] = {"reviewed": False, "completed_at_host_time_s": time.perf_counter()}
+    report(directory, state)
+    return state
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("check", "observe", "prepare", "run", "train"))
+    parser.add_argument("action", choices=("check", "observe", "prepare", "run", "repeat", "analyze", "train", "complete"))
     parser.add_argument("--config", type=Path, default=BUNDLE_PATH)
     parser.add_argument("--session", type=Path)
+    parser.add_argument("--source", type=Path, help="completed session used as a repeat source")
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--from-current", action="store_true", help="run from a newly captured current pose in a new session")
     parser.add_argument("--empty-load", action="store_true",
-                        help="prepare or run a separately retimed slow trajectory without dummy-leg capture")
+                        help="prepare, run, or repeat a slow trajectory without dummy-leg capture")
     parser.add_argument("--duration", type=float, default=10., help="observation duration in seconds")
     args = parser.parse_args(argv)
     if args.from_current and args.action != "run":
         parser.error("--from-current requires run")
-    if args.empty_load and args.action not in ("prepare", "run"):
+    if args.empty_load and args.action not in ("prepare", "run", "repeat"):
         parser.error("--empty-load requires prepare or run")
+    if args.action == "repeat" and args.source is None:
+        parser.error("--source is required for repeat")
+    if args.action == "complete" and args.live:
+        parser.error("complete is offline and does not accept --live")
     if args.action == "check":
         problems = check_config(args.config, require_physical_files=True)
         print("\n".join(problems) if problems else "READY")
@@ -1142,6 +1438,11 @@ def main(argv=None):
             run_options["empty_load"] = True
         state = (run_from_current(args.config, args.session, **run_options)
                  if args.from_current else run(args.session, **run_options))
+    elif args.action == "repeat":
+        state = repeat(args.source, args.session, live=args.live,
+                       empty_load=(True if args.empty_load else None))
+    elif args.action == "complete":
+        state = complete(args.session)
     else:
         state = analyze(args.session)
     print(state["status"])

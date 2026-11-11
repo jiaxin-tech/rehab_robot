@@ -46,6 +46,7 @@ class ExecutionPreflight:
     runtime_robot_summary: dict | None = None
     rehab_z_scale: float = 1.0
     joint_limits_deg: tuple[tuple[float, float], tuple[float, float]] | None = None
+    tcp_trajectory_digest: str | None = None
 
     def require_allowed(self):
         if not self.allowed:
@@ -136,6 +137,11 @@ def audit_execution_trajectory_content(
     require_official_reference: bool = False,
 ) -> tuple[tuple[str, ...], float | None, float | None]:
     """Independently audit the exact table that may reach the scheduler."""
+
+    from control.independent_tcp_trajectory import TRAJECTORY_ID, audit_tcp_trajectory
+    if expected_trajectory_id == TRAJECTORY_ID:
+        return audit_tcp_trajectory(trajectory, safety,
+            expected_trajectory_id=expected_trajectory_id, frame=frame, anchor=anchor)
 
     reasons: list[str] = []
 
@@ -445,6 +451,7 @@ def audit_execution_trajectory_content(
 def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirmation,
         requested_anchor_id, frame, anchor, safety, trajectory, audit,
         rehab_z_scale=1.0, joint_limits_deg=None):
+    from control.independent_tcp_trajectory import TRAJECTORY_ID, trajectory_digest
     reasons = list(safety.execution_block_reasons())
     if mode != "execute" or enable_motion is not True or operator_confirmation != OPERATOR_CONFIRMATION:
         reasons.append("explicit motion confirmation required")
@@ -465,6 +472,8 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
         anchor_id=anchor.anchor_id,
         maximum_tcp_speed_m_s=speed,
         maximum_tcp_acceleration_m_s2=acceleration,
+        tcp_trajectory_digest=(trajectory_digest(trajectory)
+            if audit.trajectory_id == TRAJECTORY_ID else None),
         rehab_z_scale=float(rehab_z_scale),
         joint_limits_deg=(
             None
@@ -518,4 +527,5 @@ def evaluate_execution_preflight(*, acquisition_health, logger, robot_adapter, c
         rehab_z_scale=result.rehab_z_scale,
         joint_limits_deg=result.joint_limits_deg,
         runtime_robot_summary=summary,
+        tcp_trajectory_digest=result.tcp_trajectory_digest,
     )

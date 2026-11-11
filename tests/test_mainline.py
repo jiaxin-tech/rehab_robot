@@ -5022,6 +5022,47 @@ class units_and_frames__UnitAndFrameTests(units_and_frames__unittest.TestCase):
 
 
 
+def test_repeat_creates_new_anchor_and_preserves_frozen_tcp_plan(tmp_path, monkeypatch, personal_context):
+    from control.independent_tcp_trajectory import TRAJECTORY_ID
+    c = personal_round.configuration()
+    config_path = tmp_path / "config.json"
+    personal_round.atomic_json(config_path, c)
+    monkeypatch.setattr(personal_round, "_check_config_for_operation", lambda *a, **k: [])
+    anchors = iter([personal_context.anchor, replace(personal_context.anchor, anchor_id="repeat-anchor")])
+    def capture_anchor(**kwargs):
+        replace(next(anchors), trajectory_id=TRAJECTORY_ID).save_json(kwargs["output_path"])
+    source = tmp_path / "source"
+    personal_round.prepare(config_path, source, empty_load=True, capture_fn=capture_anchor)
+    state = json.loads((source / "round_status.json").read_text(encoding="utf-8"))
+    state.update(status="EMPTY_LOAD_COMPLETE", execution={"completed": True,
+        "same_session_realtime_cleanup_completed": True})
+    personal_round.report(source, state)
+    target = tmp_path / "repeat"
+    repeated = personal_round.repeat(source, target, empty_load=True,
+        capture_fn=capture_anchor, capture_factory=pytest.fail, execute_fn=pytest.fail)
+    assert repeated["status"] == "PREPARED"
+    assert repeated["parent_session"] == str(source.resolve())
+    assert repeated["repeat_index"] == 1
+    assert json.loads((target / "anchor.json").read_text(encoding="utf-8"))["anchor_id"] == "repeat-anchor"
+    assert json.loads((target / "tcp_plan.json").read_text(encoding="utf-8"))["tcp_settings"] == state["tcp_plan"]["tcp_settings"]
+
+
+def test_complete_requires_evidence_and_promotes_session(tmp_path):
+    state = {"status": "EMPTY_LOAD_COMPLETE", "empty_load": True,
+        "trajectory_mode": "independent_tcp", "execution": {"completed": True,
+            "same_session_realtime_cleanup_completed": True}}
+    personal_round.report(tmp_path, state)
+    with pytest.raises(ValueError, match="completion evidence"):
+        personal_round.complete(tmp_path)
+    (tmp_path / "tcp_trajectory.csv").write_text("x\n", encoding="utf-8")
+    (tmp_path / "robot").mkdir()
+    for name in ("robot_state.csv", "robot_wrench.csv", "trajectory_command.csv"):
+        (tmp_path / "robot" / name).write_text("x\n", encoding="utf-8")
+    result = personal_round.complete(tmp_path)
+    assert result["status"] == "COMPLETE"
+    assert result["completion"]["reviewed"] is False
+
+
 if __name__ == "__main__":
     units_and_frames__unittest.main()
 
@@ -5689,6 +5730,199 @@ def personal_executor(c):
     return executor, clock
 
 
+def _tcp_test_request(c):
+    from control.independent_tcp_trajectory import build_tcp_trajectory, TRAJECTORY_ID
+    settings = personal_round.configuration()["trajectory"]
+    anchor = replace(c.anchor, trajectory_id=TRAJECTORY_ID)
+    table, audit, _ = build_tcp_trajectory(settings,
+        current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=c.frame)
+    return c.request | dict(anchor=anchor, trajectory=table, audit=audit)
+
+
+def test_independent_tcp_executes_without_joint_targets(personal_context):
+    c = personal_context
+    request = _tcp_test_request(c)
+    table = request["trajectory"]
+    assert not any("q_hip" in column or "q_knee" in column for column in table)
+    assert table.tcp_z_base.max() == pytest.approx(.9)
+    assert table.tcp_z_base.iloc[-1] == table.tcp_z_base.iloc[0]
+    assert table.time_s.iloc[-1] == pytest.approx(164.)
+    executor, _ = personal_executor(c)
+    result = executor.execute(table, evaluate_offline_execution_request(**request))
+    assert result.completed and result.commands_dispatched == len(table)
+
+
+@pytest.mark.parametrize("column,value", [("tcp_z_base", .99),
+    ("tcp_vz_base", 99.), ("time_s", -1.), ("tcp_rx", .3),
+    ("delta_x_R", .1), ("trajectory_valid", False)])
+def test_independent_tcp_rejects_tampered_content(personal_context, column, value):
+    request = _tcp_test_request(personal_context)
+    table = request["trajectory"].copy()
+    table.loc[10, column] = value
+    assert not evaluate_offline_execution_request(**(request | {"trajectory": table})).allowed
+
+
+def test_independent_tcp_scheduler_rejects_change_after_preflight(personal_context):
+    request = _tcp_test_request(personal_context)
+    preflight = evaluate_offline_execution_request(**request)
+    preflight.require_allowed()
+    request["trajectory"].loc[10, "tcp_z_base"] += .001
+    executor, _ = personal_executor(personal_context)
+    with pytest.raises(PermissionError, match="changed after preflight"):
+        executor.execute(request["trajectory"], preflight)
+    assert "target" not in personal_context.events
+
+
+@pytest.mark.parametrize("key,value", [("max_tcp_speed_m_s", 1e-6),
+    ("max_tcp_acceleration_m_s2", 1e-6), ("workspace_max_base_m", (.1, .1, .1))])
+def test_independent_tcp_keeps_physical_gates(personal_context, key, value):
+    request = _tcp_test_request(personal_context)
+    request["safety"] = replace(request["safety"], **{key: value})
+    assert not evaluate_offline_execution_request(**request).allowed
+
+
+def test_passive_leg_response_can_differ_from_reference_but_not_limits():
+    import time
+    c = personal_round.configuration()
+    latest = {}
+    origin = {"axes": {}}
+    for name, axis in (("hip", 1), ("knee", 4)):
+        cal = c["calibration"][name]
+        latest.update({f"axis{axis}_position_raw": cal["zero_counts"] + 30*cal["counts_per_degree"]/cal["flexion_sign"],
+            f"axis{axis}_fault": False, f"axis{axis}_operation_enabled": False,
+            f"axis{axis}_error_code_hex": "0x0000"})
+        origin["axes"][name] = {"physical_angle_deg": 0.}
+    capture = SimpleNamespace(health_reason=lambda: None,
+        snapshot=lambda: {"last_sample_ns": time.perf_counter_ns(), "latest": latest})
+    assert personal_round._passive_leg_guard(capture, c, origin) is None
+    assert "moved since prepare" in personal_round._passive_leg_guard(capture, c, origin, before_motion=True)
+    latest["axis1_operation_enabled"] = True
+    assert "drive enabled" in personal_round._passive_leg_guard(capture, c, origin)
+    latest["axis1_operation_enabled"] = False
+    cal = c["calibration"]["hip"]
+    latest["axis1_position_raw"] = cal["zero_counts"] + 180*cal["counts_per_degree"]/cal["flexion_sign"]
+    assert "physical calibrated range" in personal_round._passive_leg_guard(capture, c, origin)
+
+
+def test_tcp_sessions_share_geometry_and_freeze_configuration(tmp_path, monkeypatch, personal_context):
+    from control.independent_tcp_trajectory import TRAJECTORY_ID
+    c = personal_round.configuration()
+    config_path = tmp_path / "config.json"
+    personal_round.atomic_json(config_path, c)
+    monkeypatch.setattr(personal_round, "_check_config_for_operation", lambda *a, **k: [])
+    def capture(**kwargs):
+        assert kwargs["independent_tcp"] is True
+        replace(personal_context.anchor, trajectory_id=TRAJECTORY_ID).save_json(kwargs["output_path"])
+    def leg_origin(config, path):
+        value = {"usable_for_motion": True, "axes": {name: {"physical_angle_deg": 0.}
+                 for name in ("hip", "knee")}}
+        personal_round.atomic_json(path, value)
+        return value
+    empty = tmp_path / "empty"
+    passive = tmp_path / "passive"
+    personal_round.prepare(config_path, empty, empty_load=True, capture_fn=capture)
+    personal_round.prepare(config_path, passive, capture_fn=capture, leg_origin_capture_fn=leg_origin)
+    pd.testing.assert_frame_equal(pd.read_csv(empty / "tcp_trajectory.csv"),
+                                  pd.read_csv(passive / "tcp_trajectory.csv"))
+    assert not (passive / "linked_joint_reference.csv").exists()
+    def execute(**kwargs):
+        assert "joint_profile_transform" not in kwargs
+        assert "execution_guard" not in kwargs
+        assert kwargs["tcp_trajectory_settings"]["target_peak_tcp_z_base_m"] == .9
+        kwargs["dispatch_observer"](0., 1, 2)
+        return {"completed": True}
+    assert personal_round.run(empty, live=True, empty_load=True, execute_fn=execute)["status"] == "EMPTY_LOAD_COMPLETE"
+    c["trajectory"]["target_peak_tcp_z_base_m"] = .8
+    personal_round.atomic_json(config_path, c)
+    with pytest.raises(ValueError, match="configuration changed"):
+        personal_round.run(passive, live=True, execute_fn=lambda **k: pytest.fail("must not move"))
+
+
+def test_passive_response_uses_measured_angles_and_marks_data_gaps(tmp_path):
+    from measurement_validation.passive_response import analyze_passive_response
+    c = personal_round.configuration()
+    (tmp_path / "leg").mkdir()
+    (tmp_path / "robot").mkdir()
+    leg = {"host_monotonic_ns": [1_000_000_000, 1_020_000_000, 2_000_000_000]}
+    for name, axis in (("hip", 1), ("knee", 4)):
+        cal = c["calibration"][name]
+        leg[f"axis{axis}_position_raw"] = [cal["zero_counts"] + angle*cal["counts_per_degree"]/cal["flexion_sign"]
+            for angle in (0., 10., 40.)]
+        leg[f"axis{axis}_torque_3c1a_nm"] = [-3., -4., -5.]
+    pd.DataFrame(leg).to_csv(tmp_path / "leg/leg.csv", index=False)
+    pd.DataFrame({"query_start_s": [.99, 1.99], "query_end_s": [1., 2.],
+        "frame_type": ["base", "base"], "valid": [True, False],
+        "fx": [3., 900.], "fy": [4., 900.], "fz": [0., 900.],
+        "tx": [0., 0.], "ty": [0., 0.], "tz": [0., 0.]}).to_csv(tmp_path / "robot/robot_wrench.csv", index=False)
+    pd.DataFrame({"host_time_s": [.99], "tcp_x": [.5], "tcp_y": [0.], "tcp_z": [.5],
+        "valid": [True]}).to_csv(tmp_path / "robot/robot_state.csv", index=False)
+    summary = analyze_passive_response(tmp_path, c)
+    response = pd.read_csv(tmp_path / "passive_response.csv")
+    assert response.hip_deg.tolist() == pytest.approx([0., 10., 40.])
+    assert response.hip_torque_nm.tolist() == [-3., -4., -5.]
+    assert summary["wrench_matched_rows"] == 2
+    assert summary["ranges"]["robot_wrench_force_magnitude_n"] == [5., 5.]
+    assert pd.isna(response.fx.iloc[-1])
+    assert not summary["joint_tracking_error_applicable"]
+    assert not summary["identification_ready"]
+
+
+@pytest.mark.parametrize("fails", [False, True])
+def test_passive_tcp_session_executes_and_cleans_capture(tmp_path, monkeypatch, personal_context, fails):
+    import time
+    from control.independent_tcp_trajectory import TRAJECTORY_ID
+    c = personal_round.configuration()
+    c["acquisition"].update(pre_roll_s=.0001, post_roll_s=.0001)
+    config_path = tmp_path / "config.json"
+    personal_round.atomic_json(config_path, c)
+    monkeypatch.setattr(personal_round, "_check_config_for_operation", lambda *a, **k: [])
+    monkeypatch.setattr(personal_round, "inspect_file", lambda *a, **k: {"rows": 3})
+    import measurement_validation.passive_response as analysis
+    monkeypatch.setattr(analysis, "analyze_passive_response", lambda *a: {"joint_tracking_error_applicable": False})
+    def capture_anchor(**kwargs):
+        replace(personal_context.anchor, trajectory_id=TRAJECTORY_ID).save_json(kwargs["output_path"])
+    def origin(config, path):
+        value = {"usable_for_motion": True, "axes": {name: {"physical_angle_deg": 0.}
+            for name in ("hip", "knee")}}
+        personal_round.atomic_json(path, value)
+        return value
+    session = tmp_path / "session"
+    personal_round.prepare(config_path, session, capture_fn=capture_anchor, leg_origin_capture_fn=origin)
+    angle = [0.]
+    stopped = []
+    class Capture:
+        def __init__(self, *args): pass
+        def start(self): pass
+        def stop(self): stopped.append(True)
+        def health_reason(self): return None
+        def snapshot(self):
+            latest = {}
+            for name, axis in (("hip", 1), ("knee", 4)):
+                cal = c["calibration"][name]
+                latest.update({f"axis{axis}_position_raw": cal["zero_counts"] + angle[0]*cal["counts_per_degree"]/cal["flexion_sign"],
+                    f"axis{axis}_fault": False, f"axis{axis}_operation_enabled": False,
+                    f"axis{axis}_error_code_hex": "0x0000"})
+            return {"last_sample_ns": time.perf_counter_ns(), "latest": latest}
+    def execute(**kwargs):
+        assert kwargs["execution_guard"]() is None
+        kwargs["dispatch_observer"](0., 1, 2)
+        angle[0] = 30.
+        assert kwargs["execution_guard"]() is None
+        if fails:
+            raise RuntimeError("synthetic TCP failure")
+        return {"completed": True}
+    if fails:
+        with pytest.raises(RuntimeError, match="synthetic TCP failure"):
+            personal_round.run(session, live=True, capture_factory=Capture, execute_fn=execute)
+    else:
+        state = personal_round.run(session, live=True, capture_factory=Capture, execute_fn=execute)
+        assert state["status"] == "CAPTURE_COMPLETE"
+        assert not state["passive_response"]["joint_tracking_error_applicable"]
+    assert stopped == [True]
+    assert (session / "dispatch.csv").is_file()
+    assert not (session / "running.lock").exists()
+
+
 def test_personal_executor_completes_and_stops(personal_context):
     c = personal_context
     executor, _ = personal_executor(c)
@@ -5701,9 +5935,12 @@ def test_personal_executor_completes_and_stops(personal_context):
     assert c.events.count("stop") == 1
 
 
+@pytest.mark.parametrize("independent", [False, True])
 def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
-        personal_context):
+        personal_context, independent):
     c = personal_context
+    request = _tcp_test_request(c) if independent else c.request
+    trajectory = request["trajectory"]
     configured = {}
     admitted = []
     observed = []
@@ -5735,20 +5972,20 @@ def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
     executor.dispatch_observer = lambda *values: observed.append(values)
 
     result = executor.execute(
-        c.trajectory, evaluate_offline_execution_request(**c.request)
+        trajectory, evaluate_offline_execution_request(**request)
     )
 
     assert result.completed
-    assert admitted == list(range(len(c.trajectory)))
+    assert admitted == list(range(len(trajectory)))
     assert schedule_events.index(("admit", 1)) < schedule_events.index(
         ("start_timing", None)
     )
     assert schedule_events.index(("admit", 2)) < schedule_events.index(
         ("wait", 1)
     )
-    assert len(configured["poses"]) == len(c.trajectory)
+    assert len(configured["poses"]) == len(trajectory)
     assert configured["lateness"] == c.safety.max_command_lateness_s
-    assert len(observed) == len(c.trajectory)
+    assert len(observed) == len(trajectory)
 
 
 @pytest.mark.parametrize("source,allowed", [("controller", True), ("query", False), ("events", False)])
@@ -6125,6 +6362,7 @@ def test_personal_round_accepts_frozen_current_leg_as_session_start(
     tmp_path, monkeypatch, personal_context
 ):
     config = personal_round.configuration()
+    config["trajectory"].pop("mode", None)
     config["acquisition"].update(
         pre_roll_s=0.0001,
         post_roll_s=0.0001,
@@ -6255,9 +6493,13 @@ def test_personal_archive_completed_session(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("fails", [False, True])
-def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context, fails):
+@pytest.mark.parametrize("independent", [False, True])
+def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context, fails, independent):
     from scripts import run_rehab_experiment as runner
     c = personal_context
+    if independent:
+        request = _tcp_test_request(c)
+        c.anchor, c.audit = request["anchor"], request["audit"]
     anchor_path = tmp_path / "anchor.json"
     c.anchor.save_json(anchor_path)
     safety_path = tmp_path / "limits.json"
@@ -6296,6 +6538,8 @@ def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context
         motion_factory=lambda adapter: c.motion, prepare_realtime=True, wrench_hz=50,
         live_wrench_config={"connection": {"robot_ip": "192.0.2.1", "local_ip": "192.0.2.2"},
                             "budgets": {"startup_s": 1}, "allowed_operation_states": ["rtcontrolling"]})
+    if independent:
+        kwargs["tcp_trajectory_settings"] = personal_round.configuration()["trajectory"]
     if fails:
         with pytest.raises(RuntimeError, match="synthetic target failure"):
             runner.run_execute(**kwargs)
@@ -6305,6 +6549,11 @@ def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context
     assert c.events[-1] == "stop"
     metadata = json.loads((tmp_path / "robot/metadata.json").read_text(encoding="utf8"))
     assert metadata["logger"]["status"] == ("failed" if fails else "completed")
+    if independent:
+        assert metadata["trajectory_profile"] == "independent_tcp"
+        commands = pd.read_csv(tmp_path / "robot/trajectory_command.csv")
+        assert commands.q_hip_ref.isna().all()
+        assert commands.q_knee_ref.isna().all()
 
 
 def test_personal_ads_compact_configuration_decodes():
@@ -7055,6 +7304,7 @@ def test_linked_trajectory_refuses_anisotropic_z_scaling(personal_context):
 
 def test_empty_load_run_skips_dummy_leg_and_training(tmp_path, monkeypatch, personal_context):
     config = personal_round.configuration()
+    config["trajectory"].pop("mode", None)
     config["training"]["enabled"] = True
     config_path = tmp_path / "experiment.json"
     config_path.write_text(json.dumps(config), encoding="utf-8")

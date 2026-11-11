@@ -163,6 +163,7 @@ def run_execute(
     rehab_z_scale: float = 1.0,
     joint_profile_transform: dict[str, Any] | None = None,
     joint_limits_deg: dict[str, Sequence[float]] | None = None,
+    tcp_trajectory_settings: dict[str, Any] | None = None,
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
@@ -189,20 +190,29 @@ def run_execute(
     reference_path = (
         Path(reference_path_override).resolve()
         if reference_path_override is not None
-        else _reference_path(trajectory_id)
+        else (Path(anchor_path).parent / "tcp_trajectory.csv"
+              if tcp_trajectory_settings is not None else _reference_path(trajectory_id))
     )
     if prepare_realtime and (live_wrench_config is None or "rtcontrolling" not in live_wrench_config.get("allowed_operation_states", [])):
         raise ValueError("RT acquisition configuration required")
     transform = joint_profile_transform or {}
-    trajectory, audit, trajectory_metadata = build_start_anchored_relative_trajectory(
-        reference_path,
-        current_tcp_start_pose=anchor.tcp_pose_base,
-        rehab_frame=frame,
-        rehab_z_scale=rehab_z_scale,
-        joint_start_rad=transform.get("joint_start_rad"),
-        hip_delta_scale=transform.get("hip_delta_scale", 1.0),
-        knee_phase_shift_s=transform.get("knee_phase_shift_s", 0.0),
-    )
+    if tcp_trajectory_settings is not None:
+        from control.independent_tcp_trajectory import build_tcp_trajectory
+        trajectory, audit, trajectory_metadata = build_tcp_trajectory(
+            tcp_trajectory_settings, current_tcp_start_pose=anchor.tcp_pose_base,
+            rehab_frame=frame)
+    else:
+        trajectory, audit, trajectory_metadata = build_start_anchored_relative_trajectory(
+            reference_path,
+            current_tcp_start_pose=anchor.tcp_pose_base,
+            rehab_frame=frame,
+            rehab_z_scale=rehab_z_scale,
+            joint_start_rad=transform.get("joint_start_rad"),
+            hip_delta_scale=transform.get("hip_delta_scale", 1.0),
+            knee_phase_shift_s=transform.get("knee_phase_shift_s", 0.0),
+        )
+    if trajectory_id != audit.trajectory_id:
+        raise ValueError("requested trajectory ID differs from generated trajectory")
     offline = evaluate_offline_execution_request(
         mode="execute",
         enable_motion=enable_motion,
@@ -261,10 +271,11 @@ def run_execute(
             "parent_reference_id": trajectory_metadata.get(
                 "parent_reference_id"
             ),
-            "reference_version": MEASURED_ASYMMETRIC_CLOSED_REFERENCE,
+            "reference_version": ("independent_tcp_v1" if tcp_trajectory_settings is not None
+                                  else MEASURED_ASYMMETRIC_CLOSED_REFERENCE),
             "reference_path": str(reference_path.resolve()),
-            "approved_hip_rom": list(APPROVED_HIP_ROM_DEG),
-            "approved_knee_rom": list(APPROVED_KNEE_ROM_DEG),
+            "approved_hip_rom": None if tcp_trajectory_settings is not None else list(APPROVED_HIP_ROM_DEG),
+            "approved_knee_rom": None if tcp_trajectory_settings is not None else list(APPROVED_KNEE_ROM_DEG),
             "rom_protocol_version": ROM_PROTOCOL_VERSION,
             "rehab_frame": frame.as_metadata(),
             "rehab_frame_config_path": str(Path(frame_config_path).resolve()),
@@ -395,7 +406,7 @@ def run_execute(
                 "realtime_schedule_interpolation": getattr(
                     motion_adapter, "schedule_interpolation_mode", None
                 ),
-                "trajectory_profile": "approved_rehab",
+                "trajectory_profile": "independent_tcp" if tcp_trajectory_settings is not None else "approved_rehab",
             }
         )
         extra = {}
@@ -411,7 +422,7 @@ def run_execute(
             # Do not require Windows process/thread priority changes for a
             # physical run. Runtime safety gates remain enforced.
             use_windows_scheduler_priority=False,
-            trajectory_profile="approved_rehab",
+            trajectory_profile="independent_tcp" if tcp_trajectory_settings is not None else "approved_rehab",
             **extra,
         )
         result = executor.execute(trajectory, preflight)

@@ -108,12 +108,30 @@ def preview_trajectory(
     hip_delta_scale: float = 1.0,
     knee_phase_shift_s: float = 0.0,
     reference_start_tolerance_rad: float = 1e-9,
+    tcp_trajectory_settings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate review artifacts without importing or touching hardware."""
     resolved_anchor = load_start_anchor(anchor) if isinstance(anchor, (str, Path)) else anchor
     if not isinstance(resolved_anchor, StartAnchor):
         raise TypeError("anchor must be a StartAnchor or JSON path")
     frame = load_rehab_frame_config(frame_config)
+    if tcp_trajectory_settings is not None:
+        from control.independent_tcp_trajectory import build_tcp_trajectory
+        trajectory, audit, metadata = build_tcp_trajectory(
+            tcp_trajectory_settings, current_tcp_start_pose=resolved_anchor.tcp_pose_base,
+            rehab_frame=frame)
+        if audit.trajectory_id != resolved_anchor.trajectory_id:
+            raise ValueError("anchor trajectory_id does not match TCP plan")
+        destination = Path(output_dir).expanduser().resolve()
+        destination.mkdir(parents=True, exist_ok=True)
+        trajectory.to_csv(destination / "trajectory_preview.csv", index=False)
+        paths = _plot_preview(trajectory, destination)
+        _write_json(destination / "preview_metadata.json", {
+            **metadata, "anchor": resolved_anchor.to_dict(),
+            "git_commit": current_git_commit(), "preview_only": True,
+            "hardware_accessed": False, "trajectory_audit": audit.as_dict()})
+        return {"trajectory_valid": True, "trajectory_id": audit.trajectory_id,
+                "sample_count": len(trajectory), "plots": [str(p) for p in paths]}
     trajectory, audit, metadata = build_start_anchored_relative_trajectory(
         reference,
         current_tcp_start_pose=resolved_anchor.tcp_pose_base,
