@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "action": "inspect",
+  "status": "COMPLETE",
+  "ok": true,
+  "hostname": "DESKTOP-P1EOI08",
+  "started_utc": "2026-11-14T09:03:04.630882+00:00",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "live_requested": true,
+  "motion_commanded": false,
+  "ads_write_used": false,
+  "remote_helper_used": false,
+  "duration_s": null,
+  "source_sha256": {
+    "scripts/manual_leg_check.py": "3ae9ed9faea574ef75c26f5c532bc15d40bf46dc726560b336106c0c1cd9554b",
+    "collection/twincat_leg.py": "0b89dafc51bad085f27ecdea6934c3a6a293aa24f4a2fb82d28bc73a25cb4a40",
+    "config/bundle.py": "6ef762651b2422f93f578a2f5ae2737e0c5f8d9897d46f4ca44d9ef88b8242e5",
+    "scripts/twincat_file_evidence.py": "5f85840f7143ca366bb75de460c1f1a282fe3f689ef62d371289109e03253dc5"
+  },
+  "git_head": "3d59ed56540de0dd88b4bef4272a88969aca855c",
+  "config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+  "offline_check": {
+    "ok": true,
+    "checks": {
+      "windows": true,
+      "python_64bit": true,
+      "dll_exists": true,
+      "configuration_valid": true
+    },
+    "python_version": "3.12.10",
+    "python_executable": "C:\\Users\\liumai\\fjx\\rehab_robot\\.venv\\Scripts\\python.exe",
+    "hostname": "DESKTOP-P1EOI08",
+    "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+    "config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+    "configured_ams_net_id": "10.20.4.89.1.1",
+    "ads_dll_path": "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\TcAdsDll.dll",
+    "device_connected": false,
+    "ads_library_loaded": false
+  },
+  "error": null,
+  "capture_authorized": false,
+  "interpretation": "Read completion only; not hardware healthy or mapping verified.",
+  "summary": {
+    "toggle_transitions": 9,
+    "unique_image_sha256_count": 20,
+    "unique_image_sha256": [
+      "03602233b459591374ed4ac29cae6e806957cefee78c8eee909ab26af6359e36",
+      "06326bddbe9a55047031e0667b6e7e03a3746814a69ed19183e49cd71994a741",
+      "13a18b5884c573b18134009cd0ffbd9a6e4947725d81d556433c1c348d653c1a",
+      "63082a3a194e15c4ef0fdb0983bb80badcc18509dbfa1720293a735a53c4bc04",
+      "66aa3844e5245875a86defb4965d33c5197e981872ef3eea2c24d299f79db0ef",
+      "700746a019fa994bcf85677c9c36df1fa97d9b658ea9bd0eb9e4a14eddbbcf47",
+      "70a5927f7b922563df1b82b45fb31d775969cee35a0fca3a4d229cefc2b955f0",
+      "74f87909568d46f4ba4e71d35b647cfed683c484fbf643a293d99ea0272e91d8",
+      "7fb285aae3609cda0bd1020d51dcd63b3ceb51def602eeece97e62e03b66393b",
+      "85514bfe1ba785480914294087c92d6d8e76992d26f457e6f091cbd5be4268e6",
+      "969402be4712f94db05667d628ee013bcad89130adc7b93624a63438bbc96069",
+      "aadc4e769148782d251f8fbd315ab93dfdcf9bc9b77181bd4ad775d2fa0cdc38",
+      "b9191fdbb5be17da6fc05488101fc4341cc96c1907cbc5fd2e04fdd2e6799f8e",
+      "cc317f5ab639babfa74bce6b882ee5b57d71ba37106bb14422e91a777a9ecefb",
+      "ccb692c44cb92710337b89fc12a817a05a333628e2a18abca5b30613b2c21fcc",
+      "cf3841837c2b5b7b5c6531838cfa6b4847bf2a8bd1ec753aa580854265349120",
+      "dbb7afacdc533927a6311557bb1b35b2c46cf3ba0f121546bddaa4f9ecff099d",
+      "dc3bfbd84d8e49d7385fec97d6e37e579995ff89bb54081e9f72a1d3baf0b482",
+      "f9416462dddb2382ec40576c2c36bad89f9a9dfeba06e27455f24ec714f7221e",
+      "ff34da771455068543b2fa5e76539ff185ac35bf4682bcc065ccef39cfda8f08"
+    ],
+    "raw_byte_change_events": 455,
+    "changed_byte_indices": [
+      2,
+      6,
+      7,
+      8,
+      9,
+      19,
+      20,
+      21,
+      25,
+      29,
+      30,
+      31,
+      32,
+      42,
+      43,
+      44,
+      48,
+      52,
+      53,
+      54,
+      55,
+      66,
+      67,
+      71,
+      75,
+      76,
+      77,
+      78,
+      89,
+      90,
+      1365
+    ],
+    "axis_status_distributions": {
+      "1": {
+        "0x0218": 20
+      },
+      "2": {
+        "0x0231": 20
+      },
+      "3": {
+        "0x0231": 20
+      },
+      "4": {
+        "0x0231": 20
+      }
+    },
+    "axis_error_distributions": {
+      "1": {
+        "0x0022": 20
+      },
+      "2": {
+        "0x0000": 20
+      },
+      "3": {
+        "0x0000": 20
+      },
+      "4": {
+        "0x0000": 20
+      }
+    },
+    "observed_guard_failures": {
+      "axis1 fault=True": 20,
+      "axis1 error_code=0x0022": 20
+    },
+    "decode_error_count": 0,
+    "capture_authorized": false,
+    "hardware_healthy_established": false,
+    "mapping_verified": false
+  },
+  "completed_utc": "2026-11-14T09:03:04.867228+00:00",
+  "output_files_sha256": {
+    "inspection_frames.json": "4154e8d90834a200040a5dafcd8cf2a52a6a9a45e9e4a21dae8c0101a561669e",
+    "leg_config_snapshot.json": "c2f84da80ab1355a3118ae8a0746fc334ee4cfd134429069999b65366a9ac41b",
+    "segment_status.json": "5faebb295d65e418e968f365874b2dfe2ee58af1d80b213da8065d9805246d02",
+    "twincat_file_evidence.json": "c28c7c0aec5d25e8295dc5198838d798aa87494b61fe1fc5091319d26fdbeadd"
+  }
+}
