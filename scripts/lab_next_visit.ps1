@@ -1,11 +1,17 @@
 [CmdletBinding()]
 param(
-    [ValidateSet('Check', 'Initialize', 'Diagnostics', 'Events', 'Capture', 'Observe', 'Release', 'Empty', 'Round', 'Train')]
+    [ValidateSet('Check', 'Initialize', 'Diagnostics', 'Events', 'Capture', 'Quality', 'Calibrate', 'Observe', 'Release', 'Empty', 'Round', 'Train')]
     [string]$Action = 'Check',
     [string]$Profile = 'config/lab_next_visit.json',
     [string]$Python = '',
     [string]$Release = '',
     [string]$Session = '',
+    [string]$OutputRoot = '',
+    [string]$Data = '',
+    [string]$Manifest = '',
+    [string]$Label = '',
+    [ValidateRange(0.1, 3600.0)]
+    [double]$DurationSeconds = 10,
     [switch]$Live
 )
 Set-StrictMode -Version Latest
@@ -19,6 +25,11 @@ $launcherArgs = @('-X', 'utf8', '-m', 'scripts.lab_session', $Action.ToLowerInva
 if ($Live) { $launcherArgs += '--live' }
 if ($Release) { $launcherArgs += @('--empty-release', $Release) }
 if ($Session) { $launcherArgs += @('--session', $Session) }
+if ($OutputRoot) { $launcherArgs += @('--output-root', $OutputRoot) }
+if ($Data) { $launcherArgs += @('--data', $Data) }
+if ($Manifest) { $launcherArgs += @('--manifest', $Manifest) }
+if ($Label) { $launcherArgs += @('--label', $Label) }
+if ($PSBoundParameters.ContainsKey('DurationSeconds')) { $launcherArgs += @('--duration-s', $DurationSeconds.ToString([System.Globalization.CultureInfo]::InvariantCulture)) }
 Push-Location -LiteralPath $repo
 try {
     & $Python @launcherArgs

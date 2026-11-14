@@ -2,6 +2,10 @@
 
 [返回文档索引](README.md) · [代码地图](CODE_MAP.md)
 
+## 2026年11月14日当前论文路线
+
+本篇优先推进同ROM与总时长下的个性化力学负荷降低，先完成真实测量、完整假腿参考和小规模重复敏感性实验。算法与实验口径、公共基线及冻结日期统一见[当前工作流](CURRENT_WORKFLOW.md)。以下按版本列出既有研究证据，不能将它们混合为当前方法已经全部验证。
+
 ## 当前研究范围与入口
 
 | 研究部分 | 当前状态 | 入口与说明 |
@@ -11,7 +15,7 @@
 | E3 三参数探索 | 独立的候选族与低预算回放实验，比较 β＋时间分配和关键姿态点样条＋时间分配 | [候选族报告](../outputs/e3_candidate_comparison/REPORT.md)、[低预算报告](../outputs/e3_low_budget/REPORT.md)、`lower_limb_sim/e3_candidate_comparison/`、`lower_limb_sim/e3_low_budget/` |
 | 新 MyoLeg 开发实验 | 已完成 native 与原24个development主体、两轨迹族、七算法的比较；关键姿态族三物理方法主K=4并列改善2.97%，工程默认Physics Greedy | [实际报告](../outputs/myoleg_benchmark_v1/development_20260923_r2/REPORT.md)、[研究与论文计划](research/MYOLEG_RESEARCH_AND_PAPER_PLAN.md)；[环境与命令](GETTING_STARTED.md#myoleg-独立开发实验) |
 | 真实测量分析 | 已有静态有效性、同条件重复性、轨迹敏感性分析；真实数据到当前个性化环境的适配仍未贯通 | [REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md](research/REAL_MEASUREMENT_VALIDATION_ANALYSIS_V1.md)、`measurement_validation/analysis.py`、`scripts/run_real_measurement_validation_analysis.py` |
-| 机器人诊断与执行 | 已有 Windows 真机只读诊断；采集可靠性仍有阻塞问题，运动未放行 | [机器人操作与诊断指南](ROBOT_OPERATIONS.md)；`hardware/`、`collection/`、`control/`、`safety/` |
+| 机器人诊断与执行 | 已有真实静止采集、标定及空载尝试；力查询进程隔离已接生产路径，10月19日离线修复待现场验证；未完成带假腿轨迹 | [今日清单](TODAY_LAB_CHECKLIST_2026-11-14.md)、[机器人指南](ROBOT_OPERATIONS.md) |
 
 冻结的五腿 V3/E2 结果仍是 `SIMULATED_MECHANICAL_PERSONALIZATION_NECESSITY = NOT_SUPPORTED`：四条腿的最优点为共同参考，共同参考相对个体最优的队列平均相对 regret 仅为 `0.014137%`（以个体最优值为分母）。这一结论只适用于该仿真模型、候选域和机械指标，不能推出真实患者不需要个体化。ROM 个体化与固定 ROM 内的协调个体化是两个层次；后者需要真实测量的有效性、重复性、轨迹敏感性及跨主体决策差异证据。
 

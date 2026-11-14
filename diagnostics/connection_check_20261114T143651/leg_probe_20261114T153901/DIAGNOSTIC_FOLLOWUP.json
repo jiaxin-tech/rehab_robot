@@ -1,0 +1,9 @@
+{
+  "failed_collector_sha256": "7bfd76a223123a7fe98e92cd7497c1783ff14d91102f79edb47e474bdce60381",
+  "updated_diagnostic_session": "D:\\rehab_robot\\.cache\\readonly_leg_session_20261114T154146",
+  "state": "REMOTE_HELPER_CANCELLED_MANUAL_COMMANDS_PREPARED",
+  "mapping_and_guards_changed": false,
+  "remote_service_stopped": true,
+  "local_entrypoint": "scripts.manual_leg_check",
+  "operator_instructions": "docs/MANUAL_LAB_COMMANDS_2026-11-14.md"
+}

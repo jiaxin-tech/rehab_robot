@@ -351,7 +351,8 @@ def _run_once(directory, *, capture_factory, execute_fn):
             request = dict(algorithm_root=c["algorithm_root"], algorithm_sha256=c["algorithm_sha256"],
                 algorithm_dependencies=c["algorithm_dependencies"], geometry_m=c["geometry_m"], candidates=c["candidates"],
                 setup_id=c["setup_id"], setup_sha256=sha256_file(directory / "trial_setup.json"),
-                reference_candidate_id=c["reference_candidate_id"], reference_sha256=sha256_file(DEFAULT_REFERENCE_PATH), history=[])
+                reference_candidate_id=c["reference_candidate_id"], reference_sha256=sha256_file(DEFAULT_REFERENCE_PATH), history=[],
+                data_classification="MEASURED_DATA", replay_mode="fit_only")
             atomic_json(directory / "algorithm_initialization_request.json", request)
             ready = run_algorithm_worker(directory, "algorithm_initialization_request.json", "algorithm_ready.json",
                                          c["training_timeout_s"], validate_only=True)
@@ -431,6 +432,7 @@ def _run_once(directory, *, capture_factory, execute_fn):
             measured, metrics = aligned_measurement(directory / "leg/leg.csv", directory / "dispatch.csv",
                 DEFAULT_REFERENCE_PATH, read_json(c["analysis"]), calibration)
             measured.to_csv(directory / "measured.csv", index=False)
+            metrics["measured_sha256"] = sha256_file(directory / "measured.csv")
             atomic_json(directory / "measured_metrics.json", metrics)
             if not training_enabled(c):
                 state.update(status="CAPTURE_ONLY_COMPLETE", training_status="SKIPPED_CAPTURE_ONLY")
@@ -440,7 +442,8 @@ def _run_once(directory, *, capture_factory, execute_fn):
             state.update(status="TRAINING", endpoints=scores)
             report(directory, state)
             request["history"] = [dict(episode_id=directory.name, candidate_id=c["reference_candidate_id"],
-                measured_path=str(directory / "measured.csv"), measured_sha256=sha256_file(directory / "measured.csv"), endpoints=scores)]
+                measured_path=str(directory / "measured.csv"), measured_sha256=sha256_file(directory / "measured.csv"), endpoints=scores,
+                endpoint_source=dict(path=str(directory / "measured_metrics.json"), sha256=sha256_file(directory / "measured_metrics.json")))]
             atomic_json(directory / "training_request.json", request)
             trained = run_algorithm_worker(directory, "training_request.json", "model_update.json", c["training_timeout_s"])
             state.update(status="ROUND_COMPLETE", training_status="MODEL_UPDATED",

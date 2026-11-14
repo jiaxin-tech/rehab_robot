@@ -62,3 +62,25 @@ def test_changed_frozen_source_blocks_before_creating_bundle(tmp_path, monkeypat
     with pytest.raises(ValueError, match="algorithm changed"):
         bundle.build(output)
     assert not output.exists()
+
+
+def test_existing_absolute_paths_with_rehab_robot_ancestor_are_not_relocated_twice(tmp_path, monkeypatch):
+    nested = tmp_path / "rehab_robot" / ".cache" / "fixture"
+    nested.mkdir(parents=True)
+    root, frozen, _ = fixture_repo(nested, monkeypatch)
+    output = bundle.build(root / "results/portable")
+    assert output.is_dir()
+    assert bundle.sha(output / "frozen/model/coupled_model.py") == bundle.sha(frozen.parent / "model/coupled_model.py")
+
+
+def test_repository_relative_dependencies_and_config_relative_sources_are_supported(tmp_path, monkeypatch):
+    root, frozen, config = fixture_repo(tmp_path, monkeypatch)
+    config["algorithm_root"] = str(frozen.relative_to(root.parent)).replace("\\", "/")
+    # The algorithm root is relative to config/, so reach the fixture sibling.
+    config["algorithm_root"] = "../../" + config["algorithm_root"]
+    internal_digest = config["algorithm_dependencies"].pop(str(root / "mechanics.py"))
+    config["algorithm_dependencies"]["mechanics.py"] = internal_digest
+    config["candidates"][0]["path"] = "../reference.csv"
+    (root / "config/robot_leg_round.json").write_text(json.dumps(config), encoding="utf-8")
+    output = bundle.build(root / "results/portable_relative")
+    assert bundle.load(output / "round_training_draft.json")["algorithm_dependencies"]["mechanics.py"] == internal_digest

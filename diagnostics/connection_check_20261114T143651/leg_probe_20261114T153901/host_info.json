@@ -1,0 +1,15 @@
+{
+  "hostname": "DESKTOP-P1EOI08",
+  "python": "3.12.10",
+  "python_bits": 64,
+  "dll_available": true,
+  "configured_ams_net_id": "10.20.4.89.1.1",
+  "config_path": "C:\\Users\\liumai\\Downloads\\readonly_leg_helper\\leg_capture_config.json",
+  "config_sha256": "3a5523e3bbf1c6d3a302e8b8eeba7f6b24c95e5e4b1dc8a545d0bc35dc953564",
+  "capabilities": [
+    "probe_20_reads",
+    "capture_10_or_30_seconds"
+  ],
+  "motion_available": false,
+  "received_at": "2026-11-14T07:38:22.651195+00:00"
+}

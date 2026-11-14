@@ -15,6 +15,23 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def source_path(name, base):
+    """Prefer real existing paths; relocate only missing old-checkout paths.
+
+    A temporary directory can itself contain a parent named rehab_robot. Splitting
+    that existing absolute path at its first marker duplicates the checkout.
+    """
+    source = (base / name).resolve()
+    if source.exists():
+        return source
+    normalized = str(name).replace("\\", "/")
+    if "/rehab_robot/" in normalized:
+        relocated = (ROOT / normalized.rsplit("/rehab_robot/", 1)[1]).resolve()
+        if relocated.exists():
+            return relocated
+    return source
+
+
 def build(output):
     output = Path(output).resolve()
     if not output.is_relative_to(ROOT):
@@ -23,7 +40,7 @@ def build(output):
     config = load(config_path)
     copies = []
     dependencies = {}
-    algorithm_root = Path(config["algorithm_root"])
+    algorithm_root = source_path(config["algorithm_root"], config_path.parent)
     frozen_root = output / "frozen" / algorithm_root.name
     for name, digest in config["algorithm_sha256"].items():
         source = algorithm_root / name
@@ -31,10 +48,8 @@ def build(output):
             raise ValueError("frozen algorithm changed: " + str(source))
         copies.append((source, frozen_root / name, digest))
     for name, digest in config["algorithm_dependencies"].items():
-        source = Path(name)
-        suffix = name.replace("\\", "/").split("/rehab_robot/", 1)
-        if len(suffix) == 2:
-            source = ROOT / suffix[1]
+        source = source_path(name, ROOT)
+        if source.is_relative_to(ROOT):
             target = source
         else:
             # The standalone model relies on this original sibling layout.
@@ -50,10 +65,7 @@ def build(output):
     # Validate all inputs before creating or copying any files.
     candidates = []
     for item in config["candidates"]:
-        source = Path(item["path"])
-        suffix = item["path"].replace("\\", "/").split("/rehab_robot/", 1)
-        if len(suffix) == 2:
-            source = ROOT / suffix[1]
+        source = source_path(item["path"], config_path.parent)
         if sha(source) != item["sha256"]:
             raise ValueError("candidate source mismatch")
         candidates.append(dict(item, path=os.path.relpath(source, output).replace("\\", "/")))

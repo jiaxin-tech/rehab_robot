@@ -155,6 +155,9 @@ def test_full_loaded_round_lifecycle(tmp_path, monkeypatch, fault):
         result = rounds.run(directory, confirmation=rounds.CONFIRMATION, capture_factory=Capture, execute_fn=execute)
         assert result["status"] == "ROUND_COMPLETE"
         assert result["training_status"] == "MODEL_UPDATED"
+        from measurement_validation.torque_endpoints import RAW_ENDPOINT_METHOD
+        assert read_json(directory / "training_request.json")["data_classification"] == "MEASURED_DATA"
+        assert result["training_result"]["endpoint_sampling"][0] == RAW_ENDPOINT_METHOD
     else:
         with pytest.raises((Exception, KeyboardInterrupt)):
             rounds.run(directory, confirmation=rounds.CONFIRMATION, capture_factory=Capture, execute_fn=execute)

@@ -2,6 +2,8 @@
 
 [返回文档索引](README.md) · [研究主线](RESEARCH.md)
 
+本篇论文当前入口见[当前工作流](CURRENT_WORKFLOW.md)：现场统一助手、原始高频端点、多轮历史和仓内experiment_algorithm。以下V2/V3等模块用于各自研究范围；其中旧通用RealRobotEnvironment关闭，不代表新的单轮采集与训练接口不存在。
+
 本页按研究问题和运行链定位代码。当前离线集成入口是 `personalization/integrated_v2.py`；`lower_limb_sim/` 同时包含共享力学、机器人参考轨迹、历史算法和后续 E3 实验，不能仅按目录名判断代码新旧。环境和测试见[上手指南](GETTING_STARTED.md)，真机操作条件见[机器人指南](ROBOT_OPERATIONS.md)。
 
 ## 先区分四条工作线

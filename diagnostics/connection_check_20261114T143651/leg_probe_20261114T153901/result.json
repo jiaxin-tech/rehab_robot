@@ -1,0 +1,12 @@
+{
+  "ok": false,
+  "result": null,
+  "error": "RuntimeError: axis1 stationary acquisition guard failed",
+  "received_at": "2026-11-14T07:39:01.170343+00:00",
+  "files": {
+    "segment_status.json": {
+      "sha256": "5cd6bb1d11ab4c51fac9ae6738d6f6d8a17de1c523a328eda48f6867c3489990",
+      "bytes": 595
+    }
+  }
+}

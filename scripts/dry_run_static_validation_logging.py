@@ -21,7 +21,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.static_validation_logging import (  # noqa: E402
     CSV_FIELDS,
-    DEFAULT_CONFIG_PATH,
     DEFAULT_ENABLED,
     DEFAULT_SCHEMA_PATH,
     PHASES,
@@ -78,7 +77,10 @@ def _synthetic_metadata() -> dict[str, Any]:
 
 
 def run_dry_run(output_directory: Path) -> dict[str, Any]:
-    config = load_static_validation_logging_config(DEFAULT_CONFIG_PATH)
+    # An operator may explicitly enable the active site's sidecar. A synthetic
+    # default-off check must exercise the blank template, not reset that choice.
+    template = Path(__file__).resolve().parents[1] / "config/templates/static_validation_logging.json"
+    config = load_static_validation_logging_config(template)
     if DEFAULT_ENABLED is not False or config["enabled"] is not False:
         raise RuntimeError("default-off identity changed")
 

@@ -2,6 +2,8 @@
 
 [返回文档索引](README.md)
 
+2026年11月14日的当前入口是[现场清单](TODAY_LAB_CHECKLIST_2026-11-14.md)和[当前工作流](CURRENT_WORKFLOW.md)。本轮修复前核心基线为733通过、24失败；扩展核心回归914项通过，310.34秒，无跳过或排除。最后接线定向验证及范围统一记录在[仓库审查](REPOSITORY_REVIEW_2026-11-14.md)。下文491等计数是对应日期的历史结果。
+
 所有命令均从仓库根目录运行。已有本地环境时，可跳过安装段，直接运行下方核心回归命令。
 
 ## 安装与离线回归
@@ -26,12 +28,14 @@ if (-not $uvExe) { $uvExe = Join-Path $env:USERPROFILE '.local\bin\uv.exe' }
 $env:PYTHONUTF8 = '1'
 $env:MPLCONFIGDIR = Join-Path (Get-Location) '.cache/matplotlib'
 .\.venv\Scripts\python.exe -m pip check
-.\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q --junitxml=.cache/core-regression.xml
+New-Item -ItemType Directory -Force -Path '.cache' | Out-Null
+$testRun = Get-Date -Format 'yyyyMMddTHHmmss'
+.\.venv\Scripts\python.exe -m pytest -c pytest-core.ini -q --basetemp ".cache/test-$testRun" -o "cache_dir=.cache/pytest-$testRun" --junitxml ".cache/core-$testRun.xml"
 ```
 
 [pytest-core.ini](../pytest-core.ini) 覆盖 V3/ROM、E0/E2 时序辨识与 EI、E3、新 MyoLeg benchmark、测量分析、日志、轨迹预检/执行器 fake、离线进程诊断及 Windows SDK 加载/fake 测试；不包含 `test_rokae_hardware_integration.py`。从仓库根目录运行，因为 E3 测试读取已跟踪的相对路径 CSV/NPZ。完整历史套件另用 `python -m pytest`，不能把核心回归结果称为全仓通过。
 
-2026-09-25 本机环境验证：Windows x64、CPython 3.12.14，使用上述锁定依赖，`pip check` 通过。环境配置后的原核心回归为 `333 passed in 62.70 s`，后续中间版本曾为 404、462 项通过。接入附加弹簧—阻尼和 MyoLeg pilot 后，当前完整核心回归为 **491 passed, 1 warning in 126.74 s**，无跳过。唯一警告为已有 pytest 缓存目录写入权限不足，不影响测试执行或 JUnit 生成；可按下段指定新 cache_dir 避免。最新 JUnit 记录位于本地 `.cache/core-regression-physical-interaction-20260925.xml`。核心结果验证离线算法与 fake/诊断代码，不代表真机运动验证或历史全仓回归。
+2026-09-25 本机环境验证：Windows x64、CPython 3.12.14，使用上述锁定依赖，pip check通过。当时核心回归为491通过，126.74秒，记录位于.cache/core-regression-physical-interaction-20260925.xml。该计数不是当前版本的测试结果。11月14日已复测依赖兼容，最终核心结果见本轮审查；软件测试不代表真机运动验证或历史全仓回归。
 
 若受限环境无法读取系统临时目录，给 pytest 加上 `--basetemp .cache/pytest-temp-<本次唯一名称> -o cache_dir=.cache/pytest-cache-<本次唯一名称>`，使用仓库内新建的独立目录。不要把已有研究数据目录传给 `--basetemp`，pytest 会清理该目录。
 
@@ -64,6 +68,8 @@ $myolegRun = Join-Path 'outputs/myoleg_benchmark_v1' ('native_smoke_' + (Get-Dat
 旧 `myoleg_robot_scene.py` 及其视频 renderer 仍直接加载含原机器绝对路径的 XML，未接入新加载器。因此新 benchmark 运行成功不代表旧渲染命令也能直接运行。实验设计、证据边界及后续安排见[MyoLeg 研究与论文计划](research/MYOLEG_RESEARCH_AND_PAPER_PLAN.md)。
 
 ## 历史记录与机器人 SDK
+
+新安装的空白配置位于config/templates；config中同名现场文件保留实际填写。默认关闭的测试与合成静态dry run读取空白模板，不要求现场文件回退为空值或关闭记录。历史V3参数化研究使用frozen_inputs内从Git恢复且匹配原SHA的协议快照，与后续现场审核标志变化分开。
 
 旧文档中的 `667 passed, 5 skipped` 是 reference freeze 阶段的 macOS 历史记录，不代表当前代码或 Windows 环境的回归结果。
 

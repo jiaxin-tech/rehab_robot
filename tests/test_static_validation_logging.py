@@ -119,7 +119,7 @@ def make_logger(path: Path, *, enabled: bool) -> StaticValidationLabelLogger:
 
 
 def test_default_off_identity_is_redundantly_explicit() -> None:
-    config = load_static_validation_logging_config()
+    config = load_static_validation_logging_config(ROOT / "config/templates/static_validation_logging.json")
     assert DEFAULT_ENABLED is False
     assert config["enabled"] is False
     assert config["schema_version"] == 1

@@ -1,0 +1,31 @@
+{
+  "version": "REHAB_OFFLINE_V2",
+  "upstream": {
+    "config.py": {
+      "source_path": "C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\完整算法验证_2026-09-29\\config.py",
+      "source_sha256": "4c0088edc7191fa799e8a69cd185aa5dfbe1fea36f2050339d5a92321f1865c5",
+      "changes": "Package-relative imports and repository-relative paths only; scientific formulas and default thresholds retained."
+    },
+    "policy.py": {
+      "source_path": "C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\完整算法验证_2026-09-29\\policy.py",
+      "source_sha256": "2ab3ed5ba501974b856342b1b96f7da2de5fec3a2bc1fe4fdd9c1218b9fdbee1",
+      "changes": "Package-relative imports and repository-relative paths only; scientific formulas and default thresholds retained."
+    },
+    "surrogate.py": {
+      "source_path": "C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\完整算法验证_2026-09-29\\surrogate.py",
+      "source_sha256": "c8243a57dd5c714b661641b06ba0888a4b369d706ad99784c859543ccae5a5b0",
+      "changes": "Package-relative imports and repository-relative paths only; scientific formulas and default thresholds retained."
+    },
+    "coupled_model.py": {
+      "source_path": "C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\升级模型试跑_2026-09-28\\coupled_model.py",
+      "source_sha256": "6fb016127bd05b209ab7bd42ce1424e68f784ea9f224e51ec087d65aa3df7186",
+      "changes": "Package-relative imports and repository-relative paths only; scientific formulas and default thresholds retained."
+    },
+    "coordinate_consistent_model.py": {
+      "source_path": "C:\\Users\\CSR001279\\Documents\\ChatGPT\\康复\\升级模型试跑_2026-09-28\\root_cause\\mass_model\\coordinate_consistent_model.py",
+      "source_sha256": "0900ff8fb6443a5bf558708c6e2833015579eda8d9a84bc25aa7b868a7c29b4e",
+      "changes": "Package-relative imports and repository-relative paths only; scientific formulas and default thresholds retained."
+    }
+  },
+  "old_artifacts_modified": false
+}

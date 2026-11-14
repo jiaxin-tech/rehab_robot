@@ -1,0 +1,18 @@
+{
+  "task_id": "aa44242908ac4ebfbb1746e04084ad1e",
+  "action": "probe",
+  "status": "FAILED",
+  "ok": false,
+  "motion_commanded": false,
+  "ads_write_used": false,
+  "source_expected_hz": 500,
+  "timing_semantics": "host receive/query times; actual source frame count and 500 Hz delivery are not established",
+  "actual_local_ams_net_id": "10.20.4.89.1.1",
+  "ads_state": 0,
+  "device_state": 0,
+  "rows": 0,
+  "toggle_changes": 0,
+  "error": "RuntimeError: axis1 stationary acquisition guard failed",
+  "result": null,
+  "completed_utc": "2026-11-14T07:39:01.128499+00:00"
+}

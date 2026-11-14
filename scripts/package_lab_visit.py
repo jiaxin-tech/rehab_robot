@@ -10,6 +10,15 @@ import zipfile
 
 from scripts.lab_session import ROOT, load
 
+SOURCE_DIRECTORIES = ("collection", "control", "diagnostics", "experiment_algorithm", "external_simulation",
+                      "hardware", "lower_limb_sim", "measurement_validation", "personalization",
+                      "safety", "scripts", "tests", "utils")
+DOCUMENTS = ("README.md", "CURRENT_ARCHITECTURE.md", "docs/GETTING_STARTED.md", "docs/ROBOT_OPERATIONS.md",
+             "docs/ROBOT_MOTION_CHAIN.md", "docs/NEXT_LAB_VISIT.md", "docs/OFFLINE_ROBOT_LEG_HISTORY.md",
+             "docs/CURRENT_WORKFLOW.md", "docs/REPOSITORY_REVIEW_2026-11-14.md",
+             "docs/RESEARCH.md", "docs/README.md", "docs/CODE_MAP.md",
+             "docs/TODAY_LAB_CHECKLIST_2026-11-14.md", "measurement_validation/OFFLINE_WORKFLOW.md")
+
 
 def package(bundle, initialization, output):
     bundle = Path(bundle).resolve()
@@ -27,9 +36,27 @@ def package(bundle, initialization, output):
         p = ROOT / name
         if p.suffix in (".py", ".ps1", ".ini") and p.is_file():
             files.add(p.resolve())
-    for folder in ("scripts", "tests"):
-        files.update(p.resolve() for p in (ROOT / folder).glob("*.py"))
-        files.update(p.resolve() for p in (ROOT / folder).glob("*.ps1"))
+    # Include newly added source modules before they have been staged in Git.
+    # A bundle containing only tracked adapters can otherwise miss their new
+    # imports. Restrict this walk to source roots; do not ingest raw results.
+    for folder in SOURCE_DIRECTORIES:
+        files.update(p.resolve() for p in (ROOT / folder).rglob("*")
+                     if p.is_file() and p.suffix in (".py", ".ps1", ".ini")
+                     and "__pycache__" not in p.parts)
+    files.update((ROOT / name).resolve() for name in DOCUMENTS if (ROOT / name).is_file())
+    files.update((ROOT / name).resolve() for name in (
+        ".gitattributes", ".gitignore", ".python-version", "requirements.txt",
+        "requirements-win-py312.lock.txt") if (ROOT / name).is_file())
+    files.update(p.resolve() for p in (ROOT / "docs/audit").glob("*.md") if p.is_file())
+    # Versioned algorithm provenance is part of the frozen-source delivery.
+    files.update(p.resolve() for p in (ROOT / "experiment_algorithm").rglob("*.json") if p.is_file())
+    files.update(p.resolve() for p in (ROOT / "experiment_algorithm").rglob("*.md") if p.is_file())
+    files.update(p.resolve() for p in (ROOT / "experiment_algorithm").rglob(".gitattributes") if p.is_file())
+    files.update(p.resolve() for p in (ROOT / "config/templates").rglob("*")
+                 if p.is_file() and p.suffix in (".json", ".md"))
+    frozen_inputs = ROOT / "external_simulation/myoleg_v3_trajectory_parameterization_design_v1/frozen_inputs"
+    files.update(p.resolve() for p in frozen_inputs.rglob("*")
+                 if p.is_file() and p.suffix in (".json", ".md"))
     files.add(ROOT / "config/lab_next_visit.json")
     files.add(ROOT / "pytest-core.ini")
     files.update(p.resolve() for p in bundle.rglob("*") if p.is_file() and "__pycache__" not in p.parts)

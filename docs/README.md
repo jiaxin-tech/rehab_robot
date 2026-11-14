@@ -2,6 +2,8 @@
 
 [返回项目概览](../README.md) · [本次整理记录](REPOSITORY_ORGANIZATION.md)
 
+2026年11月14日，用户在旧电脑自行执行并通过Git回传数据时，先读[旧电脑静止检查与数据回传命令](MANUAL_LAB_COMMANDS_2026-11-14.md)。当前完整实验入口为[今日现场清单](TODAY_LAB_CHECKLIST_2026-11-14.md)、[当前工作流](CURRENT_WORKFLOW.md)和[本轮仓库审查](REPOSITORY_REVIEW_2026-11-14.md)；本次静止检查不执行其中的运动步骤。
+
 初次阅读按 [开始使用](GETTING_STARTED.md) → [当前研究](RESEARCH.md) → [代码地图](CODE_MAP.md) 的顺序。要准备实机测量时再读 [机器人操作](ROBOT_OPERATIONS.md)；数据、模型及生成产物的位置与重建边界见 [产物指南](ARTIFACTS.md)。
 
 | 文档区域 | 作用 |

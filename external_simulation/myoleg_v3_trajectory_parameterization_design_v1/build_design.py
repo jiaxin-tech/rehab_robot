@@ -59,7 +59,10 @@ COHORT_MANIFEST = ROOT / "external_simulation_audits/myoleg_virtual_patient_coho
 REFERENCE_PATH = ROOT / "external_simulation_audits/myoleg_knee_rom_compatibility_audit_v1/NATIVE_ROM_REFERENCE_CANDIDATE.csv"
 FORMAL_REFERENCE_PATH = ROOT / "reference_release/reference_measured_asymmetric_closed_slow.csv"
 FROZEN_GENERATOR = ROOT / "external_simulation/myoleg_v2_candidate_domain_design_v1/build_candidate_domain.py"
-FORMAL_MANIFEST = ROOT / "config/formal_experiment_manifest.json"
+# Preserve the exact protocol input used by this historical study. The active
+# site manifest subsequently changed its safety-review field; it is not the
+# byte-frozen input of this offline experiment.
+FORMAL_MANIFEST = Path(__file__).with_name("frozen_inputs") / "formal_experiment_manifest.json"
 
 HELD_OUT_IDS = (
     "MYOLEG_VP_004", "MYOLEG_VP_008", "MYOLEG_VP_012", "MYOLEG_VP_016",

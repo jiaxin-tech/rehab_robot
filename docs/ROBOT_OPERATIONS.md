@@ -2,6 +2,8 @@
 
 [返回文档索引](README.md) · [研究主线](RESEARCH.md) · [代码地图](CODE_MAP.md)
 
+2026年11月14日现场优先使用[今日逐步清单](TODAY_LAB_CHECKLIST_2026-11-14.md)与 scripts/lab_next_visit.ps1。当前配置已有现场填写，不能再按“全部空模板”理解；是否可执行由当前完整配置、安装、有效发布及实时检查共同决定。
+
 本文集中维护原 README 中的机器人命令、运行契约与当前诊断状态，所有命令从仓库根目录运行。[CURRENT_ARCHITECTURE.md](../CURRENT_ARCHITECTURE.md) 与 [REAL_ROBOT_EXPERIMENT.md](../REAL_ROBOT_EXPERIMENT.md) 保留在根目录，是历史协议按原路径和 SHA 引用的原始输入；其旧测试记录或“尚无 Windows 验证”的表述需结合本文的后续证据阅读。安装步骤统一见[上手指南](GETTING_STARTED.md)。
 
 ## 冻结机器人参考与模型约定
@@ -39,7 +41,7 @@ tracked release bundle 位于 `reference_release/`；默认 active loader 只接
 - [进程隔离验证](../diagnostics/wrench_process_isolation_validation_20260813T113755Z.md)：独立 RT/wrench 会话能够让 supervisor 和 RT 在 wrench 阻塞期间继续推进，但整体结论为 `PARTIAL`，未形成运动放行依据。
 - [2026-08-14 最新 A/B 对照](../diagnostics/state_wrench_timing_comparison_20260814T093551709145Z.md)：仅 RT 的 Test A 完成约 900 s；并发 wrench 的 Test B 在 **169.610/900 s** 因 `RuntimeError:RT worker hung` 终止，出现 3 次 SDK 263 错误，最大当前状态年龄 724.138 ms，`READY_FOR_FIRST_MOTION_TEST=false`。
 
-生产路径 `collection/real_robot_acquisition.py` 仍使用 state/wrench/alignment 线程；进程隔离实现在 `scripts/wrench_process_isolation.py` 等诊断脚本中，尚未接入生产 `acquire/execute`。因此“Python 线程分开”不能作为原生调用不阻塞调度与监测的保证。下一步工程工作需要先解决 RT/wrench 长时间并发采集与进程隔离整合，再推进物理坐标/符号/同步、重复性及轨迹敏感性验证。任何软件 stop 都不能替代急停、安全控制器和现场实验人员。
+生产路径已显式接入 collection/wrench_process.py 的独立进程provider，原生力查询在子进程；父进程保留状态、IPC消费和对齐线程，不再直接查询原生力。10月18日空载尝试仍遇到数据新鲜度与清理问题，10月19日修复查询计时、审计批次与退出检查，现场复测尚未完成。进程隔离已接入不等于现场实时性已验收；最新复核见[10月19日审计](../site_evidence/OFFLINE_EMPTY_LOAD_REVIEW_2026-10-19.md)。
 
 ## 机器人参考数据与执行链
 
@@ -81,10 +83,10 @@ TCP 姿态全程固定为 StartAnchor 中的起始姿态。该模式不需要绝
 
 ## 真机前配置
 
-以下模板默认全部 fail-closed：
+新安装的空白模板位于 config/templates/。config 中的现场文件已填写过部分值，审核标志、说明文字和实际缺失字段需要逐项核对：
 
-- `config/rehab_frame_config.json`：床面 rehabilitation x/z 轴，默认 `null`、`reviewed=false`。
-- `config/experiment_safety.json`（schema v3）：速度、加速度、起点误差、command lateness、力/力矩、时效、skew、workspace、机器人身份、工具/工件、payload、六轴软限位、RT filter 与外部 network-tolerance 声明均默认 `null`；六类专项审核和总 `reviewed` 均为 `false`。
+- config/rehab_frame_config.json 已记录床面方向并标为已核对，仍须与今天实际安装一致。
+- config/experiment_safety.json（schema v3）已有部分数值和审核标志，但起点误差、command lateness、软限位及RT参数仍有缺项；正文与总审核标志还有矛盾。单个true不会替代缺失事实，完整执行校验仍会拒绝。
 - StartAnchor：每次观察捕获后绑定 robot model/serial/controller 与人工声明的 tool/workpiece，固定写入 `reviewed=false`。
 
 不要把仿真力值写入真实安全配置。设置 `reviewed=true` 代表现场人员已经核对该机器人、工具、负载、受试者、workspace、wrench 语义和实验流程。
@@ -158,11 +160,11 @@ EPISODE_DIR/
   metadata.json
 ```
 
-state、wrench、alignment 在当前生产实现中各自使用线程；命令目标更新不直接调用 wrench 查询，但已有真机记录证明 SDK 原生阻塞仍可能冻结同进程 Python 执行，进程隔离诊断原型尚未接入此路径。CSV 对不可用值留空并保存 `valid/invalid_reason`，不会伪造零。execute 的 `metadata.json` 固化完整 safety snapshot、frame/anchor/config 路径、轨迹生成审计、reference SHA、`L1/L2`、live preflight 与 execution result；结束时再记录 host 观察到的各流平均发布率。125 Hz state 和 50 Hz wrench 是配置目标；现有并发长测失败，不能将这些目标写成已达到的持续采集性能。
+父进程使用状态与IPC消费/对齐线程，原生wrench查询由独立进程拥有。CSV对不可用值留空并保存valid/invalid_reason，不伪造零。metadata.json保留配置、安装、参考身份、实时检查与退出结果。目标频率与实际发布率分开记录；平均频率达标不能代替最大年龄、时序对齐、查询长尾与清理结果的检查。
 
 ## 真实执行：默认关闭
 
-执行前，实验人员必须在外部控制器/HMI 和既定安全流程中完成必要准备。外部 RT network tolerance 的审核值会写入 safety/episode 证据，但当前 SDK 路径无法回读确认；程序只把 `reviewed_rt_filter_hz` 显式传给 `setFilterFrequency`。程序不会自动：
+执行前，实验人员必须核对外部控制器/HMI及当前安装。外部RT network tolerance声明不等于SDK已回读确认。通用执行默认不准备RT；带假腿单轮入口使用显式same-session准备，会切模式、上电并在结束时执行停止/下电/断连，不能称零副作用。下面的限制适用于通用默认路径；具体动作以所选现场入口为准：
 
 - 切 automatic 或上电；
 - clear error、回零或移动到 anchor；

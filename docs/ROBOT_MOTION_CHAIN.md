@@ -10,9 +10,7 @@
 
 ## 0. 一句话结论
 
-从采集、锚点、轨迹、预检到执行器的代码都已就位，并且每一步都是
-**封闭失败**；当前链路在"离线预检"这一步就被冻结发布策略挡住，
-即使把安全配置全部填好，也不会自动放行。**没有任何一环可以靠软件自己解开。**
+从采集、锚点、轨迹、预检到执行器的代码已有入口。冻结参考保留NO_GO身份，真实试验通过独立、时效与哈希绑定的发布文件进入；这不是一条永远硬编码禁止的路径。当前配置与现场证据仍不完整，尚无完整带假腿轨迹。2026年11月14日起以[今日清单](TODAY_LAB_CHECKLIST_2026-11-14.md)与[当前工作流](CURRENT_WORKFLOW.md)为操作入口。
 
 ## 1. 链路总览
 
@@ -42,10 +40,10 @@ flowchart TD
 | 环节 | 代码位置 | 作用 | 当前状态 | 需要什么才能推进 |
 | --- | --- | --- | --- | --- |
 | 参考轨迹冻结 | `lower_limb_sim/reference_measured_asymmetric.py`、`reference_release/` | 唯一 first-trial 参考，24 s / 401 点，SHA 固定 | **可用** | 无 |
-| 起点锚点 | `control/start_anchor.py` | 现场采集并审核 TCP 位姿、关节、身份、工具 | **未采集** | 现场采集 + 人工审核 |
-| 康复坐标系 | `config/rehab_frame_config.json` | 床体 +x/+z 方向 | **全 null / reviewed=false** | 现场测量方向并审核 |
+| 起点锚点 | `control/start_anchor.py` | 现场采集并审核 TCP 位姿、关节、身份、工具 | 有历史文件，不能自动沿用到今天 | 核对当前安装与起点 |
+| 康复坐标系 | `config/rehab_frame_config.json` | 床体 +x/+z 方向 | 已填写并标为reviewed | 与当前安装复核 |
 | 相对轨迹生成 | `control/start_anchored_relative_trajectory.py` | 相对锚点生成、闭合、ROM、theta_shank 审计 | **可用** | 依赖锚点与坐标系 |
-| 安全配置 | `config/experiment_safety.json` | 速度、加速度、力、位龄、软限位、负载等 | **全 null / reviewed=false** | 现场逐项审核 |
+| 安全配置 | `config/experiment_safety.json` | 速度、加速度、力、位龄、软限位、负载等 | 部分填写，仍有必需字段缺失与说明矛盾 | 按实际缺项逐项核对 |
 | 发布 manifest | `reference_release/reference_release_manifest.json` | 冻结 `approved_for_first_robot_trial=false` | **NO_GO（硬编码期望）** | 见第 4 节 |
 | 离线预检 | `control/execution_preflight.py: evaluate_offline_execution_request` | 连接前一次性静态门禁 | **可用，会拒绝** | 上述全部审核 |
 | 采集 | `collection/real_robot_acquisition.py` + 隔离 provider | 状态流 + 力采集五文件 | **已接线** | 现场审核的力配置 |
@@ -96,12 +94,9 @@ flowchart TD
 软件另已接入厂家 `Event.safety` 回调，可显式选择 `events` 并配置经评审的时效预算。
 该路径已做离线测试；订阅成功不等于安全状态有效，初始事件、时效、断连和恢复仍待真机验证。
 
-### 4.3 安全配置与坐标系仍是空模板
+### 4.3 现场配置与空白模板已经分开
 
-`config/experiment_safety.json` 是 schema v3，全部限值为 `null`、
-全部 `*_reviewed` 与总 `reviewed` 为 `false`；
-`config/rehab_frame_config.json` 的两个方向轴也是 `null`。
-这些值必须来自一次有据可查的现场审核，不能照抄仿真或历史最大值。
+config/templates/保存新的空白模板。config/中的现场文件已部分填写，康复坐标系已有方向与审核声明，安全配置仍缺起点误差、command lateness、软限位和RT参数。检查具体字段和来源，不能凭审核标志或过时文档判断可执行。
 
 ### 4.4 历史并发故障尚未闭环
 
@@ -160,8 +155,7 @@ python -m scripts.run_rehab_experiment --mode execute --ip ROBOT_IP `
 必然在采集启动时被这道门拒绝，永远走不到实时预检。
 
 现在执行入口要求 `--wrench-config` 与 `--wrench-hz`，并用与采集入口相同的
-`build_live_wrench_provider` 构造隔离 provider；配置里的 robot_ip / local_ip
-必须与实际连接一致，否则在建立连接前就拒绝。**这道门没有被移除，而是被接线绕过。**
+`build_live_wrench_provider` 构造隔离provider；配置里的robot_ip/local_ip必须与实际连接一致，否则在建立连接前拒绝。执行入口通过显式传入provider满足采集接口要求，校验仍然保留。
 
 ## 7. 状态复现命令
 

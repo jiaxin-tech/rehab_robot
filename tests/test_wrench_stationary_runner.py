@@ -81,12 +81,27 @@ def test_state_failure(request_record, outputs):
 @pytest.mark.parametrize("authorization", [None, {}, {"reviewed": True}])
 def test_live_missing_auth_before_sdk(request_record, tmp_path, authorization, monkeypatch):
     from hardware.rokae_adapter import RokaeRobotAdapter
+    from hardware.windows import rokae_xcore
+    sdk_before = sys.modules.get("xCoreSDK_python")
     calls = []
     monkeypatch.setattr(RokaeRobotAdapter, "__init__", lambda *a, **k: calls.append("SDK"))
+    monkeypatch.setattr(rokae_xcore, "_load_sdk", lambda: pytest.fail("rejected authorization must not load the SDK"))
     with pytest.raises(PermissionError):
         runner.run_case(request_record, "B", tmp_path / "unused", mode="LIVE_STATIONARY", authorization=authorization)
     assert not calls and not (tmp_path / "unused").exists()
-    assert "xCoreSDK_python" not in sys.modules
+    assert sys.modules.get("xCoreSDK_python") is sdk_before
+
+
+def test_query_counts_cover_current_completions_hangs_and_legacy_intents():
+    events = [dict(type="PROCESS_START", query_id=0),
+              dict(type="QUERY_SUCCESS", query_id=1), dict(type="QUERY_ERROR", query_id=2),
+              dict(type="QUERY_HUNG", query_id=3), dict(type="QUERY_START_INTENT", query_id=4)]
+    health = [dict(provider=dict(query_id=3, QUERY_IN_PROGRESS=True)),
+              dict(provider=dict(query_id=5, QUERY_IN_PROGRESS=True)),
+              dict(provider=dict(query_id=6, QUERY_IN_PROGRESS=False))]
+    observed, completed = runner.observed_query_ids(events, health)
+    assert observed == {1, 2, 3, 4, 5} and completed == {1, 2}
+    assert observed - completed == {3, 4, 5}
 
 
 @pytest.mark.parametrize("key,value", [("schema_version", 2), ("duration_s", 1), ("intended_wrench_hz", 0), ("retry", True)])

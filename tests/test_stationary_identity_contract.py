@@ -14,6 +14,7 @@ def metadata_from_native_contract(sdk_version):
         ip_address="OFFLINE", local_ip="OFFLINE", robot_class="OFFLINE",
         _robot_info=SimpleNamespace(type="fixture-model", id="fixture-serial", version="fixture-controller"),
         _sdk_version=sdk_version, state_interval_ms=8,
+        collision_source="query", get_safety_event_status=lambda: {},
         _joint_soft_limits_rad=None, _joint_soft_limit_error=None,
         get_tool_payload_metadata=lambda: {},
     )
@@ -30,16 +31,26 @@ def expected_identity():
 
 @pytest.fixture(autouse=True)
 def forbid_native_sdk_and_network(monkeypatch):
+    import builtins
     import socket
     import sys
     from hardware.windows import rokae_xcore
+    # Other offline Windows signature tests may already have imported the
+    # extension. This contract forbids loading/using it in this test rather
+    # than assuming global test order or trying to unload a native extension.
+    sdk_before = sys.modules.get("xCoreSDK_python")
+    original_import = builtins.__import__
     def forbidden(*args, **kwargs):
         raise AssertionError("native SDK/network forbidden in identity contract tests")
     monkeypatch.setattr(rokae_xcore, "_load_sdk", forbidden)
     monkeypatch.setattr(socket, "socket", forbidden)
-    assert "xCoreSDK_python" not in sys.modules
+    def guarded_import(name, *args, **kwargs):
+        if name == "xCoreSDK_python" or name.startswith("xCoreSDK_python."):
+            forbidden()
+        return original_import(name, *args, **kwargs)
+    monkeypatch.setattr(builtins, "__import__", guarded_import)
     yield
-    assert "xCoreSDK_python" not in sys.modules
+    assert sys.modules.get("xCoreSDK_python") is sdk_before
 
 
 @pytest.mark.parametrize("sdk_version,accepted", [("fixture-sdk", True), ("wrong-sdk", False), (None, False)])

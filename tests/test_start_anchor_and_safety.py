@@ -211,7 +211,9 @@ def test_invalid_cached_state_is_rejected_without_fallback_motion() -> None:
 
 
 def test_repository_default_safety_config_is_all_null_and_fail_closed() -> None:
-    path = Path(__file__).resolve().parents[1] / "config" / "experiment_safety.json"
+    # Site configuration contains the operator's actual settings. Test the
+    # distributed blank template without asserting or rewriting those facts.
+    path = Path(__file__).resolve().parents[1] / "config" / "templates" / "experiment_safety.json"
     config = load_experiment_safety_config(path)
     assert config.reviewed is False
     assert config.max_tcp_speed_m_s is None

@@ -3,6 +3,10 @@
 
 # These files were frozen with LF. Override Windows core.autocrlf.
 /config/formal_experiment_manifest.json text eol=lf
+/external_simulation/myoleg_v3_trajectory_parameterization_design_v1/frozen_inputs/formal_experiment_manifest.json text eol=lf
+# Preserve exact raw acquisition bytes when results are committed from Windows.
+/results/manual_lab/** -text
+/diagnostics/connection_check_20261114T143651/leg_probe_20261114T153901/** -text
 /external_simulation/myoleg_v2_candidate_domain_design_v1/build_candidate_domain.py text eol=lf
 /external_simulation_audits/myoleg_v2_candidate_domain_design_v1/MYOLEG_V2_CANDIDATE_DOMAIN_V1_MANIFEST.json text eol=lf
 /external_simulation_audits/myoleg_v2_trajectory_parameterization_boundary_audit_v1/checksums.sha256 text eol=lf

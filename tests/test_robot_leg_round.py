@@ -21,19 +21,26 @@ from collection.twincat_leg import (AdsInputImage, AmsAddr, AmsNetId, capture, d
 from lower_limb_sim.run_robot_trajectory_export import DEFAULT_REFERENCE_PATH
 from measurement_validation.robot_leg_round import aligned_measurement, endpoints, validate_analysis
 from safety.robot_trial_release import read_json, sha256_file, EVIDENCE_KINDS, LOADED_EVIDENCE
+from experiment_algorithm.binding import current_binding
 import scripts.run_robot_leg_round as rounds
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def portable_test_config():
-    """Relocate checkout files only, always retaining frozen expected hashes."""
+    """Use the explicit repository algorithm version in synthetic fixtures.
+
+    Historical live configuration hashes are intentionally left unchanged.
+    The versioned source lock is verified before binding local source bytes.
+    """
     c = rounds.paths(ROOT / "config/robot_leg_round.json")
     if os.environ.get("REHAB_TEST_ROUND_CONFIG"):
         portable = rounds.paths(os.environ["REHAB_TEST_ROUND_CONFIG"])
         assert portable["algorithm_sha256"] == c["algorithm_sha256"]
         assert sorted(portable["algorithm_dependencies"].values()) == sorted(c["algorithm_dependencies"].values())
         c = portable
+    else:
+        c.update(current_binding())
     def relocate(name):
         parts = name.replace("\\", "/").split("/rehab_robot/", 1)
         return str(ROOT / parts[1]) if len(parts) == 2 else name
@@ -269,8 +276,10 @@ def test_real_frozen_training_worker(tmp_path):
     update = read_json(output)
     assert update["method"] == "FROZEN_RESIDUAL_GP_MEAN_GREEDY"
     assert len(update["theta"]) == 6
-    assert update["action"]["role"] == "STOP"
-    assert update["action"]["stop_reason"] == "DOMAIN_EXHAUSTED"
+    assert update["action"] is None and not update["policy_state_replayed"]
+    assert update["algorithm_version"] == "REHAB_OFFLINE_V2"
+    assert update["diagnostic_action"]["role"] == "STOP"
+    assert update["diagnostic_action"]["stop_reason"] == "DOMAIN_EXHAUSTED"
 
 
 def test_unreviewed_setup_blocks_before_hardware(tmp_path):
@@ -362,6 +371,12 @@ def test_full_round_with_real_release_analysis_and_training(tmp_path):
     assert state["status"] == "ROUND_COMPLETE"
     assert state["training_status"] == "MODEL_UPDATED"
     assert state["endpoints"]["E3"] == 1.
+    from measurement_validation.torque_endpoints import RAW_ENDPOINT_METHOD
+    request = read_json(directory / "training_request.json")
+    assert request["data_classification"] == "MEASURED_DATA" and request["replay_mode"] == "fit_only"
+    assert state["training_result"]["endpoint_sampling"][0] == RAW_ENDPOINT_METHOD
+    assert read_json(directory / "measured_metrics.json")["measured_sha256"] == request["history"][0]["measured_sha256"]
+    assert request["history"][0]["endpoint_source"]["sha256"] == sha256_file(directory / "measured_metrics.json")
     assert read_json(directory / "algorithm_ready.json")["status"] == "ALGORITHM_INITIALIZED"
     assert (directory / "report.md").is_file() and (directory / "quality.json").is_file()
     assert read_json(directory / "release_approval.json")["scope"] == rounds.LOADED_SCOPE

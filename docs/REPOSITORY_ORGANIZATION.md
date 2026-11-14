@@ -2,6 +2,8 @@
 
 整理日期：2026-09-23。[返回文档索引](README.md)。
 
+本页记录9月的整理。2026年11月14日的当前入口整合、仓内算法、配置模板和测试临时文件索引清理见[本轮仓库审查](REPOSITORY_REVIEW_2026-11-14.md)与[当前工作流](CURRENT_WORKFLOW.md)。
+
 ## 整理后的阅读方式
 
 根 README 负责介绍课题、当前状态、快速验证和目录入口。环境操作统一到 [GETTING_STARTED.md](GETTING_STARTED.md)，研究结论统一到 [RESEARCH.md](RESEARCH.md)，原 README 中的机器人命令与实现契约集中到 [ROBOT_OPERATIONS.md](ROBOT_OPERATIONS.md)。[CODE_MAP.md](CODE_MAP.md)连接代码、测试和结果；[ARTIFACTS.md](ARTIFACTS.md)解释文件保留与清理依据。

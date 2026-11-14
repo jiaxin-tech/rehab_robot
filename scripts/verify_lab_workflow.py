@@ -14,6 +14,9 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = (
+    "tests/test_lab_session.py",
+    "tests/test_lab_capture_summary.py",
+    "tests/test_package_lab_visit.py",
     "tests/test_loaded_round_lifecycle.py",
     "tests/test_robot_leg_round.py",
     "tests/test_wrench_production_process.py",

@@ -1,5 +1,6 @@
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
+import hashlib
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -8,6 +9,18 @@ import pytest
 
 import scripts.lab_session as lab
 from scripts.prepare_empty_load_commissioning_release import bounded_expiry
+
+
+def recorded_capture(command, *, findings=None):
+    directory = Path(command[command.index("--output-dir") + 1])
+    directory.mkdir(parents=True)
+    raw = directory / "leg.csv"
+    raw.write_bytes(b"time_s,value\n0,1\n1,2\n")
+    digest = hashlib.sha256(raw.read_bytes()).hexdigest()
+    lab.write(directory / "segment_status.json", dict(status="CAPTURE_COMPLETE", motion_commanded=False,
+              rows=2, csv_sha256=digest))
+    lab.write(directory / "quality.json", dict(rows=2, sha256=digest, findings=findings or [],
+              usable_for_dynamics=not findings, long_intervals=[], receive_time_duplicates_csv_lines=[]))
 
 
 @pytest.fixture
@@ -28,6 +41,8 @@ def test_diagnostics_retains_independent_failures_without_retry(tmp_path, profil
         assert "--enable-motion" not in command
         assert "--prepare-realtime" not in command
         assert "--operator-confirmation" not in command
+        if command[4] == "scripts.capture_leg_segment":
+            recorded_capture(command)
         return SimpleNamespace(returncode=1 if command[4] == "scripts.diagnose_collision_events" else 0)
     result = lab.execute("diagnostics", profile, tmp_path, live=True, runner=runner)
     assert len(commands) == 3
@@ -96,14 +111,72 @@ def test_empty_uses_only_existing_release_after_precheck_and_manual_confirmation
         assert "scripts.train_robot_leg_round" not in command
 
 
-def test_capture_only_config_cannot_masquerade_as_training(tmp_path, profile, monkeypatch):
+def test_empty_load_config_cannot_masquerade_as_loaded_round(tmp_path, profile, monkeypatch):
     import scripts.run_robot_leg_round as rounds
     monkeypatch.setattr(rounds, "check_config", lambda _: [])
-    monkeypatch.setattr(rounds, "paths", lambda _: dict(trial_kind="dummy_leg_capture_only"))
+    monkeypatch.setattr(rounds, "paths", lambda _: dict(trial_kind="empty_load"))
     result = lab.execute("round", profile, tmp_path, live=True,
                          runner=lambda *a, **k: pytest.fail("motion command"))
     assert result["status"] == "BLOCKED_OR_FAILED"
-    assert result["blockers"] == ["selected configuration does not enable real training"]
+    assert result["blockers"] == ["round requires a reviewed loaded capture-only or training configuration"]
+
+
+@pytest.mark.parametrize("completed", [("CAPTURE_ONLY_COMPLETE", "SKIPPED_CAPTURE_ONLY"), ("ROUND_COMPLETE", "MODEL_UPDATED")])
+def test_capture_only_round_requires_capture_only_completion(tmp_path, profile, monkeypatch, completed):
+    import scripts.run_robot_leg_round as rounds
+    monkeypatch.setattr(rounds, "check_config", lambda _: [])
+    monkeypatch.setattr(rounds, "paths", lambda _: dict(trial_kind="dummy_leg_capture_only"))
+    calls = []
+    def runner(command, **kwargs):
+        calls.append(command)
+        directory = Path(command[command.index("--session") + 1])
+        directory.mkdir(exist_ok=True)
+        if "run" in command:
+            lab.write(directory / "round_status.json", dict(status=completed[0], training_status=completed[1]))
+        return SimpleNamespace(returncode=0)
+    result = lab.execute("round", profile, tmp_path, live=True, runner=runner, confirm=lambda _: rounds.CONFIRMATION)
+    assert len(calls) == 2
+    assert result["status"] == ("COMPLETE" if completed[0] == "CAPTURE_ONLY_COMPLETE" else "BLOCKED_OR_FAILED")
+    if result["status"] == "COMPLETE":
+        assert result["training_status"] == "SKIPPED_CAPTURE_ONLY"
+
+
+def test_capture_duration_label_and_quality_are_recorded_without_quality_approval(tmp_path, profile):
+    calls = []
+    def runner(command, **kwargs):
+        calls.append(command)
+        recorded_capture(command, findings=["receive_time_gaps"])
+        return SimpleNamespace(returncode=0)
+    result = lab.execute("capture", profile, tmp_path, live=True, duration_s=30, label="knee_test_A", runner=runner)
+    assert calls[0][calls[0].index("--duration-s") + 1] == "30"
+    assert result["status"] == "COMPLETE" and result["capture_label"] == "knee_test_A"
+    assert result["quality_summary"]["findings"] == ["receive_time_gaps"]
+    assert result["quality_summary"]["usable_for_dynamics"] is False
+    assert result["quality_summary"]["motion_approved"] is False
+
+
+@pytest.mark.parametrize("action", ["quality", "calibrate"])
+def test_analysis_actions_are_offline(tmp_path, profile, action):
+    calls = []
+    result = lab.execute(action, profile, tmp_path, data="results/raw", manifest="results/points.json",
+                         runner=lambda command, **kwargs: calls.append(command) or SimpleNamespace(returncode=0))
+    assert result["status"] == "COMPLETE"
+    assert len(calls) == 1 and calls[0][4] == "measurement_validation.offline_leg"
+    assert action in calls[0] and "--enable-motion" not in calls[0]
+
+
+def test_check_never_calls_device_or_motion_functions(tmp_path, profile, monkeypatch):
+    import scripts.run_robot_leg_round as rounds
+    def forbidden(*args, **kwargs):
+        pytest.fail("offline check must not construct, connect, capture, or execute a device")
+    for name in ("run_capture", "run_execute", "_configured_adapter_factory", "LegCaptureProcess"):
+        monkeypatch.setattr(rounds, name, forbidden)
+    result = lab.execute("check", profile, tmp_path, runner=forbidden)
+    assert result["checks"]["offline"] is True
+    assert result["checks"]["device_connected"] is False
+    assert result["checks"]["motion_approved"] is False
+    assert result["checks"]["round_trial_kind"] == "dummy_leg_capture_only"
+    assert all("training intentionally disabled" not in x for x in result["checks"]["round_blockers"])
 
 
 @pytest.mark.parametrize("confirmed", [False, True])

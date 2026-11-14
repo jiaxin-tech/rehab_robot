@@ -185,6 +185,14 @@ def test_held_out_remains_sealed_and_frozen_inputs_are_unchanged() -> None:
         assert sha256(build_design.frozen_paths()[name]) == expected
 
 
+def test_historical_protocol_snapshot_keeps_active_scientific_task_compatible() -> None:
+    frozen = json.loads(build_design.FORMAL_MANIFEST.read_text(encoding="utf-8"))
+    active = json.loads((build_design.ROOT / "config/formal_experiment_manifest.json").read_text(encoding="utf-8"))
+    # A later site-review flag is not a new ROM or reference experiment.
+    scientific_fields = set(frozen) - {"real_robot_safety_thresholds_reviewed", "notes"}
+    assert {key: active[key] for key in scientific_fields} == {key: frozen[key] for key in scientific_fields}
+
+
 def test_all_formal_artifact_checksums_pass() -> None:
     lines = (OUTPUT / "checksums.sha256").read_text(encoding="utf-8").splitlines()
     assert len(lines) >= 19

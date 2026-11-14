@@ -1,0 +1,16 @@
+{
+  "outcome": "READ_ONLY_PROBE_FAILED_CLOSED",
+  "old_computer_connected": true,
+  "actual_local_ams_net_id": "10.20.4.89.1.1",
+  "configured_mapping_sha256": "3a5523e3bbf1c6d3a302e8b8eeba7f6b24c95e5e4b1dc8a545d0bc35dc953564",
+  "ads_state_raw": 0,
+  "device_state_raw": 0,
+  "error": "RuntimeError: axis1 stationary acquisition guard failed",
+  "failure_cause_detail": "UNKNOWN: first helper version did not preserve the guarded frame before exception",
+  "capture_started": false,
+  "motion_commanded": false,
+  "ads_write_used": false,
+  "original_failure_latch_preserved": true,
+  "next_action": "Improve failure evidence only, then separately launch a fresh read-only diagnostic session; do not change mapping or guards",
+  "note": "ADS service state at local port 11 does not establish global TwinCAT RUN/CONFIG state."
+}

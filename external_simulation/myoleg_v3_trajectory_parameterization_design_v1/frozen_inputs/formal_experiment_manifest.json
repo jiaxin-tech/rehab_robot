@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "rom_protocol_version": "ROM_PROTOCOL_V2",
+  "hip_rom_deg": [0.0, 120.0],
+  "knee_rom_deg": [5.0, 145.0],
+  "theta_shank_definition": "q_hip - q_knee",
+  "active_reference_id": "reference_measured_asymmetric_closed_slow",
+  "active_reference_parent_cycle_frames": [5844, 5895, 5934],
+  "active_reference_sha256": "f63bdea2e0d346d73151eedaac73e887f1028c99a6eb15cfc3bc44cfd088a881",
+  "reference_release_manifest": "reference_release/reference_release_manifest.json",
+  "scope": "formal_offline_paper_and_active_pipeline",
+  "real_robot_safety_thresholds_reviewed": false,
+  "notes": "ROM protocol approval does not approve robot motion or site-specific safety thresholds."
+}

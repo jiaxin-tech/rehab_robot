@@ -7,15 +7,16 @@ import importlib.util
 import json
 import math
 from pathlib import Path
+import re
 import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-ACTIONS = ("check", "initialize", "diagnostics", "events", "capture", "observe", "release", "empty", "round", "train")
+ACTIONS = ("check", "initialize", "diagnostics", "events", "capture", "quality", "calibrate", "observe", "release", "empty", "round", "train")
 
 
 def load(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    return json.loads(Path(path).read_text(encoding="utf-8-sig"))
 
 
 def path(value):
@@ -55,11 +56,13 @@ def check(profile, directory):
     if sys.version_info[:2] != (3, 12):
         findings.append("bundled Windows SDK requires CPython 3.12")
     config_path = path(profile["round_config"])
+    trial_kind = None
     try:
         findings.extend(check_config(config_path))
         config = paths(config_path)
-        if config.get("trial_kind") != "dummy_leg_reference":
-            findings.append("training disabled: trial_kind must be reviewed dummy_leg_reference, current=" + str(config.get("trial_kind")))
+        trial_kind = config.get("trial_kind")
+        if trial_kind not in ("dummy_leg_reference", "dummy_leg_capture_only"):
+            findings.append("round requires reviewed dummy_leg_reference or dummy_leg_capture_only, current=" + str(trial_kind))
     except Exception as exc:
         findings.append(f"round inspection: {type(exc).__name__}:{exc}")
     try:
@@ -78,14 +81,18 @@ def check(profile, directory):
         empty = "CURRENT_HASH_BOUND_RELEASE_PRESENT_NOT_LIVE_VALIDATED"
     except Exception as exc:
         empty = f"BLOCKED: {type(exc).__name__}:{exc}"
-    report = dict(offline=True, device_connected=False, training_blockers=findings,
+    training_blockers = list(findings)
+    if trial_kind != "dummy_leg_reference":
+        training_blockers.append("training intentionally disabled for current trial_kind=" + str(trial_kind))
+    report = dict(offline=True, device_connected=False, motion_approved=False,
+        round_trial_kind=trial_kind, round_blockers=findings, training_blockers=training_blockers,
         empty_load=empty, hardware_unverified=[
             "Safety callback initial state and continuity",
             "State/wrench freshness and alignment under production logging",
             "Complete supervised reference execution and cleanup",
             "Independent angle accuracy across intended trajectory range"],
         next_actions=["events", "capture", "observe", "empty (current release required)",
-                      "round (reviewed training setup required)"])
+                      "round (reviewed capture-only or training setup required)"])
     write(directory / "blockers.json", report)
     return report
 
@@ -108,8 +115,9 @@ def empty_release(profile):
     return release
 
 
-def execute(action, profile, directory, *, live=False, confirm=input, runner=subprocess.run, session=None):
-    if action not in ("check", "initialize", "release", "train") and not live:
+def execute(action, profile, directory, *, live=False, confirm=input, runner=subprocess.run, session=None,
+            duration_s=None, label=None, data=None, manifest=None):
+    if action not in ("check", "initialize", "release", "train", "quality", "calibrate") and not live:
         raise PermissionError("device access requires --live; check never connects")
     state = dict(action=action, status="STARTING", steps=[], motion_requested=action in ("empty", "round"))
 
@@ -122,7 +130,7 @@ def execute(action, profile, directory, *, live=False, confirm=input, runner=sub
     try:
         if action == "check":
             state["checks"] = check(profile, directory)
-            state["status"] = "CHECK_COMPLETE_WITH_BLOCKERS" if state["checks"]["training_blockers"] or state["checks"]["empty_load"].startswith("BLOCKED") else "OFFLINE_CHECK_COMPLETE"
+            state["status"] = "CHECK_COMPLETE_WITH_BLOCKERS" if state["checks"]["round_blockers"] or state["checks"]["empty_load"].startswith("BLOCKED") else "OFFLINE_CHECK_COMPLETE"
         elif action == "initialize":
             from scripts.run_robot_leg_round import paths
             config_path = path(profile["round_config"])
@@ -154,8 +162,29 @@ def execute(action, profile, directory, *, live=False, confirm=input, runner=sub
                 "--local-ip", profile["local_ip"], "--duration-s", profile["diagnostic_duration_s"],
                 "--max-age-s", profile["diagnostic_event_max_age_s"], "--output", directory / "events.json"])
         elif action == "capture":
+            from scripts.lab_capture_summary import summarize_capture
+            duration = positive(profile["diagnostic_duration_s"] if duration_s is None else duration_s, "capture duration")
+            if duration > 3600:
+                raise ValueError("one capture must not exceed 3600 seconds")
+            if label is not None and (not isinstance(label, str) or not re.fullmatch(r"[A-Za-z0-9_-]+", label)):
+                raise ValueError("capture label must contain only ASCII letters, digits, underscores or hyphens")
             run("leg", "scripts.capture_leg_segment", ["--config", path(profile["leg_config"]),
-                "--output-dir", directory / "leg", "--duration-s", profile["diagnostic_duration_s"]])
+                "--output-dir", directory / "leg", "--duration-s", duration])
+            state["capture_label"] = label
+            state["quality_summary"] = summarize_capture(directory / "leg")
+            state["note"] = "Recording completed; inspect quality_summary and raw quality.json before interpreting measurements. No subsequent motion is approved."
+        elif action == "quality":
+            if data is None:
+                raise ValueError("--data must name a raw CSV or its parent directory")
+            run("quality", "measurement_validation.offline_leg", ["quality", path(str(data)),
+                "--output-dir", directory / "quality"])
+            state["note"] = "Descriptive offline quality report. Host timing gaps are not exact device frame loss; torque changes during pose changes are not stationary drift."
+        elif action == "calibrate":
+            if data is None or manifest is None:
+                raise ValueError("--data and --manifest are required for offline calibration analysis")
+            run("calibrate", "measurement_validation.offline_leg", ["calibrate", path(str(manifest)),
+                "--data-dir", path(str(data)), "--output", directory / "calibration.json"])
+            state["note"] = "Offline fit/validation analysis only; no calibration, safety configuration or movement release was changed."
         elif action == "observe":
             # Unpowered idle observation. Does not prepare RT or reuse the powered commissioning profile.
             from scripts.acquire_robot_data import load_live_wrench_config
@@ -219,11 +248,12 @@ def execute(action, profile, directory, *, live=False, confirm=input, runner=sub
             config_path = path(profile["round_config"])
             blockers = check_config(config_path)
             config = paths(config_path)
-            if config["trial_kind"] != "dummy_leg_reference":
-                blockers.append("selected configuration does not enable real training")
+            trial_kind = config["trial_kind"]
+            if trial_kind not in ("dummy_leg_reference", "dummy_leg_capture_only"):
+                blockers.append("round requires a reviewed loaded capture-only or training configuration")
             if blockers:
                 state["blockers"] = blockers
-                raise PermissionError("training setup blocked; see session_status.json")
+                raise PermissionError("loaded round setup blocked; see session_status.json")
             round_dir = directory / "round"
             run("prepare", "scripts.run_robot_leg_round", ["prepare", "--config", config_path, "--session", round_dir])
             print("Review captured anchor and preview:", round_dir / "preview")
@@ -231,8 +261,11 @@ def execute(action, profile, directory, *, live=False, confirm=input, runner=sub
                 raise PermissionError("operator cancelled; no motion started")
             run("round", "scripts.run_robot_leg_round", ["run", "--session", round_dir, "--confirmation", CONFIRMATION])
             completed = load(round_dir / "round_status.json")
-            if completed.get("status") != "ROUND_COMPLETE" or completed.get("training_status") != "MODEL_UPDATED":
-                raise RuntimeError("round did not complete real-data training")
+            expected = ("CAPTURE_ONLY_COMPLETE", "SKIPPED_CAPTURE_ONLY") if trial_kind == "dummy_leg_capture_only" else ("ROUND_COMPLETE", "MODEL_UPDATED")
+            if (completed.get("status"), completed.get("training_status")) != expected:
+                raise RuntimeError("round did not confirm the expected completion and training status: " + str(expected))
+            state.update(round_trial_kind=trial_kind, round_status=completed["status"],
+                         training_status=completed["training_status"])
             state["round_report"] = str(round_dir / "report.md")
         elif action == "train":
             if session is None:
@@ -257,12 +290,19 @@ def execute(action, profile, directory, *, live=False, confirm=input, runner=sub
                  state.get("reason", ""), "", "No automatic retry, reset, approval or next-candidate dispatch."]
         lines += [f"- {s['name']}: exit {s['returncode']}; {s['log']}" for s in state["steps"]]
         if state.get("checks"):
-            lines += ["", "Empty-load: " + state["checks"]["empty_load"], "", "Training blockers:"]
+            lines += ["", "Empty-load: " + state["checks"]["empty_load"], "", "Loaded round blockers:"]
+            lines += ["- " + item for item in state["checks"]["round_blockers"]]
+            lines += ["", "Training blockers:"]
             lines += ["- " + item for item in state["checks"]["training_blockers"]]
         if state.get("blockers"):
             lines += ["", "Blockers:"] + ["- " + item for item in state["blockers"]]
         if state.get("round_report"):
-            lines += ["", "Training report: " + state["round_report"]]
+            lines += ["", "Round report: " + state["round_report"]]
+        if state.get("quality_summary"):
+            lines += ["", "Recording completion does not mean dynamics quality passed.",
+                      "Quality summary: " + json.dumps(state["quality_summary"], ensure_ascii=False)]
+        if state.get("note"):
+            lines += ["", state["note"]]
         (directory / "session_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return state
 
@@ -274,18 +314,28 @@ def main(argv=None):
     parser.add_argument("--output-root", type=Path, default=ROOT / "results/next_lab_visit")
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--session", type=Path)
+    parser.add_argument("--duration-s", type=float, help="capture recording length only; does not change safety timing limits")
+    parser.add_argument("--label", help="ASCII capture label recorded in the session metadata")
+    parser.add_argument("--data", type=Path, help="raw CSV or directory for offline quality/calibration analysis")
+    parser.add_argument("--manifest", type=Path, help="independently measured angle manifest for offline calibration")
     parser.add_argument("--empty-release", type=Path, help="existing separately reviewed short-lived release; never generated by this launcher")
     args = parser.parse_args(argv)
+    if args.label is not None and (args.action != "capture" or not re.fullmatch(r"[A-Za-z0-9_-]+", args.label)):
+        parser.error("--label requires capture and only ASCII letters, digits, underscores or hyphens")
+    if args.duration_s is not None and args.action != "capture":
+        parser.error("--duration-s changes only a capture recording length")
     profile = load(args.profile)
     if profile.get("schema_version") != 1:
         raise ValueError("unknown launcher profile schema")
     if args.empty_release:
         profile["empty_load"]["release"] = str(args.empty_release.resolve())
     args.output_root.mkdir(parents=True, exist_ok=True)
-    directory = args.output_root / (datetime.now().strftime("%Y%m%d_%H%M%S_%f") + "_" + args.action)
+    suffix = args.action + ("_" + args.label if args.label else "")
+    directory = args.output_root / (datetime.now().strftime("%Y%m%d_%H%M%S_%f") + "_" + suffix)
     directory.mkdir(exist_ok=False)
     write(directory / "launcher_profile.json", profile)
-    result = execute(args.action, profile, directory, live=args.live, session=args.session)
+    result = execute(args.action, profile, directory, live=args.live, session=args.session,
+                     duration_s=args.duration_s, label=args.label, data=args.data, manifest=args.manifest)
     print(json.dumps(dict(directory=str(directory), status=result["status"], reason=result.get("reason")), ensure_ascii=False))
     return 0 if result["status"] in ("COMPLETE", "OFFLINE_CHECK_COMPLETE") else 1
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 
 import numpy as np
@@ -9,8 +10,10 @@ import pandas as pd
 from scipy.signal import savgol_filter
 
 from collection.twincat_leg import positive
-from lower_limb_sim.mechanical_endpoints import branch_rms_components
 from measurement_validation.leg_episode import JointCalibration, read_leg_episode
+from measurement_validation.torque_endpoints import (
+    RAW_ENDPOINT_METHOD, endpoints, raw_torque_endpoint_trace, torque_metrics_from_trace,
+)
 from safety.robot_trial_release import read_json, sha256_file
 
 
@@ -47,8 +50,10 @@ def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calib
     expected = reference.time_s.to_numpy(float)
     if len(expected) < 5 or not np.isfinite(expected).all() or np.any(np.diff(expected) <= 0):
         raise ValueError("finite increasing reference time required")
-    if set(reference.cycle_phase) != {"flexion", "extension"}:
-        raise ValueError("both reviewed motion phases required")
+    phases = reference.cycle_phase.to_numpy()
+    transitions = phases[np.r_[True, phases[1:] != phases[:-1]]].tolist()
+    if transitions != ["flexion", "extension"] or min(np.sum(phases == p) for p in transitions) < 2:
+        raise ValueError("complete flexion then extension motion phases required")
     if (len(dispatch) != len(reference) or
             not np.allclose(dispatch.trajectory_time_s, expected, rtol=0, atol=1e-9)):
         raise ValueError("dispatch log does not cover the complete reference")
@@ -113,25 +118,29 @@ def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calib
     measured = pd.DataFrame(output)
     if not np.isfinite(measured.select_dtypes(include="number")).all().all():
         raise ValueError("nonfinite aligned training data")
-    components = np.array(branch_rms_components(measured.tau_hip_nm, measured.tau_knee_nm,
-                                               measured.time_s, measured.phase))
-    peaks = np.max(np.abs(measured[["tau_hip_nm", "tau_knee_nm"]].to_numpy()), axis=0)
-    return measured, dict(components_nm=components.tolist(), peaks_nm=peaks.tolist(),
+    # The model keeps one measured row per dispatched command. Mechanical
+    # endpoints instead use every raw sample in the complete motion interval:
+    # resampling force to the coarser command grid can erase short load peaks.
+    turn = int(np.flatnonzero(phases == "flexion")[-1])
+    raw_torque = {name: calibration["joints"][name]["torque_sign_to_inverse_dynamics"]
+                  * joint.torque_nm[lo:hi+1] for name, joint in episode.joints.items()}
+    trace = raw_torque_endpoint_trace(sensor[lo:hi+1], raw_torque["hip"], raw_torque["knee"],
+                                     motion_start_s=target[0], phase_boundary_s=target[turn],
+                                     motion_end_s=target[-1])
+    metrics = torque_metrics_from_trace(trace)
+    config_digest = lambda value: hashlib.sha256(json.dumps(
+        value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")).hexdigest()
+    return measured, dict(**metrics, endpoint_trace=trace,
+        endpoint_sampling=dict(method=RAW_ENDPOINT_METHOD,
+            phase_boundary_convention=trace["phase_boundary_convention"],
+            raw_samples_in_motion_interval=trace["raw_samples_in_motion_interval"],
+            endpoint_samples=len(trace["time_s"]), model_samples=len(measured),
+            rms_integration="trapezoidal squared raw torque on actual sensor time; exact shared branch boundary",
+            boundary_interpolation="piecewise linear raw torque at motion start, turning boundary and end",
+            note="Keeps recorded transients; does not recover peaks absent from the sensor stream."),
         source_sha256=sha256_file(csv_path), dispatch_sha256=sha256_file(dispatch_path),
         reference_sha256=sha256_file(reference_path), synchronization="reviewed same-host receive/dispatch alignment; not device hardware synchronization",
+        analysis_config_sha256=config_digest(analysis), calibration_config_sha256=config_digest(calibration),
+        configuration_hash_encoding="UTF-8 JSON, sorted keys, separators comma/colon, no nonfinite values",
         derivative_method=dict(method="Savitzky-Golay degree 3 on uniformly resampled measured angles", window_samples=window, delta_s=delta),
         raw_torque_preserved=True, automatically_tared=False)
-
-
-def endpoints(metrics, baseline):
-    reference = np.asarray(baseline["components_nm"], float)
-    peaks = np.asarray(baseline["peaks_nm"], float)
-    if reference.shape != (4,) or peaks.shape != (2,) or not np.isfinite([*reference, *peaks]).all() or np.any(reference <= 1e-12) or np.any(peaks <= 1e-12):
-        raise ValueError("nonzero finite measured baseline required")
-    actual = np.asarray(metrics["components_nm"], float)
-    actual_peaks = np.asarray(metrics["peaks_nm"], float)
-    if actual.shape != (4,) or actual_peaks.shape != (2,) or not np.isfinite([*actual, *actual_peaks]).all() or np.any(actual < 0) or np.any(actual_peaks < 0):
-        raise ValueError("finite nonnegative measured endpoints required")
-    ratios = actual / reference
-    return dict(E3=float(ratios.mean()), E2=float(ratios.max()),
-                peak_ratio=float(np.max(actual_peaks/peaks)))

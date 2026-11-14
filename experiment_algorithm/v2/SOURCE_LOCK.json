@@ -1,0 +1,29 @@
+{
+  "version": "REHAB_OFFLINE_V2",
+  "identity": "LF_NORMALIZED_SOURCE_CONTENT",
+  "source_sha256": {
+    "experiment_algorithm/__init__.py": "2a1d8cd8e210c903bbbc4a846be761ab0a22f633bc11b2c09b055580ac1d3040",
+    "experiment_algorithm/binding.py": "d56377d664345e9603a495903df5683cec352e6878f2f5c50ec20ee69ffb259f",
+    "experiment_algorithm/strict_replay.py": "e9c2038b01288a7a7e480dd23e1fb2acfe64adde45404b5f2a6b0f63b532212e",
+    "experiment_algorithm/v2/__init__.py": "eedf5b178dd5c9226e17b09176ba7b8bfb30aad9b630066b4173c7c26d3ec452",
+    "experiment_algorithm/v2/config.py": "57a73a9988270dfa49b4932a0bc366415ff77e6d4068597e5d9b8dc879b27297",
+    "experiment_algorithm/v2/coordinate_consistent_model.py": "afb62aa261bd5de9a58f88c5389fcbbfdab676f326d2dc2611aaaa699ee5b9c3",
+    "experiment_algorithm/v2/coupled_model.py": "7b2b51abd70013583bee22a14099651585566cb1df6b89be21c9d9bade945fd5",
+    "experiment_algorithm/v2/policy.py": "7663a488186b7d3d99e8a6dd3d424dfdf5ab23c550fd800888d26fb929f63b3c",
+    "experiment_algorithm/v2/surrogate.py": "1fc0dfc11c50721afc8f423aff7f2296c2bd00b3dc93322a7f83d161cacae1a9",
+    "scripts/train_robot_leg_round.py": "7f3f096b54b7ae708f3d040616354ac1e317160b7717d68af9f1f327b492d62c",
+    "measurement_validation/robot_leg_history.py": "c55c857a612afb604246ef0010649ebb75c4f2c4f6c706430a410f0ffe0c0081",
+    "measurement_validation/torque_endpoints.py": "3171d98f9de0b8383b35456dfeec4a336c465106137fa8459f5926bc8e1c7668",
+    "external_simulation/myoleg_reference_trajectory_replay_v1/build_and_replay.py": "a56ad78d53a9a83af5aa518dac0a4fdd70eb4c6e69ad4da59c10c1fdc23e1ec9",
+    "external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml": "20e46cd3e372fbcbdddaf7ff6dceae0652e5e9f66237ca573f6612ae4a800b7d",
+    "lower_limb_sim/config.py": "5f4da8438ad7776b374eee6870307a0b5cf81ef6bb21c29b2dc964c540a8d234",
+    "lower_limb_sim/dynamic_subject.py": "f116d624607c4c6fc26e92d18c683478f0297c128ca36da4703bd0246e90b392",
+    "lower_limb_sim/parameter_estimator.py": "fd15136408641e173b80ef779e57532dee1c507ccf10193fd98386a0d238410a",
+    "lower_limb_sim/mechanical_endpoints.py": "e366c2c806f936fd3a21fd991486656192ed3d704004e55be18765cbc76e76cd",
+    "lower_limb_sim/full_dynamics.py": "7fa196fd03a82915d27ac24eaa275dc00d780be21cc9f6163e01decf75beaca4",
+    "lower_limb_sim/e3_low_budget/run.py": "e63f73eff8fe751b174143cd11de56930d760e51cbeb63f27a12673377737e4b",
+    "lower_limb_sim/myoleg_benchmark/portable_model.py": "f21ae3cf35c1237dbb3347924b0699945acd4ecd8134d323cc5ea0489f65269d",
+    "personalization/models/time_series_graybox.py": "dfe380cf27aaeee86179bc3347be8fded7a67558354a783fef60a0eefe853ec7"
+  },
+  "note": "New repository-local version. Historical external snapshots and live configuration remain unchanged. Canonical LF identity is explicit; run requests bind local bytes after verification."
+}

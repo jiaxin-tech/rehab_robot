@@ -41,6 +41,27 @@ def source_hashes():
     return {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in SOURCES}
 
 
+def observed_query_ids(query_events, health_events):
+    """Count persisted query evidence across legacy and current provider logs.
+
+    Current providers persist one completion event and publish an independent
+    in-progress marker. A native hang therefore need not have a legacy start
+    intent. These are observed query attempts, not proof of vendor entry.
+    """
+    def valid_id(value):
+        return isinstance(value, int) and not isinstance(value, bool) and value > 0
+    completed = {r["query_id"] for r in query_events
+                 if r.get("type") in ("QUERY_SUCCESS", "QUERY_ERROR") and valid_id(r.get("query_id"))}
+    observed = completed | {r["query_id"] for r in query_events
+                            if r.get("type") in ("QUERY_START_INTENT", "QUERY_HUNG")
+                            and valid_id(r.get("query_id"))}
+    for row in health_events:
+        provider = row.get("provider") or {}
+        if provider.get("QUERY_IN_PROGRESS") is True and valid_id(provider.get("query_id")):
+            observed.add(provider["query_id"])
+    return observed, completed
+
+
 def write_json(path, value):
     Path(path).write_text(json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8")
 
@@ -505,8 +526,7 @@ def run_case(request, case, output_root, *, mode="OFFLINE_DRY_RUN", authorizatio
     samples = [dict(r["frame"], run_id=run_id, session_id=r["session_id"], query_id=r["query_id"],
                     parent_receive_ns=r.get("parent_receive_ns")) for r in success]
     csv_export(out / "wrench_samples.csv", samples, list(samples[0]) if samples else ["sequence_id", "host_monotonic_time_s", "cartesian_force_raw_n", "cartesian_torque_raw_nm"])
-    intents = {r["query_id"] for r in queries if r.get("type") == "QUERY_START_INTENT"}
-    completed = {r["query_id"] for r in success + errors}
+    observed, completed = observed_query_ids(queries, health_rows)
     if case == "B" and not success: failures.append("no_successful_wrench_sample")
     if not state_rows: failures.append("no_state_samples")
     if any(r.get("sequence_gap", 0) for r in state_rows): failures.append("rt_capture_sequence_gap")
@@ -535,9 +555,9 @@ def run_case(request, case, output_root, *, mode="OFFLINE_DRY_RUN", authorizatio
         intended_rt_rate_hz=1000 / request["rt_interval_ms"], intended_state_poll_hz=request["state_poll_hz"],
         intended_wrench_rate_hz=request["intended_wrench_hz"], wrench_status="N/A_INTENTIONALLY_DISABLED" if case == "A" else "ENABLED",
         rt_sample_count=len(state_rows), wrench_planned_queries=0 if case == "A" else math.floor(900 * request["intended_wrench_hz"]),
-        wrench_started_queries=len(intents), wrench_completed_queries=len(completed),
-        query_count_semantics="started=start intent; pre-call boundary does not prove native entry",
-        wrench_successful_queries=len(success), wrench_error_queries=len(errors), pending_queries=sorted(intents - completed),
+        wrench_started_queries=len(observed), wrench_completed_queries=len(completed),
+        query_count_semantics="observed query attempts from persisted completion, legacy intent, hang or supervisor in-progress marker; a pre-call marker does not prove vendor entry",
+        wrench_successful_queries=len(success), wrench_error_queries=len(errors), pending_queries=sorted(observed - completed),
         sdk_error_histogram=dict(Counter(str(r["error"].get("code")) for r in errors)), distributions=metrics,
         rt_device_source_timing="UNAVAILABLE_NO_DEVICE_TIMESTAMP", criteria=request.get("criteria"),
         timing_acceptance="UNDEFINED", reliability_acceptance="UNDEFINED", cleanup=cleanup,
