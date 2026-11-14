@@ -1,0 +1,35 @@
+{
+  "clock_domain": "LOCAL_HOST_PERF_COUNTER",
+  "ams_net_id": "10.20.4.89.1.1",
+  "ads_port": 11,
+  "index_group": 50593808,
+  "index_offset": 2147483807,
+  "image_bytes": 1366,
+  "axis_offsets": [
+    0,
+    23,
+    46,
+    69
+  ],
+  "toggle_byte": 1365,
+  "toggle_bit": 4,
+  "expected_hz": 500,
+  "ads_dll_path": "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\TcAdsDll.dll",
+  "ads_timeout_ms": 100,
+  "startup_timeout_s": 5,
+  "max_progress_age_s": 0.25,
+  "shutdown_timeout_s": 5,
+  "heartbeat_s": 0.01,
+  "no_new_sample_timeout_s": 0.1,
+  "poll_interval_s": 0.0005,
+  "guards": {
+    "axis1": {
+      "max_abs_torque_nm": 100,
+      "expected_operation_enabled": false
+    },
+    "axis4": {
+      "max_abs_torque_nm": 100,
+      "expected_operation_enabled": false
+    }
+  }
+}
