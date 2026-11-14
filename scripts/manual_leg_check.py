@@ -252,18 +252,29 @@ def acquire(action, config, directory, *, duration_s=None, source_factory=LocalA
     return status
 
 
-def inspect(config, directory, *, source_factory=LocalAdsReader, clock=time):
-    """Read exactly twenty images for diagnosis, without authorizing capture.
+def inspect(config, directory, *, duration_s=None, source_factory=LocalAdsReader, clock=time):
+    """Read twenty images, or explicitly ten seconds, for diagnosis only.
 
     Guard flags and decode errors are evidence to inspect, not permission to
     ignore the unchanged probe/capture guards. A native/session/cleanup error
     stops this bounded diagnostic and preserves all observations so far.
     """
+    if duration_s is not None and (type(duration_s) is not int or duration_s != 10):
+        raise ValueError("inspect duration must be omitted or exactly 10 seconds")
+    poll_s = max(config["poll_interval_s"], .005)
+    mode = "DURATION_10_SECONDS" if duration_s is not None else "FIXED_20_READS"
+    maximum_frames = 2000 if duration_s is not None else 20
     status = dict(action="inspect", status="STARTING", ok=False, attempted_reads=0,
-        completed_reads=0, capture_authorized=False, motion_commanded=False, ads_write_used=False,
+        completed_reads=0, capture_authorized=False, training_authorized=False,
+        data_classification="DIAGNOSTIC_ONLY", inspection_mode=mode,
+        requested_duration_s=duration_s, requested_read_count=None if duration_s else 20,
+        effective_poll_interval_s=poll_s, maximum_frames=maximum_frames,
+        motion_commanded=False, ads_write_used=False,
         interpretation="Read completion only; not hardware healthy or mapping verified.",
+        sampling_interpretation="Diagnostic polling at intervals >=5 ms; not a 500 Hz normal capture or training dataset.",
         ads_state_interpretation="raw queried-service value; not proof of TwinCAT RUN/CONFIG")
     source, error, frames = None, None, []
+    origin_ns, elapsed_s = None, None
     previous_image, previous_toggle = None, None
     changes, byte_events, changed_indices, images = 0, 0, set(), set()
     axis_status = {str(axis): Counter() for axis in range(1, 5)}
@@ -275,10 +286,14 @@ def inspect(config, directory, *, source_factory=LocalAdsReader, clock=time):
                       ads_state=source.ads_state, device_state=source.device_state)
         if source.actual_local_ams_net_id != config["ams_net_id"]:
             raise ValueError("actual local AMS differs from configured target; no address guessed")
-        for index in range(20):
+        origin_ns = clock.perf_counter_ns()
+        deadline_ns = origin_ns + 10_000_000_000
+        while (len(frames) < 20 if duration_s is None else clock.perf_counter_ns() < deadline_ns):
+            if len(frames) >= maximum_frames:
+                raise RuntimeError("inspection frame cap reached before duration; no additional reads attempted")
             begin = clock.perf_counter_ns()
             status["attempted_reads"] += 1
-            record = dict(read_index=index+1, query_start_ns=begin)
+            record = dict(read_index=status["attempted_reads"], query_start_ns=begin)
             try:
                 image = source.read()
             except BaseException as exc:
@@ -323,13 +338,15 @@ def inspect(config, directory, *, source_factory=LocalAdsReader, clock=time):
                               guard_failures=["decoded guard state unavailable"])
             frames.append(record)
             previous_image = image
-            clock.sleep(max(config["poll_interval_s"], .005))
+            clock.sleep(poll_s)
     except BaseException as exc:
         error = ("KeyboardInterrupt: operator cancelled; no automatic retry" if isinstance(exc, KeyboardInterrupt)
                  else f"{type(exc).__name__}: {exc}")
         if getattr(exc, "__notes__", None):
             status["exception_notes"] = list(exc.__notes__)
     finally:
+        if origin_ns is not None:
+            elapsed_s = (clock.perf_counter_ns()-origin_ns)/1e9
         if source is not None:
             try:
                 source.close()
@@ -340,12 +357,18 @@ def inspect(config, directory, *, source_factory=LocalAdsReader, clock=time):
             changed_byte_indices=sorted(changed_indices), axis_status_distributions={k: dict(v) for k, v in axis_status.items()},
             axis_error_distributions={k: dict(v) for k, v in axis_error.items()},
             observed_guard_failures=dict(failures), decode_error_count=decode_errors,
-            capture_authorized=False, hardware_healthy_established=False, mapping_verified=False)
-        complete = error is None and status["completed_reads"] == 20
+            capture_authorized=False, training_authorized=False, data_classification="DIAGNOSTIC_ONLY",
+            hardware_healthy_established=False, mapping_verified=False,
+            inspection_mode=mode, requested_duration_s=duration_s, observed_span_s=elapsed_s)
+        complete = error is None and (status["completed_reads"] == 20 if duration_s is None else
+                                     status["completed_reads"] > 0 and elapsed_s >= 10.)
         status.update(status="COMPLETE" if complete else "FAILED", ok=complete, error=error,
-                      summary=summary, completed_utc=datetime.now(timezone.utc).isoformat())
+                      observed_span_s=elapsed_s, summary=summary, completed_utc=datetime.now(timezone.utc).isoformat())
         write_json(directory / "inspection_frames.json", dict(action="inspect", capture_authorized=False,
-            interpretation=status["interpretation"], frames=frames, summary=summary))
+            training_authorized=False, data_classification="DIAGNOSTIC_ONLY", inspection_mode=mode,
+            requested_duration_s=duration_s, maximum_frames=maximum_frames,
+            interpretation=status["interpretation"], sampling_interpretation=status["sampling_interpretation"],
+            frames=frames, summary=summary))
         write_json(directory / "segment_status.json", status)
     return status
 
@@ -386,6 +409,9 @@ def run(action, *, config_path=BUNDLE_PATH, output_dir=None, live=False, duratio
         config_path=str(Path(config_path).resolve()), live_requested=bool(live),
         motion_commanded=False, ads_write_used=False, remote_helper_used=False,
         duration_s=duration_s, source_sha256=source_hashes())
+    if action == "inspect":
+        manifest.update(capture_authorized=False, training_authorized=False,
+                        data_classification="DIAGNOSTIC_ONLY")
     try:
         manifest["git_head"] = git_head()
         config, checks = offline_check(config_path)
@@ -407,12 +433,17 @@ def run(action, *, config_path=BUNDLE_PATH, output_dir=None, live=False, duratio
                     hostname=manifest["hostname"], expected_ams=config["ams_net_id"])
                 manifest["probe_session"] = str(probe)
             if action == "inspect":
+                if duration_s is not None and (type(duration_s) is not int or duration_s != 10):
+                    raise ValueError("inspect duration must be omitted or exactly 10 seconds")
                 write_json(output / "twincat_file_evidence.json", collect_file_evidence())
-            status = (inspect(config, output, source_factory=source_factory, clock=clock) if action == "inspect" else
+            status = (inspect(config, output, duration_s=duration_s, source_factory=source_factory, clock=clock) if action == "inspect" else
                       acquire(action, config, output, duration_s=duration_s, source_factory=source_factory, clock=clock))
             manifest.update(status=status["status"], ok=status["ok"], error=status.get("error"))
             if action == "inspect":
-                manifest.update(capture_authorized=False, interpretation=status["interpretation"], summary=status["summary"])
+                manifest.update(inspection_mode=status["inspection_mode"], requested_duration_s=duration_s,
+                                observed_span_s=status["observed_span_s"],
+                                interpretation=status["interpretation"], sampling_interpretation=status["sampling_interpretation"],
+                                summary=status["summary"])
     except (Exception, KeyboardInterrupt) as exc:
         manifest.update(status="FAILED", ok=False, error=f"{type(exc).__name__}: {exc}")
     manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
@@ -435,11 +466,14 @@ def main(argv=None):
         parser.error("--offline is valid only for check without --live")
     if args.action == "check" and args.live:
         parser.error("check is always offline; remove --live")
+    if args.action == "inspect" and args.duration_s not in (None, 10):
+        parser.error("inspect accepts only omitted duration or --duration-s 10")
     output, manifest = run(args.action, config_path=args.config, output_dir=args.output_dir,
         live=args.live, duration_s=args.duration_s, probe_session=args.probe_session)
     print("记录目录：" + str(output))
     if args.action == "inspect" and manifest["ok"]:
-        print("20次只读映像读取完成；不代表硬件健康或映射已核实，也不允许据此采集。")
+        print(("10秒只读诊断记录完成" if args.duration_s == 10 else "20次只读映像读取完成")
+              + "；不代表硬件健康或映射已核实，不允许据此采集或训练。")
     else:
         print("只读检查完成。" if manifest["ok"] else "本次停止，不自动重试：" + str(manifest.get("error")))
     return 0 if manifest["ok"] else 1

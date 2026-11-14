@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "confirmation_method": "USER_REPORTED_TWINCAT_COE_ONLINE",
+  "reported_date_local": "2026-11-14",
+  "local_timezone": "Asia/Shanghai",
+  "prompt_context": "CoE-Online of the physical drive corresponding to axis1",
+  "original_user_text": "6041 status word 0*0218  603f errorcode 0*0022",
+  "normalized_online_values": {
+    "0x6041:00": "0x0218",
+    "0x603F:00": "0x0022"
+  },
+  "matches_all_20_configured_axis1_images": true,
+  "cia402_state_interpretation": {
+    "fault_bit3": true,
+    "operation_enabled_bit2": false,
+    "statusword_mask_0x004F": "0x0008",
+    "state": "FAULT"
+  },
+  "confirmation_scope": "axis1 statusword and error code only; operator-reported, not independently acquired SDO",
+  "full_live_pdo_mapping_verified": false,
+  "error_0x0022_vendor_meaning": null,
+  "drive_vendor_and_model": null,
+  "physical_damage_confirmed": false,
+  "capture_or_motion_authorized": false
+}

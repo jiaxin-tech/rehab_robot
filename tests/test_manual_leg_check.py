@@ -436,6 +436,9 @@ def test_inspect_retains_twenty_faulted_images_without_authorizing_capture(local
     assert manifest["ok"] is True and status["ok"] is True
     assert readers[0].reads == status["completed_reads"] == 20 and readers[0].closed
     assert manifest["capture_authorized"] is status["capture_authorized"] is evidence["capture_authorized"] is False
+    assert manifest["training_authorized"] is status["training_authorized"] is evidence["training_authorized"] is False
+    assert manifest["data_classification"] == status["data_classification"] == evidence["data_classification"] == "DIAGNOSTIC_ONLY"
+    assert manifest["inspection_mode"] == "FIXED_20_READS"
     assert "not hardware healthy or mapping verified" in status["interpretation"]
     assert len(evidence["frames"]) == 20 and evidence["frames"][0]["raw_image_hex"] == images[0].hex()
     assert evidence["frames"][-1]["decoded"]["axis1_torque_3c1a_nm"] == 139.
@@ -526,3 +529,64 @@ def test_only_inspect_collects_file_evidence_and_binds_its_hash(local_config, tm
     assert calls == [True]
     assert diagnostic.read_json(output / "twincat_file_evidence.json") == evidence
     assert manifest["output_files_sha256"]["twincat_file_evidence.json"] == diagnostic.sha256_file(output / "twincat_file_evidence.json")
+
+
+def test_ten_second_inspect_logs_persistent_faults_without_capture_or_training_permission(local_config, tmp_path):
+    path, config = local_config
+    readers, clock = [], FakeClock()
+    images = [image_for(config, toggle=index % 2, axis1_status=0x0218,
+                        axis1_error=0x0022, axis1_torque=-12.) for index in range(1000)]
+    directory, manifest = diagnostic.run("inspect", config_path=path, output_dir=tmp_path / "inspect10",
+        live=True, duration_s=10, source_factory=fake_factory(clock, readers, images=images), clock=clock)
+    status = diagnostic.read_json(directory / "segment_status.json")
+    evidence = diagnostic.read_json(directory / "inspection_frames.json")
+    assert manifest["ok"] and readers[0].closed
+    assert 20 < readers[0].reads == status["completed_reads"] == len(evidence["frames"]) <= 2000
+    assert 10. <= status["observed_span_s"] < 10.02
+    assert all(sleep >= .005 for sleep in clock.sleeps)
+    assert all(not frame["guard_passed"] for frame in evidence["frames"])
+    assert status["summary"]["observed_guard_failures"]["axis1 fault=True"] == readers[0].reads
+    for record in (manifest, status, evidence):
+        assert record["inspection_mode"] == "DURATION_10_SECONDS" and record["requested_duration_s"] == 10
+        assert record["data_classification"] == "DIAGNOSTIC_ONLY"
+        assert record["capture_authorized"] is record["training_authorized"] is False
+    assert status["summary"]["hardware_healthy_established"] is False
+    assert "not a 500 Hz normal capture or training dataset" in status["sampling_interpretation"]
+    assert not (directory / "leg.csv").exists()
+    assert manifest["output_files_sha256"]["inspection_frames.json"] == diagnostic.sha256_file(directory / "inspection_frames.json")
+    def forbidden(config): pytest.fail("ten-second diagnosis cannot authorize normal capture")
+    _, capture = diagnostic.run("capture", config_path=path, output_dir=tmp_path / "blocked_capture10",
+        live=True, duration_s=10, probe_session=directory, source_factory=forbidden)
+    assert not capture["ok"] and "successful complete probe" in capture["error"]
+
+
+def test_timed_inspect_native_error_closes_and_preserves_partial_diagnostic(local_config, tmp_path):
+    _, config = local_config
+    readers, clock = [], FakeClock()
+    status = diagnostic.inspect(config, tmp_path, duration_s=10,
+        source_factory=fake_factory(clock, readers, read_error=diagnostic.AdsReadError(1797, 0, bytes(config["image_bytes"]))),
+        clock=clock)
+    evidence = diagnostic.read_json(tmp_path / "inspection_frames.json")
+    assert not status["ok"] and status["attempted_reads"] == 1 and status["completed_reads"] == 0
+    assert readers[0].reads == 1 and readers[0].closed and len(evidence["frames"]) == 1
+    assert evidence["frames"][0]["read_evidence"]["ads_return_code"] == 1797
+    assert status["inspection_mode"] == "DURATION_10_SECONDS"
+    assert status["capture_authorized"] is status["training_authorized"] is False
+
+
+@pytest.mark.parametrize("duration", [True, 1, 20, 30])
+def test_inspect_refuses_other_durations_before_any_native_read(local_config, tmp_path, duration):
+    path, _ = local_config
+    def forbidden(config): pytest.fail("invalid inspect duration opened ADS")
+    _, manifest = diagnostic.run("inspect", config_path=path, output_dir=tmp_path / "invalid_duration",
+        live=True, duration_s=duration, source_factory=forbidden)
+    assert not manifest["ok"] and "exactly 10 seconds" in manifest["error"]
+    assert manifest["data_classification"] == "DIAGNOSTIC_ONLY"
+    assert not (tmp_path / "invalid_duration/inspection_frames.json").exists()
+
+
+def test_cli_inspect_rejects_thirty_second_request_without_running(monkeypatch):
+    monkeypatch.setattr(diagnostic, "run", lambda *a, **k: pytest.fail("unsupported duration reached run"))
+    with pytest.raises(SystemExit) as caught:
+        diagnostic.main(["inspect", "--live", "--duration-s", "30"])
+    assert caught.value.code == 2

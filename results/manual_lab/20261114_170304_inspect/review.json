@@ -81,6 +81,11 @@
   "physical_drive_fault_cause_confirmed": false,
   "sustained_500hz_verified": false,
   "capture_authorized": false,
-  "next_discriminating_check": "Read the same physical axis device 0x6041:00 and 0x603F:00 in TwinCAT CoE-Online; retain device name/vendor/model and compare with 0x0218/0x0022",
-  "no_hardware_access_performed_by_review": true
+  "next_discriminating_check": "Identify vendor/model and error meaning; bounded diagnostic-only recording can retain the reported fault without authorizing ordinary capture or motion",
+  "no_hardware_access_performed_by_review": true,
+  "axis1_online_comparison": {
+    "status": "OPERATOR_REPORTED_MATCH",
+    "evidence": "online_object_confirmation.json",
+    "scope": "6041/603F only"
+  }
 }

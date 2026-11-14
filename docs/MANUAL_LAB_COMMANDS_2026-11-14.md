@@ -2,22 +2,24 @@
 
 本次在装有TwinCAT的旧实验电脑本地运行。16:43回传的一帧按当前配置解码为轴1状态字`0x0218`、错误码`0x0022`，程序因此停止；但现场报告TwinCAT界面没有报错。当时单帧不足以排除旧映像或映射不一致，随后补充了20帧inspect。首次复核见[本次记录分析](lab/LEG_PROBE_REVIEW_2026-11-14.md)，当前进展以下一段为准。
 
-**17:03的inspect已经回传并核验，无须重复同一检查。** 20帧均不同，toggle变化9次，轴1始终为`0x0218 / 0x0022`。本次下一步是对照TwinCAT同一物理驱动器的CoE-Online `0x6041:00`和`0x603F:00`，并记录设备名称/型号；界面主状态和这两个驱动器对象应分开核对。见[20帧复核](lab/LEG_INSPECT_REVIEW_2026-11-14.md)。以下inspect命令保留供复现，本次先不重跑或进入采集。
+**在线对照已完成：操作者报告6041为0x0218、603F为0x0022，与程序一致。** 17:03的20帧均不同、toggle变化9次，这两个字段持续存在。具体错误含义尚缺驱动型号。本次如果要继续查看数据，可按下方运行10秒独立只读诊断：故障状态作为记录保留，不因该标志提前结束读取。旧代码对比见[复核记录](lab/LEG_INSPECT_REVIEW_2026-11-14.md)。
 
-## 本次先执行：连续映像与配置文件核对
+## 本次命令：十秒独立只读诊断
 
 在原仓库PowerShell中，先核对当前分支为`paper-personalized-load`、暂存区及工作区已干净，再执行：
 
 ```powershell
 git pull --ff-only origin paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '更新失败，保留原状并停止。' }
-$legInspect = 'results/manual_lab/' + (Get-Date -Format 'yyyyMMdd_HHmmss') + '_inspect'
-& .\.venv\Scripts\python.exe -X utf8 -m scripts.manual_leg_check inspect --live --output-dir $legInspect
+$legInspect = 'results/manual_lab/' + (Get-Date -Format 'yyyyMMdd_HHmmss') + '_diagnostic10s'
+& .\.venv\Scripts\python.exe -X utf8 -m scripts.manual_leg_check inspect --live --duration-s 10 --output-dir $legInspect
 $legInspectExit = $LASTEXITCODE
 Write-Host "核对退出码：$legInspectExit；本次目录：$legInspect"
 ```
 
-inspect固定读取20次，在`inspection_frames.json`保留每帧原始字节、时间、解码和守卫判断。它统计映像变化与toggle，不因观察到的故障位提前停止；原生读取或关闭错误仍结束本次诊断。`COMPLETE/ok=true`只表示20次读取完成，**不代表驱动健康、映射正确或可以采集**。inspect目录不能代替成功probe用于采集放行。
+不带时长的inspect仍固定读取20次；显式`--duration-s 10`读取约十秒，以实际保存跨度为准，最多2000帧。两种模式都在`inspection_frames.json`保留原始字节、时间、解码和守卫判断；观测到fault、非零603F或力矩超守卫时继续只读记录，原生读取/会话/关闭错误仍结束本次诊断。
+
+所有输出明确标记`DIAGNOSTIC_ONLY`、`capture_authorized=false`、`training_authorized=false`。`COMPLETE/ok=true`只表示本次只读诊断完成，**不代表驱动健康或正常采集合格**。poll至少5ms，不能把这段称为500Hz正常采集或用于论文性能比较；inspect目录不能代替成功probe放行采集。它不发送任何复位、使能、模式或运动指令。
 
 同时保存`twincat_file_evidence.json`：只读`C:/TwinCAT/3.1/Boot/CurrentConfig.xml`的哈希、修改时间、可识别设备身份及PDO字段原字符串；文件缺失或解析失败也保留状态。启动文件不是在线映射证明，程序不激活工程、不修改配置、不猜设备型号或偏移。
 
@@ -27,7 +29,7 @@ inspect固定读取20次，在`inspection_frames.json`保留每帧原始字节�
 git diff --cached --name-only
 git add -- $legInspect
 git diff --cached --stat
-git commit -m "Record read-only TwinCAT image inspection 2026-11-14"
+git commit -m "Record diagnostic-only TwinCAT stream 2026-11-14"
 if ($LASTEXITCODE -ne 0) { throw '提交失败，保留原始记录并停止。' }
 git push origin paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '上传失败，保留本地提交，不要强推。' }
