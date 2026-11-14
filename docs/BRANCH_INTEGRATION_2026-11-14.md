@@ -30,7 +30,7 @@
 
 `force_training.fixed_cycle_duration_s`在保守重定时后的实际计划上核对；周期增长即拒绝本批固定周期比较，不能提高限速或偷偷使用名义时间。若需统一更长周期，必须作为新的开发协议重新冻结并保留旧记录。
 
-`force_training.study_identity`为`{setup_id:null, mechanical_condition_id:null, strict:true}`。身份由真实安装和机械条件定义，不自动产生假编号；跨条件另起历史。模板继续保留补偿false、偏置null与训练关闭，所以它不是即刻可执行配置。
+`force_training.study_identity`为`{setup_id:null, mechanical_condition_id:null, strict:true}`。身份由真实安装和机械条件定义，不自动产生假编号；跨条件另起历史。模板继续保留补偿false与偏置null，因此不是即刻可执行配置。旧字段`training.enabled=false`不关闭TCP受力主线的自动训练，具体现场阶段见[操作总手册](NEXT_LAB_OPERATIONS.md)。
 
 ## 研究主张与评价
 

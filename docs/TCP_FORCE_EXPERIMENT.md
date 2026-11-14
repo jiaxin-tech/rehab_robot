@@ -9,7 +9,7 @@
 3. ROKAE xCoreSDK 实时笛卡尔位置控制执行一轮，同步记录实际 TCP 和六维受力。实时力控制不在本实现中，在线已有力限仍负责停止保护。
 4. 完整执行和数据审核通过后，直接计算力/力矩负担及峰值，不重建患者角度或关节力矩。
 5. 复用原 MaternGP、expected_improvement、constraint_probability 工具，预测有限 TCP 候选的负担及峰值，选择下一未试候选；预算耗尽、无候选、无预测可行候选或无预期改善时停止。
-6. 下一轮重新准备、核对预览，再显式启动。每次重复运动也保存观测并训练，候选 ID 不伪造。
+6. 下一轮重新准备、核对预览，再显式启动。自适应轮次更新GP；显式evaluation保存独立评价、不更新GP，候选ID不伪造。
 
 这是经用户确认后的新正式观测/决策方法，不能写成原六参数算法原封不动部署，也不再把受力目标叫作原 E3/E2。
 
@@ -68,6 +68,8 @@ GP 长度尺度、噪声与幅值下限、预测可行性分数和停止门限�
 
 ## 操作指南
 
+当前后续阶段及精确回传命令以[实验操作总手册](NEXT_LAB_OPERATIONS.md)为准。本页的旧`results/force_*`示例默认被Git忽略，总手册统一使用`results/manual_lab/`和`results/paper_study/`。
+
 在仓库根目录 PowerShell 执行。实验台架保持 validation.capture_dummy_leg=true，可采集假腿独立验证数据并保留装置保护；仅机器人工作流设为 false。每轮用新目录。
 
 先核对配置与不运动观测：
@@ -94,7 +96,7 @@ prepare 读取起点、不运动。检查 blockers 为空，以及 preview/、tc
 .\.venv\Scripts\python.exe -m scripts.lab_session run --live --session results/force_round_01
 ~~~
 
-run 正常结束后自动训练，检查 training_status=COMPLETE 和 tcp_force_training.json 的 action。训练失败仍保留原始记录，修复数据/分析问题后可离线重试：
+run正常结束后自动训练，不以`training.enabled=false`关闭；检查training_status=COMPLETE和tcp_force_training.json的action。训练失败保留原始记录。下面命令仅供已有完整原始证据的离线核查，不能解除失败账本的继续运动限制，也不能靠改写原始输入恢复搜索：
 
 ~~~powershell
 .\.venv\Scripts\python.exe -m scripts.lab_session train --training-mode passive --session results/force_round_01

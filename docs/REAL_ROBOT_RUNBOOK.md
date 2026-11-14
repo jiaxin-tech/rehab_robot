@@ -1,5 +1,7 @@
 # 真机实验操作手册
 
+当前后续操作统一使用[实验操作总手册](NEXT_LAB_OPERATIONS.md)。本页保留SDK、短诊断、停止及历史实现说明；不把后续历史几何段落与新TCP受力流程混用。
+
 当前正式流程已变更：trajectory.mode=independent_tcp、training.mode=tcp_force，直接由机械臂实测位姿与受力决策，不需要患者几何。原六参数只作离线对照。最新完整操作见 [TCP_FORCE_EXPERIMENT.md](TCP_FORCE_EXPERIMENT.md)。本页后续的 original_candidate、IK/JᵀF 和患者几何段落为历史实现记录，不能作为当前带载操作指令；SDK、短诊断与停止说明仍可参考。
 
 历史实现说明：以下原候选几何流程已由当前独立 TCP 受力主线替代，保留供旧记录复现，不作为新的正式实验操作。

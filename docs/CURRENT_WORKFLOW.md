@@ -2,6 +2,8 @@
 
 更新日期2026年11月14日。实验室实验硬截止为2027年1月15日，每周两次、每次三至四小时，由一人完成。当前统一分支为`paper-personalized-load`，正式代码继承`cleanup/unified-dummy-leg-mainline`的机器人位姿与受力方法。来源见[整合记录](BRANCH_INTEGRATION_2026-11-14.md)。
 
+实际后续操作和数据回传统一按[实验操作总手册](NEXT_LAB_OPERATIONS.md)逐步执行；现场记录可复制[记录模板](templates/LAB_RECORD_TEMPLATE.md)。
+
 ## 本篇只研究什么
 
 工作题目为“面向舒适度相关机械负荷降低的单臂牵引轨迹个性化方法与假腿验证”。在相同机器人空间任务和预先冻结的总周期下，利用少量该机械条件的实测受力选择节奏，检验其是否比合理公共节奏负荷更低。题目是待验证研究方向，不代表创新和效果已经成立。
@@ -32,7 +34,7 @@
 
 新增`config/paper_personalized_load.template.json`从实际配置复制，仅提出同空间端点、80/80、70/90、90/70秒候选，总周期均164秒。`force_training.fixed_cycle_duration_s=164`约束的是保守限速之后的完整计划周期，包含保持阶段。重定时使周期变化时拒绝这一批可比性；若现场确实需要更慢，应在观察正式效果前统一重定任务并重新冻结，保留原失败记录，不修改限速来迁就模板。
 
-模板不是可运行批准。`study_identity.setup_id`和`mechanical_condition_id`为null，`strict=true`；应按实际安装与机械条件填写并保存定义，不能用虚构编号声称已验证。补偿未核实、无接触偏置未测，继续false/null；`training.enabled`继续false。模板没有改变现场空间、限速、限力或假腿ROM。
+模板不是可运行批准。`study_identity.setup_id`和`mechanical_condition_id`为null，`strict=true`；应按实际安装与机械条件填写并保存定义，不能用虚构编号声称已验证。补偿未核实、无接触偏置未测，继续false/null。`training.enabled`虽保留false，但并非TCP受力训练总开关：完整带载run会自动训练，实际前提由受力标定、身份和任务审核约束。模板没有改变现场空间、限速、限力或假腿ROM。
 
 当前0.9m绝对Z目标与-0.2m水平位移只是沿用配置。需针对真实起点、安装、空间、连接和装置状态审核，不是患者处方。先导或模板不可执行时，先修现场任务定义，不能认为文档中的数字保证适合这台装置。
 
