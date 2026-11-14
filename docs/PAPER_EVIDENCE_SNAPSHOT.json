@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-12T09:12:22.080171+00:00",
-  "git_commit": "01684c5c3e5bad500c95bc015d0e8678561cb584",
-  "worktree_dirty": true,
+  "generated_at_utc": "2026-11-14T08:33:34.698531+00:00",
+  "git_commit": "d38a71476ca64ccab81a61254ffdca3dbcec6890",
+  "worktree_dirty": false,
   "source_sha256": {
     "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
     "control/independent_tcp_trajectory.py": "7056fc86eba68d992e85a12eb48c7ff38732d67a9b6c9ea3d0939abf9e65f409",
@@ -11,7 +11,7 @@
     "collection/real_robot_acquisition.py": "071d9f783660d9d2d98c221f2fdcaade18c1079bcd2fa97ff467c70885a9bac1",
     "collection/twincat_leg.py": "0b89dafc51bad085f27ecdea6934c3a6a293aa24f4a2fb82d28bc73a25cb4a40",
     "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
-    "scripts/lab_session.py": "75d8e32b2a7c3c60131c738f1b9a77686b139849d091034abf848c1026616e38",
+    "scripts/lab_session.py": "d913e4601628dc807cfbf54a07cad19604c96924149e86e5053b9519caecaeb6",
     "scripts/train_robot_leg_round.py": "a2c7ce9f71f96049da6882f11c723f0a9c5d6a98e256cb7d2482c603e1c0f896",
     "experiment_algorithm/config.py": "57a73a9988270dfa49b4932a0bc366415ff77e6d4068597e5d9b8dc879b27297",
     "experiment_algorithm/policy.py": "7663a488186b7d3d99e8a6dd3d424dfdf5ab23c550fd800888d26fb929f63b3c",
@@ -27,15 +27,24 @@
     "measurement_validation/robot_observation.py": "03b19debd5b20af0db25074b1a16144966dc4072f08f50657792f56f2049a6e9",
     "scripts/original_training_adapter.py": "70dda3b02af479f94ddd5797cb70be167e226a9c96daa93bba78e6dc5f26e339",
     "control/prepared_trajectory.py": "280142833f858360d3d05e270bf4fd7782466055539776811b9239cb1b77bfd3",
-    "measurement_validation/robot_execution.py": "0766c2a50bc3f80c013a73c3b98b0d738e957be4a2268d87a70d325213c6edd5",
+    "measurement_validation/robot_execution.py": "cb3be1924fcf6c0c87275b65adf12fc87e3f7d3951bc6510b3424883d8e497d8",
     "measurement_validation/passive_response.py": "075add12c49705e551a6467526bc00938772e225a8f7c15e14b9ffbec9d2e21b",
     "measurement_validation/robot_leg_round.py": "c1b406c17c1e26e2a72ae89210d9046d934397e7fa39d1e8e3fd31f48ad3db93",
-    "scripts/audit_paper_evidence.py": "6b4710dede35f0b91c65fe7f3e8a0ed872cbb4b702841f410a6f14d8ee116224",
+    "scripts/audit_paper_evidence.py": "afdc99c48b41082121219b87af7baacdbb097b738fb362d96705fe4ef2ce5b1c",
     "tests/test_original_training_adapter.py": "5412a76bddeacb7ee65a5ce23eeaadfff1760c385c68897155dd53ab11437201",
-    "scripts/tcp_force_training.py": "ff86639a3cd4e2c077a83dfdefe59e58f3f7126dcc7e1e44f76fe3e82c7e2571",
-    "tests/test_tcp_force_training.py": "4ec742137b956c15c7991eb39b2808b298e327a0374dad89c337c66995a22b75"
+    "scripts/tcp_force_training.py": "667c7aa8492bc721d494138be921c29d5106ed0013bdae7034a30b34bfdb3fb7",
+    "tests/test_tcp_force_training.py": "5bc879ccf9e6a2e64a407e158c4b45480e2439aa5b907ae1244e8775e67bdca8",
+    "measurement_validation/wrench_endpoints.py": "374cec10a4e47549ef53ad60b60d6cb1929a097b91cbcf74946572abe29cbddb",
+    "measurement_validation/force_trial_ledger.py": "a135a1a63aac130a1b17205137f85e1e53746fb22e7e66b481890db615f772b5",
+    "scripts/manual_leg_check.py": "05d06fe7108e01eb9c911eb6f3bc5df4446faa82ad78f428bd99ef3b998d9429",
+    "config/paper_personalized_load.template.json": "2eae0a9e5ed656c4c504c5b01bc4a73b14f01fff26c72b272a4be3ee2d1c1fed",
+    "pytest-core.ini": "4e2697374a94fea70d89d688da8a7c1d1189febbd408616e92a3a47ce430fbf5",
+    "tests/test_force_trial_ledger.py": "8427137d5725ae04124e08fa498b9208ed0f16a5a4a717e41e85cbe9330f9052",
+    "tests/test_manual_leg_check.py": "85c73d18b481fb15856960c92ff861279a6b85db2ddf8626642bddb045351bc0",
+    "tests/test_wrench_endpoints.py": "0ff3c579afd629ceb92a25a706819bc19d4d7b514fb5db4deff211b149604cd4"
   },
-  "scope": "Current source tree and results/* only; no external lab computer or clinical evidence.",
+  "scope": "Current source tree, local results and selected hash-checked historical archive; no new hardware or clinical experiment.",
+  "historical_evidence_archive_sha256": "eaa9f3f4c9a031c2955e983712bf1847e98c985998a76ca581a89216dc2cce29",
   "sessions": [
     {
       "session": "current_001",
@@ -407,9 +416,9 @@
   "verification": {
     "kind": "OFFLINE_TESTS_ONLY",
     "status": "REPORT_PROVIDED",
-    "report": "D:\\rehab_robot_data_path\\.cache\\paper_audit_tests.xml",
-    "sha256": "5a58095adcf71aece8ae0f9f4ba1d165d25c1c581403c503995b2ea92a57fdf3",
-    "tests": 444,
+    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-14.xml",
+    "sha256": "075e5e41e5b03dfa00312ca8a92d5986acb8ca49401a0906492b2b4ee32413ee",
+    "tests": 498,
     "failures": 0,
     "errors": 0,
     "skipped": 0
