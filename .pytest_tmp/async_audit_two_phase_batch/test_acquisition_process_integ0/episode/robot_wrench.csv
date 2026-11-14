@@ -1,3 +1,0 @@
-query_start_s,query_end_s,publish_time_s,joint_measured_torque_1,joint_measured_torque_2,joint_measured_torque_3,joint_measured_torque_4,joint_measured_torque_5,joint_measured_torque_6,joint_external_torque_1,joint_external_torque_2,joint_external_torque_3,joint_external_torque_4,joint_external_torque_5,joint_external_torque_6,fx,fy,fz,tx,ty,tz,frame_type,query_duration_ms,valid,invalid_reason
-2654382.4728922,2654382.4745434,2654382.4745434,1.0,1.0,1.0,1.0,1.0,1.0,0.5,0.5,0.5,0.5,0.5,0.5,1.0,2.0,3.0,0.1,0.2,0.3,world,1.6512000001966953,True,
-2654382.4961535,2654382.496204,2654382.496204,1.0,1.0,1.0,1.0,1.0,1.0,0.5,0.5,0.5,0.5,0.5,0.5,1.0,2.0,3.0,0.1,0.2,0.3,world,0.05050003528594971,True,

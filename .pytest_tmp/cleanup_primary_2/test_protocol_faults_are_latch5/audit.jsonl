@@ -1,1 +1,0 @@
-{"version": 1, "origin": "supervisor", "run_id": "3a47aa440dc3486da3cfeee6f4845d52", "session_id": "e3e9fc78b4974bc8bdd8e2f6b6f8498c", "pid": 48268, "query_id": 0, "event_id": 1, "type": "FAILURE_LATCH", "timestamp_ns": 2656911780529400, "reason": "telemetry_failure:ValueError:invalid_event_clock", "log_write_ns": 2656911780638100}
