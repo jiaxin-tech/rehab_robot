@@ -1,0 +1,139 @@
+{
+  "session": "D:\\rr_paper\\results\\manual_lab\\20261114_174300\\empty_full_tcp_20261114_174525",
+  "analysis": "OFFLINE_RECORDED_PLAN_COMPARISON",
+  "coordinate_frame": "robot Base",
+  "position_unit": "m",
+  "time_alignment": "recorded schedule origin; no fitted offset or removed position bias",
+  "input_sha256": {
+    "prepared_config.json": "a76e0ecaa3ec0220b4b932e495fbf3d33bc5656257b34883e01d8855fb0fa4f8",
+    "round_status.json": "aacf16cae25b9ec1a7126a0b9562bc3d6bb5ab68713ab7a9f61237a3b196938e",
+    "tcp_trajectory.csv": "546331b2feda142860ec1422b4ca0e1b1a8815324f7216a1a5262167078f61ee",
+    "dispatch.csv": "6cd37054337213ba7566be70d8fccceb7152e94ae95ec99e87a87d88a4d95e16",
+    "robot/metadata.json": "cb38c671d1b704e19ebb6b22c11cfbddb73bfd18ee8f5c52e00784392c041156",
+    "robot/robot_state.csv": "567dfec0bc164f8ee83cdffcc8cc8a31b93857e4e0dfaf1f94fdf4177a82f96d",
+    "robot/robot_wrench.csv": "621097a75cf60dd9ce2279672dbafe45868b30b05d405e59751b558509931f7c",
+    "robot/trajectory_command.csv": "a06104bb1218137736aa3f0d6ea21830596a7c0c51ad97447fc280a3d0215546",
+    "robot/aligned_snapshot.csv": "d649fdd88b29df2f2bc2eb8d51522c8c8079a5ea2ee4023edafbe48d7330ed1b"
+  },
+  "planned_start_m": [
+    0.7542268557678186,
+    -0.1135527195125661,
+    0.2866698577378572
+  ],
+  "planned_peak_m": [
+    0.7542268557678186,
+    0.0864472804874338,
+    0.9000000000000001
+  ],
+  "planned_excursion_m": [
+    0.0,
+    0.1999999999999999,
+    0.6133301422621429
+  ],
+  "planned_duration_s": 164.0,
+  "commanded_pose_matches_plan": true,
+  "measured_samples_in_cycle": 20499,
+  "measured_min_m": [
+    0.7538922237740738,
+    -0.1135189431558715,
+    0.2853240466636747
+  ],
+  "measured_max_m": [
+    0.7546444693029992,
+    0.0863786275584021,
+    0.8986530323267364
+  ],
+  "tracking_error_mm": {
+    "rms": 1.3406357201515842,
+    "p95": 1.5019720490568549,
+    "max": 1.5390462557642648
+  },
+  "last_measured_offset_from_original_anchor_mm": [
+    -0.3295289803880719,
+    0.11889149609539684,
+    -1.2870765544333862
+  ],
+  "largest_measured_state_interval_ms": 11.01479958742857,
+  "wrench_gaps_exceeding_limit": [
+    {
+      "start_s": 7.315675700083375,
+      "end_s": 7.638713899999857,
+      "gap_ms": 323.038199916482
+    },
+    {
+      "start_s": 34.086610349826515,
+      "end_s": 34.410346299409866,
+      "gap_ms": 323.7359495833516
+    },
+    {
+      "start_s": 35.37057130038738,
+      "end_s": 35.693947250023484,
+      "gap_ms": 323.3759496361017
+    },
+    {
+      "start_s": 48.89428319968283,
+      "end_s": 49.21800884976983,
+      "gap_ms": 323.72565008699894
+    },
+    {
+      "start_s": 62.71955704968423,
+      "end_s": 63.04166634939611,
+      "gap_ms": 322.10929971188307
+    },
+    {
+      "start_s": 69.70248460024595,
+      "end_s": 70.02506279945374,
+      "gap_ms": 322.57819920778275
+    },
+    {
+      "start_s": 78.06575714983046,
+      "end_s": 78.39079004898667,
+      "gap_ms": 325.0328991562128
+    },
+    {
+      "start_s": 94.84593649953604,
+      "end_s": 95.16779119987041,
+      "gap_ms": 321.85470033437014
+    },
+    {
+      "start_s": 98.14916289970279,
+      "end_s": 98.47076280042529,
+      "gap_ms": 321.59990072250366
+    },
+    {
+      "start_s": 113.5973771493882,
+      "end_s": 113.91899029910564,
+      "gap_ms": 321.61314971745014
+    },
+    {
+      "start_s": 114.78902529925108,
+      "end_s": 115.03230834938586,
+      "gap_ms": 243.28305013477802
+    },
+    {
+      "start_s": 116.23401929996908,
+      "end_s": 116.55701994989067,
+      "gap_ms": 323.00064992159605
+    },
+    {
+      "start_s": 118.89889734983444,
+      "end_s": 119.22162675019354,
+      "gap_ms": 322.72940035909414
+    },
+    {
+      "start_s": 162.7745866496116,
+      "end_s": 163.0982922501862,
+      "gap_ms": 323.7056005746126
+    }
+  ],
+  "wrench_gap_limit_s": 0.05,
+  "invalid_aligned_snapshots_during_motion": 192,
+  "reported_run_status": "EMPTY_LOAD_COMPLETE",
+  "offline_execution_audit": {
+    "passed": false,
+    "error": "ValueError: wrench gap in motion; no interpolation across missing data"
+  },
+  "interpretation": "Following a frozen plan does not establish that its shape or extent suits rehabilitation. This review neither changes a trajectory nor authorizes replay.",
+  "hardware_accessed": false,
+  "motion_commanded": false
+}

@@ -1,0 +1,53 @@
+{
+  "returned_commit": "85f4c224",
+  "capture_and_diagnostics": [
+    {
+      "run": "20261114_174002",
+      "action": "leg_diagnostic10s",
+      "status": "COMPLETE",
+      "file_hashes_verified": true
+    },
+    {
+      "run": "20261114_174002",
+      "action": "leg_check",
+      "status": "COMPLETE",
+      "file_hashes_verified": true
+    },
+    {
+      "run": "20261114_174002",
+      "action": "leg_probe",
+      "status": "FAILED",
+      "file_hashes_verified": true
+    },
+    {
+      "run": "20261114_174300",
+      "action": "leg_diagnostic10s",
+      "status": "COMPLETE",
+      "file_hashes_verified": true
+    },
+    {
+      "run": "20261114_174300",
+      "action": "leg_check",
+      "status": "COMPLETE",
+      "file_hashes_verified": true
+    },
+    {
+      "run": "20261114_174300",
+      "action": "leg_probe",
+      "status": "COMPLETE",
+      "file_hashes_verified": true
+    },
+    {
+      "run": "20261114_174300",
+      "action": "leg_capture10s",
+      "status": "COMPLETE",
+      "file_hashes_verified": true
+    }
+  ],
+  "empty_session": "results/manual_lab/20261114_174300/empty_full_tcp_20261114_174525",
+  "empty_review": "results/manual_lab/20261114_174300/empty_full_tcp_20261114_174525/review/review.json",
+  "current_user_choice": "OEM drag teaching; record the actual desired rehabilitation TCP shape, then inspect offline",
+  "current_execution_plan_accepted_as_desired_path": false,
+  "new_recording_auto_replay_available": false,
+  "review_hardware_accessed": false
+}
