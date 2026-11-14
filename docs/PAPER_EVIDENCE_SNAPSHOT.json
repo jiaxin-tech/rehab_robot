@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-14T09:18:41.741124+00:00",
-  "git_commit": "d25c154a2a52efdb09f91b1d07cdb7c6bcf1c565",
+  "generated_at_utc": "2026-11-14T10:16:38.461592+00:00",
+  "git_commit": "e996b106e782237f4d2e336fdb0a1f4f58cf72c8",
   "worktree_dirty": false,
   "source_sha256": {
     "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
@@ -30,7 +30,7 @@
     "measurement_validation/robot_execution.py": "cb3be1924fcf6c0c87275b65adf12fc87e3f7d3951bc6510b3424883d8e497d8",
     "measurement_validation/passive_response.py": "075add12c49705e551a6467526bc00938772e225a8f7c15e14b9ffbec9d2e21b",
     "measurement_validation/robot_leg_round.py": "c1b406c17c1e26e2a72ae89210d9046d934397e7fa39d1e8e3fd31f48ad3db93",
-    "scripts/audit_paper_evidence.py": "a074b0a823458bc5ff886a07e6dbb0977730435cdb11e7bf218cd5bf39ce5f47",
+    "scripts/audit_paper_evidence.py": "fb1b1c2814453b1c9faaf28941995477181cbb9c866253ab8c3513fb79e37db1",
     "tests/test_original_training_adapter.py": "5412a76bddeacb7ee65a5ce23eeaadfff1760c385c68897155dd53ab11437201",
     "scripts/tcp_force_training.py": "667c7aa8492bc721d494138be921c29d5106ed0013bdae7034a30b34bfdb3fb7",
     "tests/test_tcp_force_training.py": "5bc879ccf9e6a2e64a407e158c4b45480e2439aa5b907ae1244e8775e67bdca8",
@@ -38,12 +38,18 @@
     "measurement_validation/force_trial_ledger.py": "a135a1a63aac130a1b17205137f85e1e53746fb22e7e66b481890db615f772b5",
     "scripts/manual_leg_check.py": "53db76db8c27bc6f85d258d66b5847ad9b8b43de5966cae3a7e0e305c7c0e442",
     "config/paper_personalized_load.template.json": "2eae0a9e5ed656c4c504c5b01bc4a73b14f01fff26c72b272a4be3ee2d1c1fed",
-    "pytest-core.ini": "adcddd5abc2578c4327952b4ad8fb64dabfebc185487baccdcfe9862765826aa",
+    "pytest-core.ini": "c98ddd767ad8ca62a66fc8072c2e25b9f26cd7beef48ef5ef88192da689f3f67",
     "tests/test_force_trial_ledger.py": "8427137d5725ae04124e08fa498b9208ed0f16a5a4a717e41e85cbe9330f9052",
     "tests/test_manual_leg_check.py": "05983d75bf705d357763cb97bac1c3141f7ea5c07cc3c35fd9b7271285911e2a",
     "tests/test_wrench_endpoints.py": "0ff3c579afd629ceb92a25a706819bc19d4d7b514fb5db4deff211b149604cd4",
     "scripts/twincat_file_evidence.py": "5f85840f7143ca366bb75de460c1f1a282fe3f689ef62d371289109e03253dc5",
-    "tests/test_twincat_file_evidence.py": "a1b9643098dda539cb77813895fa6e4885aef97c4e179687c8cc55038e7d33e8"
+    "tests/test_twincat_file_evidence.py": "a1b9643098dda539cb77813895fa6e4885aef97c4e179687c8cc55038e7d33e8",
+    "scripts/record_rehab_trajectory.py": "7dbd638a8af990893d182a9493362b52b9888faeafef15f7e04fd5686ff0ddca",
+    "scripts/preview_recorded_trajectory.py": "90f94351a953b4095022dee1787edb71932042120b459c6c7306c4d0d9e12244",
+    "scripts/review_empty_recording.py": "e25a12be7829b26dcd93da311a75ad1f4fd42fc6bd2c87bffd106218bf85140c",
+    "tests/test_record_rehab_trajectory.py": "a3b35cb4dfff03fe6862c7bfaff26cb5c5fd94f3526d33ea17ae985816b5a024",
+    "tests/test_preview_recorded_trajectory.py": "ba207de59cfe11c667a84b26fb3313d2940015b2993d8c48460d46d86febd2dc",
+    "tests/test_review_empty_recording.py": "7b748e14816aa2d3e50b80aa461dc535c51c17ea4b4f047252107a8d8c2df5bc"
   },
   "scope": "Current source tree, local results and selected hash-checked historical archive; no new hardware or clinical experiment.",
   "historical_evidence_archive_sha256": "eaa9f3f4c9a031c2955e983712bf1847e98c985998a76ca581a89216dc2cce29",
@@ -313,6 +319,22 @@
       "status_sha256": "85192ffed07740556473d666cf5a8e53414a125b569b662756f52422fc6c526a"
     },
     {
+      "session": "robot_observe30s",
+      "status": "OBSERVATION_COMPLETE",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "d2e4a87fce7e12f6cdf082634178731144bd2d6267de08f55317ca4e5a3d73ce"
+    },
+    {
+      "session": "empty_full_tcp_20261114_174525",
+      "status": "EMPTY_LOAD_COMPLETE",
+      "mode": "independent_tcp",
+      "training_status": "NOT_APPLICABLE",
+      "original_training_file_available": false,
+      "status_sha256": "aacf16cae25b9ec1a7126a0b9562bc3d6bb5ab68713ab7a9f61237a3b196938e"
+    },
+    {
       "session": "observe_001",
       "status": "FAILED",
       "mode": "historical",
@@ -418,9 +440,9 @@
   "verification": {
     "kind": "OFFLINE_TESTS_ONLY",
     "status": "REPORT_PROVIDED",
-    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-14_DIAGNOSTIC10S.xml",
-    "sha256": "ba1674c488e50beb8a987b87e0aa13976def5e75eae245930aacfd0c45424504",
-    "tests": 525,
+    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-14_DRAG_TEACHING.xml",
+    "sha256": "cd6a5c5761b0759b600d1a775c77edb319e7a66f1d5f0de706d9daa578fc0368",
+    "tests": 557,
     "failures": 0,
     "errors": 0,
     "skipped": 0
