@@ -207,6 +207,7 @@ class ExecutionResult:
     stop_reason: str
     started_host_time_s: float
     finished_host_time_s: float
+    schedule_origin_host_time_s: float | None = None
 
 
 class RokaeMotionExecutor:
@@ -1071,6 +1072,7 @@ class RokaeMotionExecutor:
                 stop_reason=self._stop_reason or "trajectory_completed",
                 started_host_time_s=started_s,
                 finished_host_time_s=finished_s,
+                schedule_origin_host_time_s=schedule_origin_s,
             )
         except BaseException as exc:
             self.request_stop(f"execution_exception:{type(exc).__name__}:{exc}")

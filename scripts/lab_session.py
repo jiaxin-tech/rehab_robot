@@ -4,6 +4,7 @@ import argparse
 import inspect
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -458,7 +459,7 @@ def _capture_leg_start_origin(config_path, output_path, *, sample_count=20):
             time.sleep(0.01)
     finally:
         source.close()
-    if c.get("trajectory", {}).get("mode") == "independent_tcp":
+    if c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate"):
         payload = {"origin_role": "passive_leg_start_check", "axes": {},
                    "session_calibration": c["calibration"],
                    "calibration_zero_counts_changed": False, "blocking_reasons": []}
@@ -505,19 +506,19 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
         **(_empty_load_motion(c) if empty_load else c["motion"])
     ).require_execute_allowed())
     check("collision", lambda: validate_collision_source(c["robot"]["collision_source"], c["robot"]["collision_event_max_age_s"]))
-    if not empty_load:
+    capture_leg = not empty_load and c.get("validation", {}).get("capture_dummy_leg", True)
+    if capture_leg:
         check("ADS", lambda: validate_config(load_section("twincat_leg_capture", config_path=config_path)))
         check("leg start freshness", lambda: _validate_leg_start_freshness(c))
         if require_physical_files and not Path(load_section("twincat_leg_capture", config_path=config_path)["ads_dll_path"]).is_file():
             problems.append("leg.ads_dll_path: DLL not found")
-    acquisition_fields = (("wrench_hz",) if empty_load else
+    acquisition_fields = (("wrench_hz",) if not capture_leg else
         ("pre_roll_s", "post_roll_s", "wrench_hz", "max_leg_start_age_s",
          "max_start_angle_error_deg", "max_tracking_error_deg"))
-    independent = c.get("trajectory", {}).get("mode") == "independent_tcp"
+    independent = c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate")
     if independent:
         acquisition_fields = tuple(key for key in acquisition_fields if key != "max_tracking_error_deg")
-        if c["training"]["enabled"]:
-            problems.append("independent TCP uses measured-response analysis; joint-reference training must be disabled")
+        # Candidate association is checked against the frozen session plan.
     for name in acquisition_fields:
         check("acquisition." + name, lambda name=name: positive(c["acquisition"].get(name), name))
     check("wrench", lambda: load_live_wrench_config(config_path))
@@ -526,9 +527,15 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
             JointCalibration(**{k: values[k] for k in ("counts_per_degree", "zero_counts", "flexion_sign", "safe_min_deg", "safe_max_deg")})
         if set(c["calibration"]) != {"hip", "knee"}:
             raise ValueError("hip and knee calibration required")
-    if not empty_load:
+    if capture_leg:
         check("calibration", calibration)
-    if c["training"]["enabled"]:
+    from scripts.tcp_force_training import active as force_active, validate_config as validate_force
+    if force_active(c):
+        check("TCP force task", lambda: validate_force(c, measurement=not empty_load))
+    if not empty_load and c.get("trajectory", {}).get("mode") == "original_candidate":
+        from measurement_validation.robot_observation import validate_robot_observation
+        check("robot-only observation", lambda: validate_robot_observation(c))
+    if c["training"]["enabled"] and not independent:
         check("analysis", lambda: validate_analysis(c["analysis"], {"joints": c["calibration"]}))
         check("training.timeout_s", lambda: positive(c["training"]["timeout_s"], "timeout_s"))
     return problems
@@ -580,6 +587,9 @@ def report(directory, state):
     if "model" in state:
         lines += ["模型建议：" + json.dumps(state["model"].get("action"), ensure_ascii=False)]
         lines += ["参考自身归一化为 1；单候选 DOMAIN_EXHAUSTED 不代表优化收益。"]
+    if "force_training" in state:
+        lines += ["TCP 受力决策：" + json.dumps(state["force_training"]["action"], ensure_ascii=False),
+                  "仅使用机器人实测运动与受力；未辨识人体关节参数，预测不等于临床安全保证。"]
     if (directory / "leg/leg.csv").is_file():
         lines += ["", "原始数据：leg/leg.csv 和 robot/。"]
     if (directory / "dispatch.csv").is_file():
@@ -593,9 +603,11 @@ def observe(config_path, directory, *, duration_s=10., capture_factory=LegCaptur
     positive(duration_s, "duration_s")
     config_path = Path(config_path).resolve()
     c = configuration(config_path)
-    leg_config = validate_config(load_section("leg", config_path=config_path))
-    if not Path(leg_config["ads_dll_path"]).is_file():
-        raise FileNotFoundError("leg.ads_dll_path: DLL not found")
+    capture_leg = c.get("validation", {}).get("capture_dummy_leg", True)
+    if capture_leg:
+        leg_config = validate_config(load_section("leg", config_path=config_path))
+        if not Path(leg_config["ads_dll_path"]).is_file():
+            raise FileNotFoundError("leg.ads_dll_path: DLL not found")
     wrench = load_live_wrench_config(config_path)
     positive(c["acquisition"]["wrench_hz"], "wrench_hz")
     robot = c["robot"]
@@ -606,8 +618,9 @@ def observe(config_path, directory, *, duration_s=10., capture_factory=LegCaptur
     primary_failure = None
     report(directory, state)
     try:
-        capture = capture_factory(config_path, directory / "leg")
-        capture.start()
+        if capture_leg:
+            capture = capture_factory(config_path, directory / "leg")
+            capture.start()
         result = acquire_fn(robot_ip=robot["ip"], episode_dir=directory / "robot",
             duration_s=duration_s, mode="live", live_wrench_config=wrench,
             wrench_hz=c["acquisition"]["wrench_hz"],
@@ -615,10 +628,10 @@ def observe(config_path, directory, *, duration_s=10., capture_factory=LegCaptur
                 robot_class=robot["robot_class"], state_interval_ms=None,
                 collision_source=robot["collision_source"],
                 collision_event_max_age_s=robot["collision_event_max_age_s"]),
-            observation_guard=capture.health_reason)
+            observation_guard=capture.health_reason if capture is not None else None)
         if result.get("completed") is not True:
             raise RuntimeError("robot observation incomplete")
-        reason = capture.health_reason()
+        reason = capture.health_reason() if capture is not None else None
         if reason:
             raise RuntimeError(reason)
         state["observation"] = result
@@ -639,7 +652,8 @@ def observe(config_path, directory, *, duration_s=10., capture_factory=LegCaptur
         finally:
             report(directory, state)
     try:
-        state["quality"] = inspect_file(directory / "leg/leg.csv", expected_hz=c["leg"]["expected_hz"])
+        if capture_leg:
+            state["quality"] = inspect_file(directory / "leg/leg.csv", expected_hz=c["leg"]["expected_hz"])
         state["status"] = "OBSERVATION_COMPLETE"
     except Exception as exc:
         state.update(status="FAILED", reason="quality analysis: " + str(exc))
@@ -745,6 +759,55 @@ def _prepare_empty_load_artifacts(config_path, directory):
     return metadata
 
 
+def _prepare_original_candidate(config_path, directory, c, state, empty_load,
+                                leg_origin_capture_fn, selected, parent_session, repeat_index):
+    from control.execution_preflight import audit_execution_trajectory_content
+    from scripts.original_training_adapter import freeze_binding, commit_original_prediction, file_hash
+    anchor = load_start_anchor(directory / "anchor.json")
+    frame = load_rehab_frame_config(config_path)
+    frozen = directory / "original_candidate.csv"
+    shutil.copyfile(selected["path"], frozen)
+    table, audit, metadata = build_start_anchored_relative_trajectory(frozen,
+        current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
+    metadata.update(mode="original_candidate", candidate_id=selected["candidate_id"],
+        reference_path=str(frozen), reference_sha256=file_hash(frozen), anchor=anchor.to_dict())
+    motion = _empty_load_motion(c)
+    for key in ("max_tcp_speed_m_s", "max_tcp_acceleration_m_s2"):
+        motion[key] = min(motion[key], c["motion"][key])
+    reasons, _, _ = audit_execution_trajectory_content(table, ExperimentSafetyConfig(**motion),
+        expected_trajectory_id=anchor.trajectory_id, frame=frame, anchor=anchor)
+    blockers = list(reasons)
+    if not audit.trajectory_valid:
+        blockers.extend(audit.invalid_reasons)
+    requested_z = _trajectory_target_peak_z(c)
+    actual_z = float(table.tcp_z_base.max())
+    metadata["actual_peak_tcp_z_base_m"] = actual_z
+    if requested_z is not None and not np.isclose(actual_z, requested_z, atol=1e-9, rtol=0):
+        blockers.append(f"original candidate peak Z {actual_z:.6f}m differs from requested {requested_z:.6f}m; candidate is not reshaped")
+    table.to_csv(directory / "tcp_trajectory.csv", index=False)
+    atomic_json(directory / "tcp_plan.json", metadata)
+    atomic_json(directory / "tcp_safety.json", motion)
+    atomic_json(directory / "prepared_config.json", c)
+    if not empty_load:
+        binding = freeze_binding(directory, c, metadata)
+        state["original_training_binding"] = binding
+        if binding["status"] != "BOUND":
+            blockers.append("original training: " + binding["reason"])
+        if parent_session is not None and binding["status"] == "BOUND":
+            state["pretrial_prediction"] = commit_original_prediction(parent_session, directory, binding)
+        leg_path = directory / "leg_start_origin.json"
+        state["leg_start_origin"] = leg_origin_capture_fn(config_path, leg_path)
+        state["leg_start_origin_path"] = str(leg_path)
+    preview_trajectory(anchor=anchor, frame_config=config_path, reference=frozen,
+                       output_dir=directory / "preview")
+    state.update(status="PREPARED", trajectory_mode="original_candidate", tcp_plan=metadata,
+        reference_path=str(frozen), safety_config_path=str(directory / "tcp_safety.json"),
+        training_status="NOT_APPLICABLE" if empty_load else "PENDING",
+        blockers=blockers + _check_config_for_operation(config_path, empty_load=empty_load))
+    if parent_session is not None:
+        state.update(parent_session=str(parent_session), repeat_index=int(repeat_index))
+
+
 def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
                            leg_origin_capture_fn, trajectory_settings=None,
                            parent_session=None, repeat_index=None):
@@ -779,7 +842,20 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
     atomic_json(directory / "tcp_plan.json", metadata)
     atomic_json(directory / "tcp_safety.json", motion)
     atomic_json(directory / "prepared_config.json", c)
-    if not empty_load:
+    from scripts import tcp_force_training as force
+    force_mode = force.active(c)
+    if force_mode:
+        state["learning_mode"] = "tcp_force"
+        state["force_training_binding"] = force.freeze_binding(directory, c, metadata, measurement=False)
+        if not empty_load and parent_session is not None:
+            state["pretrial_prediction"] = force.commit_prediction(parent_session, directory, state["force_training_binding"])
+    if not empty_load and not force_mode:
+        from scripts.original_training_adapter import freeze_binding, commit_original_prediction
+        state["original_training_binding"] = freeze_binding(directory, c, metadata)
+        if parent_session is not None and state["original_training_binding"]["status"] == "BOUND":
+            state["pretrial_prediction"] = commit_original_prediction(
+                parent_session, directory, state["original_training_binding"])
+    if not empty_load and c.get("validation", {}).get("capture_dummy_leg", True):
         leg_path = directory / "leg_start_origin.json"
         origin = leg_origin_capture_fn(config_path, leg_path)
         state.update(leg_start_origin_path=str(leg_path), leg_start_origin=origin)
@@ -791,6 +867,10 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
         **({"parent_session": str(parent_session), "repeat_index": int(repeat_index)}
            if parent_session is not None else {}),
         status="PREPARED", blockers=_check_config_for_operation(config_path, empty_load=empty_load))
+    state["training_status"] = "NOT_APPLICABLE" if empty_load else "PENDING"
+    if not empty_load and not force_mode and state["original_training_binding"]["status"] != "BOUND":
+        state["training_status"] = "PENDING_INPUT_BINDING"
+        state["blockers"].append("original training: " + state["original_training_binding"]["reason"])
 
 
 def _passive_leg_guard(capture, c, origin, *, before_motion=False):
@@ -817,7 +897,6 @@ def _passive_leg_guard(capture, c, origin, *, before_motion=False):
 
 
 def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
-    from control.independent_tcp_trajectory import build_tcp_trajectory, audit_tcp_trajectory
     if bool(state.get("empty_load")) != bool(empty_load):
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
@@ -827,22 +906,47 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
     blockers = _check_config_for_operation(config_path, empty_load=empty_load)
     if blockers:
         raise ValueError("complete physical parameters: " + "; ".join(blockers))
+    if state.get("blockers"):
+        raise ValueError("prepared trajectory blocked: " + "; ".join(state["blockers"]))
     anchor = load_start_anchor(directory / "anchor.json")
+    if not empty_load:
+        if state.get("learning_mode") == "tcp_force":
+            from scripts.tcp_force_training import require_binding
+        else:
+            from scripts.original_training_adapter import require_binding
+        require_binding(directory, c, state)
     plan = json.loads((directory / "tcp_plan.json").read_text(encoding="utf-8"))
     if plan != state["tcp_plan"] or plan["anchor"] != anchor.to_dict():
         raise ValueError("prepared TCP plan or anchor changed; prepare a new session")
+    if state.get("pretrial_prediction") is not None:
+        prediction = json.loads((directory / "pretrial_prediction.json").read_text(encoding="utf-8"))
+        force_mode = state.get("learning_mode") == "tcp_force"
+        binding = state["force_training_binding"] if force_mode else state["original_training_binding"]
+        if prediction != state["pretrial_prediction"] or prediction["candidate_id"] != binding["candidate_id"]:
+            raise ValueError("prepared pretrial prediction changed")
+        if force_mode:
+            from scripts.tcp_force_training import verify_training as verify_source, file_hash
+            source_name = "tcp_force_training.json"
+        else:
+            from scripts.original_training_adapter import verify_original_training as verify_source, file_hash
+            source_name = "original_training.json"
+        verify_source(state["parent_session"])
+        if file_hash(Path(state["parent_session"]) / source_name) != prediction["source_training_sha256"]:
+            raise ValueError("original source prediction changed after prepare")
     frame = load_rehab_frame_config(config_path)
-    table, _, _ = build_tcp_trajectory(plan["tcp_settings"],
+    from control.prepared_trajectory import build_prepared_trajectory
+    table, _, _ = build_prepared_trajectory(plan,
         current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
-    frozen = pd.read_csv(directory / "tcp_trajectory.csv")
-    pd.testing.assert_frame_equal(table, frozen, check_exact=False, atol=1e-12, rtol=0)
+    from control.prepared_trajectory import assert_frozen_trajectory
+    assert_frozen_trajectory(table, directory / "tcp_trajectory.csv")
     expected_motion = dict(c["motion"])
     for key in ("max_tcp_speed_m_s", "max_tcp_acceleration_m_s2"):
         expected_motion[key] = min(c["empty_load"][key], expected_motion[key])
     actual_motion = json.loads((directory / "tcp_safety.json").read_text(encoding="utf-8"))
     if actual_motion != expected_motion:
         raise ValueError("prepared TCP safety settings changed")
-    reasons, _, _ = audit_tcp_trajectory(frozen, ExperimentSafetyConfig(**actual_motion),
+    from control.execution_preflight import audit_execution_trajectory_content
+    reasons, _, _ = audit_execution_trajectory_content(table, ExperimentSafetyConfig(**actual_motion),
         expected_trajectory_id=anchor.trajectory_id, anchor=anchor, frame=frame)
     if reasons:
         raise ValueError("prepared TCP trajectory invalid: " + ";".join(reasons))
@@ -852,7 +956,7 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
     report(directory, state)
     try:
         guard = None
-        if not empty_load:
+        if not empty_load and c.get("validation", {}).get("capture_dummy_leg", True):
             origin = json.loads((directory / "leg_start_origin.json").read_text(encoding="utf-8"))
             if not origin.get("usable_for_motion"):
                 raise ValueError("passive leg start check failed")
@@ -872,7 +976,7 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
             episode_dir=directory / "robot", anchor_path=directory / "anchor.json",
             requested_anchor_id=anchor.anchor_id, frame_config_path=config_path,
             safety_config_path=directory / "tcp_safety.json", trajectory_id=anchor.trajectory_id,
-            tcp_trajectory_settings=plan["tcp_settings"], enable_motion=True,
+            enable_motion=True,
             operator_confirmation=OPERATOR_CONFIRMATION,
             live_wrench_config=load_live_wrench_config(config_path),
             adapter_factory=_configured_adapter_factory(local_ip=robot["local_ip"], robot_class=robot["robot_class"],
@@ -880,6 +984,10 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
             wrench_hz=acquisition["wrench_hz"], collision_source=robot["collision_source"],
             collision_event_max_age_s=robot["collision_event_max_age_s"],
             prepare_realtime=True, dispatch_observer=dispatched)
+        if state["trajectory_mode"] == "original_candidate":
+            kwargs["reference_path_override"] = Path(plan["reference_path"])
+        else:
+            kwargs["tcp_trajectory_settings"] = plan["tcp_settings"]
         if guard is not None:
             kwargs["execution_guard"] = guard
         result = execute_fn(**kwargs)
@@ -913,15 +1021,25 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
                 pd.DataFrame(dispatches).to_csv(directory / "dispatch.csv", index=False)
             report(directory, state)
     if not empty_load:
+        analysis_error = None
         try:
-            state["quality"] = inspect_file(directory / "leg/leg.csv", expected_hz=c["leg"]["expected_hz"])
-            from measurement_validation.passive_response import analyze_passive_response
-            state["passive_response"] = analyze_passive_response(directory, c)
+            if c.get("validation", {}).get("capture_dummy_leg", True):
+                state["quality"] = inspect_file(directory / "leg/leg.csv", expected_hz=c["leg"]["expected_hz"])
+                from measurement_validation.passive_response import analyze_passive_response
+                state["passive_response"] = analyze_passive_response(directory, c)
+            state["analysis_status"] = "COMPLETE"
+            state.pop("response_analysis_error", None)
         except Exception as exc:
             state["response_analysis_error"] = str(exc)
-            raise
+            state["analysis_status"] = "FAILED"
+            analysis_error = exc
         finally:
             report(directory, state)
+        # Adapt passive measurements to the existing algorithm; never substitute a learner.
+        trained = train_session(directory, training_mode="passive")
+        if analysis_error is not None:
+            raise RuntimeError("passive response analysis failed: " + str(analysis_error)) from analysis_error
+        return trained
     return state
 
 
@@ -945,10 +1063,29 @@ def prepare(
     try:
         r = c["robot"]
         independent = c.get("trajectory", {}).get("mode") == "independent_tcp"
+        original = c.get("trajectory", {}).get("mode") == "original_candidate"
+        if independent:
+            from scripts.tcp_force_training import active, selected_settings
+            if active(c):
+                _, trajectory_settings = selected_settings(c, trajectory_settings)
+        selected = None
+        if original:
+            from scripts.original_training_adapter import catalog
+            cid = ((trajectory_settings or {}).get("candidate_id")
+                   or c["training"]["reference_candidate_id"])
+            matches = [item for item in catalog(c) if item["candidate_id"] == cid]
+            if len(matches) != 1:
+                raise ValueError("original selected candidate is not in the catalog")
+            selected = matches[0]
         capture_fn(robot_ip=r["ip"], output_path=directory / "anchor.json",
                    **({"independent_tcp": True} if independent else {}),
+                   **({"reference": selected["path"]} if original else {}),
                    adapter_factory=_configured_adapter_factory(local_ip=r["local_ip"], robot_class=r["robot_class"], state_interval_ms=None,
                        collision_source=r["collision_source"], collision_event_max_age_s=r["collision_event_max_age_s"]))
+        if original:
+            _prepare_original_candidate(config_path, directory, c, state, empty_load,
+                leg_origin_capture_fn, selected, parent_session, repeat_index)
+            return state
         if independent:
             _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
                                    leg_origin_capture_fn, trajectory_settings,
@@ -1054,19 +1191,64 @@ def run_algorithm_worker(directory, request, timeout):
     return json.loads(output_path.read_text(encoding="utf-8"))
 
 
+def train_session(directory, *, training_mode="auto"):
+    directory = Path(directory).resolve()
+    state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+    if training_mode not in ("auto", "passive", "joint"):
+        raise ValueError("unknown training mode")
+    independent = state.get("trajectory_mode") in ("independent_tcp", "original_candidate")
+    if training_mode == "joint" and independent:
+        raise ValueError("joint-reference training cannot train independent TCP motion")
+    if training_mode == "passive" and not independent:
+        raise ValueError("passive measurement training requires a passive TCP session")
+    if not independent:
+        return analyze(directory)
+    if state.get("empty_load") or state["status"] not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"):
+        raise ValueError("passive training requires a completed with-leg motion")
+    state["training_status"] = "RUNNING"
+    state.pop("training_error", None)
+    report(directory, state)
+    try:
+        if state.get("learning_mode") == "tcp_force":
+            from scripts.tcp_force_training import train
+            state["force_training"] = train(directory)
+            (directory / "training.log").write_text("TCP_FORCE_GP_EI completed; see tcp_force_training.json\n", encoding="utf-8")
+        else:
+            from scripts.original_training_adapter import train_original
+            state["original_training"] = train_original(directory, run_algorithm_worker)
+        state["training_status"] = "COMPLETE"
+    except Exception as exc:
+        state.update(training_status="FAILED", training_error=str(exc))
+        state.pop("original_training", None)
+        state.pop("force_training", None)
+        raise
+    finally:
+        report(directory, state)
+    return state
+
+
 def analyze(directory):
     directory = Path(directory).resolve()
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
-    if state["status"] not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE"):
+    if state["status"] not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"):
         raise ValueError("a completed recording is required")
-    if state.get("trajectory_mode") == "independent_tcp":
+    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
+        if state.get("learning_mode") == "tcp_force":
+            from scripts.tcp_force_training import measure
+            state["force_response"] = measure(directory)
+            state["analysis_status"] = "COMPLETE"
+            report(directory, state)
+            return state
         from measurement_validation.passive_response import analyze_passive_response
-        state["passive_response"] = analyze_passive_response(directory, configuration(state["config_path"]))
+        state["passive_response"] = analyze_passive_response(directory, configuration(directory / "prepared_config.json"))
         state["analysis_status"] = "COMPLETE"
+        state.pop("response_analysis_error", None)
         report(directory, state)
         return state
     try:
         c = configuration(state["config_path"])
+        if c["training"].get("observation_source") == "robot_only":
+            raise ValueError("historical joint-sensor training is validation only; prepare an original_candidate robot-only session")
         positive(c["training"]["timeout_s"], "training.timeout_s")
         analysis_calibration = c["calibration"]
         leg_origin_path = state.get("leg_start_origin_path")
@@ -1088,9 +1270,11 @@ def analyze(directory):
             candidates.append(item)
         reference_id = pd.read_csv(DEFAULT_REFERENCE_PATH).trajectory_id.iloc[0]
         request = dict(candidates=candidates, reference_candidate_id=reference_id,
+                       experiment_scope="single_reference_calibration",
                        history=[dict(episode_id=directory.name, candidate_id=reference_id,
                                      measured_path=str(directory / "measured.csv"), endpoints=endpoints(metrics, metrics))])
         state["model"] = run_algorithm_worker(directory, request, c["training"]["timeout_s"])
+        state["training_scope"] = "SINGLE_REFERENCE_CALIBRATION_NOT_CROSS_TRIAL_OPTIMIZATION"
         state.update(status="ROUND_COMPLETE", training_status="COMPLETE")
         state.pop("reason", None)
     except Exception as exc:
@@ -1109,14 +1293,16 @@ def _run(directory, *, live=False, empty_load=False, capture_factory=LegCaptureP
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
     if state["status"] != "PREPARED":
         raise ValueError("prepare a new session before running")
-    if state.get("trajectory_mode") == "independent_tcp":
+    if state.get("trajectory_mode") == "original_candidate" and not empty_load:
+        raise ValueError("six-parameter route is an offline comparison only; prepare an independent TCP force session")
+    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
         return _run_tcp(directory, state, empty_load=empty_load,
                         capture_factory=capture_factory, execute_fn=execute_fn)
     if bool(state.get("empty_load", False)) != bool(empty_load):
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
     c = configuration(config_path)
-    if c.get("trajectory", {}).get("mode") == "independent_tcp":
+    if c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate"):
         raise ValueError("legacy session cannot run in independent TCP mode; prepare a new session")
     blockers = _check_config_for_operation(
         state["config_path"], empty_load=empty_load
@@ -1339,6 +1525,7 @@ def run_from_current(config_path, directory, *, live=False, empty_load=False):
 
 
 def repeat(source_directory, directory, *, live=False, empty_load=None,
+           use_trained=False,
            capture_fn=run_capture, leg_origin_capture_fn=_capture_leg_start_origin,
            capture_factory=LegCaptureProcess, execute_fn=run_execute):
     """Create a new anchored session with the source TCP plan and optionally run it."""
@@ -1348,11 +1535,16 @@ def repeat(source_directory, directory, *, live=False, empty_load=None,
     completed = {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"}
     if source_state.get("status") not in completed:
         raise ValueError("repeat source must be a completed session")
-    if source_state.get("trajectory_mode") != "independent_tcp":
+    if source_state.get("trajectory_mode") not in ("independent_tcp", "original_candidate"):
         raise ValueError("repeat currently requires an independent TCP source session")
     source_plan = source_state.get("tcp_plan")
-    if not isinstance(source_plan, dict) or not isinstance(source_plan.get("tcp_settings"), dict):
+    if not isinstance(source_plan, dict):
         raise ValueError("repeat source is missing frozen TCP plan")
+    if source_state["trajectory_mode"] == "original_candidate":
+        if source_plan.get("mode") != "original_candidate" or not source_plan.get("candidate_id"):
+            raise ValueError("repeat source is missing its original candidate")
+    elif not isinstance(source_plan.get("tcp_settings"), dict):
+        raise ValueError("repeat source is missing frozen TCP settings")
     source_config = Path(source_state["config_path"])
     config = configuration(source_config)
     prepared = source_directory / "prepared_config.json"
@@ -1361,11 +1553,36 @@ def repeat(source_directory, directory, *, live=False, empty_load=None,
     mode_empty = bool(source_state.get("empty_load", False)) if empty_load is None else bool(empty_load)
     if mode_empty != bool(source_state.get("empty_load", False)):
         raise ValueError("repeat mode must match the source session")
+    settings = ({"candidate_id": source_plan["candidate_id"]}
+        if source_state["trajectory_mode"] == "original_candidate" else source_plan["tcp_settings"])
+    if mode_empty and source_state.get("learning_mode") == "tcp_force":
+        settings = {"candidate_id": source_state["force_training_binding"]["candidate_id"]}
+    if not mode_empty or use_trained:
+        force_mode = source_state.get("learning_mode") == "tcp_force"
+        if force_mode:
+            from scripts.tcp_force_training import selected_candidate as selected_tcp_settings, verify_training as verify_original_training
+        else:
+            from scripts.original_training_adapter import selected_tcp_settings, verify_original_training
+        # Even exact repeats require the preceding with-leg trial to be trained.
+        suggestion = selected_tcp_settings(source_directory) if use_trained else None
+        if not mode_empty and source_state.get("training_status") != "COMPLETE":
+            raise ValueError("train the source with-leg motion before repeating")
+        if not mode_empty and not use_trained:
+            verify_original_training(source_directory)
+            if force_mode:
+                settings = {"candidate_id": source_state["force_training_binding"]["candidate_id"]}
+            else:
+                raise ValueError("DUPLICATE_CANDIDATE_NO_REPEAT_NOISE_MODEL: exact repeats cannot be appended to the unchanged original algorithm; use an independent reference recording for validation")
+        if use_trained:
+            settings = suggestion
     repeat_index = int(source_state.get("repeat_index", 0)) + 1
     prepare(source_config, target_directory, empty_load=mode_empty,
-            trajectory_settings=source_plan["tcp_settings"],
+            trajectory_settings=settings,
             parent_session=source_directory, repeat_index=repeat_index,
             capture_fn=capture_fn, leg_origin_capture_fn=leg_origin_capture_fn)
+    prepared_state = json.loads((target_directory / "round_status.json").read_text(encoding="utf-8"))
+    prepared_state["repeat_plan_source"] = source_state.get("learning_mode", "original_algorithm") if use_trained else "exact_parameters"
+    report(target_directory, prepared_state)
     if live:
         return run(target_directory, live=True, empty_load=mode_empty,
                    capture_factory=capture_factory, execute_fn=execute_fn)
@@ -1376,28 +1593,52 @@ def complete(directory):
     """Promote a successful recording to a final, reviewable COMPLETE state."""
     directory = Path(directory).resolve()
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
-    if state.get("status") == "COMPLETE":
+    if state.get("status") == "COMPLETE" and state.get("trajectory_mode") not in ("independent_tcp", "original_candidate"):
         return state
-    if state.get("status") not in {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE"}:
+    if state.get("status") not in {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"}:
         raise ValueError("complete requires a successful executed or analyzed session")
     execution = state.get("execution", {})
-    if execution and (execution.get("completed") is not True or
+    if (state.get("trajectory_mode") in ("independent_tcp", "original_candidate") or execution) and (execution.get("completed") is not True or
                       execution.get("same_session_realtime_cleanup_completed") is not True):
         raise ValueError("execution completion and realtime cleanup evidence are required")
-    if state.get("trajectory_mode") == "independent_tcp":
+    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
+        if not state.get("empty_load"):
+            if state.get("learning_mode") == "tcp_force":
+                from scripts.tcp_force_training import verify_training as verify_original_training
+            else:
+                from scripts.original_training_adapter import verify_original_training
+            if state.get("training_status") != "COMPLETE":
+                raise ValueError("passive training must complete before final completion")
+            verify_original_training(directory)
         if state.get("empty_load"):
-            required = (directory / "robot/robot_state.csv", directory / "robot/robot_wrench.csv",
-                        directory / "robot/trajectory_command.csv", directory / "tcp_trajectory.csv")
+            from measurement_validation.robot_execution import EVIDENCE, audit_robot_execution
+            required = tuple(directory / name for name in EVIDENCE)
+            missing = [str(path.relative_to(directory)) for path in required if not path.is_file()]
+            if missing:
+                raise ValueError("completion evidence missing: " + ", ".join(missing))
+            state["completion_trajectory_audit"] = audit_robot_execution(directory, allow_empty=True)
         else:
-            if not (directory / "passive_response_summary.json").is_file():
-                analyze(directory)
-            required = (directory / "leg/leg.csv", directory / "passive_response.csv",
-                        directory / "passive_response_summary.json")
+            if state.get("learning_mode") == "tcp_force" and not configuration(directory / "prepared_config.json").get("validation", {}).get("capture_dummy_leg", True):
+                required = ()
+            else:
+                required = (directory / "leg/leg.csv", directory / "passive_response.csv",
+                            directory / "passive_response_summary.json")
+            if required and not (directory / "passive_response_summary.json").is_file():
+                if state.get("learning_mode") == "tcp_force":
+                    from measurement_validation.passive_response import analyze_passive_response
+                    state["passive_response"] = analyze_passive_response(directory, configuration(directory / "prepared_config.json"))
+                    state.pop("response_analysis_error", None)
+                    report(directory, state)
+                else:
+                    analyze(directory)
+                state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+            if state.get("response_analysis_error"):
+                raise ValueError("resolve passive response analysis before completion")
         missing = [str(path.relative_to(directory)) for path in required if not path.is_file()]
         if missing:
             raise ValueError("completion evidence missing: " + ", ".join(missing))
     state["status"] = "COMPLETE"
-    state["completion"] = {"reviewed": False, "completed_at_host_time_s": time.perf_counter()}
+    state.setdefault("completion", {"reviewed": False, "completed_at_host_time_s": time.perf_counter()})
     report(directory, state)
     return state
 
@@ -1408,6 +1649,8 @@ def main(argv=None):
     parser.add_argument("--config", type=Path, default=BUNDLE_PATH)
     parser.add_argument("--session", type=Path)
     parser.add_argument("--source", type=Path, help="completed session used as a repeat source")
+    parser.add_argument("--trained", action="store_true", help="prepare the trained policy's next TCP candidate")
+    parser.add_argument("--training-mode", choices=("auto", "passive", "joint"), default="auto")
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--from-current", action="store_true", help="run from a newly captured current pose in a new session")
     parser.add_argument("--empty-load", action="store_true",
@@ -1420,6 +1663,10 @@ def main(argv=None):
         parser.error("--empty-load requires prepare or run")
     if args.action == "repeat" and args.source is None:
         parser.error("--source is required for repeat")
+    if args.trained and args.action != "repeat":
+        parser.error("--trained requires repeat")
+    if args.training_mode != "auto" and args.action != "train":
+        parser.error("--training-mode requires train")
     if args.action == "complete" and args.live:
         parser.error("complete is offline and does not accept --live")
     if args.action == "check":
@@ -1440,9 +1687,12 @@ def main(argv=None):
                  if args.from_current else run(args.session, **run_options))
     elif args.action == "repeat":
         state = repeat(args.source, args.session, live=args.live,
+                       use_trained=args.trained,
                        empty_load=(True if args.empty_load else None))
     elif args.action == "complete":
         state = complete(args.session)
+    elif args.action == "train":
+        state = train_session(args.session, training_mode=args.training_mode)
     else:
         state = analyze(args.session)
     print(state["status"])

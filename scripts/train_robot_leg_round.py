@@ -92,6 +92,9 @@ def train(request, *, validate_only=False):
         path = repo_path(item["measured_path"])
         f = pd.read_csv(path)
         scores = item["endpoints"]
+        if request.get("observation_source") == "robot_tcp_point_force_v1":
+            if "observation_source" not in f or not f.observation_source.eq(request["observation_source"]).all():
+                raise ValueError("robot-only worker requires reconstructed robot observation provenance")
         point = context.domain.by_id(item["candidate_id"])
         observation = SimpleNamespace(valid=True, episode_id=item["episode_id"],
             candidate_id=item["candidate_id"], trial_index=index, endpoint_value=scores["E3"],
@@ -104,7 +107,12 @@ def train(request, *, validate_only=False):
     action = policy.next_action(measurements)
     predictions = model.predict_all()
     return finite_json(dict(status="MODEL_UPDATED", method="FROZEN_RESIDUAL_GP_MEAN_GREEDY",
-        input_adapter="direct calibrated joint-torque sensor; no fictitious planar force",
+        experiment_scope=request.get("experiment_scope", "declared_candidate_history"),
+        optimization_benefit_demonstrated=False,
+        input_adapter=("robot measured TCP/wrench through existing IK and J.T @ F; no dummy-leg sensors"
+                       if request.get("observation_source") == "robot_tcp_point_force_v1"
+                       else "historical/synthetic direct joint-torque input; validation only"),
+        observation_source=request.get("observation_source", "historical_or_synthetic_joint_torque"),
         theta=model.theta, diagnostics=model.diagnostics, action=asdict(action),
         candidates=[p.candidate_id for p in points], predictions=predictions,
         history=request["history"], public_prior=frozen.mechanical.public_basis().provenance,

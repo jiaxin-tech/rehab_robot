@@ -152,8 +152,29 @@
     "max_tcp_acceleration_m_s2": 0.01,
     "retiming_margin": 1.01
   },
+  "robot_observation": {
+    "connection_model": "fixed_tcp_to_pull_point",
+    "hip_center_in_base_m": null,
+    "tcp_to_pull_point_in_tcp_m": null,
+    "wrench_origin_in_tcp_m": null,
+    "L1_m": null,
+    "L2_m": null,
+    "wrench_frame_type": null,
+    "rotation_base_from_wrench": null,
+    "force_robot_on_leg_sign": null,
+    "unloaded_wrench_bias": null,
+    "compensation_verified": false,
+    "state_time_offset_s": null,
+    "wrench_time_offset_s": null,
+    "max_out_of_plane_position_m": null,
+    "max_out_of_plane_force_n": null,
+    "max_connection_moment_nm": null
+  },
   "training": {
     "enabled": false,
+    "mode": "tcp_force",
+    "observation_source": "robot_only",
+    "reference_candidate_id": "reference_measured_asymmetric_closed_slow",
     "timeout_s": 300,
     "candidates": [
       {
@@ -164,5 +185,30 @@
         "beta_extend": 0
       }
     ]
+  },
+  "validation": {
+    "capture_dummy_leg": true
+  },
+  "force_training": {
+    "reference_candidate_id": "tcp_reference",
+    "candidates": [
+      {"candidate_id": "tcp_reference", "horizontal_displacement_m": -0.2, "lift_duration_s": 80, "return_duration_s": 80},
+      {"candidate_id": "tcp_slower_lift", "horizontal_displacement_m": -0.2, "lift_duration_s": 100, "return_duration_s": 80},
+      {"candidate_id": "tcp_slower_return", "horizontal_displacement_m": -0.2, "lift_duration_s": 80, "return_duration_s": 100}
+    ],
+    "horizontal_displacement_bounds_m": [-0.2, -0.2],
+    "branch_duration_bounds_s": [40, 100],
+    "min_vertical_excursion_m": 0.05,
+    "max_cycle_duration_s": 204,
+    "total_budget": 8,
+    "feature_scales": [0.05, 20, 20],
+    "gp_length_scale": 0.7,
+    "gp_signal_floor": 0.05,
+    "gp_noise_std": 0.02,
+    "feasibility_probability": 0.8,
+    "minimum_gain": 0.005,
+    "wrench_frame_type": "world",
+    "unloaded_wrench_bias": null,
+    "compensation_verified": false
   }
 }

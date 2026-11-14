@@ -14,6 +14,7 @@ from typing import Any, Callable, Sequence
 from control.start_anchor import capture_start_anchor, save_start_anchor
 from control.start_anchored_relative_trajectory import (
     FIRST_ROBOT_TRIAL_TRAJECTORY_ID,
+    ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES,
 )
 from lower_limb_sim.run_robot_trajectory_export import (
     DEFAULT_REFERENCE_PATH,
@@ -50,10 +51,10 @@ def run_capture(
         reference_frame, reference_metadata = load_closed_reference_trajectory(reference)
         trajectory_ids = reference_frame["trajectory_id"].astype(str).unique().tolist()
         first = reference_frame.iloc[0]
-    if not independent_tcp and trajectory_ids != [FIRST_ROBOT_TRIAL_TRAJECTORY_ID]:
+    if not independent_tcp and (len(trajectory_ids) != 1 or trajectory_ids[0] not in ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES):
         raise ValueError(
-            "first anchor capture accepts only "
-            f"{FIRST_ROBOT_TRIAL_TRAJECTORY_ID}"
+            "first anchor capture accepts only " +
+            ", ".join(sorted(ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES))
         )
     adapter = (adapter_factory or _default_adapter_factory)(robot_ip)
     connect_attempted = False

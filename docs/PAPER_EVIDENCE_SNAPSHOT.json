@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-11-12T09:12:22.080171+00:00",
+  "git_commit": "01684c5c3e5bad500c95bc015d0e8678561cb584",
+  "worktree_dirty": true,
+  "source_sha256": {
+    "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+    "control/independent_tcp_trajectory.py": "7056fc86eba68d992e85a12eb48c7ff38732d67a9b6c9ea3d0939abf9e65f409",
+    "control/robot_trajectory_executor.py": "f8a8608ca47cce6dc0990b742eae7219eaaa0ec7e70ab6fcc621dca3000773c7",
+    "control/execution_preflight.py": "e75d53a2e620c3ce4730c0fa2607f24dbaf572fdcdc2670a80f93e6b4ae79f3d",
+    "collection/real_robot_acquisition.py": "071d9f783660d9d2d98c221f2fdcaade18c1079bcd2fa97ff467c70885a9bac1",
+    "collection/twincat_leg.py": "0b89dafc51bad085f27ecdea6934c3a6a293aa24f4a2fb82d28bc73a25cb4a40",
+    "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
+    "scripts/lab_session.py": "75d8e32b2a7c3c60131c738f1b9a77686b139849d091034abf848c1026616e38",
+    "scripts/train_robot_leg_round.py": "a2c7ce9f71f96049da6882f11c723f0a9c5d6a98e256cb7d2482c603e1c0f896",
+    "experiment_algorithm/config.py": "57a73a9988270dfa49b4932a0bc366415ff77e6d4068597e5d9b8dc879b27297",
+    "experiment_algorithm/policy.py": "7663a488186b7d3d99e8a6dd3d424dfdf5ab23c550fd800888d26fb929f63b3c",
+    "experiment_algorithm/surrogate.py": "2245daff332854e6d2b462a7129d8008595344cb95bc498966ca5b09beae741a",
+    "experiment_algorithm/coupled_model.py": "109ac5705a6e83704219adeb2c15c6a35f110faeeb6e83f3f6303f462c184641",
+    "experiment_algorithm/coordinate_consistent_model.py": "7c1bc747c7ed91b1e7fe08d60659c12bd35f6551475af0af4321d2db16d21a5c",
+    "experiment_algorithm/coordinates.py": "41584840a2d13d387141e278ebde04d1ad2eecb912ad4554ca988ca650f78559",
+    "control/start_anchored_relative_trajectory.py": "ffa9a32e7580c88241bd31ca610336b9c693325f9264dc2cd4141e7cf72b56c6",
+    "lower_limb_sim/kinematics.py": "f14c543a1f3481e4f5e3fe73d0e4ec52bff024da8023463adef1e251508585a5",
+    "lower_limb_sim/config.py": "16b02c11196e30357f3c97193fabb8898b957c35aa332e7230c8977472f95940",
+    "lower_limb_sim/jacobian.py": "efd4240885c8d65a965a5cc053dad9995125678e3bb170322a4da4fac6761a25",
+    "lower_limb_sim/observation_model.py": "4daea3029f357ff783b4655d371e84d6d46060d2632381fcee58a3e6880a1369",
+    "measurement_validation/robot_observation.py": "03b19debd5b20af0db25074b1a16144966dc4072f08f50657792f56f2049a6e9",
+    "scripts/original_training_adapter.py": "70dda3b02af479f94ddd5797cb70be167e226a9c96daa93bba78e6dc5f26e339",
+    "control/prepared_trajectory.py": "280142833f858360d3d05e270bf4fd7782466055539776811b9239cb1b77bfd3",
+    "measurement_validation/robot_execution.py": "0766c2a50bc3f80c013a73c3b98b0d738e957be4a2268d87a70d325213c6edd5",
+    "measurement_validation/passive_response.py": "075add12c49705e551a6467526bc00938772e225a8f7c15e14b9ffbec9d2e21b",
+    "measurement_validation/robot_leg_round.py": "c1b406c17c1e26e2a72ae89210d9046d934397e7fa39d1e8e3fd31f48ad3db93",
+    "scripts/audit_paper_evidence.py": "6b4710dede35f0b91c65fe7f3e8a0ed872cbb4b702841f410a6f14d8ee116224",
+    "tests/test_original_training_adapter.py": "5412a76bddeacb7ee65a5ce23eeaadfff1760c385c68897155dd53ab11437201",
+    "scripts/tcp_force_training.py": "ff86639a3cd4e2c077a83dfdefe59e58f3f7126dcc7e1e44f76fe3e82c7e2571",
+    "tests/test_tcp_force_training.py": "4ec742137b956c15c7991eb39b2808b298e327a0374dad89c337c66995a22b75"
+  },
+  "scope": "Current source tree and results/* only; no external lab computer or clinical evidence.",
+  "sessions": [
+    {
+      "session": "current_001",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "5f2f03eef08e678da3438c0cee9766c01b7c3642ab3bee25663105fbe2240e82"
+    },
+    {
+      "session": "empty_load_001",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "c814e6d9f37b8b747532cf0fc1597088527b51ed9f4a9aec9299b978604e4695"
+    },
+    {
+      "session": "empty_load_002",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "36fd432f74fe9031f7c18cbfb0051efe6f4c4873ed6d3f21c246b72b53236515"
+    },
+    {
+      "session": "empty_load_003",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "e35700b568eb685166b702a2d48f0951ff8768df90d2e5c4aa5d15e9fd708442"
+    },
+    {
+      "session": "empty_load_004",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "a342e9bfc8c5555e6562e7d55de945bba30b59f96e6eb0715c6f08b5346f1c38"
+    },
+    {
+      "session": "empty_load_005",
+      "status": "RUNNING",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "6fc63645d41a9a5f85d24ed1e81aaadb83be94dc7de638b98913773294f86707"
+    },
+    {
+      "session": "empty_load_006",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "28a090b6ce64dce5ac1536f21981c023be09c257ced39ca84a9a24bdf0564743"
+    },
+    {
+      "session": "empty_load_007",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "b6b631d4dac92c241d2d34de28c4ee3c7e4cac977a09197ff5fd4c5409b23bfc"
+    },
+    {
+      "session": "empty_load_008",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "7feba79e6a8d7e6dc6bba8ad1b73c40cf384811984c54b2420610120b7548294"
+    },
+    {
+      "session": "empty_load_009",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "3ed195357f7c26e09331ce23baf134f78b3a9a0049e12fd47e25acc1fdd90b94"
+    },
+    {
+      "session": "empty_load_010",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "3001ccfe938278b5c2e6cdf7e82cd6b4ef72cd2fba5aff70948657dfd50900fb"
+    },
+    {
+      "session": "empty_load_011",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "dec547691b5ab8a2f67bef0af61903cbdb0ed5387f489cc6cca7d7a1d33d8942"
+    },
+    {
+      "session": "empty_load_012",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "c1a6740f4e6c5e7123a9efb953c17a548ca3fc074f833bc8f7d05b38d17116c6"
+    },
+    {
+      "session": "empty_load_013",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "8c2b7534521edfc9b9325b6b4adc4679fd252bbb41b7e50af89a6a340fedc557"
+    },
+    {
+      "session": "empty_load_014",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "3889c8016afe000fab6cc2d4bed9ade22c44a50e82a4f8e22c81345d1c16bfc3"
+    },
+    {
+      "session": "empty_load_015",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "de29e9add75531bb723b639ce7a4ebd85a471369d1d2b34564a98ebc550e4964"
+    },
+    {
+      "session": "empty_load_016",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "b5e4f20b5432cdd373aaeeecb9fb54e9793f56f1c8bcb8116e88837e99439e93"
+    },
+    {
+      "session": "empty_load_017",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "2d64859a91123c2bad1fa768649125c62e597e3ed5588543e0f9d6291e25a212"
+    },
+    {
+      "session": "empty_load_018",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "7a1e68224d6eb3f9d9c1037f770924ea2ecbc271ce8160cf978b2d690fa48a9d"
+    },
+    {
+      "session": "empty_load_019",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "1bcdcc9a6d9bbdbcfc121bf6d695b8def653310c736d28f6a52123c4b0a9a41d"
+    },
+    {
+      "session": "empty_load_020",
+      "status": "RUNNING",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "68fb3e70d1d187f593ab3e7ca45ebf721f204b1182d18192d2f6e20d2d56ddbd"
+    },
+    {
+      "session": "empty_load_021",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "2021068c15b41663a61b7cbafa090d4295254ed379382898b2e3aa52c1c830d7"
+    },
+    {
+      "session": "empty_load_022",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "d5f96c0523bf62288880ddea2d89d50cabe518f96c2481c3e63a781e77d7c8c5"
+    },
+    {
+      "session": "empty_load_023",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "9949b622898fdd66aa2a939e3935bd442617284e14be1bd4c4ef2f7b8953685e"
+    },
+    {
+      "session": "empty_load_024",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "451353f3a7051903693df815c7f44b13ac90ec8f313277a9ffba7ae99479ed5b"
+    },
+    {
+      "session": "empty_load_025",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "d5cfb69a2f36543a49ab6bf4727ae543fe2395a726f5d5ed12e8a229245f2b6e"
+    },
+    {
+      "session": "empty_load_026",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "784d236e81b6d5abbf4222d126a704766924ce6963a88a54779241f0789b5342"
+    },
+    {
+      "session": "empty_load_027",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "4467978d23c7dc8086d48462dcb06394a18535d5293d9dc4a0ab82860de12e72"
+    },
+    {
+      "session": "empty_load_028",
+      "status": "PREPARED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "a6ccd988e0bdccec0dade59e1836859f933201da56cd03e1cc363cb5350d5e74"
+    },
+    {
+      "session": "empty_load_115",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "6bd3fd25551220b11582163a223e918354ad5b6633d8a1626af25bf2588c3847"
+    },
+    {
+      "session": "empty_load_116",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "9774c0ac2a1de99b388460ee5fdd5ffabe514f45e633c87471e173b1e65e0989"
+    },
+    {
+      "session": "empty_load_117",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "d056e0a918469b05064fc45d496928d5d79094f042f1693e0415fcc018cf5298"
+    },
+    {
+      "session": "empty_load_118",
+      "status": "EMPTY_LOAD_COMPLETE",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "85192ffed07740556473d666cf5a8e53414a125b569b662756f52422fc6c526a"
+    },
+    {
+      "session": "observe_001",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "1f5efb99296f62160d4c036e470eb6bdb74da2f91a83f64a36a974a1f44fc533"
+    },
+    {
+      "session": "observe_002",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "ad02fcc1f10c3256230a1c4974dc1843c3a5f8fbbe49fcf0a14a882cd2cf7ff7"
+    },
+    {
+      "session": "observe_003",
+      "status": "OBSERVATION_COMPLETE",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "ca3d8131ec629448d560e5f18340b80391b81d9092f0b89ed585abdecd5fb76c"
+    },
+    {
+      "session": "round_001",
+      "status": "PREPARED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "03649e8bd4418e8e0ca3cff19794db8ab0da716ed84d93acce36afddd858a46c"
+    }
+  ],
+  "rt_link_004": {
+    "recorded_status": "COMPLETE",
+    "reported_tracking": {
+      "samples": 755,
+      "latest_trajectory_time_s": 11.0,
+      "max_displacement_m": 0.0010059628013515036,
+      "max_absolute_displacement_m": 0.0012022482165815385,
+      "max_positive_z_m": 0.0010059584310858627,
+      "max_lateral_m": 1.0285275339460598e-05,
+      "last_displacement_m": 6.157213181061321e-07,
+      "settle_displacement_m": 0.0011949460958572658,
+      "settled_baseline_captured": true,
+      "far_verified": true,
+      "return_verified": true,
+      "step_m": 0.001
+    },
+    "status_sha256": "b4066cc9063e680e3b923687cd8db83ab1a0c266dd87a955da083e68b36cd73e",
+    "raw_robot_state_available": false,
+    "interpretation": "Recorded 1 mm diagnostic outcome, not a current full-trajectory learning experiment."
+  },
+  "empty_load_118": {
+    "recorded_status": "EMPTY_LOAD_COMPLETE",
+    "robot_metadata_git_commit": "ec08c177d06852a2536b6bb16880d6ce0ddc1470",
+    "planned_peak_z_m": 0.5281997904204508,
+    "valid_robot_samples": 17356,
+    "max_distance_from_first_valid_tcp_m": 1.1032467769712916e-06,
+    "interpretation": "Historical archived recording only; does not negate operator reports of later unarchived motion."
+  },
+  "current_plan_offline_example": {
+    "mode": "independent_tcp",
+    "tcp_settings": {
+      "target_peak_tcp_z_base_m": 0.9,
+      "horizontal_displacement_m": -0.2,
+      "lift_duration_s": 80.0,
+      "return_duration_s": 80.0,
+      "start_hold_s": 2.0,
+      "peak_hold_s": 2.0,
+      "sample_period_s": 0.1
+    },
+    "joint_reference_used": false,
+    "joint_tracking_required": false,
+    "actual_peak_tcp_z_base_m": 0.9,
+    "duration_s": 164.0,
+    "learning_mode": "tcp_force",
+    "candidate_id": "tcp_reference",
+    "patient_geometry_required": false,
+    "patient_joint_angles_or_parameters_estimated": false,
+    "requested_peak_tcp_z_base_m": 0.9,
+    "peak_z_requirement_met": true,
+    "execution_audit_reasons": [],
+    "execution_limits": {
+      "max_tcp_speed_m_s": 0.03,
+      "max_tcp_acceleration_m_s2": 0.01
+    },
+    "catalog_size": 3,
+    "missing_robot_analysis": [],
+    "robot_observation_source": "TCP_FORCE_GP_EI",
+    "dummy_leg_training_data_used": false,
+    "missing_robot_calibration": [
+      "unloaded_wrench_bias",
+      "compensation_verified"
+    ],
+    "robot_observation_calibration_status": "INCOMPLETE",
+    "robot_observation_blocker": "force training requires verified robot external-wrench/tool compensation",
+    "source_anchor": "results/empty_load_118/anchor.json",
+    "peak_speed_m_s": 0.013846160843921549,
+    "peak_acceleration_m_s2": 0.0005944383021941907,
+    "sample_count": 1641,
+    "hardware_accessed": false
+  },
+  "verification": {
+    "kind": "OFFLINE_TESTS_ONLY",
+    "status": "REPORT_PROVIDED",
+    "report": "D:\\rehab_robot_data_path\\.cache\\paper_audit_tests.xml",
+    "sha256": "5a58095adcf71aece8ae0f9f4ba1d165d25c1c581403c503995b2ea92a57fdf3",
+    "tests": 444,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

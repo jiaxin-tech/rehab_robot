@@ -1,5 +1,7 @@
 # 代码地图
 
+2026-11-12 正式主线：independent_tcp + tcp_force。lab_session.py 组织独立规划、执行、可选假腿验证和 robot-only 训练；tcp_force_training.py 直接使用机器人运动与六维受力，复用已有 GP/EI/可行性工具。原六参数和几何观测模块仅作离线对照，公开入口拒绝其带载启动。当前操作见 [TCP_FORCE_EXPERIMENT.md](TCP_FORCE_EXPERIMENT.md)。
+
 唯一配置：[experiment.json](../config/experiment.json)。操作和当前进展见[实验指南](EXPERIMENT.md)。
 
 ## 真机操作与依赖
@@ -50,17 +52,19 @@ run --from-current --live 将 prepare 和 run 串成一次操作，使用新会�
 
 ## 采集后处理
 
+正式主线：独立 TCP 候选 → 冻结计划 → 实际机器人执行/受力审核 → tcp_force_training.py → 原 Matérn GP 与 EI/可行性工具 → 下一 TCP 候选。假腿数据仅作可选验证与保护；关闭 validation.capture_dummy_leg 后整条主线不依赖 ADS。原 IK/JᵀF 和 original_training_adapter.py 保留作离线对照，见 [PASSIVE_TRAINING.md](PASSIVE_TRAINING.md)。
+
 ~~~mermaid
 flowchart LR
-    L["scripts/lab_session.py train"] --> ALIGN["measurement_validation/robot_leg_round.py"]
-    RAW["dispatch.csv + leg/leg.csv"] --> ALIGN
-    ALIGN --> DATA["measured.csv<br/>按实际发送时间对齐、计算端点"]
-    DATA --> WORK["scripts/train_robot_leg_round.py<br/>独立无硬件进程"]
-    WORK --> ALG["experiment_algorithm/<br/>六参数辨识 → 残差 GP → Greedy"]
+    L["scripts/lab_session.py train"] --> ALIGN["measurement_validation/robot_execution.py"]
+    RAW["机器人实测 TCP + 外力 + dispatch.csv"] --> ALIGN
+    ALIGN --> DATA["机器人任务审核与直接受力指标"]
+    DATA --> WORK["scripts/tcp_force_training.py"]
+    WORK --> ALG["既有 GP / EI / 可行性工具<br/>有限 TCP 候选决策"]
     ALG --> REPORT["report.md + round_status.json"]
 ~~~
 
-辨识使用标定后的假腿数据，机器人力保留为采集和限值数据。训练建议不自动驱动机器人；observe 没有 dispatch.csv，不能当作动态训练轮次。
+正式指标为 load_score、force_peak_fraction、torque_peak_fraction，不输出人体关节参数或原 E 指标。假腿编码器/力矩不进入训练；observe 没有动态调度记录，不能当作训练轮次。训练建议不自动驱动机器人。
 
 | 目录 | 用途 |
 | --- | --- |
@@ -74,7 +78,7 @@ flowchart LR
 | lower_limb_sim/ | 力学模型、参考轨迹及其复现工具 |
 | external_simulation/ | 公共右腿模型 |
 | data/ | 一张历史汇总表、一份原始数据与模型 ZIP |
-| tests/ | 一个离线回归文件 |
+| tests/ | 采集、运动、诊断、被动训练和实验流程离线回归 |
 | docs/、utils/ | 操作说明和共享工具 |
 
 ## 文件用途
@@ -96,7 +100,7 @@ flowchart LR
 | [collection/wrench_process.py](../collection/wrench_process.py) | 独立进程内查询力，监督预算、心跳和审计写盘 |
 | [collection/wrench_test_provider.py](../collection/wrench_test_provider.py) | 离线测试的模拟力源，不是真机采集入口 |
 | [config/bundle.py](../config/bundle.py) | 直接读取唯一配置；兼容单独诊断参数，定位归档数据 |
-| [config/experiment.json](../config/experiment.json) | 唯一实验参数文件：连接、限值、假腿、标定、坐标、采集、分析和训练八组 |
+| [config/experiment.json](../config/experiment.json) | 唯一实验配置：设备、执行限值、台架保护、坐标、机器人观测标定、采集与原算法目录 |
 | [config/settings.py](../config/settings.py) | SDK 固定约定；IP、采样频率和数据时效从统一配置读取 |
 | [control/execution_preflight.py](../control/execution_preflight.py) | 检查轨迹数值、物理限值、实际起点和实时采集健康 |
 | [control/robot_trajectory_executor.py](../control/robot_trajectory_executor.py) | 定时发送轨迹；超限、数据失效或异常时停止 |
@@ -164,6 +168,12 @@ flowchart LR
 | [measurement_validation/leg_episode.py](../measurement_validation/leg_episode.py) | 导入假腿 CSV、编码器角度换算和质量检查；也可直接作为 CLI |
 | [measurement_validation/offline_leg.py](../measurement_validation/offline_leg.py) | 假腿 CSV 采样质量、间隔和稳定性统计 |
 | [measurement_validation/robot_leg_round.py](../measurement_validation/robot_leg_round.py) | 按真实发送时刻对齐假腿数据、估计导数、计算论文端点指标 |
+| [measurement_validation/robot_execution.py](../measurement_validation/robot_execution.py) | 冻结计划、调度、实测跟随和六维力完整性审核，不训练模型 |
+| [measurement_validation/robot_observation.py](../measurement_validation/robot_observation.py) | 离线六参数对照的条件 IK/JᵀF 观测，正式主线不调用 |
+| [control/prepared_trajectory.py](../control/prepared_trajectory.py) | 通过已有转换重建冻结轨迹，核对 CSV 内容与候选哈希 |
+| [scripts/original_training_adapter.py](../scripts/original_training_adapter.py) | 有条件的六参数离线对照，固定原基线、历史和原约束 |
+| [scripts/tcp_force_training.py](../scripts/tcp_force_training.py) | 当前正式方法：独立 TCP 目录、任务审核、直接受力 GP/EI 决策、重复和证据校验 |
+| [scripts/audit_paper_evidence.py](../scripts/audit_paper_evidence.py) | 离线复算候选、盘点归档与测试报告，输出论文证据快照 |
 | [pytest-core.ini](../pytest-core.ini) | 统一测试的收集与运行配置 |
 | [requirements-win-py312.lock.txt](../requirements-win-py312.lock.txt) | Windows Python 3.12 固定依赖版本 |
 | [requirements.txt](../requirements.txt) | 项目依赖声明 |
@@ -179,13 +189,14 @@ flowchart LR
 | [scripts/run_real_measurement_validation_analysis.py](../scripts/run_real_measurement_validation_analysis.py) | 运行静载、重复性和轨迹敏感性离线分析 |
 | [scripts/run_rehab_experiment.py](../scripts/run_rehab_experiment.py) | 内部机器人执行和采集集成；统一停止与设备清理 |
 | [scripts/train_robot_leg_round.py](../scripts/train_robot_leg_round.py) | 独立无硬件进程：六参数辨识、残差 GP 和 Greedy 建议 |
-| [tests/test_mainline.py](../tests/test_mainline.py) | 唯一离线回归文件：采集、设备适配、物理停止、简化流程和算法 |
+| [tests/test_mainline.py](../tests/test_mainline.py) | 主线离线回归：采集、设备适配、物理停止、流程和算法 |
+| [tests/test_original_training_adapter.py](../tests/test_original_training_adapter.py) | 原候选冻结、已有 FK 执行、被动数据接入和原训练器回归 |
 | [utils/assets.py](../utils/assets.py) | 读取原始数据与模型 ZIP，归档已完成的观测或运动会话 |
 | [utils/clock.py](../utils/clock.py) | 全链路共用主机单调高精度时钟 |
 | [utils/provenance.py](../utils/provenance.py) | 获取 Git 提交等来源信息 |
 
 ## 本地输出
 
-results/ 下每个新会话仅保留一份 report.md 和一份 round_status.json，原始数据分别保存在 leg/、robot/。运动会话另外保留起点、预览与 dispatch.csv，训练后生成 measured.csv。历史输出另汇总在本机 results/history.zip，原目录保留；历史报告不作为当前操作说明。
+results/ 下每个新会话保留 report.md、round_status.json、robot/、起点、预览、dispatch.csv 和 TCP 计划。正式训练另存 tcp_force_binding.json、tcp_force_training.json 与可选的 pretrial_prediction.json。leg/ 仅是可选台架验证，原 original_measured.csv/original_training.json 属于离线六参数对照。历史报告不作为当前操作说明。
 
 .cache/data/ 是参考轨迹与模型缓存，.cache/training/ 是训练临时数据；.cache/config/ 仅供旧独立配置接口的离线兼容测试，现场主线不生成配置副本。.venv/、.tools/ 是本机运行环境。

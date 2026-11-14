@@ -1,8 +1,10 @@
 # 真机实验操作手册
 
-2026-11-11 更新：当前默认使用独立 TCP 牵引轨迹，假腿被动响应，不要求跟踪髋膝参考角。新流程及完整操作见[独立 TCP 牵引实验](INDEPENDENT_TCP_EXPERIMENT.md)。下文涉及 Z 单轴缩放、膝相位和髋幅值求解的内容仅适用于历史模式。
+当前正式流程已变更：trajectory.mode=independent_tcp、training.mode=tcp_force，直接由机械臂实测位姿与受力决策，不需要患者几何。原六参数只作离线对照。最新完整操作见 [TCP_FORCE_EXPERIMENT.md](TCP_FORCE_EXPERIMENT.md)。本页后续的 original_candidate、IK/JᵀF 和患者几何段落为历史实现记录，不能作为当前带载操作指令；SDK、短诊断与停止说明仍可参考。
 
-更新时间：2026-11-07
+历史实现说明：以下原候选几何流程已由当前独立 TCP 受力主线替代，保留供旧记录复现，不作为新的正式实验操作。
+
+更新时间：2026-11-12
 
 所有命令在仓库根目录的 PowerShell 中执行。真机实验必须由现场操作员执行，运动区域清空，急停可用，机器人状态和控制器报警可见。
 
@@ -54,9 +56,9 @@ python -m scripts.lab_session prepare --config config/experiment.json --session 
 
 轨迹方向由 `config/experiment.json` 的 `frame` 定义。两条配置向量表示康复坐标正 X、正 Z 在机器人基坐标系中的方向；实际运动方向还取决于预览中的 `delta_x_R/delta_z_R` 正负。当前参考主行程 `delta_x_R<0`，所以 `[0,-1,0]` 将主行程映射为基座 `Y+`。方向调整后必须核对预览中 `tcp_x_base/tcp_y_base/tcp_z_base` 的最小值、最大值和首段变化，再新建毫米级或空载会话验证。
 
-`config/experiment.json` 的 `trajectory.target_peak_tcp_z_base_m` 是基座坐标系绝对 Z 峰值，单位为米。TCP 原点由每次 `prepare` 只读捕获。空载模式可据此冻结单轴 `rehab_z_scale`；连接假腿时禁止单独放大 Z，因为它会破坏两连杆正运动学，普通联动必须改用经过审核的几何一致关节轨迹。改峰值、移动机器人或改变 TCP 后必须新建会话并重新准备，禁止只改旧会话 CSV。假腿“当前原点”应保存为独立的实验相对原点记录，不能覆盖 `calibration.*.zero_counts` 的编码器/解剖标定。
+`trajectory.target_peak_tcp_z_base_m` 是基座坐标系绝对 Z 峰值要求，单位为米。默认模式只检查原候选是否达到，不自动缩放。TCP 原点由每次 prepare 捕获，原 CSV 复制为 original_candidate.csv，再通过已有转换生成 TCP。候选时间和曲线不变，朝向固定。改配置、移动机器人或改变 TCP 后须新建会话；被动腿初始状态不覆盖 calibration.*.zero_counts。
 
-当前普通联动从准备时实测物理髋膝角出发，在 `22.2～22.55 s` 内自动求膝轨迹周期平移量并保留完整角度行程；计划膝最低角必须比 `-10°` 物理下限高出 2° 跟踪门限及额外 0.5° 余量。随后程序在配置上限内二分求解髋幅值以达到 0.900 m。生成结果必须同时满足髋 `[-5°,145°]`、膝 `[-10°,145°]`、完整 XYZ 工作空间、速度和加速度限制；变换参数冻结在 `trajectory_adjustment.json`，预览、外层预检和调度器内层审计必须一致。
+旧联动的实测关节起点、膝相位平移、髋幅值求解和空载 Z 缩放不参与默认模式。当前原候选 24 s/401 点，按旧锚点复算峰值约 0.5282 m，达不到 0.9 m 且超出保守速度/加速度限制。先按原方法完善候选，不能修改预览或放宽限值绕过 blocker。
 
 ## 5. 实时链路诊断
 
@@ -86,7 +88,7 @@ python -m scripts.test_realtime_motion run --session results/rt_link_YYYYMMDD_01
 python -m scripts.lab_session prepare --config config/experiment.json --empty-load --session results/empty_load_YYYYMMDD_01
 ~~~
 
-检查 preview/trajectory_preview.csv、empty_load_retiming.json、empty_load_safety.json 和 blocker。确认现场条件后运动：
+检查 preview/trajectory_preview.csv、original_candidate.csv、tcp_plan.json、tcp_trajectory.csv、tcp_safety.json 和 blocker。默认模式不产生历史 empty_load_retiming.json。仅在 blockers 为空且现场核对通过后运动：
 
 ~~~powershell
 python -m scripts.lab_session run --config config/experiment.json --empty-load --session results/empty_load_YYYYMMDD_01 --live
@@ -96,14 +98,14 @@ python -m scripts.lab_session run --config config/experiment.json --empty-load -
 
 ## 7. 假腿正式实验
 
-安装假腿后核对编码器零位、方向、量程、参考起始角、ADS 通信和安全状态。安装或零位变化后重新观测并 prepare。
+安装假腿后核对编码器零位、方向、量程、ADS 通信、被动未使能和安全状态。传感器只用于台架验证与保护，无需与名义起始角相同，不进入正式训练。固定连接几何、髋中心、有效长度、力坐标/参考点/符号、补偿和时序标定填写在 robot_observation；缺失时阻止正式实验。安装或零位变化后重新观测并 prepare。
 
 ~~~powershell
 python -m scripts.lab_session prepare --config config/experiment.json --session results/round_YYYYMMDD_01
 python -m scripts.lab_session run --config config/experiment.json --session results/round_YYYYMMDD_01 --live
 ~~~
 
-运行时必须确认假腿采集健康、起始角在允许误差内、机器人状态/力/碰撞/日志健康、dispatch.csv 和 robot/ 存在、最终状态为 CAPTURE_COMPLETE，并且 TCP 反馈覆盖运动前中后。
+运行时确认假腿物理角度在标定范围、准备后起点未变化、机器人状态/力/碰撞/日志健康。正常采集状态为 CAPTURE_COMPLETE，training_status 还须为 COMPLETE；run 结束自动调用原六参数/物理预测/残差 GP/Greedy，不受历史 training.enabled 开关影响。TCP 反馈及原始腿数据应覆盖完整运动。
 
 若每次以当前 TCP 为起点：
 
@@ -113,9 +115,9 @@ python -m scripts.lab_session run --config config/experiment.json --from-current
 
 该入口会新建 session、捕获当前位姿并生成相对轨迹，不要复用旧 session。
 
-连接假腿的普通 `prepare` 会同时冻结当前轴1/轴4为该 session 的轨迹起点，证据写入 `leg_start_origin.json`。它不重写全局编码器零点；运行前同时检查全局物理角度范围和 session 轨迹起点误差。若准备后假腿被拖动，必须换新 session 重新准备，不能通过增大 `max_start_angle_error_deg` 继续。
+带腿 prepare 将轴1/轴4初始状态写入 leg_start_origin.json，仅用于被动状态及准备后移动检查，不作为 TCP 规划起点，不重写全局编码器零点。准备后假腿被移动时换新 session，不扩大起点容差继续。
 
-运动过程中还会按最近已下发的轨迹时刻检查髋、膝跟踪误差。`acquisition.max_tracking_error_deg` 当前为 2°；超过后立即取消实时调度，不能用放宽物理角度范围代替跟踪误差修复。
+本模式不检查假腿是否跟踪名义关节曲线，台架保护仍检查物理范围、故障、未使能状态、采样新鲜度和关节力矩。正式六参数学习只从机械臂实测位姿和外力经原 IK/JᵀF 观测方程构造输入；原点力模型未覆盖的自由力矩/出平面受力会拒绝。后续 repeat --trained 按原候选 ID 准备下一轮，保留原 STOP 和重复限制。见[原候选实验](INDEPENDENT_TCP_EXPERIMENT.md)。
 
 ## 8. 停止、故障和证据
 

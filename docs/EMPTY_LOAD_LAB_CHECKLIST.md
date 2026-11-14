@@ -1,6 +1,8 @@
 # 空载实验现场操作与故障排查
 
-2026-11-11 更新：当前默认使用独立 TCP 牵引轨迹，假腿被动响应，不要求跟踪髋膝参考角。新流程及完整操作见[独立 TCP 牵引实验](INDEPENDENT_TCP_EXPERIMENT.md)。下文涉及 Z 单轴缩放、膝相位和髋幅值求解的内容仅适用于历史模式。
+当前默认已改为独立 TCP 受力决策，患者几何不参与正式流程，原六参数仅作离线对照。最新空载/带载操作见 [TCP_FORCE_EXPERIMENT.md](TCP_FORCE_EXPERIMENT.md)。下文默认模式、旧测试数量及原候选说明均属历史；SDK 诊断和故障排查按实际记录参考。
+
+以下原候选和旧限值记录仅供历史故障复现，不是当前主线配置。最新证据和边界见[论文审核](PAPER_CODE_AUDIT.md)。
 
 整理日期：2026-11-04。所有命令在仓库根目录的 PowerShell 中执行。
 
@@ -45,7 +47,7 @@ git diff -- hardware/rokae_motion.py scripts/run_rehab_experiment.py
 .\.venv\Scripts\python.exe -m scripts.lab_session prepare --empty-load --session results/empty_load_001
 ```
 
-检查 `report.md`、`round_status.json` 没有阻断项；只显示 `PREPARED` 还不够，需要检查 `blockers`。核对 `preview/trajectory_preview.csv` 的整条路径方向与范围，以及 `empty_load_retiming.json` 的时长和运动限值。准备后不要移动机械臂；移动或改变 TCP、安装状态后，换新会话重新准备。
+检查 report.md、round_status.json 没有阻断项；只显示 PREPARED 还不够，需要检查 blockers。核对 preview/trajectory_preview.csv 整条路径方向与范围、tcp_plan.json 时间和 tcp_safety.json 限制。默认模式原样冻结 original_candidate.csv，不产生历史 empty_load_retiming.json。准备后移动机械臂或改变 TCP、安装状态时，换新会话。
 
 确认现场具备启动条件后执行。下面的命令会使机械臂运动：
 
@@ -54,7 +56,7 @@ git diff -- hardware/rokae_motion.py scripts/run_rehab_experiment.py
     Tee-Object results/empty_load_001/console.log
 ```
 
-当前空载独立上限为 `0.03 m/s`、`0.01 m/s²`，重定时余量为 `1.01`。参考轨迹约需两分多钟，具体以该轮重定时报告为准。普通 `motion` 中的 `1 m/s`、`2 m/s²` 不是空载实际使用的上限。
+当前执行取 motion 与 empty_load 对应限制的较小值，即 0.03 m/s、0.01 m/s²。默认原候选为 24 s，超过这些限制时阻止执行，不自动延长。retiming_margin 只属于历史重定时路径，当前不使用。
 
 ## 4. 失败后按原因排查
 
@@ -80,7 +82,7 @@ git diff -- hardware/rokae_motion.py scripts/run_rehab_experiment.py
 | --- | --- | --- |
 | `empty_load.max_tcp_speed_m_s` | 0.03 | 链路健康、可稳定启动后，可单独降低到 0.015 比较；不是已验证推荐值 |
 | `empty_load.max_tcp_acceleration_m_s2` | 0.01 | 另起一轮可单独降低到 0.005 比较；不能解决通信或启动门禁 |
-| `trajectory.target_peak_tcp_z_base_m` | 0.9 | 空载的基座坐标系绝对 Z 峰值，单位 m；每次改值或移动 TCP 后必须新建会话重新 `prepare`，核对完整 XYZ 预览和工作空间；普通联动禁止单轴 Z 缩放 |
+| `trajectory.target_peak_tcp_z_base_m` | 0.9 | 基座坐标系绝对 Z 峰值要求，单位 m；当前只审核原候选是否满足，不自动缩放。改值或移动 TCP 后新建会话检查完整预览 |
 | `motion.rt_filter_hz` | 50 | 先保持；不是力数据滤波，不能解除力查询阻塞 |
 | `motion.rt_network_tolerance_percent` | 20 | 先保持；不是 20 ms，不控制力查询阻塞 |
 | `motion.max_command_lateness_s` | 0.1 | 现场诊断临时放宽；超过 100 ms 仍拒绝下发，并结合回调和发送时序继续定位 |
@@ -91,7 +93,7 @@ git diff -- hardware/rokae_motion.py scripts/run_rehab_experiment.py
 
 降低速度、加速度应分轮比较，不同时改动。这是定位手段，不是现场安全认证。不要把软件偏置或清零当作隐藏超限的方法。
 
-修改后必须新建会话重新 `prepare --empty-load`，再检查预览与阻断项。旧会话保存了生成的 `empty_load_reference.csv` 和 `empty_load_safety.json`，修改源配置不会自动更新这些文件。
+修改后新建会话重新 prepare --empty-load，再检查预览与阻断项。默认会话冻结 original_candidate.csv、tcp_trajectory.csv、tcp_safety.json 和 prepared_config.json，修改源配置不会更新这些文件，执行前发现变化会拒绝继续。
 
 ## 6. 每轮保留证据和判定结果
 

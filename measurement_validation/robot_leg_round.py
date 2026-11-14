@@ -13,9 +13,10 @@ from lower_limb_sim.mechanical_endpoints import branch_rms_components
 from measurement_validation.leg_episode import JointCalibration, read_leg_episode
 
 
-def validate_analysis(config, calibration):
+def validate_analysis(config, calibration, *, require_reference_tracking=True):
     for key in ("max_gap_s", "max_read_duration_s", "max_dispatch_time_error_s", "derivative_rate_hz",
-                "derivative_window_s", "max_start_angle_error_deg", "max_tracking_error_deg"):
+                "derivative_window_s") + (("max_start_angle_error_deg", "max_tracking_error_deg")
+                                          if require_reference_tracking else ()):
         positive(config.get(key), key)
     for key in ("sensor_receive_delay_s", "command_application_delay_s"):
         v = config.get(key)
@@ -33,8 +34,9 @@ def validate_analysis(config, calibration):
     return result
 
 
-def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calibration):
-    conversions = validate_analysis(analysis, calibration)
+def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calibration,
+                        *, require_reference_tracking=True, schedule_origin_host_time_s=None):
+    conversions = validate_analysis(analysis, calibration, require_reference_tracking=require_reference_tracking)
     episode = read_leg_episode(csv_path)
     frame = episode.source_frame
     reference = pd.read_csv(reference_path)
@@ -59,8 +61,16 @@ def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calib
     target = np.array([(int(v)-origin_ns)/1e9 for v in dispatch.dispatch_end_ns]) + analysis["command_application_delay_s"]
     if np.any(np.diff(sensor) <= 0) or np.any(np.diff(target) <= 0):
         raise ValueError("non-increasing sensor or dispatch clock")
-    if np.max(np.abs((target-target[0]) - (expected-expected[0]))) > analysis["max_dispatch_time_error_s"]:
-        raise ValueError("dispatch timing exceeded reviewed analysis budget")
+    if schedule_origin_host_time_s is None:
+        if np.max(np.abs((target-target[0]) - (expected-expected[0]))) > analysis["max_dispatch_time_error_s"]:
+            raise ValueError("dispatch timing exceeded reviewed analysis budget")
+    else:
+        if not np.isfinite(schedule_origin_host_time_s):
+            raise ValueError("recorded schedule origin must be finite")
+        schedule = float(schedule_origin_host_time_s) - origin_ns/1e9 + expected
+        if np.max(np.abs(target[1:] - analysis["command_application_delay_s"] - schedule[1:])) > analysis["max_dispatch_time_error_s"]:
+            raise ValueError("dispatch timing exceeded reviewed analysis budget")
+        target = schedule + analysis["command_application_delay_s"]
     if sensor[0] > target[0] or sensor[-1] < target[-1]:
         raise ValueError("leg recording does not bracket all motion targets")
     lo = max(0, np.searchsorted(sensor, target[0])-1)
@@ -96,9 +106,9 @@ def aligned_measurement(csv_path, dispatch_path, reference_path, analysis, calib
         q_filtered = savgol_filter(q, window, 3, mode="interp")
         actual = np.interp(target, grid, q_filtered)
         planned = reference[f"q_{name}_rad"].to_numpy(float)
-        if abs(np.rad2deg(actual[0]-planned[0])) > analysis["max_start_angle_error_deg"]:
+        if require_reference_tracking and abs(np.rad2deg(actual[0]-planned[0])) > analysis["max_start_angle_error_deg"]:
             raise ValueError(f"{name} start angle inconsistent with reference")
-        if np.max(np.abs(np.rad2deg(actual-planned))) > analysis["max_tracking_error_deg"]:
+        if require_reference_tracking and np.max(np.abs(np.rad2deg(actual-planned))) > analysis["max_tracking_error_deg"]:
             raise ValueError(f"{name} tracking deviation invalidates this training episode")
         output[f"q_{name}_rad"] = actual
         output[f"dq_{name}_rad_s"] = np.interp(target, grid, savgol_filter(q, window, 3, deriv=1, delta=delta, mode="interp"))

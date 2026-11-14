@@ -5025,6 +5025,7 @@ class units_and_frames__UnitAndFrameTests(units_and_frames__unittest.TestCase):
 def test_repeat_creates_new_anchor_and_preserves_frozen_tcp_plan(tmp_path, monkeypatch, personal_context):
     from control.independent_tcp_trajectory import TRAJECTORY_ID
     c = personal_round.configuration()
+    c["trajectory"]["mode"] = "independent_tcp"
     config_path = tmp_path / "config.json"
     personal_round.atomic_json(config_path, c)
     monkeypatch.setattr(personal_round, "_check_config_for_operation", lambda *a, **k: [])
@@ -5058,9 +5059,9 @@ def test_complete_requires_evidence_and_promotes_session(tmp_path):
     (tmp_path / "robot").mkdir()
     for name in ("robot_state.csv", "robot_wrench.csv", "trajectory_command.csv"):
         (tmp_path / "robot" / name).write_text("x\n", encoding="utf-8")
-    result = personal_round.complete(tmp_path)
-    assert result["status"] == "COMPLETE"
-    assert result["completion"]["reviewed"] is False
+    # Header-only files are not measured execution evidence.
+    with pytest.raises(ValueError, match="completion evidence"):
+        personal_round.complete(tmp_path)
 
 
 if __name__ == "__main__":
@@ -5807,6 +5808,8 @@ def test_passive_leg_response_can_differ_from_reference_but_not_limits():
 def test_tcp_sessions_share_geometry_and_freeze_configuration(tmp_path, monkeypatch, personal_context):
     from control.independent_tcp_trajectory import TRAJECTORY_ID
     c = personal_round.configuration()
+    c["training"]["mode"] = "original_offline"
+    c["trajectory"]["mode"] = "independent_tcp"
     config_path = tmp_path / "config.json"
     personal_round.atomic_json(config_path, c)
     monkeypatch.setattr(personal_round, "_check_config_for_operation", lambda *a, **k: [])
@@ -5867,11 +5870,13 @@ def test_passive_response_uses_measured_angles_and_marks_data_gaps(tmp_path):
     assert not summary["identification_ready"]
 
 
-@pytest.mark.parametrize("fails", [False, True])
-def test_passive_tcp_session_executes_and_cleans_capture(tmp_path, monkeypatch, personal_context, fails):
+@pytest.mark.parametrize("fails,analysis_fails", [(False, False), (True, False), (False, True)])
+def test_passive_tcp_session_executes_and_cleans_capture(tmp_path, monkeypatch, personal_context, fails, analysis_fails):
     import time
     from control.independent_tcp_trajectory import TRAJECTORY_ID
     c = personal_round.configuration()
+    c["training"]["mode"] = "original_offline"
+    c["trajectory"]["mode"] = "independent_tcp"
     c["acquisition"].update(pre_roll_s=.0001, post_roll_s=.0001)
     config_path = tmp_path / "config.json"
     personal_round.atomic_json(config_path, c)
@@ -5879,6 +5884,20 @@ def test_passive_tcp_session_executes_and_cleans_capture(tmp_path, monkeypatch, 
     monkeypatch.setattr(personal_round, "inspect_file", lambda *a, **k: {"rows": 3})
     import measurement_validation.passive_response as analysis
     monkeypatch.setattr(analysis, "analyze_passive_response", lambda *a: {"joint_tracking_error_applicable": False})
+    if analysis_fails:
+        def invalid_leg_analysis(*args):
+            raise ValueError("synthetic leg analysis failure")
+        monkeypatch.setattr(analysis, "analyze_passive_response", invalid_leg_analysis)
+    import scripts.original_training_adapter as learning
+    monkeypatch.setattr(learning, "require_binding", lambda *a: {})
+    monkeypatch.setattr(learning, "freeze_binding", lambda *a: {"status": "BOUND", "candidate_id": "test"})
+    trained = []
+    def train_closed_capture(directory, worker):
+        assert stopped == [True]
+        assert (directory / "dispatch.csv").is_file()
+        trained.append(directory)
+        return {"method": "FROZEN_RESIDUAL_GP_MEAN_GREEDY", "passive_measurements": True}
+    monkeypatch.setattr(learning, "train_original", train_closed_capture)
     def capture_anchor(**kwargs):
         replace(personal_context.anchor, trajectory_id=TRAJECTORY_ID).save_json(kwargs["output_path"])
     def origin(config, path):
@@ -5914,10 +5933,18 @@ def test_passive_tcp_session_executes_and_cleans_capture(tmp_path, monkeypatch, 
     if fails:
         with pytest.raises(RuntimeError, match="synthetic TCP failure"):
             personal_round.run(session, live=True, capture_factory=Capture, execute_fn=execute)
+    elif analysis_fails:
+        with pytest.raises(RuntimeError, match="passive response analysis failed"):
+            personal_round.run(session, live=True, capture_factory=Capture, execute_fn=execute)
+        state = json.loads((session / "round_status.json").read_text(encoding="utf-8"))
+        assert state["training_status"] == "COMPLETE"
+        assert state["analysis_status"] == "FAILED"
     else:
         state = personal_round.run(session, live=True, capture_factory=Capture, execute_fn=execute)
         assert state["status"] == "CAPTURE_COMPLETE"
         assert not state["passive_response"]["joint_tracking_error_applicable"]
+        assert state["training_status"] == "COMPLETE"
+    assert len(trained) == (0 if fails else 1)
     assert stopped == [True]
     assert (session / "dispatch.csv").is_file()
     assert not (session / "running.lock").exists()
@@ -6638,7 +6665,8 @@ def test_unified_config_readers_need_no_generated_sections(tmp_path, monkeypatch
     assert Path(read_json(path)["ads_dll_path"]).is_absolute()
     assert load_live_wrench_config(path)["connection"]["robot_ip"] == "192.0.2.33"
     assert set(_calibration_from_json(path)) == {"hip", "knee"}
-    assert personal_round.check_config(path) == []
+    assert any("TCP force task" in problem for problem in personal_round.check_config(path))
+    assert personal_round.check_config(path, empty_load=True) == []
     assert list(tmp_path.iterdir()) == [path]
 
 
@@ -6648,12 +6676,12 @@ def test_training_failure_updates_same_round_report(tmp_path, monkeypatch):
     def invalid_alignment(*args, **kwargs):
         raise ValueError("recording has a time gap")
     monkeypatch.setattr(personal_round, "aligned_measurement", invalid_alignment)
-    with pytest.raises(ValueError, match="time gap"):
+    with pytest.raises(ValueError, match="historical joint-sensor training is validation only"):
         personal_round.analyze(tmp_path)
     state = json.loads((tmp_path / "round_status.json").read_text(encoding="utf-8"))
     assert state["status"] == "CAPTURE_COMPLETE"
     assert state["training_status"] == "FAILED"
-    assert "time gap" in (tmp_path / "report.md").read_text(encoding="utf-8")
+    assert "historical joint-sensor training is validation only" in (tmp_path / "report.md").read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize("kind", ["state", "wrench", "alignment"])
