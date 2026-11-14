@@ -114,7 +114,7 @@ flowchart LR
 | [experiment_algorithm/coordinate_consistent_model.py](../experiment_algorithm/coordinate_consistent_model.py) | 用公共机械先验构建设计矩阵和六参数模型预测 |
 | [experiment_algorithm/coordinates.py](../experiment_algorithm/coordinates.py) | MuJoCo 关节坐标、仰卧映射及虚功切向计算 |
 | [experiment_algorithm/coupled_model.py](../experiment_algorithm/coupled_model.py) | 固定六参数的顺序、边界和尺度 |
-| [experiment_algorithm/policy.py](../experiment_algorithm/policy.py) | 根据已观测数据选择候选、检查预算和停止；轮次入口使用冻结 Greedy 配置 |
+| [experiment_algorithm/policy.py](../experiment_algorithm/policy.py) | 原六参数条件对照的策略；正式TCP方法仅复用其中的评分工具 |
 | [experiment_algorithm/surrogate.py](../experiment_algorithm/surrogate.py) | 六参数拟合、残差 GP、参数不确定性及诊断 |
 | [external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml](../external_simulation/myoleg_supine_rehab_v1/myoleg_supine_right_v1.xml) | 仰卧右腿公共机械模型，供六参数先验使用 |
 | [hardware/network_probe.py](../hardware/network_probe.py) | 不加载 SDK 的控制器网络可达性检查 |
@@ -173,6 +173,9 @@ flowchart LR
 | [control/prepared_trajectory.py](../control/prepared_trajectory.py) | 通过已有转换重建冻结轨迹，核对 CSV 内容与候选哈希 |
 | [scripts/original_training_adapter.py](../scripts/original_training_adapter.py) | 有条件的六参数离线对照，固定原基线、历史和原约束 |
 | [scripts/tcp_force_training.py](../scripts/tcp_force_training.py) | 当前正式方法：独立 TCP 目录、任务审核、直接受力 GP/EI 决策、重复和证据校验 |
+| [measurement_validation/force_trial_ledger.py](../measurement_validation/force_trial_ledger.py) | 研究共享尝试账本、失败预算、搜索/评价分离 |
+| [measurement_validation/wrench_endpoints.py](../measurement_validation/wrench_endpoints.py) | 完整原始受力区间、精确边界RMS与短峰保留 |
+| [scripts/manual_leg_check.py](../scripts/manual_leg_check.py) | 统一配置的本地假腿离线检查、只读probe和短时静止采集 |
 | [scripts/audit_paper_evidence.py](../scripts/audit_paper_evidence.py) | 离线复算候选、盘点归档与测试报告，输出论文证据快照 |
 | [pytest-core.ini](../pytest-core.ini) | 统一测试的收集与运行配置 |
 | [requirements-win-py312.lock.txt](../requirements-win-py312.lock.txt) | Windows Python 3.12 固定依赖版本 |
