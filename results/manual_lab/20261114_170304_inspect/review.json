@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "returned_commit": "42ad8edc",
+  "acquisition_commit": "3d59ed56",
+  "raw_output_and_recorded_source_hashes_verified": true,
+  "calculated_from_all_raw_frames": {
+    "verified_frames": 20,
+    "unique_images": 20,
+    "toggle_transitions": 9,
+    "query_duration_ms": {
+      "min": 0.8714,
+      "median": 1.0169000000000001,
+      "max": 8.9851
+    },
+    "read_start_interval_ms": {
+      "min": 6.8347,
+      "median": 6.9743,
+      "max": 19.9185
+    },
+    "span_ms": 155.477,
+    "axes": {
+      "1": {
+        "statuswords": [
+          "0x0218"
+        ],
+        "error_codes": [
+          "0x0022"
+        ],
+        "position_raw_min": -116527,
+        "position_raw_max": -116516,
+        "torque_nm_min": -12.230682373046875,
+        "torque_nm_max": -11.864501953125
+      },
+      "2": {
+        "statuswords": [
+          "0x0231"
+        ],
+        "error_codes": [
+          "0x0000"
+        ],
+        "position_raw_min": -429778,
+        "position_raw_max": -429772,
+        "torque_nm_min": -4.76043701171875,
+        "torque_nm_max": -4.394256591796875
+      },
+      "3": {
+        "statuswords": [
+          "0x0231"
+        ],
+        "error_codes": [
+          "0x0000"
+        ],
+        "position_raw_min": -5201366,
+        "position_raw_max": -5201357,
+        "torque_nm_min": -1.03143310546875,
+        "torque_nm_max": -0.7934112548828125
+      },
+      "4": {
+        "statuswords": [
+          "0x0231"
+        ],
+        "error_codes": [
+          "0x0000"
+        ],
+        "position_raw_min": -2773804,
+        "position_raw_max": -2773800,
+        "torque_nm_min": 4.99847412109375,
+        "torque_nm_max": 5.19683837890625
+      }
+    }
+  },
+  "whole_image_unchanging_cache_ruled_out_in_observed_window": true,
+  "axis1_status_and_error_persisted": true,
+  "axis1_same_reported_status_as_earlier_probe": true,
+  "boot_config_sha256": "c5d10c97c6d4c131a3ff6871a509bc71a7a559dfff585a44dff70f89a2f5934c",
+  "boot_config_matches_2026_10_16_documented_hash": true,
+  "boot_xml_parse_succeeded": true,
+  "generic_file_extractor_recognized_device_count": 0,
+  "zero_extracted_devices_means_no_devices": false,
+  "live_mapping_verified": false,
+  "physical_drive_fault_cause_confirmed": false,
+  "sustained_500hz_verified": false,
+  "capture_authorized": false,
+  "next_discriminating_check": "Read the same physical axis device 0x6041:00 and 0x603F:00 in TwinCAT CoE-Online; retain device name/vendor/model and compare with 0x0218/0x0022",
+  "no_hardware_access_performed_by_review": true
+}
