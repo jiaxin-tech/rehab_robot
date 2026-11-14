@@ -950,6 +950,14 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
         expected_trajectory_id=anchor.trajectory_id, anchor=anchor, frame=frame)
     if reasons:
         raise ValueError("prepared TCP trajectory invalid: " + ";".join(reasons))
+    if not empty_load and state.get("learning_mode") == "tcp_force":
+        if state.get("trial_purpose") == "evaluation":
+            from scripts.tcp_force_training import verify_training, verify_evaluation
+            source = Path(state["evaluation_source"])
+            source_state = json.loads((source / "round_status.json").read_text(encoding="utf-8"))
+            (verify_evaluation if source_state.get("trial_purpose") == "evaluation" else verify_training)(source)
+        from measurement_validation.force_trial_ledger import claim
+        state["force_attempt"] = claim(directory, c, state)
     capture, dispatches, failure = None, [], None
     robot, acquisition = c["robot"], c["acquisition"]
     state.update(status="RUNNING", blockers=[])
@@ -1210,9 +1218,13 @@ def train_session(directory, *, training_mode="auto"):
     report(directory, state)
     try:
         if state.get("learning_mode") == "tcp_force":
-            from scripts.tcp_force_training import train
-            state["force_training"] = train(directory)
-            (directory / "training.log").write_text("TCP_FORCE_GP_EI completed; see tcp_force_training.json\n", encoding="utf-8")
+            from scripts.tcp_force_training import train, evaluate
+            if state.get("trial_purpose") == "evaluation":
+                state["force_evaluation"] = evaluate(directory)
+                (directory / "training.log").write_text("TCP_FORCE_EVALUATION_ONLY; no GP update\n", encoding="utf-8")
+            else:
+                state["force_training"] = train(directory)
+                (directory / "training.log").write_text("TCP_FORCE_GP_EI completed; see tcp_force_training.json\n", encoding="utf-8")
         else:
             from scripts.original_training_adapter import train_original
             state["original_training"] = train_original(directory, run_algorithm_worker)
@@ -1221,6 +1233,7 @@ def train_session(directory, *, training_mode="auto"):
         state.update(training_status="FAILED", training_error=str(exc))
         state.pop("original_training", None)
         state.pop("force_training", None)
+        state.pop("force_evaluation", None)
         raise
     finally:
         report(directory, state)
@@ -1504,8 +1517,19 @@ def run(directory, *, live=False, empty_load=False, capture_factory=LegCapturePr
     with lock.open("x", encoding="ascii") as stream:
         stream.write(str(os.getpid()))
     try:
-        return _run(directory, live=live, empty_load=empty_load,
-                    capture_factory=capture_factory, execute_fn=execute_fn)
+        try:
+            result = _run(directory, live=live, empty_load=empty_load,
+                          capture_factory=capture_factory, execute_fn=execute_fn)
+        except BaseException as exc:
+            from measurement_validation.force_trial_ledger import finish
+            try:
+                finish(directory, ok=False, error=f"{type(exc).__name__}: {exc}")
+            except BaseException as ledger_error:
+                exc.add_note("force attempt ledger completion failed: " + str(ledger_error))
+            raise
+        from measurement_validation.force_trial_ledger import finish
+        finish(directory, ok=True)
+        return result
     finally:
         lock.unlink(missing_ok=True)
 
@@ -1525,7 +1549,7 @@ def run_from_current(config_path, directory, *, live=False, empty_load=False):
 
 
 def repeat(source_directory, directory, *, live=False, empty_load=None,
-           use_trained=False,
+           use_trained=False, evaluation=False,
            capture_fn=run_capture, leg_origin_capture_fn=_capture_leg_start_origin,
            capture_factory=LegCaptureProcess, execute_fn=run_execute):
     """Create a new anchored session with the source TCP plan and optionally run it."""
@@ -1553,11 +1577,26 @@ def repeat(source_directory, directory, *, live=False, empty_load=None,
     mode_empty = bool(source_state.get("empty_load", False)) if empty_load is None else bool(empty_load)
     if mode_empty != bool(source_state.get("empty_load", False)):
         raise ValueError("repeat mode must match the source session")
+    force_mode = source_state.get("learning_mode") == "tcp_force"
+    study_root = None
+    if evaluation and (mode_empty or not force_mode or use_trained):
+        raise ValueError("--evaluation is a separate exact loaded force repeat, without --trained")
+    if not mode_empty and force_mode:
+        from measurement_validation.force_trial_ledger import continuation
+        if not use_trained and not evaluation:
+            raise ValueError("exact force repeats require explicit --evaluation; they are not adaptive search trials")
+        study_root = continuation(source_directory, config, evaluation=evaluation)
+        if evaluation:
+            from scripts.tcp_force_training import verify_training, verify_evaluation
+            (verify_evaluation if source_state.get("trial_purpose") == "evaluation" else verify_training)(source_directory)
+            settings_evaluation = {"candidate_id": source_state["force_training_binding"]["candidate_id"]}
     settings = ({"candidate_id": source_plan["candidate_id"]}
         if source_state["trajectory_mode"] == "original_candidate" else source_plan["tcp_settings"])
+    if evaluation:
+        settings = settings_evaluation
     if mode_empty and source_state.get("learning_mode") == "tcp_force":
         settings = {"candidate_id": source_state["force_training_binding"]["candidate_id"]}
-    if not mode_empty or use_trained:
+    if (not mode_empty or use_trained) and not evaluation:
         force_mode = source_state.get("learning_mode") == "tcp_force"
         if force_mode:
             from scripts.tcp_force_training import selected_candidate as selected_tcp_settings, verify_training as verify_original_training
@@ -1578,9 +1617,14 @@ def repeat(source_directory, directory, *, live=False, empty_load=None,
     repeat_index = int(source_state.get("repeat_index", 0)) + 1
     prepare(source_config, target_directory, empty_load=mode_empty,
             trajectory_settings=settings,
-            parent_session=source_directory, repeat_index=repeat_index,
+            parent_session=None if evaluation else source_directory,
+            repeat_index=None if evaluation else repeat_index,
             capture_fn=capture_fn, leg_origin_capture_fn=leg_origin_capture_fn)
     prepared_state = json.loads((target_directory / "round_status.json").read_text(encoding="utf-8"))
+    if study_root is not None:
+        prepared_state.update(force_study_root=str(study_root), trial_purpose="evaluation" if evaluation else "adaptive")
+    if evaluation:
+        prepared_state.update(evaluation_source=str(source_directory), enters_adaptive_history=False)
     prepared_state["repeat_plan_source"] = source_state.get("learning_mode", "original_algorithm") if use_trained else "exact_parameters"
     report(target_directory, prepared_state)
     if live:
@@ -1604,7 +1648,10 @@ def complete(directory):
     if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
         if not state.get("empty_load"):
             if state.get("learning_mode") == "tcp_force":
-                from scripts.tcp_force_training import verify_training as verify_original_training
+                if state.get("trial_purpose") == "evaluation":
+                    from scripts.tcp_force_training import verify_evaluation as verify_original_training
+                else:
+                    from scripts.tcp_force_training import verify_training as verify_original_training
             else:
                 from scripts.original_training_adapter import verify_original_training
             if state.get("training_status") != "COMPLETE":
@@ -1650,6 +1697,7 @@ def main(argv=None):
     parser.add_argument("--session", type=Path)
     parser.add_argument("--source", type=Path, help="completed session used as a repeat source")
     parser.add_argument("--trained", action="store_true", help="prepare the trained policy's next TCP candidate")
+    parser.add_argument("--evaluation", action="store_true", help="separate exact force repeat; never append to adaptive GP history")
     parser.add_argument("--training-mode", choices=("auto", "passive", "joint"), default="auto")
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--from-current", action="store_true", help="run from a newly captured current pose in a new session")
@@ -1665,6 +1713,8 @@ def main(argv=None):
         parser.error("--source is required for repeat")
     if args.trained and args.action != "repeat":
         parser.error("--trained requires repeat")
+    if args.evaluation and (args.action != "repeat" or args.trained):
+        parser.error("--evaluation requires repeat without --trained")
     if args.training_mode != "auto" and args.action != "train":
         parser.error("--training-mode requires train")
     if args.action == "complete" and args.live:
@@ -1688,6 +1738,7 @@ def main(argv=None):
     elif args.action == "repeat":
         state = repeat(args.source, args.session, live=args.live,
                        use_trained=args.trained,
+                       evaluation=args.evaluation,
                        empty_load=(True if args.empty_load else None))
     elif args.action == "complete":
         state = complete(args.session)

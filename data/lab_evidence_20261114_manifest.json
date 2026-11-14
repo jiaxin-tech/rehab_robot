@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-14T08:23:14.205438+00:00",
+  "source_branch": "cleanup/unified-dummy-leg-mainline",
+  "source_commit": "01684c5c",
+  "scope": "Selected historical evidence required by the read-only paper inventory; not new experiments or a complete session archive",
+  "raw_rt_link_004_robot_state_available": false,
+  "files": {
+    "results/rt_link_004/status.json": {
+      "bytes": 1610,
+      "sha256": "b4066cc9063e680e3b923687cd8db83ab1a0c266dd87a955da083e68b36cd73e"
+    },
+    "results/empty_load_118/round_status.json": {
+      "bytes": 4187,
+      "sha256": "85192ffed07740556473d666cf5a8e53414a125b569b662756f52422fc6c526a"
+    },
+    "results/empty_load_118/anchor.json": {
+      "bytes": 1257,
+      "sha256": "53cc4feb41b51c01468bc1fe8dd3863c240831ece29e94176f816f8ebf6002c0"
+    },
+    "results/empty_load_118/robot/robot_state.csv": {
+      "bytes": 4484708,
+      "sha256": "d0856564fbd5bbbc4d0c1f37093e872a0c35e4c24857d3eab6efea0ce8d1954b"
+    },
+    "results/empty_load_118/robot/metadata.json": {
+      "bytes": 22591,
+      "sha256": "846f928ddce0fdf103436f2b84250e9e10f46766964254e54c93cf8a6975a084"
+    },
+    "results/empty_load_118/preview/trajectory_preview.csv": {
+      "bytes": 185025,
+      "sha256": "ce9d71c208da688594773f6c192a530f42d36e200d34b791046c28b2e41bf646"
+    }
+  },
+  "archive_sha256": "eaa9f3f4c9a031c2955e983712bf1847e98c985998a76ca581a89216dc2cce29"
+}

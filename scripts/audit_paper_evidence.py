@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
+import zipfile
 
 import numpy as np
 import pandas as pd
@@ -39,6 +40,26 @@ SOURCES = ("config/experiment.json", "control/independent_tcp_trajectory.py",
     "measurement_validation/robot_leg_round.py", "scripts/audit_paper_evidence.py",
     "tests/test_original_training_adapter.py", "scripts/tcp_force_training.py", "tests/test_tcp_force_training.py")
 
+SOURCES += ("measurement_validation/wrench_endpoints.py", "measurement_validation/force_trial_ledger.py",
+    "scripts/manual_leg_check.py", "config/paper_personalized_load.template.json", "pytest-core.ini",
+    "tests/test_force_trial_ledger.py", "tests/test_manual_leg_check.py", "tests/test_wrench_endpoints.py")
+
+
+def historical_path(relative):
+    """Materialize hash-checked selected historical bytes in a disposable cache."""
+    manifest = read_json(ROOT / "data/lab_evidence_20261114_manifest.json")
+    archive_path = ROOT / "data/lab_evidence_20261114.zip"
+    if sha256(archive_path) != manifest["archive_sha256"]:
+        raise ValueError("historical evidence archive changed")
+    with zipfile.ZipFile(archive_path) as archive:
+        payload = archive.read(relative)
+    if hashlib.sha256(payload).hexdigest() != manifest["files"][relative]["sha256"]:
+        raise ValueError("historical evidence file changed: " + relative)
+    target = ROOT / ".cache/paper_evidence" / relative
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(payload)
+    return target
+
 
 def read_json(path):
     return json.loads(path.read_text(encoding="utf-8"))
@@ -50,16 +71,18 @@ def sha256(path):
 
 def inventory(junit=None):
     sessions = []
-    for path in sorted((ROOT / "results").glob("*/round_status.json")):
+    for path in sorted((ROOT / "results").rglob("round_status.json")):
         state = read_json(path)
         sessions.append({"session": path.parent.name, "status": state.get("status"),
             "mode": state.get("trajectory_mode", "historical"),
             "training_status": state.get("training_status"),
             "original_training_file_available": (path.parent / "original_training.json").is_file(),
             "status_sha256": sha256(path)})
-    diagnostic_path = ROOT / "results/rt_link_004/status.json"
+    diagnostic_path = historical_path("results/rt_link_004/status.json")
     diagnostic = read_json(diagnostic_path)
-    old = ROOT / "results/empty_load_118"
+    old = historical_path("results/empty_load_118/round_status.json").parent
+    for relative in ("anchor.json", "robot/robot_state.csv", "robot/metadata.json", "preview/trajectory_preview.csv"):
+        historical_path("results/empty_load_118/" + relative)
     robot = pd.read_csv(old / "robot/robot_state.csv")
     xyz = robot.loc[robot.valid.astype(str).str.lower().eq("true"), ["tcp_x", "tcp_y", "tcp_z"]].to_numpy(float)
     xyz = xyz[np.isfinite(xyz).all(axis=1)]
@@ -129,7 +152,8 @@ def inventory(junit=None):
         "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "worktree_dirty": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT, text=True).strip()),
         "source_sha256": {name: sha256(ROOT / name) for name in SOURCES},
-        "scope": "Current source tree and results/* only; no external lab computer or clinical evidence.",
+        "scope": "Current source tree, local results and selected hash-checked historical archive; no new hardware or clinical experiment.",
+        "historical_evidence_archive_sha256": sha256(ROOT / "data/lab_evidence_20261114.zip"),
         "sessions": sessions,
         "rt_link_004": {"recorded_status": diagnostic["status"],
             "reported_tracking": diagnostic["result"]["tracking_verification"],

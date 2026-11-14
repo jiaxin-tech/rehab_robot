@@ -9,7 +9,7 @@ from control.start_anchor import load_start_anchor
 from control.start_anchored_relative_trajectory import load_rehab_frame_config
 from control.prepared_trajectory import build_prepared_trajectory, assert_frozen_trajectory
 from control.execution_preflight import audit_execution_trajectory_content
-from lower_limb_sim.mechanical_endpoints import time_rms
+from measurement_validation.wrench_endpoints import load_window
 from safety.experiment_safety import ExperimentSafetyConfig
 
 EVIDENCE = ("prepared_config.json", "tcp_plan.json", "anchor.json", "tcp_safety.json",
@@ -121,17 +121,22 @@ def audit_robot_execution(directory, *, allow_empty=False):
             raise ValueError("insufficient valid robot wrench in motion branch")
         if np.diff(np.r_[origin + begin, stamp, origin + end]).max() > safety.max_wrench_age_s:
             raise ValueError("wrench gap in motion; no interpolation across missing data")
-        moving |= good
-        metrics.append((time_rms(force[good], stamp), time_rms(torque[good], stamp)))
+        measured = load_window(clock, np.column_stack([force, torque]), valid,
+                               origin + begin, origin + end, safety.max_wrench_age_s)
+        moving[measured["source_indices"]] = True
+        metrics.append(measured["rms"])
     if wrench.loc[moving, "frame_type"].nunique(dropna=False) != 1 or wrench.loc[moving, "frame_type"].isna().any():
         raise ValueError("mixed or missing wrench frame")
     cycle = (clock >= origin) & (clock <= origin + times[-1])
     whole = cycle & valid
+    cycle_metrics = load_window(clock, np.column_stack([force, torque]), valid,
+                                origin, origin + times[-1], safety.max_wrench_age_s)
+    whole[cycle_metrics["source_indices"]] = True
     if (np.diff(np.r_[origin, clock[whole], origin + times[-1]]).max() > safety.max_wrench_age_s):
         raise ValueError("incomplete full-cycle wrench data")
     if wrench.loc[whole, "frame_type"].nunique(dropna=False) != 1 or wrench.loc[whole, "frame_type"].isna().any():
         raise ValueError("mixed or missing full-cycle wrench frame")
-    if force[whole].max() > safety.max_force_n or torque[whole].max() > safety.max_torque_nm:
+    if cycle_metrics["peaks"][0] > safety.max_force_n or cycle_metrics["peaks"][1] > safety.max_torque_nm:
         raise ValueError("recorded force or torque exceeds physical safety limit")
     robot = pd.read_csv(directory / "robot/robot_state.csv")
     robot_time = robot.host_time_s.to_numpy(float)
@@ -154,7 +159,8 @@ def audit_robot_execution(directory, *, allow_empty=False):
         "candidate_id": plan.get("candidate_id"),
         "schedule_origin_host_time_s": origin, "schedule_origin_source": origin_source,
         "components": np.asarray(metrics).T.reshape(-1).tolist(),
-        "peaks": [float(force[whole].max()), float(torque[whole].max())],
+        "peaks": cycle_metrics["peaks"].tolist(),
+        "endpoint_method": cycle_metrics["method"],
         "frame_type": str(wrench.loc[moving, "frame_type"].iloc[0]),
         "anchor_pose": list(anchor.tcp_pose_base),
         "evidence_hashes": evidence_hashes(directory)}

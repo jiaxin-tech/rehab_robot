@@ -141,18 +141,22 @@ def test_force_training_refuses_stale_or_tampered_inputs(experiment):
         force.selected_candidate(first)
 
 
-def test_exact_repeat_trains_and_original_six_parameter_rules_are_separate(experiment):
+def test_exact_repeat_is_explicit_evaluation_outside_adaptive_history(experiment):
     first = experiment("first")
     record(first)
     lab.train_session(first)
     target = first.parent/"repeat"
-    state = lab.repeat(first, target, capture_fn=experiment.capture,
+    with pytest.raises(ValueError, match="explicit --evaluation"):
+        lab.repeat(first, target, capture_fn=experiment.capture,
+            leg_origin_capture_fn=lambda *a: pytest.fail("no leg"))
+    state = lab.repeat(first, target, evaluation=True, capture_fn=experiment.capture,
         leg_origin_capture_fn=lambda *a: pytest.fail("no leg"))
     assert state["force_training_binding"]["candidate_id"] == "tcp_reference"
+    assert state["trial_purpose"] == "evaluation" and "parent_session" not in state
     record(target, scale=.9)
-    result = lab.train_session(target)["force_training"]
-    assert len(result["history"]) == 2
-    assert result["history"][0]["candidate_id"] == result["history"][1]["candidate_id"]
+    result = lab.train_session(target)["force_evaluation"]
+    assert result["enters_adaptive_history"] is False and result["action"] is None
+    assert not (target / "tcp_force_training.json").exists()
 
 
 def test_complete_robot_task_requires_no_leg_or_patient_geometry(experiment):
@@ -186,6 +190,9 @@ def test_robot_only_run_closes_then_trains(experiment):
         capture_factory=lambda *a: pytest.fail("no fake-leg dependency"))
     assert state["training_status"] == "COMPLETE"
     assert state["force_training"]["method"] == force.METHOD
+    ledger = read_json(directory / "force_trial_ledger.json")
+    assert len(ledger["attempts"]) == 1 and ledger["attempts"][0]["status"] == "COMPLETE"
+    assert state["force_training"]["attempt_accounting"]["complete"] is True
 
 
 @pytest.mark.parametrize("invalid", ["flag", "negative_query", "nan"])
@@ -235,3 +242,69 @@ def test_six_parameter_comparison_cannot_start_loaded_motion(tmp_path):
     atomic_json(tmp_path/"round_status.json", {"status": "PREPARED", "trajectory_mode": "original_candidate"})
     with pytest.raises(ValueError, match="offline comparison only"):
         lab.run(tmp_path, live=True, execute_fn=lambda **k: pytest.fail("must not move"))
+
+
+def fake_run(directory, *, scale=1., fails=False):
+    def execute(**kwargs):
+        from measurement_validation.force_trial_ledger import NAME, root_for
+        ledger = read_json(root_for(directory) / NAME)
+        assert ledger["attempts"][-1]["session"] == str(directory)
+        assert ledger["attempts"][-1]["status"] == "RUNNING"  # Before any physical dispatch.
+        if fails:
+            raise RuntimeError("synthetic failed hardware attempt")
+        execution = record(directory, scale=scale)
+        for row in pd.read_csv(directory / "dispatch.csv").itertuples():
+            kwargs["dispatch_observer"](row.trajectory_time_s, row.dispatch_start_ns, row.dispatch_end_ns)
+        return execution
+    return lab.run(directory, live=True, execute_fn=execute,
+                   capture_factory=lambda *a: pytest.fail("no ADS in software test"))
+
+
+def test_attempt_budget_is_charged_before_run_and_stop_keeps_evaluation_separate(experiment):
+    c = experiment.config
+    c["force_training"]["total_budget"] = 2
+    c["force_training"]["evaluation_budget"] = 2
+    atomic_json(experiment.config_path, c)
+    first = experiment("first")
+    first_state = fake_run(first)
+    second = first.parent / "second"
+    lab.repeat(first, second, use_trained=True, capture_fn=experiment.capture,
+               leg_origin_capture_fn=lambda *a: pytest.fail("no leg"))
+    second_state = fake_run(second, scale=.9)
+    assert second_state["force_training"]["action"]["stop_reason"] == "TOTAL_BUDGET_REACHED"
+    with pytest.raises(ValueError, match="TOTAL_BUDGET_REACHED"):
+        lab.repeat(second, first.parent / "blocked", use_trained=True, capture_fn=experiment.capture)
+    evaluation = first.parent / "evaluation"
+    evaluated = lab.repeat(second, evaluation, evaluation=True, capture_fn=experiment.capture,
+                           leg_origin_capture_fn=lambda *a: pytest.fail("no leg"))
+    assert evaluated["force_training_binding"]["candidate_id"] == second_state["force_training_binding"]["candidate_id"]
+    result = fake_run(evaluation, scale=.85)
+    assert "force_training" not in result and result["force_evaluation"]["action"] is None
+    assert lab.complete(evaluation)["status"] == "COMPLETE"
+    ledger = read_json(first / "force_trial_ledger.json")
+    assert [row["purpose"] for row in ledger["attempts"]] == ["adaptive", "adaptive", "evaluation"]
+    assert all(row["status"] == "COMPLETE" for row in ledger["attempts"])
+
+
+def test_failed_run_latches_root_and_prevents_free_sibling_retry(experiment):
+    first = experiment("first")
+    fake_run(first)
+    second = first.parent / "failed"
+    lab.repeat(first, second, use_trained=True, capture_fn=experiment.capture,
+               leg_origin_capture_fn=lambda *a: pytest.fail("no leg"))
+    with pytest.raises(RuntimeError, match="synthetic failed"):
+        fake_run(second, fails=True)
+    ledger = read_json(first / "force_trial_ledger.json")
+    assert len(ledger["attempts"]) == 2 and ledger["attempts"][1]["status"] == "FAILED"
+    with pytest.raises(ValueError, match="failed or unfinished"):
+        lab.repeat(first, first.parent / "sibling_retry", use_trained=True, capture_fn=experiment.capture)
+
+
+def test_paper_fixed_period_rejects_conservative_retiming_that_changes_cycle(experiment):
+    c = experiment.config
+    c["force_training"]["fixed_cycle_duration_s"] = 164.
+    _, settings = force.selected_settings(c)
+    force.check_task(c, settings, [.5, 0., .5])
+    settings["lift_duration_s"] += .1
+    with pytest.raises(ValueError, match="fixed comparison cycle"):
+        force.check_task(c, settings, [.5, 0., .5])

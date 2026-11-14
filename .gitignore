@@ -21,5 +21,7 @@ lower_limb_sim/data/
 /data/*
 !/data/experiment_data.zip
 !/data/experiment_summary.csv
+!/data/lab_evidence_20261114.zip
+!/data/lab_evidence_20261114_manifest.json
 *.pth
 .DS_Store

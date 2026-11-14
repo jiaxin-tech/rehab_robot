@@ -47,7 +47,7 @@ GP 长度尺度、噪声与幅值下限、预测可行性分数和停止门限�
 
 目标 Z 沿用现有配置 0.9 m，总周期分别为 164/184/184 s，若限速触发延长则仍须满足任务预算。默认先比较运动节奏，空间端点一致。接口支持改变水平位移，但必须同时明确允许的水平任务区间；程序不自行扩大空间范围或生成无限新候选。
 
-这些候选是待验证的实验计划，不是已验证适合某患者的处方。当前机器人运动方向由 frame 决定，其坐标是实验任务坐标，不要求精确的患者解剖坐标。
+这些候选是待验证的先导计划，不是已验证适合某患者的处方，也不是同周期对照。正式论文模板及固定164秒候选见[当前工作流](CURRENT_WORKFLOW.md)；它继续保留未标定阻断。当前机器人运动方向由 frame 决定，其坐标是实验任务坐标，不要求精确的患者解剖坐标。
 
 ## 必需配置
 
@@ -108,7 +108,15 @@ run 正常结束后自动训练，检查 training_status=COMPLETE 和 tcp_force_
 .\.venv\Scripts\python.exe -m scripts.lab_session complete --session results/force_round_02
 ~~~
 
-不带 --trained 的 repeat 保留相同候选用于重复验证，仍记录并训练。repeat --trained 在 STOP 时拒绝继续，不自行绕过停止。新的正式流程支持重复候选观测，原六参数离线分支的重复限制不改。
+`repeat --trained`只准备算法提出的下一自适应候选，STOP或预算耗尽时拒绝继续。独立复测必须显式加`--evaluation`，不带`--trained`；它保留源候选、独立计入评价预算，不更新GP或重新选择推荐。例如：
+
+~~~powershell
+.\.venv\Scripts\python.exe -m scripts.lab_session repeat --source results/force_round_01 --evaluation --session results/paper_study/evaluation_01
+.\.venv\Scripts\python.exe -m scripts.lab_session run --live --session results/paper_study/evaluation_01
+.\.venv\Scripts\python.exe -m scripts.lab_session complete --session results/paper_study/evaluation_01
+~~~
+
+新研究在实际run前共享记录`force_trial_ledger.json`。失败与未完成尝试不会从预算消失，同一祖先的兄弟目录不能免费续试。失败或中断会封闭本研究，先保留数据并查明原因；不删账本或锁文件绕过。旧完成记录可供离线分析，但没有账本就不能宣称完整预算，亦不能直接作为新硬件搜索的祖先。`evaluation_budget`独立规定评价上限，缺省等于`total_budget`；必须同时报告两类尝试及总成本。
 
 ## 证据文件
 
@@ -120,6 +128,7 @@ run 正常结束后自动训练，检查 training_status=COMPLETE 和 tcp_force_
 | dispatch.csv、robot/ | 实际命令时刻、机器人状态与六维受力 |
 | tcp_force_training.json、training.log | 直接受力指标、GP 预测、决策、输入哈希和实现版本 |
 | pretrial_prediction.json | 下一轮运动前冻结的预测，结束后计算预测误差 |
+| force_trial_ledger.json、force_attempt.json | 研究根共享尝试账本、本轮身份；区分自适应和独立评价 |
 | leg/、passive_response.* | 可选假腿验证记录，不进入正式训练 |
 
 模型会核对历史配置、机器人起点/工具朝向和原始证据变化。阶段结果只支持当前记录，不能据此声称患者状态恒定或因果优化收益。测试使用合成数据，不代表真机受力降低、临床安全或疗效。
