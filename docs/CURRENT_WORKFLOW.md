@@ -1,6 +1,6 @@
 # 当前论文与实验工作流
 
-更新日期2026年11月14日。实验室实验硬截止为2027年1月15日，每周两次、每次三至四小时，由一人完成。当前统一分支为`paper/personalized-load`，正式代码继承`cleanup/unified-dummy-leg-mainline`的机器人位姿与受力方法。来源见[整合记录](BRANCH_INTEGRATION_2026-11-14.md)。
+更新日期2026年11月14日。实验室实验硬截止为2027年1月15日，每周两次、每次三至四小时，由一人完成。当前统一分支为`paper-personalized-load`，正式代码继承`cleanup/unified-dummy-leg-mainline`的机器人位姿与受力方法。来源见[整合记录](BRANCH_INTEGRATION_2026-11-14.md)。
 
 ## 本篇只研究什么
 

@@ -2,7 +2,7 @@
 
 本次在装有TwinCAT的旧实验电脑本地运行，只检查假腿ADS连接、原始反馈和短段静止记录。今天此前的探测确认本机AMS为`10.20.4.89.1.1`，但在轴1守卫处失败；具体是使能、故障、错误码、力矩还是映射问题，尚待新诊断证据确认。因此更新代码后先做一次probe；失败就保存并回传，不继续采集，不修改参数来消除报错。
 
-本流程使用`paper/personalized-load`分支及统一配置`config/experiment.json`中的`leg`部分，不依赖旧独立配置、临时远程助手或远程登录。ADS Net ID是AMS路由身份，不是普通IPv4；临时网卡地址`192.168.137.2`不能代替AMS。端口11返回的ADS状态0只是该查询服务的原始值，不能单独证明TwinCAT全局处于CONFIG，也不据此切换运行状态。当前DLL路径来自统一配置，为`C:\TwinCAT\AdsApi\TcAdsDll\x64\TcAdsDll.dll`。
+本流程使用`paper-personalized-load`分支及统一配置`config/experiment.json`中的`leg`部分，不依赖旧独立配置、临时远程助手或远程登录。ADS Net ID是AMS路由身份，不是普通IPv4；临时网卡地址`192.168.137.2`不能代替AMS。端口11返回的ADS状态0只是该查询服务的原始值，不能单独证明TwinCAT全局处于CONFIG，也不据此切换运行状态。当前DLL路径来自统一配置，为`C:\TwinCAT\AdsApi\TcAdsDll\x64\TcAdsDll.dll`。
 
 以下命令在旧电脑PowerShell中逐块执行。每块先查看结果，再执行下一块，不要整页一次粘贴。本流程没有机器人或假腿运动命令。
 
@@ -23,17 +23,17 @@ git diff --cached --name-only
 工作区和暂存区干净后，逐条更新：
 
 ```powershell
-git fetch origin paper/personalized-load
+git fetch origin paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '获取论文分支失败，停止。' }
-git switch paper/personalized-load
+git switch paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '切换论文分支失败，停止。' }
-git merge --ff-only origin/paper/personalized-load
+git merge --ff-only origin/paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '分支不能直接前进，保留原状并停止。' }
 git status --short
 git branch --show-current
 ```
 
-若分支不存在、发生分叉或更新失败，把错误交给协作者处理，不临时建立另一条同名研究分支或强推。更新完成后应能找到`scripts/manual_leg_check.py`、`config/experiment.json`和本说明；当前分支应为`paper/personalized-load`。
+若分支不存在、发生分叉或更新失败，把错误交给协作者处理，不临时建立另一条同名研究分支或强推。更新完成后应能找到`scripts/manual_leg_check.py`、`config/experiment.json`和本说明；当前分支应为`paper-personalized-load`。
 
 ## 2 选择已有Python并建立本次目录
 
@@ -150,7 +150,7 @@ git diff --cached --name-only
 ```powershell
 git commit -m "Record stationary leg check 2026-11-14"
 if ($LASTEXITCODE -ne 0) { throw '数据提交失败，保留文件并停止。' }
-git push origin paper/personalized-load
+git push origin paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '上传失败，保留本地提交，不要强推。' }
 git log -1 --oneline
 ```
