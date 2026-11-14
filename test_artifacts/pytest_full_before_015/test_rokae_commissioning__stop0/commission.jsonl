@@ -1,3 +1,0 @@
-{"action": "connect", "monotonic_s": 3268559.875, "ok": true, "timestamp_utc": "2026-11-01T09:03:24.397162Z"}
-{"action": "power_on", "monotonic_s": 3268559.875, "ok": true, "speed_ratio": 10, "timestamp_utc": "2026-11-01T09:03:24.397162Z"}
-{"action": "stop_motion", "errors": [], "monotonic_s": 3268559.875, "ok": true, "reason": "operator_pressed_estop", "timestamp_utc": "2026-11-01T09:03:24.398133Z"}

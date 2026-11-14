@@ -1,6 +1,0 @@
-{
-  "status": "CAPTURE_COMPLETE",
-  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
-  "training_status": "FAILED",
-  "reason": "recording has a time gap"
-}

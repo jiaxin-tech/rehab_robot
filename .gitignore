@@ -10,7 +10,11 @@ __pycache__/
 .tmp_matplotlib/
 _rokae_log_/
 logs/
-results/
+results/*
+!results/manual_lab/
+!results/paper_study/
+# Generated regression output, not experimental measurements.
+test_artifacts/
 outputs/
 backups/
 lower_limb_sim/data/

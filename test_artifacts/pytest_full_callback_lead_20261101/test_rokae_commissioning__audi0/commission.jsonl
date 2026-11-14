@@ -1,3 +1,0 @@
-{"action": "connect", "monotonic_s": 3270731.437, "ok": true, "timestamp_utc": "2026-11-01T09:39:35.962665Z"}
-{"action": "power_on", "monotonic_s": 3270731.437, "ok": true, "speed_ratio": 10, "timestamp_utc": "2026-11-01T09:39:35.962665Z"}
-{"action": "jog_joint", "command_issued": true, "delta_rad": 0.017453292519943295, "failure": "TimeoutError:robot did not become idle", "from_rad": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1], "joint_index": 1, "monotonic_s": 3270731.437, "ok": false, "target_rad": [0.1, 0.1174532925199433, 0.1, 0.1, 0.1, 0.1], "timestamp_utc": "2026-11-01T09:39:35.963663Z"}

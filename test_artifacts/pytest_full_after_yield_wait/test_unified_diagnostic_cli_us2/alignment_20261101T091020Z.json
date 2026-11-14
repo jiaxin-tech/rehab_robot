@@ -1,9 +1,0 @@
-{
-  "samples_csv": "alignment_20261101T091020Z.csv",
-  "summary": {
-    "base_rotation_config_verified": true,
-    "sample_count": 1,
-    "software_bias_used": false,
-    "valid_count": 1
-  }
-}
