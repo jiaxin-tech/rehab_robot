@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-14T08:59:09.983488+00:00",
-  "git_commit": "524570a796a8c097373148fe1f6bbe2dad2028f3",
+  "generated_at_utc": "2026-11-14T09:18:41.741124+00:00",
+  "git_commit": "d25c154a2a52efdb09f91b1d07cdb7c6bcf1c565",
   "worktree_dirty": false,
   "source_sha256": {
     "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
@@ -36,11 +36,11 @@
     "tests/test_tcp_force_training.py": "5bc879ccf9e6a2e64a407e158c4b45480e2439aa5b907ae1244e8775e67bdca8",
     "measurement_validation/wrench_endpoints.py": "374cec10a4e47549ef53ad60b60d6cb1929a097b91cbcf74946572abe29cbddb",
     "measurement_validation/force_trial_ledger.py": "a135a1a63aac130a1b17205137f85e1e53746fb22e7e66b481890db615f772b5",
-    "scripts/manual_leg_check.py": "3ae9ed9faea574ef75c26f5c532bc15d40bf46dc726560b336106c0c1cd9554b",
+    "scripts/manual_leg_check.py": "53db76db8c27bc6f85d258d66b5847ad9b8b43de5966cae3a7e0e305c7c0e442",
     "config/paper_personalized_load.template.json": "2eae0a9e5ed656c4c504c5b01bc4a73b14f01fff26c72b272a4be3ee2d1c1fed",
     "pytest-core.ini": "adcddd5abc2578c4327952b4ad8fb64dabfebc185487baccdcfe9862765826aa",
     "tests/test_force_trial_ledger.py": "8427137d5725ae04124e08fa498b9208ed0f16a5a4a717e41e85cbe9330f9052",
-    "tests/test_manual_leg_check.py": "7c8d2033ab7351a0c99fa8d9a3b8d8e502025747168410f1f017df9c5b8bfb6e",
+    "tests/test_manual_leg_check.py": "05983d75bf705d357763cb97bac1c3141f7ea5c07cc3c35fd9b7271285911e2a",
     "tests/test_wrench_endpoints.py": "0ff3c579afd629ceb92a25a706819bc19d4d7b514fb5db4deff211b149604cd4",
     "scripts/twincat_file_evidence.py": "5f85840f7143ca366bb75de460c1f1a282fe3f689ef62d371289109e03253dc5",
     "tests/test_twincat_file_evidence.py": "a1b9643098dda539cb77813895fa6e4885aef97c4e179687c8cc55038e7d33e8"
@@ -418,9 +418,9 @@
   "verification": {
     "kind": "OFFLINE_TESTS_ONLY",
     "status": "REPORT_PROVIDED",
-    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-14_INSPECT.xml",
-    "sha256": "d1e88bc9e65019aefa1d44ccc021604655e4be75597e36cc4c6005a9b9ff7b7e",
-    "tests": 518,
+    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-14_DIAGNOSTIC10S.xml",
+    "sha256": "ba1674c488e50beb8a987b87e0aa13976def5e75eae245930aacfd0c45424504",
+    "tests": 525,
     "failures": 0,
     "errors": 0,
     "skipped": 0
