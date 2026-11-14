@@ -422,3 +422,107 @@ def test_invalid_offline_live_combinations_rejected_without_output(arguments, mo
     with pytest.raises(SystemExit) as caught:
         diagnostic.main(arguments)
     assert caught.value.code == 2
+
+
+def test_inspect_retains_twenty_faulted_images_without_authorizing_capture(local_config, tmp_path):
+    path, config = local_config
+    images = [image_for(config, toggle=index % 2, axis1_status=8, axis1_error=0x1234,
+                        axis1_torque=120.+index) for index in range(20)]
+    readers, clock = [], FakeClock()
+    directory, manifest = diagnostic.run("inspect", config_path=path, output_dir=tmp_path / "inspect",
+        live=True, source_factory=fake_factory(clock, readers, images=images), clock=clock)
+    status = diagnostic.read_json(directory / "segment_status.json")
+    evidence = diagnostic.read_json(directory / "inspection_frames.json")
+    assert manifest["ok"] is True and status["ok"] is True
+    assert readers[0].reads == status["completed_reads"] == 20 and readers[0].closed
+    assert manifest["capture_authorized"] is status["capture_authorized"] is evidence["capture_authorized"] is False
+    assert "not hardware healthy or mapping verified" in status["interpretation"]
+    assert len(evidence["frames"]) == 20 and evidence["frames"][0]["raw_image_hex"] == images[0].hex()
+    assert evidence["frames"][-1]["decoded"]["axis1_torque_3c1a_nm"] == 139.
+    assert all(not frame["guard_passed"] and frame["guard_failures"] for frame in evidence["frames"])
+    assert all(frame["query_end_ns"] >= frame["query_start_ns"] for frame in evidence["frames"])
+    summary = evidence["summary"]
+    assert summary["toggle_transitions"] == 19 and summary["unique_image_sha256_count"] == 20
+    assert summary["axis_status_distributions"]["1"] == {"0x0008": 20}
+    assert summary["axis_error_distributions"]["1"] == {"0x1234": 20}
+    assert summary["observed_guard_failures"]["axis1 fault=True"] == 20
+    assert summary["raw_byte_change_events"] > 0 and config["toggle_byte"] in summary["changed_byte_indices"]
+    assert manifest["output_files_sha256"]["inspection_frames.json"] == diagnostic.sha256_file(directory / "inspection_frames.json")
+    assert not (directory / "leg.csv").exists()
+    def forbidden(config): pytest.fail("inspect must never authorize capture")
+    _, capture = diagnostic.run("capture", config_path=path, output_dir=tmp_path / "blocked_capture",
+        live=True, duration_s=10, probe_session=directory, source_factory=forbidden)
+    assert not capture["ok"] and "successful complete probe" in capture["error"]
+
+
+def test_inspect_static_images_finish_diagnosis_and_do_not_claim_refresh(local_config, tmp_path):
+    _, config = local_config
+    readers, clock = [], FakeClock()
+    status = diagnostic.inspect(config, tmp_path,
+        source_factory=fake_factory(clock, readers, constant_toggle=True), clock=clock)
+    assert status["ok"] and readers[0].reads == 20 and readers[0].closed
+    assert status["summary"]["toggle_transitions"] == 0
+    assert status["summary"]["unique_image_sha256_count"] == 1
+    assert status["summary"]["raw_byte_change_events"] == 0
+    assert status["summary"]["mapping_verified"] is False and not status["capture_authorized"]
+
+
+def test_inspect_native_error_stops_once_and_preserves_partial_frames(local_config, tmp_path):
+    _, config = local_config
+    readers, clock = [], FakeClock()
+    def factory(c):
+        reader = FakeReader(c, clock)
+        readers.append(reader)
+        original = reader.read
+        def read():
+            if reader.reads == 3:
+                reader.reads += 1
+                raise diagnostic.AdsReadError(1797, 0, bytes(config["image_bytes"]))
+            return original()
+        reader.read = read
+        return reader
+    status = diagnostic.inspect(config, tmp_path, source_factory=factory, clock=clock)
+    evidence = diagnostic.read_json(tmp_path / "inspection_frames.json")
+    assert not status["ok"] and status["attempted_reads"] == 4 and status["completed_reads"] == 3
+    assert readers[0].reads == 4 and readers[0].closed and len(evidence["frames"]) == 4
+    assert evidence["frames"][-1]["read_completed"] is False
+    assert evidence["frames"][-1]["read_evidence"]["ads_return_code"] == 1797
+    assert not evidence["frames"][-1]["read_evidence"]["returned_data_valid"]
+
+
+def test_inspect_decode_errors_preserve_raw_refresh_evidence(local_config, tmp_path):
+    _, config = local_config
+    images = [image_for(config, toggle=index % 2, axis1_torque=float("nan")) for index in range(20)]
+    readers, clock = [], FakeClock()
+    status = diagnostic.inspect(config, tmp_path,
+        source_factory=fake_factory(clock, readers, images=images), clock=clock)
+    evidence = diagnostic.read_json(tmp_path / "inspection_frames.json")
+    assert status["ok"] and readers[0].closed and status["summary"]["decode_error_count"] == 20
+    assert status["summary"]["toggle_transitions"] == 19
+    assert all(frame["raw_image_hex"] and frame["decode_error"] for frame in evidence["frames"])
+    assert not status["capture_authorized"]
+
+
+def test_inspect_requires_explicit_live_before_native_io(local_config, tmp_path):
+    path, _ = local_config
+    def forbidden(config): pytest.fail("inspect without --live opened native source")
+    _, manifest = diagnostic.run("inspect", config_path=path, output_dir=tmp_path / "blocked", source_factory=forbidden)
+    assert not manifest["ok"] and "--live" in manifest["error"]
+
+
+def test_only_inspect_collects_file_evidence_and_binds_its_hash(local_config, tmp_path, monkeypatch):
+    path, _ = local_config
+    calls = []
+    evidence = dict(evidence_scope="FILE_CONFIGURATION_ONLY", not_live_mapping_verified=True)
+    def collect():
+        calls.append(True)
+        return evidence
+    monkeypatch.setattr(diagnostic, "collect_file_evidence", collect)
+    diagnostic.run("check", config_path=path, output_dir=tmp_path / "check")
+    assert calls == []
+    clock, readers = FakeClock(), []
+    output, manifest = diagnostic.run("inspect", config_path=path, output_dir=tmp_path / "inspect",
+        live=True, source_factory=fake_factory(clock, readers), clock=clock)
+    assert calls == [True]
+    assert diagnostic.read_json(output / "twincat_file_evidence.json") == evidence
+    assert manifest["output_files_sha256"]["twincat_file_evidence.json"] == diagnostic.sha256_file(output / "twincat_file_evidence.json")

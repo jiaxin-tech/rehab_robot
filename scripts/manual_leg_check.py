@@ -1,11 +1,12 @@
 """Local, bounded ADS reads using the unified experiment configuration.
 
-Check never opens ADS. Probe and capture expose read/session functions only;
+Check never opens ADS. Inspect, probe and capture expose read/session functions only;
 they cannot change a runtime state, enable an axis, or command either device.
 """
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import csv
 import ctypes as ct
 from datetime import datetime, timezone
@@ -23,9 +24,11 @@ from uuid import uuid4
 
 from config.bundle import BUNDLE_PATH, ROOT, load_section
 from collection.twincat_leg import AmsAddr, FIELDS, decode_image, validate_config
+from scripts.twincat_file_evidence import collect_file_evidence
 
 PROBE_MAX_AGE_S = 600
-SOURCE_FILES = ("scripts/manual_leg_check.py", "collection/twincat_leg.py", "config/bundle.py")
+SOURCE_FILES = ("scripts/manual_leg_check.py", "collection/twincat_leg.py", "config/bundle.py",
+                "scripts/twincat_file_evidence.py")
 
 
 def read_json(path):
@@ -249,6 +252,104 @@ def acquire(action, config, directory, *, duration_s=None, source_factory=LocalA
     return status
 
 
+def inspect(config, directory, *, source_factory=LocalAdsReader, clock=time):
+    """Read exactly twenty images for diagnosis, without authorizing capture.
+
+    Guard flags and decode errors are evidence to inspect, not permission to
+    ignore the unchanged probe/capture guards. A native/session/cleanup error
+    stops this bounded diagnostic and preserves all observations so far.
+    """
+    status = dict(action="inspect", status="STARTING", ok=False, attempted_reads=0,
+        completed_reads=0, capture_authorized=False, motion_commanded=False, ads_write_used=False,
+        interpretation="Read completion only; not hardware healthy or mapping verified.",
+        ads_state_interpretation="raw queried-service value; not proof of TwinCAT RUN/CONFIG")
+    source, error, frames = None, None, []
+    previous_image, previous_toggle = None, None
+    changes, byte_events, changed_indices, images = 0, 0, set(), set()
+    axis_status = {str(axis): Counter() for axis in range(1, 5)}
+    axis_error = {str(axis): Counter() for axis in range(1, 5)}
+    failures, decode_errors = Counter(), 0
+    try:
+        source = source_factory(config)
+        status.update(actual_local_ams_net_id=source.actual_local_ams_net_id,
+                      ads_state=source.ads_state, device_state=source.device_state)
+        if source.actual_local_ams_net_id != config["ams_net_id"]:
+            raise ValueError("actual local AMS differs from configured target; no address guessed")
+        for index in range(20):
+            begin = clock.perf_counter_ns()
+            status["attempted_reads"] += 1
+            record = dict(read_index=index+1, query_start_ns=begin)
+            try:
+                image = source.read()
+            except BaseException as exc:
+                record.update(query_end_ns=clock.perf_counter_ns(), read_completed=False,
+                              error=f"{type(exc).__name__}: {exc}")
+                if getattr(exc, "read_evidence", None) is not None:
+                    record["read_evidence"] = exc.read_evidence
+                    status["last_failed_read"] = exc.read_evidence
+                frames.append(record)
+                raise
+            end = clock.perf_counter_ns()
+            status["completed_reads"] += 1
+            digest = hashlib.sha256(image).hexdigest()
+            changed = ([] if previous_image is None else
+                       [i for i in range(max(len(image), len(previous_image)))
+                        if image[i:i+1] != previous_image[i:i+1]])
+            changed_indices.update(changed)
+            byte_events += len(changed)
+            images.add(digest)
+            record.update(query_end_ns=end, read_completed=True, raw_image_hex=image.hex(),
+                          image_bytes=len(image), image_sha256=digest,
+                          changed_bytes_from_previous=len(changed))
+            if len(image) > config["toggle_byte"]:
+                toggle = (image[config["toggle_byte"]] >> config["toggle_bit"]) & 1
+                record["raw_input_toggle"] = toggle
+                if previous_toggle is not None and previous_toggle != toggle:
+                    changes += 1
+                previous_toggle = toggle
+            status.update(last_query_start_ns=begin, last_query_end_ns=end, last_raw_image_hex=image.hex())
+            try:
+                row = decode_image(image, config)
+                observed = guard_failures(row, config)
+                record.update(decoded=row, guard_failures=observed, guard_passed=not observed)
+                status["last_observed_frame"] = dict(row)
+                failures.update(observed)
+                for axis in range(1, 5):
+                    axis_status[str(axis)][row[f"axis{axis}_statusword_hex"]] += 1
+                    axis_error[str(axis)][row[f"axis{axis}_error_code_hex"]] += 1
+            except (ValueError, KeyError, struct.error) as exc:
+                decode_errors += 1
+                record.update(decode_error=f"{type(exc).__name__}: {exc}", guard_passed=False,
+                              guard_failures=["decoded guard state unavailable"])
+            frames.append(record)
+            previous_image = image
+            clock.sleep(max(config["poll_interval_s"], .005))
+    except BaseException as exc:
+        error = ("KeyboardInterrupt: operator cancelled; no automatic retry" if isinstance(exc, KeyboardInterrupt)
+                 else f"{type(exc).__name__}: {exc}")
+        if getattr(exc, "__notes__", None):
+            status["exception_notes"] = list(exc.__notes__)
+    finally:
+        if source is not None:
+            try:
+                source.close()
+            except BaseException as exc:
+                error = (error + "; " if error else "") + f"ADS close failed: {type(exc).__name__}: {exc}"
+        summary = dict(toggle_transitions=changes, unique_image_sha256_count=len(images),
+            unique_image_sha256=sorted(images), raw_byte_change_events=byte_events,
+            changed_byte_indices=sorted(changed_indices), axis_status_distributions={k: dict(v) for k, v in axis_status.items()},
+            axis_error_distributions={k: dict(v) for k, v in axis_error.items()},
+            observed_guard_failures=dict(failures), decode_error_count=decode_errors,
+            capture_authorized=False, hardware_healthy_established=False, mapping_verified=False)
+        complete = error is None and status["completed_reads"] == 20
+        status.update(status="COMPLETE" if complete else "FAILED", ok=complete, error=error,
+                      summary=summary, completed_utc=datetime.now(timezone.utc).isoformat())
+        write_json(directory / "inspection_frames.json", dict(action="inspect", capture_authorized=False,
+            interpretation=status["interpretation"], frames=frames, summary=summary))
+        write_json(directory / "segment_status.json", status)
+    return status
+
+
 def validate_probe_session(path, *, config_sha256, hostname, expected_ams, now=None):
     path = Path(path).resolve(strict=True)
     manifest, status = read_json(path / "manifest.json"), read_json(path / "segment_status.json")
@@ -275,8 +376,8 @@ def validate_probe_session(path, *, config_sha256, hostname, expected_ams, now=N
 
 def run(action, *, config_path=BUNDLE_PATH, output_dir=None, live=False, duration_s=None,
         probe_session=None, source_factory=LocalAdsReader, clock=time):
-    if action not in ("check", "probe", "capture"):
-        raise ValueError("only check, probe and capture are supported")
+    if action not in ("check", "inspect", "probe", "capture"):
+        raise ValueError("only check, inspect, probe and capture are supported")
     suffix = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")+"_"+action+"_"+uuid4().hex[:8]
     output = Path(output_dir).resolve() if output_dir else ROOT / "results/manual_lab" / suffix
     output.mkdir(parents=True, exist_ok=False)
@@ -305,8 +406,13 @@ def run(action, *, config_path=BUNDLE_PATH, output_dir=None, live=False, duratio
                 probe = validate_probe_session(probe_session, config_sha256=checks["config_sha256"],
                     hostname=manifest["hostname"], expected_ams=config["ams_net_id"])
                 manifest["probe_session"] = str(probe)
-            status = acquire(action, config, output, duration_s=duration_s, source_factory=source_factory, clock=clock)
+            if action == "inspect":
+                write_json(output / "twincat_file_evidence.json", collect_file_evidence())
+            status = (inspect(config, output, source_factory=source_factory, clock=clock) if action == "inspect" else
+                      acquire(action, config, output, duration_s=duration_s, source_factory=source_factory, clock=clock))
             manifest.update(status=status["status"], ok=status["ok"], error=status.get("error"))
+            if action == "inspect":
+                manifest.update(capture_authorized=False, interpretation=status["interpretation"], summary=status["summary"])
     except (Exception, KeyboardInterrupt) as exc:
         manifest.update(status="FAILED", ok=False, error=f"{type(exc).__name__}: {exc}")
     manifest["completed_utc"] = datetime.now(timezone.utc).isoformat()
@@ -317,7 +423,7 @@ def run(action, *, config_path=BUNDLE_PATH, output_dir=None, live=False, duratio
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("check", "probe", "capture"))
+    parser.add_argument("action", choices=("check", "inspect", "probe", "capture"))
     parser.add_argument("--config", type=Path, default=BUNDLE_PATH)
     parser.add_argument("--output-dir", type=Path, help="new directory only; default results/manual_lab/UTC_action")
     parser.add_argument("--offline", action="store_true", help="explicit offline check; valid only with check")
@@ -332,7 +438,10 @@ def main(argv=None):
     output, manifest = run(args.action, config_path=args.config, output_dir=args.output_dir,
         live=args.live, duration_s=args.duration_s, probe_session=args.probe_session)
     print("记录目录：" + str(output))
-    print("只读检查完成。" if manifest["ok"] else "本次停止，不自动重试：" + str(manifest.get("error")))
+    if args.action == "inspect" and manifest["ok"]:
+        print("20次只读映像读取完成；不代表硬件健康或映射已核实，也不允许据此采集。")
+    else:
+        print("只读检查完成。" if manifest["ok"] else "本次停止，不自动重试：" + str(manifest.get("error")))
     return 0 if manifest["ok"] else 1
 
 

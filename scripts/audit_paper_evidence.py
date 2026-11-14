@@ -42,7 +42,8 @@ SOURCES = ("config/experiment.json", "control/independent_tcp_trajectory.py",
 
 SOURCES += ("measurement_validation/wrench_endpoints.py", "measurement_validation/force_trial_ledger.py",
     "scripts/manual_leg_check.py", "config/paper_personalized_load.template.json", "pytest-core.ini",
-    "tests/test_force_trial_ledger.py", "tests/test_manual_leg_check.py", "tests/test_wrench_endpoints.py")
+    "tests/test_force_trial_ledger.py", "tests/test_manual_leg_check.py", "tests/test_wrench_endpoints.py",
+    "scripts/twincat_file_evidence.py", "tests/test_twincat_file_evidence.py")
 
 
 def historical_path(relative):

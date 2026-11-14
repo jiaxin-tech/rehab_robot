@@ -1,6 +1,38 @@
 # 2026年11月14日旧电脑静止检查与数据回传
 
-本次在装有TwinCAT的旧实验电脑本地运行，只检查假腿ADS连接、原始反馈和短段静止记录。今天此前的探测确认本机AMS为`10.20.4.89.1.1`，但在轴1守卫处失败；具体是使能、故障、错误码、力矩还是映射问题，尚待新诊断证据确认。因此更新代码后先做一次probe；失败就保存并回传，不继续采集，不修改参数来消除报错。
+本次在装有TwinCAT的旧实验电脑本地运行。16:43回传的一帧按当前配置解码为轴1状态字`0x0218`、错误码`0x0022`，程序因此停止；但现场报告TwinCAT界面没有报错。该帧不足以排除旧映像或映射不一致，不能直接断言驱动器物理故障。**本次先执行下方inspect核对并回传，不直接重跑probe/capture。** 具体复核见[本次记录分析](lab/LEG_PROBE_REVIEW_2026-11-14.md)。
+
+## 本次先执行：连续映像与配置文件核对
+
+在原仓库PowerShell中，先核对当前分支为`paper-personalized-load`、暂存区及工作区已干净，再执行：
+
+```powershell
+git pull --ff-only origin paper-personalized-load
+if ($LASTEXITCODE -ne 0) { throw '更新失败，保留原状并停止。' }
+$legInspect = 'results/manual_lab/' + (Get-Date -Format 'yyyyMMdd_HHmmss') + '_inspect'
+& .\.venv\Scripts\python.exe -X utf8 -m scripts.manual_leg_check inspect --live --output-dir $legInspect
+$legInspectExit = $LASTEXITCODE
+Write-Host "核对退出码：$legInspectExit；本次目录：$legInspect"
+```
+
+inspect固定读取20次，在`inspection_frames.json`保留每帧原始字节、时间、解码和守卫判断。它统计映像变化与toggle，不因观察到的故障位提前停止；原生读取或关闭错误仍结束本次诊断。`COMPLETE/ok=true`只表示20次读取完成，**不代表驱动健康、映射正确或可以采集**。inspect目录不能代替成功probe用于采集放行。
+
+同时保存`twincat_file_evidence.json`：只读`C:/TwinCAT/3.1/Boot/CurrentConfig.xml`的哈希、修改时间、可识别设备身份及PDO字段原字符串；文件缺失或解析失败也保留状态。启动文件不是在线映射证明，程序不激活工程、不修改配置、不猜设备型号或偏移。
+
+本次到这里结束。核对暂存区没有其他内容后，只提交刚打印的目录：
+
+```powershell
+git diff --cached --name-only
+git add -- $legInspect
+git diff --cached --stat
+git commit -m "Record read-only TwinCAT image inspection 2026-11-14"
+if ($LASTEXITCODE -ne 0) { throw '提交失败，保留原始记录并停止。' }
+git push origin paper-personalized-load
+if ($LASTEXITCODE -ne 0) { throw '上传失败，保留本地提交，不要强推。' }
+git log -1 --oneline
+```
+
+以下原check/probe/capture步骤保留供原因查明后使用，本次不接着执行。
 
 本流程使用`paper-personalized-load`分支及统一配置`config/experiment.json`中的`leg`部分，不依赖旧独立配置、临时远程助手或远程登录。ADS Net ID是AMS路由身份，不是普通IPv4；临时网卡地址`192.168.137.2`不能代替AMS。端口11返回的ADS状态0只是该查询服务的原始值，不能单独证明TwinCAT全局处于CONFIG，也不据此切换运行状态。当前DLL路径来自统一配置，为`C:\TwinCAT\AdsApi\TcAdsDll\x64\TcAdsDll.dll`。
 

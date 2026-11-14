@@ -1,0 +1,21 @@
+{
+  "review_schema_version": 1,
+  "returned_commit": "4e6a302c",
+  "source_code_commit": "c2003d26",
+  "hashes_verified_against_recorded_commit": true,
+  "raw_image_sha256": "369bfde86fcc7490e4c611a106421179cbd0defc6913e37d5ad6248279253308",
+  "observed_guard_failures": [
+    "axis1 fault=True",
+    "axis1 error_code=0x0022"
+  ],
+  "physical_drive_fault_confirmed": false,
+  "operator_report": "TwinCAT界面没有报错",
+  "online_mapping_verified": false,
+  "freshness_assessed": false,
+  "reason": "Only one successful native read was retained before the guard stopped probe",
+  "capture_completed": false,
+  "query_duration_ms": 1.7799,
+  "next_step": "Bounded read-only inspect: twenty raw images plus file configuration evidence; no capture authorization",
+  "review_accessed_hardware": false,
+  "original_records_modified": false
+}
