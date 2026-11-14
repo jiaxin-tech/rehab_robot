@@ -1,0 +1,76 @@
+{
+  "status": "OBSERVATION_COMPLETE",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261114_174002\\robot_only_observe_config.json",
+  "motion_commanded": false,
+  "observation": {
+    "episode_dir": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261114_174002\\robot_observe30s\\robot",
+    "completed": true,
+    "duration_s": 30.0,
+    "wrench_mode": "live",
+    "row_counts": {
+      "robot_state": 4155,
+      "robot_wrench": 99,
+      "trajectory_command": 0,
+      "aligned_snapshot": 1660
+    },
+    "motion_commanded": false
+  },
+  "robot_timing": {
+    "available": true,
+    "samples": 1660,
+    "valid_samples": 99,
+    "recorded_span_s": 33.204700499773026,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 44.16329972445965,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 1400,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 1499,
+        "mean": 210.4126340277826,
+        "p50": 226.6915999352932,
+        "p95": 226.6915999352932,
+        "p99": 226.6915999352932,
+        "min": 0.4932992160320282,
+        "max": 226.6915999352932
+      },
+      "state_age_ms": {
+        "count": 1660,
+        "mean": 4.262924262782536,
+        "p50": 4.0074004791677,
+        "p95": 6.870105257257819,
+        "p99": 7.232944741845133,
+        "min": 0.4134001210331917,
+        "max": 11.32969930768013
+      },
+      "wrench_age_ms": {
+        "count": 1499,
+        "mean": 13021.308301435442,
+        "p50": 12950.501100160182,
+        "p95": 26431.947949714955,
+        "p99": 27630.24286793545,
+        "min": 17.507449723780155,
+        "max": 27929.854999296367
+      },
+      "state_wrench_skew_ms": {
+        "count": 1499,
+        "mean": 13017.014138339668,
+        "p50": 12947.246000170708,
+        "p95": 26429.24831993878,
+        "p99": 27628.349963594228,
+        "min": 11.278149671852589,
+        "max": 27923.92349988222
+      }
+    },
+    "invalid_reasons": {
+      "query_pending_too_long": 1391,
+      "state_wrench_skew_unavailable_or_exceeded": 1561,
+      "wrench_not_ready": 161,
+      "wrench_process_not_ready": 161,
+      "wrench_sample_stale_or_clock_invalid": 1400,
+      "wrench_stale_or_unavailable": 1561
+    }
+  }
+}

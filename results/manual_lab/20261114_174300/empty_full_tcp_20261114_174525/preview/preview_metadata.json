@@ -1,0 +1,71 @@
+{
+  "actual_peak_tcp_z_base_m": 0.9000000000000001,
+  "anchor": {
+    "anchor_id": "anchor_0af6ad8e39f74103a6b5cecf8ddc7b8d",
+    "capture_host_time_s": 4394277.1129711,
+    "controller_version": "3.2.1",
+    "created_at": "2026-11-14T09:45:29.538+00:00",
+    "notes": "",
+    "reference_start_q_hip": 0.0,
+    "reference_start_q_knee": 0.0,
+    "reviewed": false,
+    "robot_joint_positions": [
+      -0.3553859977188147,
+      0.7551647602803783,
+      -1.9858584515360125,
+      -3.004475623704152,
+      0.43226667801524565,
+      -1.1961167256638665
+    ],
+    "robot_model": "XMC12-R1300-W7G3B4",
+    "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+    "schema_version": 2,
+    "tcp_orientation": {
+      "representation": "euler_xyz_rad",
+      "strategy": "fixed",
+      "values_rad": [
+        -3.0878730602699207,
+        -0.03547882309804637,
+        0.7142021399063603
+      ]
+    },
+    "tcp_pose_base": [
+      0.7542268557678186,
+      -0.11355271951256612,
+      0.2866698577378572,
+      -3.0878730602699207,
+      -0.03547882309804637,
+      0.7142021399063603
+    ],
+    "tcp_position_base_m": [
+      0.7542268557678186,
+      -0.11355271951256612,
+      0.2866698577378572
+    ],
+    "tool_name": null,
+    "trajectory_id": "independent_tcp_lift_v1",
+    "workpiece_name": null
+  },
+  "duration_s": 164.0,
+  "git_commit": "507044471129f4816ae1d81a7d2595ab65de134d",
+  "hardware_accessed": false,
+  "joint_reference_used": false,
+  "joint_tracking_required": false,
+  "mode": "independent_tcp",
+  "preview_only": true,
+  "tcp_settings": {
+    "horizontal_displacement_m": -0.2,
+    "lift_duration_s": 80.0,
+    "peak_hold_s": 2.0,
+    "return_duration_s": 80.0,
+    "sample_period_s": 0.1,
+    "start_hold_s": 2.0,
+    "target_peak_tcp_z_base_m": 0.9
+  },
+  "trajectory_audit": {
+    "invalid_reasons": [],
+    "sample_count": 1641,
+    "trajectory_id": "independent_tcp_lift_v1",
+    "trajectory_valid": true
+  }
+}

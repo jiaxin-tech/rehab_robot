@@ -1,0 +1,35 @@
+{
+  "evidence_scope": "FILE_CONFIGURATION_ONLY",
+  "not_live_mapping_verified": true,
+  "device_access_performed": false,
+  "runtime_configuration_modified": false,
+  "directory_scan_performed": false,
+  "current_config_file": {
+    "path": "C:\\TwinCAT\\3.1\\Boot\\CurrentConfig.xml",
+    "exists": true,
+    "is_file": true,
+    "size_bytes": 209425,
+    "mtime_ns": 1790679200363840500,
+    "mtime_utc": "2026-09-29T10:53:20.363841+00:00",
+    "sha256": "c5d10c97c6d4c131a3ff6871a509bc71a7a559dfff585a44dff70f89a2f5934c",
+    "read_status": "READ",
+    "errors": [],
+    "metadata_changed_during_read": false,
+    "bytes_read": 209425,
+    "xml_parse": {
+      "status": "PARSED",
+      "error": null,
+      "root_tag": "TcBootProject",
+      "element_count": 418
+    },
+    "devices": [],
+    "target_pdo_entries": []
+  },
+  "known_project_files": [],
+  "limitations": [
+    "File contents and timestamps do not establish the active runtime or live PDO mapping.",
+    "Device identity fields retain XML strings; an absent or ambiguous model is not inferred.",
+    "PDO matches are XML index-field search hits; offsets and units are not interpreted.",
+    "Project references are hashed only and are not assumed to be the active project."
+  ]
+}

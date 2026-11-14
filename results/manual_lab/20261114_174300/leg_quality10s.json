@@ -1,0 +1,125 @@
+{
+  "file": "leg.csv",
+  "rows": 4968,
+  "duration_s": 9.9990879,
+  "sample_rate_hz": 496.74530813955545,
+  "mean_period_s": 0.0020131040668411515,
+  "jitter_s": {
+    "std": 0.000796267096535405,
+    "max_abs_deviation_from_median": 0.0397478
+  },
+  "expected_period_s": 0.0017632999999999122,
+  "gap_count": 912,
+  "non_atomic_axis_reads": false,
+  "joints": {
+    "hip": {
+      "axis": 1,
+      "signals": {
+        "position": "axis1_position_raw",
+        "motor_position_deg": "axis1_position_motor_deg",
+        "velocity": "axis1_velocity_raw",
+        "torque_nm": "axis1_torque_3c1a_nm",
+        "torque_pct": "axis1_torque_6077_raw_bits",
+        "statusword": "axis1_statusword_hex",
+        "error_code": "axis1_error_code_hex",
+        "mode": "axis1_mode_display",
+        "operation_enabled": "axis1_operation_enabled",
+        "fault": "axis1_fault",
+        "following_error": "axis1_following_error_raw"
+      },
+      "raw_torque_nm": {
+        "n": 4968,
+        "mean": -12.303741848219229,
+        "std": 0.12338681320270921,
+        "minimum": -12.596893310546877,
+        "maximum": -12.084228515625
+      },
+      "torque_offset_note": "descriptive only; never subtracted by default because the offset moves with pose, gravity, brake and support",
+      "motor_side_torque_pct": {
+        "n": 4968,
+        "mean": 0.0,
+        "std": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "position_counts": {
+        "n": 4968,
+        "mean": -116523.39875201289,
+        "std": 3.5940321500127292,
+        "minimum": -116537.0,
+        "maximum": -116510.0
+      },
+      "motor_side_deg_range": [
+        -53.3464083069,
+        -53.334048687
+      ],
+      "joint_angle_available": true,
+      "flexion_deg_range": [
+        -4.603940120922982,
+        -4.576765892605154
+      ],
+      "statusword_values": [
+        561.0
+      ],
+      "nonzero_error_count": 0
+    },
+    "knee": {
+      "axis": 4,
+      "signals": {
+        "position": "axis4_position_raw",
+        "motor_position_deg": "axis4_position_motor_deg",
+        "velocity": "axis4_velocity_raw",
+        "torque_nm": "axis4_torque_3c1a_nm",
+        "torque_pct": "axis4_torque_6077_raw_bits",
+        "statusword": "axis4_statusword_hex",
+        "error_code": "axis4_error_code_hex",
+        "mode": "axis4_mode_display",
+        "operation_enabled": "axis4_operation_enabled",
+        "fault": "axis4_fault",
+        "following_error": "axis4_following_error_raw"
+      },
+      "raw_torque_nm": {
+        "n": 4968,
+        "mean": 5.413549358718061,
+        "std": 0.05653623872721669,
+        "minimum": 5.276168823242188,
+        "maximum": 5.514190673828125
+      },
+      "torque_offset_note": "descriptive only; never subtracted by default because the offset moves with pose, gravity, brake and support",
+      "motor_side_torque_pct": {
+        "n": 4968,
+        "mean": 0.0,
+        "std": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "position_counts": {
+        "n": 4968,
+        "mean": -2773802.269927536,
+        "std": 1.4401017774577225,
+        "minimum": -2773807.0,
+        "maximum": -2773798.0
+      },
+      "motor_side_deg_range": [
+        -1269.7481554059,
+        -1269.7440355326
+      ],
+      "joint_angle_available": true,
+      "flexion_deg_range": [
+        -4.3156575889228375,
+        -4.3154129840610365
+      ],
+      "statusword_values": [
+        561.0
+      ],
+      "nonzero_error_count": 0
+    }
+  },
+  "sync_evidence_note": "CSV synchronization labels are declarations, not independently verified physical simultaneity",
+  "usable_for_dynamics": false,
+  "findings": [
+    "receive_time_gaps",
+    "sample_rate_below_500hz:496.745"
+  ],
+  "interpretation": "trial/acquisition evidence only; not identification, phase or high-rate control data"
+}

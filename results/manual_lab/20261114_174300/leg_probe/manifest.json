@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "action": "probe",
+  "status": "COMPLETE",
+  "ok": true,
+  "hostname": "DESKTOP-P1EOI08",
+  "started_utc": "2026-11-14T09:43:28.778696+00:00",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "live_requested": true,
+  "motion_commanded": false,
+  "ads_write_used": false,
+  "remote_helper_used": false,
+  "duration_s": null,
+  "source_sha256": {
+    "scripts/manual_leg_check.py": "53db76db8c27bc6f85d258d66b5847ad9b8b43de5966cae3a7e0e305c7c0e442",
+    "collection/twincat_leg.py": "0b89dafc51bad085f27ecdea6934c3a6a293aa24f4a2fb82d28bc73a25cb4a40",
+    "config/bundle.py": "6ef762651b2422f93f578a2f5ae2737e0c5f8d9897d46f4ca44d9ef88b8242e5",
+    "scripts/twincat_file_evidence.py": "5f85840f7143ca366bb75de460c1f1a282fe3f689ef62d371289109e03253dc5"
+  },
+  "git_head": "507044471129f4816ae1d81a7d2595ab65de134d",
+  "config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+  "offline_check": {
+    "ok": true,
+    "checks": {
+      "windows": true,
+      "python_64bit": true,
+      "dll_exists": true,
+      "configuration_valid": true
+    },
+    "python_version": "3.12.10",
+    "python_executable": "C:\\Users\\liumai\\fjx\\rehab_robot\\.venv\\Scripts\\python.exe",
+    "hostname": "DESKTOP-P1EOI08",
+    "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+    "config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+    "configured_ams_net_id": "10.20.4.89.1.1",
+    "ads_dll_path": "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\TcAdsDll.dll",
+    "device_connected": false,
+    "ads_library_loaded": false
+  },
+  "error": null,
+  "completed_utc": "2026-11-14T09:43:28.978134+00:00",
+  "output_files_sha256": {
+    "leg_config_snapshot.json": "c2f84da80ab1355a3118ae8a0746fc334ee4cfd134429069999b65366a9ac41b",
+    "segment_status.json": "2d9d4fdcb959eee6a6d9b5dbccb976885bc5ad36bbaa582eaca4a5983d2f9291"
+  }
+}
