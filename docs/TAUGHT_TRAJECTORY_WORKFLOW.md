@@ -1,10 +1,10 @@
 # 示教轨迹空载验证操作
 
-**最新变更：目标周期为70秒。** 新方案与配置限制冲突见[70秒审查](TAUGHT_70S_REVIEW.md)。本页425秒命令是原限值基线，不是新70秒方案；在新限值未确认前，不将配置手改为70秒直接启动。
+**当前入口：用户已确认的70秒空载配置。** 使用 `config/taught_tcp_70s.empty.json`；本配置上限为0.13米/秒、0.45米/秒²，检查返回READY。授权与核验见[70秒方案](TAUGHT_70S_REVIEW.md)，原425秒和超限草案保留为历史记录。
 
 更新日期2026年11月15日。当前采用已确认的真实示教形状，保留上抬、高位前伸、回收下降，三轴幅度均为1，工具朝向固定为本次prepare捕获的起点朝向。原始录制不修改。
 
-当前设计总周期425秒，即7分5秒：上抬144秒、高位前伸113秒、回收下降162秒。最高点停速但不额外保持；最远点保持2秒，首尾各保持2秒。处理、闭合修正和限速核验见[轨迹审核报告](lab/TAUGHT_TRAJECTORY_REVIEW_2026-11-15.md)。
+当前设计总周期70秒：上抬22秒、高位前伸17秒、回收下降25秒。最高点停速但不额外保持；最远点保持2秒，首尾各保持2秒。几何处理与闭合修正见[原轨迹报告](lab/TAUGHT_TRAJECTORY_REVIEW_2026-11-15.md)，70秒动态核验见[当前方案](TAUGHT_70S_REVIEW.md)。
 
 新模式`taught_tcp`目前只支持空载验证，尚未接入带载GP学习。旧受力采集长间隔和清理问题仍需复核，几何修正不代表受力链已修复。
 
@@ -28,7 +28,7 @@ git pull --ff-only origin paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '更新失败，保留现场文件。' }
 $taughtPython = Join-Path (Get-Location) '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $taughtPython -PathType Leaf)) { throw '找不到项目已有Python。' }
-$taughtConfig = 'config/taught_tcp_empty.template.json'
+$taughtConfig = 'config/taught_tcp_70s.empty.json'
 $taughtRun = 'results/manual_lab/' + (Get-Date -Format 'yyyyMMdd_HHmmss')
 New-Item -ItemType Directory -Path $taughtRun -ErrorAction Stop | Out-Null
 Copy-Item -LiteralPath 'docs/templates/LAB_RECORD_TEMPLATE.md' -Destination (Join-Path $taughtRun 'lab_record.md') -ErrorAction Stop
@@ -59,7 +59,7 @@ Invoke-Item -LiteralPath (Join-Path $taughtSession 'preview/speed_time.png')
 Invoke-Item -LiteralPath (Join-Path $taughtSession 'preview/acceleration_time.png')
 ```
 
-核对全路径、两个转折、朝向、范围、实际周期与限速。默认相对起点最高抬升75.10厘米、最远Base +Y位移89.25厘米；这是基座方向，不直接等同人体前后方向。原示教起点下最高Z约1.012米，现场起点改变后该绝对值也会改变。准备后移动起点、更换工具或修改配置，须新建会话重新prepare。
+核对全路径、两个转折、朝向、范围、完整70秒周期，以及`tcp_safety.json`中0.13米/秒、0.45米/秒²上限。默认相对起点最高抬升75.10厘米、最远Base +Y位移89.25厘米；这是基座方向，不直接等同人体前后方向。原示教起点下最高Z约1.012米，现场起点改变后该绝对值也会改变。准备后移动起点、更换工具或修改配置，须新建会话重新prepare。
 
 ## 显式执行空载
 
@@ -92,7 +92,7 @@ Write-Host "完成审核退出码：$LASTEXITCODE"
 if ($LASTEXITCODE -ne 0) { throw '新设计失败，查看summary并保留目录。' }
 ```
 
-此处0.9仅演示参数，不是本次批准幅度。三轴scale对应基座XYZ；`--scale-x`也可独立设置，默认均为1。`--control-spacing-m`默认0.02，改变它属于几何版本变更；它不是执行采样周期。重新设计会保守重算三段节奏，不能假定仍为425秒。
+此处0.9仅演示参数，不是本次批准幅度。三轴scale对应基座XYZ；`--scale-x`也可独立设置，默认均为1。`--control-spacing-m`默认0.02，改变它属于几何版本变更；它不是执行采样周期。空间重新设计会保守重算节奏，不能假定仍为70秒。若需保持70秒，再用[70秒文档](TAUGHT_70S_REVIEW.md)的离线节奏命令生成新版本并核对限值。
 
 新版本重新看图后，将`$taughtConfig`改为新配置的精确路径，以新`$taughtSession`重复check和prepare。不得覆盖原scale1设计，不手改原始CSV。正式论文比较内应冻结同一空间形状、幅度、朝向及总周期；当前新形状尚无正式带载候选目录。
 

@@ -66,3 +66,41 @@ def test_output_paths_and_cycle_mismatch_are_rejected_before_write(tmp_path):
     assert not output.exists()
     output.mkdir()
     with pytest.raises(FileExistsError):timing.preview(SOURCE,CONFIG,output)
+
+
+def test_approved_70s_config_prepares_and_dispatches_exact_cycle_with_fake_devices(tmp_path):
+    from control.start_anchor import StartAnchor, FixedTcpOrientation
+    from control.taught_tcp_trajectory import TRAJECTORY_ID
+    approved = ROOT / "config/taught_tcp_70s.empty.json"
+    config = configuration(approved)
+    expected = configuration(ROOT / "config/taught_tcp_70s.review.json")
+    expected["empty_load"].update(max_tcp_speed_m_s=.13, max_tcp_acceleration_m_s2=.45)
+    assert config == expected
+    assert lab.check_config(approved, empty_load=True) == []
+    geometry = json.loads((ROOT / config["trajectory"]["geometry_path"]).read_text(encoding="utf-8"))
+    pose = tuple(geometry["recorded_anchor_pose"])
+    anchor = StartAnchor(capture_host_time_s=1., tcp_pose_base=pose,
+        tcp_position_base_m=pose[:3], tcp_orientation=FixedTcpOrientation(pose[3:]),
+        robot_joint_positions=(0.,)*6, trajectory_id=TRAJECTORY_ID,
+        reference_start_q_hip=0., reference_start_q_knee=0., anchor_id="offline-approved-test")
+    directory = tmp_path / "approved_fake_session"
+    def capture(**kwargs):
+        assert kwargs["tcp_trajectory_id"] == TRAJECTORY_ID
+        anchor.save_json(kwargs["output_path"])
+    state = lab.prepare(approved, directory, empty_load=True, capture_fn=capture)
+    settings = {k:v for k,v in config["trajectory"].items() if k not in ("mode", "fixed_cycle_duration_s")}
+    assert state["status"] == "PREPARED" and state["blockers"] == []
+    assert state["tcp_plan"]["duration_s"] == 70.
+    assert state["tcp_plan"]["tcp_settings"] == settings
+    safety = json.loads((directory/"tcp_safety.json").read_text())
+    assert safety["max_tcp_speed_m_s"] == .13
+    assert safety["max_tcp_acceleration_m_s2"] == .45
+    calls=[]
+    def execute(**kwargs):
+        assert kwargs["taught_tcp_settings"] == settings
+        assert "execution_guard" not in kwargs
+        calls.append("fake_dispatch")
+        kwargs["dispatch_observer"](0., 1, 2)
+        return {"completed":True,"same_session_realtime_cleanup_completed":True}
+    result = lab.run(directory, live=True, empty_load=True, execute_fn=execute)
+    assert result["status"] == "EMPTY_LOAD_COMPLETE" and calls == ["fake_dispatch"]

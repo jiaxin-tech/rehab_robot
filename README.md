@@ -1,12 +1,12 @@
 # 面向机械负荷降低的单臂假腿轨迹适配
 
-**最新周期目标已改为70秒。** 已保留原幅度和固定朝向生成22/17/25秒三段方案，加三处2秒保持。所需速度与加速度超过当前空载限值，当前仅供离线审查，详见[70秒方案与限制冲突](docs/TAUGHT_70S_REVIEW.md)；下文425秒保留为原限值基线，暂不作为最新实验节奏。
+**当前使用用户已确认的70秒示教空载方案。** 保留原幅度和固定朝向：抬升22秒、前伸17秒、回程25秒，三处保持各2秒。配置为 `config/taught_tcp_70s.empty.json`，本配置的空载速度与加速度上限为0.13米/秒、0.45米/秒²。[方案与核验](docs/TAUGHT_70S_REVIEW.md)已通过离线检查，下一步按现场流程prepare、审核当前起点预览，再显式启动。尚未执行新方案。
 
 2026-11-15。当前分支整合自 `cleanup/unified-dummy-leg-mainline`，保留机械臂实测 TCP 和六维受力驱动的正式方法。论文研究受控机械条件下的轨迹适配，以降低机械负荷作为舒适度相关设计目标；没有人体舒适评价或临床效果结论。
 
-**当前先按[新示教曲线空载步骤](docs/TAUGHT_TRAJECTORY_WORKFLOW.md)验证固定朝向轨迹。** 已处理11月15日的真实拖动记录，保留“抬升—高位前伸—回收下降”、原最高点和最远点，默认幅度参数均为1。新节奏144/113/162秒，首、远端、尾各保持2秒，共425秒。配置为 `config/taught_tcp_empty.template.json`，新模式只接入空载验证；旧直线GP候选暂不适用于它。原始录制仍保留，补录见[拖动录制说明](docs/DRAG_TEACHING_WORKFLOW.md)。
+**当前先按[新示教曲线空载步骤](docs/TAUGHT_TRAJECTORY_WORKFLOW.md)验证固定朝向轨迹。** 已处理11月15日的真实拖动记录，保留“抬升—高位前伸—回收下降”、原最高点和最远点，默认幅度参数均为1。原425秒基线和超限草案保留作历史记录；新模式只接入空载验证，旧直线GP候选暂不适用于它。补录见[拖动录制说明](docs/DRAG_TEACHING_WORKFLOW.md)。
 
-离线预览与全部处理量见[核验记录](docs/lab/TAUGHT_TRAJECTORY_REVIEW_2026-11-15.md)。598项离线测试通过；固定朝向整圈可达性和新空载采集质量尚待现场验证。
+空间处理量见[原几何核验记录](docs/lab/TAUGHT_TRAJECTORY_REVIEW_2026-11-15.md)，新节奏见[70秒核验](docs/TAUGHT_70S_REVIEW.md)。固定朝向整圈可达性和新空载采集质量尚待现场验证。
 
 完整阶段仍见[实验操作总手册](docs/NEXT_LAB_OPERATIONS.md)。论文方案见[当前工作流](docs/CURRENT_WORKFLOW.md)，分支来源见[整合记录](docs/BRANCH_INTEGRATION_2026-11-14.md)。
 
@@ -21,7 +21,7 @@
 新曲线可先做不连接设备的空载配置检查：
 
 ~~~powershell
-.\.venv\Scripts\python.exe -m scripts.lab_session check --config config/taught_tcp_empty.template.json --empty-load
+.\.venv\Scripts\python.exe -m scripts.lab_session check --config config/taught_tcp_70s.empty.json --empty-load
 ~~~
 
 READY仅说明空载配置检查通过；现场仍需prepare后看当前起点预览，再由操作者显式run。新模式拒绝带载学习。旧直线带载流程需真实受力标定，不能填假值取得READY。

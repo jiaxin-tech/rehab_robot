@@ -1,5 +1,7 @@
 # 2026-11-15 示教轨迹处理与空载版本核验
 
+本报告保留原425秒基线及其检查结论。用户随后确认70秒方案和该空载配置的0.13米/秒、0.45米/秒²上限；当前入口见[70秒方案](../TAUGHT_70S_REVIEW.md)与[现场步骤](../TAUGHT_TRAJECTORY_WORKFLOW.md)。
+
 用户确定：固定工具朝向，保留“抬升—高位前伸—回收下降”，先保留当前抬升和前伸幅度，提供后续幅度参数，并重新设计节奏。本次只完成离线处理、软件接入与测试，没有连接或驱动设备。
 
 源文件为 `results/manual_lab/20261115_143705/drag_teach_01/`，原始CSV、记录状态、配置及清单保持原字节。衍生版本为 `results/manual_lab/20261115_taught_design_v1/`，空载配置为 `config/taught_tcp_empty.template.json`。原 `config/experiment.json` 未改。

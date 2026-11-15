@@ -59,6 +59,9 @@ SOURCES += ("control/taught_tcp_timing.py", "scripts/preview_taught_timing.py", 
 TAUGHT_70S = "results/manual_lab/20261115_taught_70s_v1"
 SOURCES += ("config/taught_tcp_70s.review.json",) + tuple(TAUGHT_70S + "/" + name
     for name in ("geometry.json", "settings.json", "summary.json"))
+APPROVED_70S = "results/manual_lab/20261115_taught_70s_approved_v1"
+SOURCES += ("config/taught_tcp_70s.empty.json",) + tuple(APPROVED_70S + "/" + name
+    for name in ("geometry.json", "settings.json", "summary.json"))
 
 
 def historical_path(relative):
@@ -170,6 +173,15 @@ def inventory(junit=None):
     for name, expected in timing_summary["processing_source_sha256"].items():
         if sha256(ROOT / name) != expected:
             raise ValueError("70s timing source changed: " + name)
+    approved_summary = read_json(ROOT / APPROVED_70S / "summary.json")
+    if sha256(ROOT / "config/taught_tcp_70s.empty.json") != approved_summary["source_config_sha256"]:
+        raise ValueError("approved 70s execution configuration changed")
+    for name, expected in approved_summary["output_files_sha256"].items():
+        if Path(name).name != name or sha256(ROOT / APPROVED_70S / name) != expected:
+            raise ValueError("approved 70s timing artifact changed: " + name)
+    for name, expected in approved_summary["processing_source_sha256"].items():
+        if sha256(ROOT / name) != expected:
+            raise ValueError("approved 70s timing source changed: " + name)
     verification = {"kind": "OFFLINE_TESTS_ONLY", "status": "NOT_PROVIDED"}
     if junit is not None:
         tree = ET.parse(junit).getroot()
@@ -212,6 +224,12 @@ def inventory(junit=None):
         "requested_70s_timing": {
             "source_summary": TAUGHT_70S + "/summary.json", "status": timing_summary["status"],
             "execution_review": timing_summary["execution_review"],
+            "shape_changed": False, "hardware_accessed": False, "ready_for_replay": False},
+        "approved_70s_timing": {
+            "source_summary": APPROVED_70S + "/summary.json",
+            "execution_configuration": "config/taught_tcp_70s.empty.json",
+            "status": approved_summary["status"], "execution_review": approved_summary["execution_review"],
+            "scope": "User accepted 0.13 m/s and 0.45 m/s2 for this empty-load configuration only.",
             "shape_changed": False, "hardware_accessed": False, "ready_for_replay": False},
         "verification": verification}
 
