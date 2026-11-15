@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-15T07:59:56.889287+00:00",
+  "status": "OFFLINE_TIMING_REVIEW_REQUIRED",
+  "ready_for_replay": false,
+  "hardware_accessed": false,
+  "execution_review": {
+    "allowed": false,
+    "reasons": [
+      "fixed_cycle_speed_limit_conflict",
+      "fixed_cycle_acceleration_limit_conflict"
+    ],
+    "requested_duration_s": 70.0,
+    "planned_duration_s": 70.0,
+    "maximum_speed_m_s": 0.12382927059379868,
+    "maximum_acceleration_m_s2": 0.4303140134337129,
+    "speed_limit_m_s": 0.03,
+    "acceleration_limit_m_s2": 0.01,
+    "retiming_margin": 1.01,
+    "automatic_retiming": false,
+    "physical_limits_changed": false
+  },
+  "shape_changed": false,
+  "orientation_strategy": "fixed_at_current_anchor",
+  "settings": {
+    "geometry_path": "results/manual_lab/20261115_taught_70s_v1/geometry.json",
+    "geometry_sha256": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+    "scale_x": 1.0,
+    "scale_y": 1.0,
+    "scale_z": 1.0,
+    "lift_duration_s": 22.0,
+    "reach_duration_s": 17.0,
+    "return_duration_s": 25.0,
+    "start_hold_s": 2.0,
+    "turn_hold_s": 2.0,
+    "end_hold_s": 2.0,
+    "sample_period_s": 0.1
+  },
+  "phase_boundaries": {
+    "start_hold": {
+      "start_s": 0.0,
+      "end_s": 2.0
+    },
+    "lift": {
+      "start_s": 2.0,
+      "end_s": 24.0
+    },
+    "high_reach": {
+      "start_s": 24.0,
+      "end_s": 41.0
+    },
+    "turn_hold": {
+      "start_s": 41.0,
+      "end_s": 43.0
+    },
+    "return": {
+      "start_s": 43.0,
+      "end_s": 68.0
+    },
+    "end_hold": {
+      "start_s": 68.0,
+      "end_s": 70.0
+    }
+  },
+  "source_settings_sha256": "7c17c052a3cbdbfde9cf72f4dc70a24d5448db4e2d81d1395c9139f1812fa152",
+  "source_config_sha256": "ae65d3b8d7776e523ecf6c2d3b8b9db52211a1a71c488d94223fa293396a0f12",
+  "geometry_sha256": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+  "physical_limits_changed": false,
+  "output_config": "D:\\rr_paper\\config\\taught_tcp_70s.review.json",
+  "output_config_sha256": "c8ac724b0024a577662449accb7ff39d92a4675218c65d705fca8777e91e7efc",
+  "processing_source_sha256": {
+    "scripts/preview_taught_timing.py": "31b7dabb8369a40fbec1dc7b451fb37a3fb67539d6d91b734fef4f9680b3e969",
+    "control/taught_tcp_timing.py": "e4908833f089d0386e70f59eb35de48dc9d7fdafae7b4d5b64aeb86f8e8b0151",
+    "control/taught_tcp_trajectory.py": "3e4b8067fd3c10ba47b576a167c15e02cfa0055842a04ad4b1a68a55909da386"
+  },
+  "output_files_sha256": {
+    "geometry.json": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+    "settings.json": "6be327490345cd95537633f9eda777a5cfe6fa4b6c32ea75b666fcb26139d5e4",
+    "trajectory_preview.csv": "5f32fd8d3b0b7d5816b6040210f1b680e482ed54721813e8d85290ae17030f49",
+    "trajectory_3d.png": "69d730c6af9af4d3d039b0d43dd3144762d3e1113ea2274aae0bdcbe47436558",
+    "xyz_time.png": "e8392fdcc1083c221cedfb50dfb64eb4a8f43fd6595280737e072d9341b7bef6",
+    "speed_time.png": "d54632a89e782ea58d385db6cfdbbbb3c423a8f2659c506aaa4bdef6ee1c4209",
+    "acceleration_time.png": "4e66c15d0ca64cd308a20e1f90086546aafef3fa31df6d64baa5f08a97363c47"
+  }
+}

@@ -55,6 +55,10 @@ SOURCES += ("control/taught_tcp_trajectory.py", "scripts/design_taught_trajector
 
 TAUGHT_DESIGN = "results/manual_lab/20261115_taught_design_v1"
 SOURCES += tuple(TAUGHT_DESIGN + "/" + name for name in ("geometry.json", "settings.json", "summary.json"))
+SOURCES += ("control/taught_tcp_timing.py", "scripts/preview_taught_timing.py", "tests/test_taught_tcp_timing.py")
+TAUGHT_70S = "results/manual_lab/20261115_taught_70s_v1"
+SOURCES += ("config/taught_tcp_70s.review.json",) + tuple(TAUGHT_70S + "/" + name
+    for name in ("geometry.json", "settings.json", "summary.json"))
 
 
 def historical_path(relative):
@@ -159,6 +163,13 @@ def inventory(junit=None):
     for name, expected in taught_summary["processing"]["processing_source_sha256"].items():
         if sha256(ROOT / name) != expected:
             raise ValueError("taught design processing source changed: " + name)
+    timing_summary = read_json(ROOT / TAUGHT_70S / "summary.json")
+    for name, expected in timing_summary["output_files_sha256"].items():
+        if Path(name).name != name or sha256(ROOT / TAUGHT_70S / name) != expected:
+            raise ValueError("70s timing artifact changed: " + name)
+    for name, expected in timing_summary["processing_source_sha256"].items():
+        if sha256(ROOT / name) != expected:
+            raise ValueError("70s timing source changed: " + name)
     verification = {"kind": "OFFLINE_TESTS_ONLY", "status": "NOT_PROVIDED"}
     if junit is not None:
         tree = ET.parse(junit).getroot()
@@ -198,6 +209,10 @@ def inventory(junit=None):
             "output_hashes_verified": True, "processing_source_hashes_verified": True,
             "hardware_accessed": False, "new_hardware_experiment": False,
             "ready_for_replay": False, "loaded_learning_integrated": False},
+        "requested_70s_timing": {
+            "source_summary": TAUGHT_70S + "/summary.json", "status": timing_summary["status"],
+            "execution_review": timing_summary["execution_review"],
+            "shape_changed": False, "hardware_accessed": False, "ready_for_replay": False},
         "verification": verification}
 
 

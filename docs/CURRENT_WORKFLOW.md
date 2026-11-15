@@ -1,5 +1,7 @@
 # 当前论文与实验工作流
 
+最新目标改为70秒，固定朝向与幅度不变；离线方案22/17/25秒加6秒保持。所需运动峰值超出当前空载限制，见[70秒审查与下一步决定](TAUGHT_70S_REVIEW.md)。原425秒作为限值基线保留，不能把新70秒目标自动重定时回425秒。
+
 更新日期2026年11月15日。实验室实验硬截止为2027年1月15日，每周两次、每次三至四小时，由一人完成。当前统一分支为`paper-personalized-load`，正式代码继承`cleanup/unified-dummy-leg-mainline`的机器人位姿与受力方法。来源见[整合记录](BRANCH_INTEGRATION_2026-11-14.md)。
 
 实际后续操作和数据回传统一按[实验操作总手册](NEXT_LAB_OPERATIONS.md)逐步执行；现场记录可复制[记录模板](templates/LAB_RECORD_TEMPLATE.md)。

@@ -57,6 +57,19 @@ def _empty_load_settings(c):
     return speed, acceleration, margin
 
 
+def _require_taught_fixed_cycle(c, settings, *, actual_duration_s=None):
+    if c.get("trajectory", {}).get("mode") != "taught_tcp" or "fixed_cycle_duration_s" not in c["trajectory"]:
+        return
+    from control.taught_tcp_timing import review_fixed_cycle
+    speed, acceleration, margin = _empty_load_settings(c)
+    review = review_fixed_cycle(settings, c["trajectory"]["fixed_cycle_duration_s"],
+        speed_limit_m_s=min(speed, c["motion"]["max_tcp_speed_m_s"]),
+        acceleration_limit_m_s2=min(acceleration, c["motion"]["max_tcp_acceleration_m_s2"]),
+        margin=margin, actual_duration_s=actual_duration_s)
+    if not review["allowed"]:
+        raise ValueError("FIXED_CYCLE_LIMIT_CONFLICT: " + json.dumps(review, sort_keys=True))
+
+
 def _trajectory_target_peak_z(c):
     settings = c.get("trajectory")
     if settings is None:
@@ -535,9 +548,10 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
             problems.append("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
         def taught_spec():
             from control.taught_tcp_trajectory import build_taught_tcp_trajectory
-            settings = {k: v for k, v in c["trajectory"].items() if k != "mode"}
+            settings = {k: v for k, v in c["trajectory"].items() if k not in ("mode", "fixed_cycle_duration_s")}
             build_taught_tcp_trajectory(settings, current_tcp_start_pose=[0.]*6,
                 rehab_frame=load_rehab_frame_config(config_path))
+            _require_taught_fixed_cycle(c, settings)
         check("taught TCP geometry", taught_spec)
     if force_active(c):
         check("TCP force task", lambda: validate_force(c, measurement=not empty_load))
@@ -831,6 +845,9 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
     frame = load_rehab_frame_config(config_path)
     settings = dict(trajectory_settings or c["trajectory"])
     settings.pop("mode", None)
+    if taught:
+        settings.pop("fixed_cycle_duration_s", None)
+        _require_taught_fixed_cycle(c, settings)
     # Cartesian profiles share conservative physical limits.
     motion = dict(c["motion"])
     speed, acceleration, margin = _empty_load_settings(c)
@@ -842,10 +859,13 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
     a = np.linalg.norm(table[[f"tcp_a{axis}_base" for axis in "xyz"]], axis=1).max()
     scale = max(1., margin*v/motion["max_tcp_speed_m_s"],
                 np.sqrt(margin*a/motion["max_tcp_acceleration_m_s2"]))
+    fixed_cycle = taught and "fixed_cycle_duration_s" in c["trajectory"]
+    if fixed_cycle:
+        scale = 1.
     duration_keys = ("lift_duration_s", "reach_duration_s", "return_duration_s") if taught else ("lift_duration_s", "return_duration_s")
     for key in duration_keys:
         settings[key] *= scale
-    if taught:
+    if taught and not fixed_cycle:
         from control.taught_tcp_trajectory import stage_kinematic_extrema
         for key, (stage_speed, stage_accel) in zip(duration_keys, stage_kinematic_extrema(settings)):
             settings[key] *= max(1., margin*stage_speed/motion["max_tcp_speed_m_s"],
@@ -962,6 +982,7 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
     from control.prepared_trajectory import build_prepared_trajectory
     table, _, _ = build_prepared_trajectory(plan,
         current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
+    _require_taught_fixed_cycle(c, plan.get("tcp_settings", {}), actual_duration_s=float(table.time_s.iloc[-1]))
     from control.prepared_trajectory import assert_frozen_trajectory
     assert_frozen_trajectory(table, directory / "tcp_trajectory.csv")
     expected_motion = dict(c["motion"])
@@ -1101,6 +1122,9 @@ def prepare(
         taught = c.get("trajectory", {}).get("mode") == "taught_tcp"
         if taught and not empty_load:
             raise ValueError("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
+        if taught:
+            _require_taught_fixed_cycle(c, {k: v for k, v in (trajectory_settings or c["trajectory"]).items()
+                if k not in ("mode", "fixed_cycle_duration_s")})
         original = c.get("trajectory", {}).get("mode") == "original_candidate"
         if independent:
             from scripts.tcp_force_training import active, selected_settings

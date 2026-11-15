@@ -7419,6 +7419,22 @@ def test_taught_empty_check_cli_uses_empty_load_gate(monkeypatch):
     assert calls==[dict(empty_load=True,require_physical_files=True)]
 
 
+def test_feasible_fixed_taught_cycle_keeps_exact_duration(tmp_path, monkeypatch, personal_context):
+    request=_taught_test_request(personal_context,tmp_path)
+    settings=request['settings'] | dict(lift_duration_s=22.,reach_duration_s=17.,return_duration_s=25.)
+    config=personal_round.configuration()
+    config['trajectory']=dict(mode='taught_tcp',fixed_cycle_duration_s=70.,**settings)
+    config['training'].update(enabled=False,mode='disabled')
+    path=tmp_path/'fixed.json';personal_round.atomic_json(path,config)
+    monkeypatch.setattr(personal_round,'_check_config_for_operation',lambda *a,**kw:[])
+    state=personal_round.prepare(path,tmp_path/'fixed',empty_load=True,
+        capture_fn=lambda **kw:request['anchor'].save_json(kw['output_path']))
+    assert state['tcp_plan']['duration_s']==70
+    assert state['tcp_plan']['tcp_settings']==settings
+    with pytest.raises(ValueError,match='FIXED_CYCLE_LIMIT_CONFLICT'):
+        personal_round._require_taught_fixed_cycle(config,settings,actual_duration_s=425.)
+
+
 def test_taught_prepare_run_preserves_profile_and_rejects_changed_source(tmp_path,monkeypatch,personal_context):
     c=personal_context
     request=_taught_test_request(c,tmp_path)
