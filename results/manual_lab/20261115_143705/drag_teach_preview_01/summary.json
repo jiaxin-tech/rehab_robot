@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "status": "PREVIEW_COMPLETE",
+  "ok": true,
+  "ready_for_replay": false,
+  "hardware_accessed": false,
+  "session": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261115_143705\\drag_teach_01",
+  "output_dir": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261115_143705\\drag_teach_preview_01",
+  "input_modified": false,
+  "coordinates_rescaled": false,
+  "samples_interpolated": false,
+  "branch_split_confirmed": false,
+  "created_utc": "2026-11-15T06:41:38.763408+00:00",
+  "screen_thresholds": {
+    "gap_s": 0.1,
+    "position_closure_m": 0.005,
+    "orientation_change_deg": 5.0
+  },
+  "threshold_interpretation": "Offline review flags only; never motion/replay approval limits.",
+  "synthetic_input": false,
+  "input_hashes_verified": true,
+  "recording_status": "COMPLETE",
+  "recording_error": null,
+  "recorded_units": {
+    "position": "base_m",
+    "orientation": "euler_xyz_rad",
+    "joints": "rad"
+  },
+  "recorded_source_sha256": {
+    "scripts/record_rehab_trajectory.py": "7dbd638a8af990893d182a9493362b52b9888faeafef15f7e04fd5686ff0ddca",
+    "hardware/rokae_adapter.py": "14e74cfb21781a310b8465aeb54dabae28414315a1f109dd912f24e37a2fde78",
+    "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
+    "collection/state.py": "43bebcd0ad8d36d71e8152a45d66e9487edfba1c32e7a3ecb6c980167f9ff798",
+    "hardware/safety_events.py": "665a63eb4b7cfa1a78331a7a9483d137ee2d32d208addbc18bbc05cf8c4e613b",
+    "config/settings.py": "2a0652569a4f8aa9dd99ba81ad2de787ad63d112440872d694adf09ce6da4c46",
+    "config/bundle.py": "6ef762651b2422f93f578a2f5ae2737e0c5f8d9897d46f4ca44d9ef88b8242e5"
+  },
+  "recorded_source_git": {
+    "commit": "3f84419b893c9ca494a4c1fbd00ac1c91df22127",
+    "branch": "paper-personalized-load",
+    "working_tree_status": "?? results/manual_lab/20261115_143705/"
+  },
+  "recording_manifest_sha256": "3a626a3c5c93dd78b9664a85a09155fe142c5aaad3d27b9341ce1cee9a656f74",
+  "verified_output_sha256": {
+    "recorded_tcp.csv": "5045dc6623cdd5a5f391c93e810b9926679255341155b490c3c4aa025e7e3a8f",
+    "recording_status.json": "5d6af17e8122871f986b2fcb82608c25a3fccad52a3d2b94443a5255d1ae23f9"
+  },
+  "config_snapshot_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+  "total_csv_rows": 11236,
+  "valid_sample_count": 11236,
+  "discarded_rows": [],
+  "first_valid_host_time_s": 4469544.2773242,
+  "valid_span_s": 89.99297150038183,
+  "sample_interval_s": {
+    "min": 0.001814199611544609,
+    "median": 0.007969900034368038,
+    "max": 0.040338899940252304
+  },
+  "gaps": [],
+  "plotted_contiguous_segments": 1,
+  "start_pose_base_m_rad": [
+    0.7286046456471599,
+    -0.11646451163197384,
+    0.26122721597504217,
+    3.087215826596474,
+    -0.04868113645668192,
+    0.7539257139875373
+  ],
+  "end_pose_base_m_rad": [
+    0.7419570939433822,
+    -0.11208478876344152,
+    0.25561229663662344,
+    3.084573983915343,
+    -0.021706028524332784,
+    0.7824344823373076
+  ],
+  "absolute_base_xyz_m": {
+    "x": {
+      "min": 0.5371502169850992,
+      "max": 0.7436774872679914,
+      "range": 0.2065272702828922
+    },
+    "y": {
+      "min": -0.12240543167363424,
+      "max": 0.7760851313103383,
+      "range": 0.8984905629839726
+    },
+    "z": {
+      "min": 0.2555794277184512,
+      "max": 1.0122725163977007,
+      "range": 0.7566930886792494
+    }
+  },
+  "relative_to_first_valid_xyz_m": {
+    "x": {
+      "min": -0.19145442866206064,
+      "max": 0.015072841620831556
+    },
+    "y": {
+      "min": -0.0059409200416604,
+      "max": 0.8925496429423121
+    },
+    "z": {
+      "min": -0.005647788256590958,
+      "max": 0.7510453004226585
+    }
+  },
+  "max_distance_from_start_m": 1.0764316792934034,
+  "position_closure_error_m": 0.015132652347998451,
+  "orientation_closure_error_deg": 2.249933950453682,
+  "maximum_orientation_change_deg": 24.172563941822638,
+  "max_z_candidate": {
+    "classification": "MAX_Z_CANDIDATE_UNCONFIRMED",
+    "valid_sample_index": 4364,
+    "csv_line": 4366,
+    "time_from_first_valid_s": 34.960773300379515,
+    "xyz_base_m": [
+      0.5583512597830438,
+      0.22532075772543364,
+      1.0122725163977007
+    ],
+    "relative_xyz_m": [
+      -0.1702533858641161,
+      0.3417852693574075,
+      0.7510453004226585
+    ],
+    "equal_max_z_sample_count": 1,
+    "interpretation": "Maximum height is a candidate only; motion phases and intended turning point require human review."
+  },
+  "review_flags": [
+    "END_POSITION_DIFFERS_FROM_START",
+    "LARGE_ORIENTATION_CHANGE"
+  ],
+  "limitations": [
+    "Host receive times do not establish device timing or force synchronization.",
+    "Partial data, closure and orientation flags do not authorize any replay.",
+    "No anatomical geometry, rescaling, phase segmentation or motion commands are generated."
+  ],
+  "generated_files_sha256": {
+    "trajectory_3d.png": "b1389b5cda30ea431e7eb773a97abba55e8bbc3d50de391f2596f28f43cb5ce7",
+    "projections.png": "e8957da2b1d7911d1b80e4be2f677dd67a9d6a3038d9548c30bc8db6eec7f910",
+    "xyz_time.png": "a83e7b543dd52fa8ee80fd823d3548a237a952959a43e3e4a644fa7d669a7f99",
+    "orientation_time.png": "72fba5434899cebadb2914d188a5de39397a298f361733d3444cd8fe6df83211",
+    "closure_review.png": "a0a076357ec5d60ecbee51e4cfbb276aed44b5a87cda2094d21a7bb99a460732"
+  }
+}

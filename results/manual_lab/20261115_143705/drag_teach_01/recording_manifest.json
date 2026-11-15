@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\experiment.json",
+  "config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+  "config_snapshot_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+  "source_git": {
+    "commit": "3f84419b893c9ca494a4c1fbd00ac1c91df22127",
+    "branch": "paper-personalized-load",
+    "working_tree_status": "?? results/manual_lab/20261115_143705/"
+  },
+  "source_sha256": {
+    "scripts/record_rehab_trajectory.py": "7dbd638a8af990893d182a9493362b52b9888faeafef15f7e04fd5686ff0ddca",
+    "hardware/rokae_adapter.py": "14e74cfb21781a310b8465aeb54dabae28414315a1f109dd912f24e37a2fde78",
+    "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
+    "collection/state.py": "43bebcd0ad8d36d71e8152a45d66e9487edfba1c32e7a3ecb6c980167f9ff798",
+    "hardware/safety_events.py": "665a63eb4b7cfa1a78331a7a9483d137ee2d32d208addbc18bbc05cf8c4e613b",
+    "config/settings.py": "2a0652569a4f8aa9dd99ba81ad2de787ad63d112440872d694adf09ce6da4c46",
+    "config/bundle.py": "6ef762651b2422f93f578a2f5ae2737e0c5f8d9897d46f4ca44d9ef88b8242e5"
+  },
+  "output_files_sha256": {
+    "recorded_tcp.csv": "5045dc6623cdd5a5f391c93e810b9926679255341155b490c3c4aa025e7e3a8f",
+    "recording_status.json": "5d6af17e8122871f986b2fcb82608c25a3fccad52a3d2b94443a5255d1ae23f9"
+  },
+  "ready_for_replay": false,
+  "units": {
+    "position": "base_m",
+    "orientation": "euler_xyz_rad",
+    "joints": "rad"
+  },
+  "timestamp_source": "host_receive_and_query_times_no_robot_device_clock",
+  "operation_state_semantics": "cached adapter operation-state label; not independent verification of OEM drag mode",
+  "operation": "OEM drag teaching selected manually; state recording only",
+  "vendor_session_side_effects": "SDK initialization/connect/disconnect may have controller/session side effects."
+}
