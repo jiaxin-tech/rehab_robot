@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-15T08:04:45.251152+00:00",
-  "git_commit": "c28867d6414631aeaba0726e70c0cef32b60cc58",
+  "generated_at_utc": "2026-11-15T08:13:08.125746+00:00",
+  "git_commit": "e1f5d93c7d240a30621a90fae51e277d20e64ff2",
   "worktree_dirty": false,
   "source_sha256": {
     "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
@@ -30,7 +30,7 @@
     "measurement_validation/robot_execution.py": "96c3f3e41ff095b36d7f27c8afb76e3c73ad2a298e120c702f8a3788e793012e",
     "measurement_validation/passive_response.py": "075add12c49705e551a6467526bc00938772e225a8f7c15e14b9ffbec9d2e21b",
     "measurement_validation/robot_leg_round.py": "c1b406c17c1e26e2a72ae89210d9046d934397e7fa39d1e8e3fd31f48ad3db93",
-    "scripts/audit_paper_evidence.py": "67700f136941f22d2332c8c0dfc8f7270d86bfedb9ac9ba495c2d835b6d7542b",
+    "scripts/audit_paper_evidence.py": "6f7005f73b24dc8eb9f37152cfa33dc33f468c583dc45eeae1622e53b530b017",
     "tests/test_original_training_adapter.py": "5412a76bddeacb7ee65a5ce23eeaadfff1760c385c68897155dd53ab11437201",
     "scripts/tcp_force_training.py": "667c7aa8492bc721d494138be921c29d5106ed0013bdae7034a30b34bfdb3fb7",
     "tests/test_tcp_force_training.py": "5bc879ccf9e6a2e64a407e158c4b45480e2439aa5b907ae1244e8775e67bdca8",
@@ -64,11 +64,15 @@
     "results/manual_lab/20261115_taught_design_v1/summary.json": "9ad06cf5fde63286b3b5654a2c22ccf5573711d11e89b036b33958f8e0f04016",
     "control/taught_tcp_timing.py": "e4908833f089d0386e70f59eb35de48dc9d7fdafae7b4d5b64aeb86f8e8b0151",
     "scripts/preview_taught_timing.py": "31b7dabb8369a40fbec1dc7b451fb37a3fb67539d6d91b734fef4f9680b3e969",
-    "tests/test_taught_tcp_timing.py": "c66cc7a669a69606b2823b3ca28f695fed574af128035c969ab2ab5e2fed4428",
+    "tests/test_taught_tcp_timing.py": "905ce72f78a25c201486e08a9114268ac6b50e7e91bc1dd3ab59c354cb19cb5f",
     "config/taught_tcp_70s.review.json": "c8ac724b0024a577662449accb7ff39d92a4675218c65d705fca8777e91e7efc",
     "results/manual_lab/20261115_taught_70s_v1/geometry.json": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
     "results/manual_lab/20261115_taught_70s_v1/settings.json": "6be327490345cd95537633f9eda777a5cfe6fa4b6c32ea75b666fcb26139d5e4",
-    "results/manual_lab/20261115_taught_70s_v1/summary.json": "8e167f09f4d88e123559ff3ebc4840aa907eec7033b2ce25fba0149f18ef7059"
+    "results/manual_lab/20261115_taught_70s_v1/summary.json": "8e167f09f4d88e123559ff3ebc4840aa907eec7033b2ce25fba0149f18ef7059",
+    "config/taught_tcp_70s.empty.json": "8550c0f33b8f8442d13d4b73d956a7bc13c5056cb986de001fa4fa9aad06aff6",
+    "results/manual_lab/20261115_taught_70s_approved_v1/geometry.json": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+    "results/manual_lab/20261115_taught_70s_approved_v1/settings.json": "6153eb116cd27d4e0475a3bcf6b81ecec4ec66abf2d2aad94bbee5b61c03fcce",
+    "results/manual_lab/20261115_taught_70s_approved_v1/summary.json": "98ae35215b90312e6e4c8f8a2d3395017dda92791e5e38817a0c477c7a399871"
   },
   "scope": "Current source tree, local results and selected hash-checked historical archive; no new hardware or clinical experiment.",
   "historical_evidence_archive_sha256": "eaa9f3f4c9a031c2955e983712bf1847e98c985998a76ca581a89216dc2cce29",
@@ -513,12 +517,34 @@
     "hardware_accessed": false,
     "ready_for_replay": false
   },
+  "approved_70s_timing": {
+    "source_summary": "results/manual_lab/20261115_taught_70s_approved_v1/summary.json",
+    "execution_configuration": "config/taught_tcp_70s.empty.json",
+    "status": "OFFLINE_TIMING_COMPLETE",
+    "execution_review": {
+      "allowed": true,
+      "reasons": [],
+      "requested_duration_s": 70.0,
+      "planned_duration_s": 70.0,
+      "maximum_speed_m_s": 0.12382927059379868,
+      "maximum_acceleration_m_s2": 0.4303140134337129,
+      "speed_limit_m_s": 0.13,
+      "acceleration_limit_m_s2": 0.45,
+      "retiming_margin": 1.01,
+      "automatic_retiming": false,
+      "physical_limits_changed": false
+    },
+    "scope": "User accepted 0.13 m/s and 0.45 m/s2 for this empty-load configuration only.",
+    "shape_changed": false,
+    "hardware_accessed": false,
+    "ready_for_replay": false
+  },
   "verification": {
     "kind": "OFFLINE_TESTS_ONLY",
     "status": "REPORT_PROVIDED",
-    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-15_70S.xml",
-    "sha256": "e48d1e8920c543e7974703eb12a45ee544226ad56a5c92730ab1966570810bbe",
-    "tests": 606,
+    "report": "D:\\rr_paper\\docs\\validation\\TAUGHT_70S_APPROVED_TESTS.xml",
+    "sha256": "7e342312252cb9ddd6aae91199d12278b213d511fd16e50df4b529b6d38439d5",
+    "tests": 8,
     "failures": 0,
     "errors": 0,
     "skipped": 0
