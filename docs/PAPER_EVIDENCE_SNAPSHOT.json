@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-15T08:13:08.125746+00:00",
-  "git_commit": "e1f5d93c7d240a30621a90fae51e277d20e64ff2",
+  "generated_at_utc": "2026-11-15T08:39:52.035699+00:00",
+  "git_commit": "03c18c48618edbd9713bbc8ec5ee408466ef219d",
   "worktree_dirty": false,
   "source_sha256": {
     "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
     "control/independent_tcp_trajectory.py": "7056fc86eba68d992e85a12eb48c7ff38732d67a9b6c9ea3d0939abf9e65f409",
-    "control/robot_trajectory_executor.py": "173d58f43a79d71eb46fdd4cc6205de1f689ad2781d0666f3cb15cb6a9941510",
-    "control/execution_preflight.py": "e261b4ef12cbf117392afd2067b9cbd6ec18c2913c9a6dd77627ff37dc3848d9",
+    "control/robot_trajectory_executor.py": "c510636cb936a982b795fe7816968d5b26ee88c18dcba75f0adf05d3eac6a941",
+    "control/execution_preflight.py": "ca328b1ea0cd839c0227e5abbbbffe0713edcde1b9d52aafaa794d6a81793b69",
     "collection/real_robot_acquisition.py": "071d9f783660d9d2d98c221f2fdcaade18c1079bcd2fa97ff467c70885a9bac1",
     "collection/twincat_leg.py": "0b89dafc51bad085f27ecdea6934c3a6a293aa24f4a2fb82d28bc73a25cb4a40",
     "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
-    "scripts/lab_session.py": "2178fea160a4d64ddf65a3c4317eacbe8d8d781323602421c85423bca77934f0",
+    "scripts/lab_session.py": "199cf1692db4da32db2a94a9fc0dc72d395b5c84753dfb2005b9d70dd910c48f",
     "scripts/train_robot_leg_round.py": "a2c7ce9f71f96049da6882f11c723f0a9c5d6a98e256cb7d2482c603e1c0f896",
     "experiment_algorithm/config.py": "57a73a9988270dfa49b4932a0bc366415ff77e6d4068597e5d9b8dc879b27297",
     "experiment_algorithm/policy.py": "7663a488186b7d3d99e8a6dd3d424dfdf5ab23c550fd800888d26fb929f63b3c",
@@ -26,11 +26,11 @@
     "lower_limb_sim/observation_model.py": "4daea3029f357ff783b4655d371e84d6d46060d2632381fcee58a3e6880a1369",
     "measurement_validation/robot_observation.py": "03b19debd5b20af0db25074b1a16144966dc4072f08f50657792f56f2049a6e9",
     "scripts/original_training_adapter.py": "70dda3b02af479f94ddd5797cb70be167e226a9c96daa93bba78e6dc5f26e339",
-    "control/prepared_trajectory.py": "8e04523649a9aa30f3be72d52cc5f586430c66a81755c64d75afefaa3da2aa28",
-    "measurement_validation/robot_execution.py": "96c3f3e41ff095b36d7f27c8afb76e3c73ad2a298e120c702f8a3788e793012e",
+    "control/prepared_trajectory.py": "d46eafd6f607fbceffa3072c22fcacaa4eb26d201d0338e0a9eecf87489a53c7",
+    "measurement_validation/robot_execution.py": "63ff9974aba376eb2cc91d69643f6191d517eb7f69edb2e522c825256802eecd",
     "measurement_validation/passive_response.py": "075add12c49705e551a6467526bc00938772e225a8f7c15e14b9ffbec9d2e21b",
     "measurement_validation/robot_leg_round.py": "c1b406c17c1e26e2a72ae89210d9046d934397e7fa39d1e8e3fd31f48ad3db93",
-    "scripts/audit_paper_evidence.py": "6f7005f73b24dc8eb9f37152cfa33dc33f468c583dc45eeae1622e53b530b017",
+    "scripts/audit_paper_evidence.py": "855885c4ca78d3bb61afe597700d77e6a954754cffd4ae5471be06b2a5740e27",
     "tests/test_original_training_adapter.py": "5412a76bddeacb7ee65a5ce23eeaadfff1760c385c68897155dd53ab11437201",
     "scripts/tcp_force_training.py": "667c7aa8492bc721d494138be921c29d5106ed0013bdae7034a30b34bfdb3fb7",
     "tests/test_tcp_force_training.py": "5bc879ccf9e6a2e64a407e158c4b45480e2439aa5b907ae1244e8775e67bdca8",
@@ -38,7 +38,7 @@
     "measurement_validation/force_trial_ledger.py": "a135a1a63aac130a1b17205137f85e1e53746fb22e7e66b481890db615f772b5",
     "scripts/manual_leg_check.py": "53db76db8c27bc6f85d258d66b5847ad9b8b43de5966cae3a7e0e305c7c0e442",
     "config/paper_personalized_load.template.json": "2eae0a9e5ed656c4c504c5b01bc4a73b14f01fff26c72b272a4be3ee2d1c1fed",
-    "pytest-core.ini": "0790d43fba6a3f79e033f652d03ff40d8cbe778561f278e04c24a8a43cae0118",
+    "pytest-core.ini": "51bf97ef8de5ac6fdceb70f4a40b4a2a1233058410a7e08ea349d7b466547041",
     "tests/test_force_trial_ledger.py": "8427137d5725ae04124e08fa498b9208ed0f16a5a4a717e41e85cbe9330f9052",
     "tests/test_manual_leg_check.py": "05983d75bf705d357763cb97bac1c3141f7ea5c07cc3c35fd9b7271285911e2a",
     "tests/test_wrench_endpoints.py": "0ff3c579afd629ceb92a25a706819bc19d4d7b514fb5db4deff211b149604cd4",
@@ -46,7 +46,7 @@
     "tests/test_twincat_file_evidence.py": "a1b9643098dda539cb77813895fa6e4885aef97c4e179687c8cc55038e7d33e8",
     "scripts/record_rehab_trajectory.py": "7dbd638a8af990893d182a9493362b52b9888faeafef15f7e04fd5686ff0ddca",
     "scripts/preview_recorded_trajectory.py": "90f94351a953b4095022dee1787edb71932042120b459c6c7306c4d0d9e12244",
-    "scripts/review_empty_recording.py": "e25a12be7829b26dcd93da311a75ad1f4fd42fc6bd2c87bffd106218bf85140c",
+    "scripts/review_empty_recording.py": "3604306984113baa6eb2f7af03fc67212e5315de9d48f0676bde3c501bac0946",
     "tests/test_record_rehab_trajectory.py": "a3b35cb4dfff03fe6862c7bfaff26cb5c5fd94f3526d33ea17ae985816b5a024",
     "tests/test_preview_recorded_trajectory.py": "ba207de59cfe11c667a84b26fb3313d2940015b2993d8c48460d46d86febd2dc",
     "tests/test_review_empty_recording.py": "7b748e14816aa2d3e50b80aa461dc535c51c17ea4b4f047252107a8d8c2df5bc",
@@ -55,10 +55,10 @@
     "tests/test_taught_tcp_trajectory.py": "090a63c1c2ff4b8fde102594aec31d75a2fad3b18c458b452ada648b6b8594d6",
     "tests/test_design_taught_trajectory.py": "b2fc80bdb1942d951e7fe6ef6e3f8d948855d4bca599bff0ed65028fb7c82aa3",
     "config/taught_tcp_empty.template.json": "ae65d3b8d7776e523ecf6c2d3b8b9db52211a1a71c488d94223fa293396a0f12",
-    "scripts/capture_start_anchor.py": "23d8819b974b46d668488464805f06fc62818bfc64701cc701f026ab3a533147",
-    "scripts/run_rehab_experiment.py": "a2edc0851cf2d5f2ed870e86605acdaad161cfd6334ff6d695e66d57f50d6655",
-    "scripts/preview_rehab_trajectory.py": "3e39df613f930c238312b9d3fad61f69110bb37376a54e2a6f831dde6c09f8bc",
-    "tests/test_mainline.py": "1eb1a8c32fe9b91dfd0003bf4686d4a7f9ffc85b0a78ef5517458ea4b30efe1a",
+    "scripts/capture_start_anchor.py": "2db656a14e979c34f180fb58ceff20186b5e6d8a8c98da81f929a6de7fe03abf",
+    "scripts/run_rehab_experiment.py": "9f267b66b2d0be25124c43509206479a5251208d1a0a9b96f21770d628b2feea",
+    "scripts/preview_rehab_trajectory.py": "f867d521ae37522a580c6a83c7e7f5ed2f3d4e9e69c985d2f6825407a88a0f6c",
+    "tests/test_mainline.py": "649b6749ae2783d028909f95ccfded58d1cbbe52998554b27d9706644d31ef8a",
     "results/manual_lab/20261115_taught_design_v1/geometry.json": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
     "results/manual_lab/20261115_taught_design_v1/settings.json": "7c17c052a3cbdbfde9cf72f4dc70a24d5448db4e2d81d1395c9139f1812fa152",
     "results/manual_lab/20261115_taught_design_v1/summary.json": "9ad06cf5fde63286b3b5654a2c22ccf5573711d11e89b036b33958f8e0f04016",
@@ -72,7 +72,16 @@
     "config/taught_tcp_70s.empty.json": "8550c0f33b8f8442d13d4b73d956a7bc13c5056cb986de001fa4fa9aad06aff6",
     "results/manual_lab/20261115_taught_70s_approved_v1/geometry.json": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
     "results/manual_lab/20261115_taught_70s_approved_v1/settings.json": "6153eb116cd27d4e0475a3bcf6b81ecec4ec66abf2d2aad94bbee5b61c03fcce",
-    "results/manual_lab/20261115_taught_70s_approved_v1/summary.json": "98ae35215b90312e6e4c8f8a2d3395017dda92791e5e38817a0c477c7a399871"
+    "results/manual_lab/20261115_taught_70s_approved_v1/summary.json": "98ae35215b90312e6e4c8f8a2d3395017dda92791e5e38817a0c477c7a399871",
+    "control/continuous_taught_trajectory.py": "4e9d0794282848bb708892217b348fb18fe16cda6f5d52a2638e57aaa5feef84",
+    "control/continuous_taught_timing.py": "9983d99b93383e3dc83b9b9a9bcbc5a746796e4e2c7753089705da12335f2582",
+    "scripts/design_continuous_taught_trajectory.py": "bc4a42126280ccaadd093333f7488c92235a4d5ea9b5181d6225b0c5773a3283",
+    "tests/test_continuous_taught_trajectory.py": "9920a3f6b440f668d60ab09502f4eeaa479d7dc6d313876495d96850d071e822",
+    "tests/test_design_continuous_taught_trajectory.py": "9dc332722efb4ead516458a116369a3f4bb4c05cc8c5bb0b1aa7a5f44e523896",
+    "config/continuous_taught_90s.empty.json": "8f922b8fde4460fd9b5dcc518c917bbfddcbe550725f908343acc9310b016adf",
+    "results/manual_lab/20261115_continuous_90s_v1/geometry.json": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+    "results/manual_lab/20261115_continuous_90s_v1/settings.json": "06e9852fed745c2c8fd0b43190d80a6e1930f9fb60aafee345fde52005c4e9d8",
+    "results/manual_lab/20261115_continuous_90s_v1/summary.json": "a59a15a566757c176242024406c3d3e00a9fdc1f8a888ac5c2394d5fcf8ec949"
   },
   "scope": "Current source tree, local results and selected hash-checked historical archive; no new hardware or clinical experiment.",
   "historical_evidence_archive_sha256": "eaa9f3f4c9a031c2955e983712bf1847e98c985998a76ca581a89216dc2cce29",
@@ -358,6 +367,14 @@
       "status_sha256": "aacf16cae25b9ec1a7126a0b9562bc3d6bb5ab68713ab7a9f61237a3b196938e"
     },
     {
+      "session": "taught_empty_01",
+      "status": "EMPTY_LOAD_COMPLETE",
+      "mode": "taught_tcp",
+      "training_status": "NOT_APPLICABLE",
+      "original_training_file_available": false,
+      "status_sha256": "919bf11de9f404b8e49f85d67f931be46d220fd4dc58770577070785beb52b97"
+    },
+    {
       "session": "observe_001",
       "status": "FAILED",
       "mode": "historical",
@@ -539,12 +556,91 @@
     "hardware_accessed": false,
     "ready_for_replay": false
   },
+  "returned_70s_execution": {
+    "session": "results/manual_lab/20261115_161440/taught_empty_01",
+    "status": "EMPTY_LOAD_COMPLETE",
+    "quality_audit": {
+      "passed": false,
+      "error": "wrench gap in motion; no interpolation across missing data"
+    },
+    "evidence_sha256": {
+      "prepared_config.json": "832fafb1ce3920db1f4f82a30adced9124c1a17667917ec65ee31b38debf06ae",
+      "tcp_plan.json": "4a73c05ababf0cf58ffb2ba9679415f5489e1ba7026771e9615295f1283a8350",
+      "anchor.json": "21e97df894bdc6461a95a7c85d497dc5c7409585093b343fed8154755ca175b4",
+      "tcp_safety.json": "e8ac3b17d5ea41005b4a4152e62197e32aaf09b1fe756e38c11ff0a8da9af59f",
+      "tcp_trajectory.csv": "eb37c52c3257577bc2639f63c5a7de2d9c8d17dd2d1535552a85226355cee12b",
+      "dispatch.csv": "ab233acc57279336e617c63185f6fd6f2558c998e0446b9b963259be0759ffd6",
+      "robot/metadata.json": "adc96eb56e451dd709f68db46ed000d9b069336c2bfafd6d8190def9316f307e",
+      "robot/robot_wrench.csv": "d6fb564de72b47c862e6bbd3554f009c912e9a9f204cbd036831e25455d20026",
+      "robot/robot_state.csv": "2470ca85e057a0dcfb53f719985890a56b6e9e42c069ab0eb67f86611843b34b",
+      "robot/trajectory_command.csv": "c092ddb130f8b36cfd884d2a8ef2ebeb589a91ff131dcd26735e7548992c1f7f"
+    },
+    "interpretation": "Physical 70s run; successful motion status does not establish complete wrench data or normal wrench-process cleanup."
+  },
+  "continuous_90s_plan": {
+    "source_summary": "results/manual_lab/20261115_continuous_90s_v1/summary.json",
+    "status": "OFFLINE_DESIGN_COMPLETE",
+    "execution_configuration": "config/continuous_taught_90s.empty.json",
+    "execution_review": {
+      "allowed": true,
+      "reasons": [],
+      "requested_duration_s": 90.0,
+      "planned_duration_s": 90.0,
+      "maximum_speed_m_s": 0.03496977795684572,
+      "maximum_acceleration_m_s2": 0.2886594252562345,
+      "speed_limit_m_s": 0.13,
+      "acceleration_limit_m_s2": 0.45,
+      "retiming_margin": 1.01,
+      "automatic_retiming": false,
+      "physical_limits_changed": false
+    },
+    "speed_verification": {
+      "constant_speed_interval_s": [
+        5.0,
+        85.0
+      ],
+      "commanded_chord_speed_min_m_s": 0.03493022469465605,
+      "commanded_chord_speed_max_m_s": 0.034969774770869246,
+      "commanded_chord_speed_maximum_relative_error": 0.001130956946933881,
+      "phase_boundary_speeds_m_s": {
+        "lift_to_high_reach": 0.034969774003498016,
+        "high_reach_to_return": 0.034969774003498016
+      },
+      "internal_holds_s": 0.0,
+      "whole_cycle_s": 90.0
+    },
+    "geometry_processing": {
+      "method": "densify each old cubic branch, resample the complete loop in arc length, then one global clamped cubic B-spline",
+      "control_spacing_m": 0.02,
+      "control_count": 153,
+      "peak_restoration_base_axis_scales": [
+        1.0,
+        1.0063105694966723,
+        1.0027058996849318
+      ],
+      "preserved_positive_excursions_yz_m": [
+        0.8925496429423121,
+        0.7510453004226585
+      ],
+      "old_to_new_maximum_nearest_distance_m": 0.009212917105338274,
+      "new_to_old_maximum_nearest_distance_m": 0.008865773156905553,
+      "old_path_length_m": 3.028708617508265,
+      "new_path_length_m": 2.9724307902973313,
+      "phase_boundary_definition": "actual global maximum Base Z, then actual global maximum Base Y",
+      "no_two_dimensional_projection": true,
+      "phase_joins_rounded": true
+    },
+    "preview_anchor_source_sha256": "21e97df894bdc6461a95a7c85d497dc5c7409585093b343fed8154755ca175b4",
+    "hardware_accessed": false,
+    "ready_for_replay": false,
+    "loaded_learning_integrated": false
+  },
   "verification": {
     "kind": "OFFLINE_TESTS_ONLY",
     "status": "REPORT_PROVIDED",
-    "report": "D:\\rr_paper\\docs\\validation\\TAUGHT_70S_APPROVED_TESTS.xml",
-    "sha256": "7e342312252cb9ddd6aae91199d12278b213d511fd16e50df4b529b6d38439d5",
-    "tests": 8,
+    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-15_CONTINUOUS_90S.xml",
+    "sha256": "d43cde96ab33ab4923d54cc2473982375ad63d167b06b99a61035a22d198630e",
+    "tests": 634,
     "failures": 0,
     "errors": 0,
     "skipped": 0
