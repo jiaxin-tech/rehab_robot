@@ -42,8 +42,15 @@ def run_capture(
     notes: str = "",
     adapter_factory: AdapterFactory | None = None,
     independent_tcp: bool = False,
+    tcp_trajectory_id: str | None = None,
 ) -> dict[str, Any]:
-    if independent_tcp:
+    if tcp_trajectory_id is not None:
+        from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID
+        if independent_tcp or tcp_trajectory_id != TAUGHT_ID:
+            raise ValueError("unsupported or ambiguous TCP anchor trajectory ID")
+        trajectory_ids = [TAUGHT_ID]
+        first = {"q_hip_rad": 0., "q_knee_rad": 0.}
+    elif independent_tcp:
         from control.independent_tcp_trajectory import TRAJECTORY_ID
         trajectory_ids = [TRAJECTORY_ID]
         first = {"q_hip_rad": 0., "q_knee_rad": 0.}
@@ -51,7 +58,7 @@ def run_capture(
         reference_frame, reference_metadata = load_closed_reference_trajectory(reference)
         trajectory_ids = reference_frame["trajectory_id"].astype(str).unique().tolist()
         first = reference_frame.iloc[0]
-    if not independent_tcp and (len(trajectory_ids) != 1 or trajectory_ids[0] not in ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES):
+    if not independent_tcp and tcp_trajectory_id is None and (len(trajectory_ids) != 1 or trajectory_ids[0] not in ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES):
         raise ValueError(
             "first anchor capture accepts only " +
             ", ".join(sorted(ALLOWED_FIRST_ROBOT_TRIAL_TRAJECTORIES))

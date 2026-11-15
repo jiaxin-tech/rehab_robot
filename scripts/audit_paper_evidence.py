@@ -48,6 +48,14 @@ SOURCES += ("measurement_validation/wrench_endpoints.py", "measurement_validatio
     "scripts/review_empty_recording.py", "tests/test_record_rehab_trajectory.py",
     "tests/test_preview_recorded_trajectory.py", "tests/test_review_empty_recording.py")
 
+SOURCES += ("control/taught_tcp_trajectory.py", "scripts/design_taught_trajectory.py",
+    "tests/test_taught_tcp_trajectory.py", "tests/test_design_taught_trajectory.py",
+    "config/taught_tcp_empty.template.json", "scripts/capture_start_anchor.py",
+    "scripts/run_rehab_experiment.py", "scripts/preview_rehab_trajectory.py", "tests/test_mainline.py")
+
+TAUGHT_DESIGN = "results/manual_lab/20261115_taught_design_v1"
+SOURCES += tuple(TAUGHT_DESIGN + "/" + name for name in ("geometry.json", "settings.json", "summary.json"))
+
 
 def historical_path(relative):
     """Materialize hash-checked selected historical bytes in a disposable cache."""
@@ -144,6 +152,13 @@ def inventory(junit=None):
         metadata.update(robot_observation_source=force_training.METHOD, missing_robot_analysis=[],
             missing_robot_calibration=[key for key in ("unloaded_wrench_bias", "compensation_verified")
                 if config["force_training"].get(key) is None or config["force_training"].get(key) is False])
+    taught_summary = read_json(ROOT / TAUGHT_DESIGN / "summary.json")
+    for name, expected in taught_summary["output_files_sha256"].items():
+        if Path(name).name != name or sha256(ROOT / TAUGHT_DESIGN / name) != expected:
+            raise ValueError("taught design artifact changed: " + name)
+    for name, expected in taught_summary["processing"]["processing_source_sha256"].items():
+        if sha256(ROOT / name) != expected:
+            raise ValueError("taught design processing source changed: " + name)
     verification = {"kind": "OFFLINE_TESTS_ONLY", "status": "NOT_PROVIDED"}
     if junit is not None:
         tree = ET.parse(junit).getroot()
@@ -175,6 +190,14 @@ def inventory(junit=None):
             "peak_speed_m_s": float(np.linalg.norm(table[[f"tcp_v{a}_base" for a in "xyz"]], axis=1).max()),
             "peak_acceleration_m_s2": float(np.linalg.norm(table[[f"tcp_a{a}_base" for a in "xyz"]], axis=1).max()),
             "sample_count": len(table), "hardware_accessed": False},
+        "taught_plan_offline_design": {
+            "source_summary": TAUGHT_DESIGN + "/summary.json",
+            "configuration": "config/taught_tcp_empty.template.json",
+            "status": taught_summary["status"], "settings": taught_summary["settings"],
+            "timing": {k: v for k, v in taught_summary["timing"].items() if k != "iterations"},
+            "output_hashes_verified": True, "processing_source_hashes_verified": True,
+            "hardware_accessed": False, "new_hardware_experiment": False,
+            "ready_for_replay": False, "loaded_learning_integrated": False},
         "verification": verification}
 
 

@@ -233,7 +233,7 @@ class RokaeMotionExecutor:
         self.clock = clock
         self.execution_guard = execution_guard
         self.dispatch_observer = dispatch_observer
-        if trajectory_profile not in ("approved_rehab", "independent_tcp", REALTIME_LINK_PROFILE):
+        if trajectory_profile not in ("approved_rehab", "independent_tcp", "taught_tcp", REALTIME_LINK_PROFILE):
             raise ValueError("unsupported trajectory_profile")
         self.trajectory_profile = trajectory_profile
         if type(use_windows_scheduler_priority) is not bool:
@@ -659,7 +659,8 @@ class RokaeMotionExecutor:
             self._used = True
         preflight.require_allowed()
         from control.independent_tcp_trajectory import TRAJECTORY_ID, trajectory_digest
-        if preflight.trajectory_id == TRAJECTORY_ID and (
+        from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID
+        if preflight.trajectory_id in (TRAJECTORY_ID, TAUGHT_ID) and (
             not preflight.tcp_trajectory_digest
             or trajectory_digest(trajectory) != preflight.tcp_trajectory_digest
         ):
@@ -708,11 +709,20 @@ class RokaeMotionExecutor:
                 )
             )
         else:
+            from types import SimpleNamespace
+            taught_context = {}
+            if preflight.trajectory_id == TAUGHT_ID:
+                if preflight.tcp_rehab_rotation is None or preflight.tcp_anchor_pose_base is None:
+                    raise PermissionError("taught TCP execution requires the preflight frame and anchor")
+                taught_context = dict(
+                    frame=SimpleNamespace(rotation_base_from_rehab=np.asarray(preflight.tcp_rehab_rotation)),
+                    anchor=SimpleNamespace(tcp_pose_base=preflight.tcp_anchor_pose_base))
             content_reasons, maximum_speed, maximum_acceleration = (
                 audit_execution_trajectory_content(
                     trajectory,
                     self.safety,
                     expected_trajectory_id=preflight.trajectory_id,
+                    **taught_context,
                     rehab_z_scale=preflight.rehab_z_scale,
                     joint_limits_deg=(
                         None

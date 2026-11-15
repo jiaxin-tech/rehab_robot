@@ -164,6 +164,7 @@ def run_execute(
     joint_profile_transform: dict[str, Any] | None = None,
     joint_limits_deg: dict[str, Sequence[float]] | None = None,
     tcp_trajectory_settings: dict[str, Any] | None = None,
+    taught_tcp_settings: dict[str, Any] | None = None,
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
@@ -187,16 +188,24 @@ def run_execute(
     anchor = load_start_anchor(anchor_path)
     frame = load_rehab_frame_config(frame_config_path)
     safety = load_experiment_safety_config(safety_config_path)
+    if tcp_trajectory_settings is not None and taught_tcp_settings is not None:
+        raise ValueError("choose exactly one TCP profile")
+    cartesian = tcp_trajectory_settings is not None or taught_tcp_settings is not None
     reference_path = (
         Path(reference_path_override).resolve()
         if reference_path_override is not None
         else (Path(anchor_path).parent / "tcp_trajectory.csv"
-              if tcp_trajectory_settings is not None else _reference_path(trajectory_id))
+              if cartesian else _reference_path(trajectory_id))
     )
     if prepare_realtime and (live_wrench_config is None or "rtcontrolling" not in live_wrench_config.get("allowed_operation_states", [])):
         raise ValueError("RT acquisition configuration required")
     transform = joint_profile_transform or {}
-    if tcp_trajectory_settings is not None:
+    if taught_tcp_settings is not None:
+        from control.taught_tcp_trajectory import build_taught_tcp_trajectory
+        trajectory, audit, trajectory_metadata = build_taught_tcp_trajectory(
+            taught_tcp_settings, current_tcp_start_pose=anchor.tcp_pose_base,
+            rehab_frame=frame)
+    elif tcp_trajectory_settings is not None:
         from control.independent_tcp_trajectory import build_tcp_trajectory
         trajectory, audit, trajectory_metadata = build_tcp_trajectory(
             tcp_trajectory_settings, current_tcp_start_pose=anchor.tcp_pose_base,
@@ -271,11 +280,12 @@ def run_execute(
             "parent_reference_id": trajectory_metadata.get(
                 "parent_reference_id"
             ),
-            "reference_version": ("independent_tcp_v1" if tcp_trajectory_settings is not None
+            "reference_version": (audit.trajectory_id if taught_tcp_settings is not None
+                                  else "independent_tcp_v1" if tcp_trajectory_settings is not None
                                   else MEASURED_ASYMMETRIC_CLOSED_REFERENCE),
             "reference_path": str(reference_path.resolve()),
-            "approved_hip_rom": None if tcp_trajectory_settings is not None else list(APPROVED_HIP_ROM_DEG),
-            "approved_knee_rom": None if tcp_trajectory_settings is not None else list(APPROVED_KNEE_ROM_DEG),
+            "approved_hip_rom": None if cartesian else list(APPROVED_HIP_ROM_DEG),
+            "approved_knee_rom": None if cartesian else list(APPROVED_KNEE_ROM_DEG),
             "rom_protocol_version": ROM_PROTOCOL_VERSION,
             "rehab_frame": frame.as_metadata(),
             "rehab_frame_config_path": str(Path(frame_config_path).resolve()),
@@ -406,7 +416,7 @@ def run_execute(
                 "realtime_schedule_interpolation": getattr(
                     motion_adapter, "schedule_interpolation_mode", None
                 ),
-                "trajectory_profile": "independent_tcp" if tcp_trajectory_settings is not None else "approved_rehab",
+                "trajectory_profile": trajectory_metadata["mode"] if cartesian else "approved_rehab",
             }
         )
         extra = {}
@@ -422,7 +432,7 @@ def run_execute(
             # Do not require Windows process/thread priority changes for a
             # physical run. Runtime safety gates remain enforced.
             use_windows_scheduler_priority=False,
-            trajectory_profile="independent_tcp" if tcp_trajectory_settings is not None else "approved_rehab",
+            trajectory_profile=trajectory_metadata["mode"] if cartesian else "approved_rehab",
             **extra,
         )
         result = executor.execute(trajectory, preflight)

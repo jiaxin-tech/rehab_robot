@@ -50,6 +50,12 @@ def _plot_preview(trajectory, output_dir: Path) -> list[Path]:
     figure = plt.figure(figsize=(7.2, 5.6), constrained_layout=True)
     axis = figure.add_subplot(111, projection="3d")
     axis.plot(xyz[:, 0], xyz[:, 1], xyz[:, 2], linewidth=1.8)
+    center = (xyz.max(axis=0) + xyz.min(axis=0)) / 2
+    half_span = max(float(np.ptp(xyz, axis=0).max()) / 2, .001)
+    axis.set_xlim(center[0]-half_span, center[0]+half_span)
+    axis.set_ylim(center[1]-half_span, center[1]+half_span)
+    axis.set_zlim(center[2]-half_span, center[2]+half_span)
+    axis.set_box_aspect((1, 1, 1))
     axis.scatter(*xyz[0], color="green", s=45, label="start / closed end")
     axis.set_xlabel("Base X (m)")
     axis.set_ylabel("Base Y (m)")
@@ -109,16 +115,23 @@ def preview_trajectory(
     knee_phase_shift_s: float = 0.0,
     reference_start_tolerance_rad: float = 1e-9,
     tcp_trajectory_settings: dict[str, Any] | None = None,
+    taught_tcp_settings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate review artifacts without importing or touching hardware."""
     resolved_anchor = load_start_anchor(anchor) if isinstance(anchor, (str, Path)) else anchor
     if not isinstance(resolved_anchor, StartAnchor):
         raise TypeError("anchor must be a StartAnchor or JSON path")
     frame = load_rehab_frame_config(frame_config)
-    if tcp_trajectory_settings is not None:
-        from control.independent_tcp_trajectory import build_tcp_trajectory
-        trajectory, audit, metadata = build_tcp_trajectory(
-            tcp_trajectory_settings, current_tcp_start_pose=resolved_anchor.tcp_pose_base,
+    if tcp_trajectory_settings is not None and taught_tcp_settings is not None:
+        raise ValueError("choose exactly one TCP profile")
+    if tcp_trajectory_settings is not None or taught_tcp_settings is not None:
+        if taught_tcp_settings is not None:
+            from control.taught_tcp_trajectory import build_taught_tcp_trajectory as builder
+        else:
+            from control.independent_tcp_trajectory import build_tcp_trajectory as builder
+        trajectory, audit, metadata = builder(
+            taught_tcp_settings if taught_tcp_settings is not None else tcp_trajectory_settings,
+            current_tcp_start_pose=resolved_anchor.tcp_pose_base,
             rehab_frame=frame)
         if audit.trajectory_id != resolved_anchor.trajectory_id:
             raise ValueError("anchor trajectory_id does not match TCP plan")

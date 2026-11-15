@@ -18,6 +18,10 @@ def assert_frozen_trajectory(expected, path):
 
 
 def build_prepared_trajectory(plan, *, current_tcp_start_pose, rehab_frame):
+    if plan.get("mode") == "taught_tcp":
+        from control.taught_tcp_trajectory import build_taught_tcp_trajectory
+        return build_taught_tcp_trajectory(plan["tcp_settings"],
+            current_tcp_start_pose=current_tcp_start_pose, rehab_frame=rehab_frame)
     if plan.get("mode") == "original_candidate":
         source = Path(plan["reference_path"])
         if hashlib.sha256(source.read_bytes()).hexdigest() != plan["reference_sha256"]:

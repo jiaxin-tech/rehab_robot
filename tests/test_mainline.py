@@ -6520,12 +6520,12 @@ def test_personal_archive_completed_session(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("fails", [False, True])
-@pytest.mark.parametrize("independent", [False, True])
+@pytest.mark.parametrize("independent", [False, True, "taught"])
 def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context, fails, independent):
     from scripts import run_rehab_experiment as runner
     c = personal_context
     if independent:
-        request = _tcp_test_request(c)
+        request = (_taught_test_request(c, tmp_path) if independent == "taught" else _tcp_test_request(c))
         c.anchor, c.audit = request["anchor"], request["audit"]
     anchor_path = tmp_path / "anchor.json"
     c.anchor.save_json(anchor_path)
@@ -6565,7 +6565,9 @@ def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context
         motion_factory=lambda adapter: c.motion, prepare_realtime=True, wrench_hz=50,
         live_wrench_config={"connection": {"robot_ip": "192.0.2.1", "local_ip": "192.0.2.2"},
                             "budgets": {"startup_s": 1}, "allowed_operation_states": ["rtcontrolling"]})
-    if independent:
+    if independent == "taught":
+        kwargs["taught_tcp_settings"] = request["settings"]
+    elif independent:
         kwargs["tcp_trajectory_settings"] = personal_round.configuration()["trajectory"]
     if fails:
         with pytest.raises(RuntimeError, match="synthetic target failure"):
@@ -6577,7 +6579,7 @@ def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context
     metadata = json.loads((tmp_path / "robot/metadata.json").read_text(encoding="utf8"))
     assert metadata["logger"]["status"] == ("failed" if fails else "completed")
     if independent:
-        assert metadata["trajectory_profile"] == "independent_tcp"
+        assert metadata["trajectory_profile"] == ("taught_tcp" if independent == "taught" else "independent_tcp")
         commands = pd.read_csv(tmp_path / "robot/trajectory_command.csv")
         assert commands.q_hip_ref.isna().all()
         assert commands.q_knee_ref.isna().all()
@@ -7372,3 +7374,82 @@ def test_command_logging_flushes_before_dispatch_and_syncs_only_on_close(tmp_pat
             assert len(stream.readlines()) == 2
         logger.close(completed=True)
         assert call(command_fd) in sync.call_args_list
+
+
+def _taught_test_request(c, tmp_path):
+    import hashlib
+    from control.taught_tcp_trajectory import build_taught_tcp_trajectory, TRAJECTORY_ID
+    geometry = {"schema_version": 1, "recorded_anchor_pose": list(c.anchor.tcp_pose_base),
+        "source": {"test_only": True}, "segments": [
+        {"phase": "lift", "control_points_delta_base_m": [[0,0,0],[0,0,.03],[0,0,.07],[0,0,.1]]},
+        {"phase": "high_reach", "control_points_delta_base_m": [[0,0,.1],[0,.03,.1],[0,.07,.09],[0,.1,.08]]},
+        {"phase": "return", "control_points_delta_base_m": [[0,.1,.08],[0,.07,.06],[0,.03,.03],[0,0,0]]}]}
+    source = tmp_path / 'geometry.json'
+    source.write_text(json.dumps(geometry), encoding='utf-8')
+    settings = dict(geometry_path=str(source), geometry_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+        scale_x=1.,scale_y=1.,scale_z=1.,lift_duration_s=20.,reach_duration_s=20.,return_duration_s=20.,
+        start_hold_s=2.,turn_hold_s=2.,end_hold_s=2.,sample_period_s=.1)
+    anchor = replace(c.anchor, trajectory_id=TRAJECTORY_ID)
+    table, audit, _ = build_taught_tcp_trajectory(settings,
+        current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=c.frame)
+    return c.request | dict(anchor=anchor,trajectory=table,audit=audit,settings=settings)
+
+
+def test_taught_preflight_binds_path_and_executor_content(tmp_path, personal_context):
+    from control.prepared_trajectory import build_prepared_trajectory
+    c=personal_context
+    request=_taught_test_request(c,tmp_path)
+    settings=request.pop('settings')
+    preflight=evaluate_offline_execution_request(**request)
+    preflight.require_allowed()
+    rebuilt,_,_=build_prepared_trajectory({'mode':'taught_tcp','tcp_settings':settings},
+        current_tcp_start_pose=request['anchor'].tcp_pose_base,rehab_frame=c.frame)
+    pd.testing.assert_frame_equal(rebuilt,request['trajectory'])
+    request['trajectory'].loc[10,'tcp_y_base'] += .001
+    executor,_=personal_executor(c)
+    with pytest.raises(PermissionError,match='changed after preflight'):
+        executor.execute(request['trajectory'],preflight)
+    assert 'target' not in c.events
+
+
+def test_taught_empty_check_cli_uses_empty_load_gate(monkeypatch):
+    calls=[]
+    monkeypatch.setattr(personal_round,'check_config',lambda path,**kw:calls.append(kw) or [])
+    assert personal_round.main(['check','--empty-load'])==0
+    assert calls==[dict(empty_load=True,require_physical_files=True)]
+
+
+def test_taught_prepare_run_preserves_profile_and_rejects_changed_source(tmp_path,monkeypatch,personal_context):
+    c=personal_context
+    request=_taught_test_request(c,tmp_path)
+    config=personal_round.configuration()
+    config['trajectory']={'mode':'taught_tcp',**request['settings']}
+    config['training']['mode']='disabled'
+    config['training']['enabled']=False
+    config_path=tmp_path/'config.json'
+    personal_round.atomic_json(config_path,config)
+    monkeypatch.setattr(personal_round,'_check_config_for_operation',lambda *a,**k:[])
+    calls=[]
+    def capture(**kw):
+        assert kw['tcp_trajectory_id']==request['audit'].trajectory_id
+        calls.append('capture')
+        request['anchor'].save_json(kw['output_path'])
+    def execute(**kw):
+        calls.append('execute')
+        assert kw['taught_tcp_settings']==request['settings']
+        assert 'tcp_trajectory_settings' not in kw
+        kw['dispatch_observer'](0,1,2)
+        return {'completed':True,'same_session_realtime_cleanup_completed':True}
+    with pytest.raises(ValueError,match='empty-load validation only'):
+        personal_round.prepare(config_path,tmp_path/'loaded',capture_fn=capture)
+    assert not calls
+    empty=tmp_path/'empty'
+    personal_round.prepare(config_path,empty,empty_load=True,capture_fn=capture)
+    assert personal_round.run(empty,live=True,empty_load=True,execute_fn=execute)['status']=='EMPTY_LOAD_COMPLETE'
+    replay=tmp_path/'replay'
+    personal_round.repeat(empty,replay,capture_fn=capture)
+    source=Path(request['settings']['geometry_path'])
+    source.write_text(source.read_text()+' ',encoding='utf-8')
+    with pytest.raises(ValueError,match='SHA|sha|hash|changed'):
+        personal_round.run(replay,live=True,empty_load=True,execute_fn=execute)
+    assert calls.count('execute')==1

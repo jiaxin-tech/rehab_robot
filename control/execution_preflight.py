@@ -47,6 +47,8 @@ class ExecutionPreflight:
     rehab_z_scale: float = 1.0
     joint_limits_deg: tuple[tuple[float, float], tuple[float, float]] | None = None
     tcp_trajectory_digest: str | None = None
+    tcp_rehab_rotation: tuple[tuple[float, ...], ...] | None = None
+    tcp_anchor_pose_base: tuple[float, ...] | None = None
 
     def require_allowed(self):
         if not self.allowed:
@@ -139,6 +141,10 @@ def audit_execution_trajectory_content(
     """Independently audit the exact table that may reach the scheduler."""
 
     from control.independent_tcp_trajectory import TRAJECTORY_ID, audit_tcp_trajectory
+    from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID, audit_taught_tcp_trajectory
+    if expected_trajectory_id == TAUGHT_ID:
+        return audit_taught_tcp_trajectory(trajectory, safety,
+            expected_trajectory_id=expected_trajectory_id, frame=frame, anchor=anchor)
     if expected_trajectory_id == TRAJECTORY_ID:
         return audit_tcp_trajectory(trajectory, safety,
             expected_trajectory_id=expected_trajectory_id, frame=frame, anchor=anchor)
@@ -452,6 +458,7 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
         requested_anchor_id, frame, anchor, safety, trajectory, audit,
         rehab_z_scale=1.0, joint_limits_deg=None):
     from control.independent_tcp_trajectory import TRAJECTORY_ID, trajectory_digest
+    from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID
     reasons = list(safety.execution_block_reasons())
     if mode != "execute" or enable_motion is not True or operator_confirmation != OPERATOR_CONFIRMATION:
         reasons.append("explicit motion confirmation required")
@@ -473,7 +480,10 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
         maximum_tcp_speed_m_s=speed,
         maximum_tcp_acceleration_m_s2=acceleration,
         tcp_trajectory_digest=(trajectory_digest(trajectory)
-            if audit.trajectory_id == TRAJECTORY_ID else None),
+            if audit.trajectory_id in (TRAJECTORY_ID, TAUGHT_ID) else None),
+        tcp_rehab_rotation=(tuple(tuple(float(v) for v in row) for row in frame.rotation_base_from_rehab)
+                            if audit.trajectory_id == TAUGHT_ID else None),
+        tcp_anchor_pose_base=(tuple(anchor.tcp_pose_base) if audit.trajectory_id == TAUGHT_ID else None),
         rehab_z_scale=float(rehab_z_scale),
         joint_limits_deg=(
             None
@@ -528,4 +538,6 @@ def evaluate_execution_preflight(*, acquisition_health, logger, robot_adapter, c
         joint_limits_deg=result.joint_limits_deg,
         runtime_robot_summary=summary,
         tcp_trajectory_digest=result.tcp_trajectory_digest,
+        tcp_rehab_rotation=result.tcp_rehab_rotation,
+        tcp_anchor_pose_base=result.tcp_anchor_pose_base,
     )

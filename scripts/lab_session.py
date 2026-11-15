@@ -459,7 +459,7 @@ def _capture_leg_start_origin(config_path, output_path, *, sample_count=20):
             time.sleep(0.01)
     finally:
         source.close()
-    if c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate"):
+    if c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate", "taught_tcp"):
         payload = {"origin_role": "passive_leg_start_check", "axes": {},
                    "session_calibration": c["calibration"],
                    "calibration_zero_counts_changed": False, "blocking_reasons": []}
@@ -515,7 +515,7 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
     acquisition_fields = (("wrench_hz",) if not capture_leg else
         ("pre_roll_s", "post_roll_s", "wrench_hz", "max_leg_start_age_s",
          "max_start_angle_error_deg", "max_tracking_error_deg"))
-    independent = c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate")
+    independent = c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate", "taught_tcp")
     if independent:
         acquisition_fields = tuple(key for key in acquisition_fields if key != "max_tracking_error_deg")
         # Candidate association is checked against the frozen session plan.
@@ -530,6 +530,15 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
     if capture_leg:
         check("calibration", calibration)
     from scripts.tcp_force_training import active as force_active, validate_config as validate_force
+    if c.get("trajectory", {}).get("mode") == "taught_tcp":
+        if not empty_load:
+            problems.append("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
+        def taught_spec():
+            from control.taught_tcp_trajectory import build_taught_tcp_trajectory
+            settings = {k: v for k, v in c["trajectory"].items() if k != "mode"}
+            build_taught_tcp_trajectory(settings, current_tcp_start_pose=[0.]*6,
+                rehab_frame=load_rehab_frame_config(config_path))
+        check("taught TCP geometry", taught_spec)
     if force_active(c):
         check("TCP force task", lambda: validate_force(c, measurement=not empty_load))
     if not empty_load and c.get("trajectory", {}).get("mode") == "original_candidate":
@@ -812,11 +821,17 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
                            leg_origin_capture_fn, trajectory_settings=None,
                            parent_session=None, repeat_index=None):
     from control.independent_tcp_trajectory import build_tcp_trajectory, audit_tcp_trajectory
+    taught = c["trajectory"].get("mode") == "taught_tcp"
+    if taught:
+        if not empty_load:
+            raise ValueError("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
+        from control.taught_tcp_trajectory import build_taught_tcp_trajectory as build_tcp_trajectory
+        from control.taught_tcp_trajectory import audit_taught_tcp_trajectory as audit_tcp_trajectory
     anchor = load_start_anchor(directory / "anchor.json")
     frame = load_rehab_frame_config(config_path)
     settings = dict(trajectory_settings or c["trajectory"])
     settings.pop("mode", None)
-    # Both modes use the same conservative limits and Cartesian geometry.
+    # Cartesian profiles share conservative physical limits.
     motion = dict(c["motion"])
     speed, acceleration, margin = _empty_load_settings(c)
     motion["max_tcp_speed_m_s"] = min(speed, motion["max_tcp_speed_m_s"])
@@ -827,8 +842,14 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
     a = np.linalg.norm(table[[f"tcp_a{axis}_base" for axis in "xyz"]], axis=1).max()
     scale = max(1., margin*v/motion["max_tcp_speed_m_s"],
                 np.sqrt(margin*a/motion["max_tcp_acceleration_m_s2"]))
-    for key in ("lift_duration_s", "return_duration_s"):
+    duration_keys = ("lift_duration_s", "reach_duration_s", "return_duration_s") if taught else ("lift_duration_s", "return_duration_s")
+    for key in duration_keys:
         settings[key] *= scale
+    if taught:
+        from control.taught_tcp_trajectory import stage_kinematic_extrema
+        for key, (stage_speed, stage_accel) in zip(duration_keys, stage_kinematic_extrema(settings)):
+            settings[key] *= max(1., margin*stage_speed/motion["max_tcp_speed_m_s"],
+                np.sqrt(margin*stage_accel/motion["max_tcp_acceleration_m_s2"]))
     table, audit, metadata = build_tcp_trajectory(settings,
         current_tcp_start_pose=anchor.tcp_pose_base, rehab_frame=frame)
     metadata["anchor"] = anchor.to_dict()
@@ -860,8 +881,10 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
         origin = leg_origin_capture_fn(config_path, leg_path)
         state.update(leg_start_origin_path=str(leg_path), leg_start_origin=origin)
     preview_trajectory(anchor=anchor, frame_config=config_path,
-        output_dir=directory / "preview", tcp_trajectory_settings=metadata["tcp_settings"])
-    state.update(trajectory_mode="independent_tcp", tcp_plan=metadata,
+        output_dir=directory / "preview",
+        **({"taught_tcp_settings": metadata["tcp_settings"]} if taught else
+           {"tcp_trajectory_settings": metadata["tcp_settings"]}))
+    state.update(trajectory_mode="taught_tcp" if taught else "independent_tcp", tcp_plan=metadata,
         reference_path=str(directory / "tcp_trajectory.csv"),
         safety_config_path=str(directory / "tcp_safety.json"),
         **({"parent_session": str(parent_session), "repeat_index": int(repeat_index)}
@@ -897,6 +920,8 @@ def _passive_leg_guard(capture, c, origin, *, before_motion=False):
 
 
 def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
+    if state.get("trajectory_mode") == "taught_tcp" and not empty_load:
+        raise ValueError("taught_tcp supports empty-load validation only")
     if bool(state.get("empty_load")) != bool(empty_load):
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
@@ -994,6 +1019,8 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
             prepare_realtime=True, dispatch_observer=dispatched)
         if state["trajectory_mode"] == "original_candidate":
             kwargs["reference_path_override"] = Path(plan["reference_path"])
+        elif state["trajectory_mode"] == "taught_tcp":
+            kwargs["taught_tcp_settings"] = plan["tcp_settings"]
         else:
             kwargs["tcp_trajectory_settings"] = plan["tcp_settings"]
         if guard is not None:
@@ -1071,6 +1098,9 @@ def prepare(
     try:
         r = c["robot"]
         independent = c.get("trajectory", {}).get("mode") == "independent_tcp"
+        taught = c.get("trajectory", {}).get("mode") == "taught_tcp"
+        if taught and not empty_load:
+            raise ValueError("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
         original = c.get("trajectory", {}).get("mode") == "original_candidate"
         if independent:
             from scripts.tcp_force_training import active, selected_settings
@@ -1087,6 +1117,7 @@ def prepare(
             selected = matches[0]
         capture_fn(robot_ip=r["ip"], output_path=directory / "anchor.json",
                    **({"independent_tcp": True} if independent else {}),
+                   **({"tcp_trajectory_id": "drag_taught_loop_v1"} if taught else {}),
                    **({"reference": selected["path"]} if original else {}),
                    adapter_factory=_configured_adapter_factory(local_ip=r["local_ip"], robot_class=r["robot_class"], state_interval_ms=None,
                        collision_source=r["collision_source"], collision_event_max_age_s=r["collision_event_max_age_s"]))
@@ -1094,7 +1125,7 @@ def prepare(
             _prepare_original_candidate(config_path, directory, c, state, empty_load,
                 leg_origin_capture_fn, selected, parent_session, repeat_index)
             return state
-        if independent:
+        if independent or taught:
             _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
                                    leg_origin_capture_fn, trajectory_settings,
                                    parent_session, repeat_index)
@@ -1202,9 +1233,11 @@ def run_algorithm_worker(directory, request, timeout):
 def train_session(directory, *, training_mode="auto"):
     directory = Path(directory).resolve()
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+    if state.get("trajectory_mode") == "taught_tcp":
+        raise ValueError("taught_tcp empty-load validation does not train a load policy")
     if training_mode not in ("auto", "passive", "joint"):
         raise ValueError("unknown training mode")
-    independent = state.get("trajectory_mode") in ("independent_tcp", "original_candidate")
+    independent = state.get("trajectory_mode") in ("independent_tcp", "original_candidate", "taught_tcp")
     if training_mode == "joint" and independent:
         raise ValueError("joint-reference training cannot train independent TCP motion")
     if training_mode == "passive" and not independent:
@@ -1243,9 +1276,15 @@ def train_session(directory, *, training_mode="auto"):
 def analyze(directory):
     directory = Path(directory).resolve()
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+    if state.get("trajectory_mode") == "taught_tcp":
+        from measurement_validation.robot_execution import audit_robot_execution
+        state["completion_trajectory_audit"] = audit_robot_execution(directory, allow_empty=True)
+        state["analysis_status"] = "COMPLETE"
+        report(directory, state)
+        return state
     if state["status"] not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"):
         raise ValueError("a completed recording is required")
-    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
+    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate", "taught_tcp"):
         if state.get("learning_mode") == "tcp_force":
             from scripts.tcp_force_training import measure
             state["force_response"] = measure(directory)
@@ -1308,14 +1347,14 @@ def _run(directory, *, live=False, empty_load=False, capture_factory=LegCaptureP
         raise ValueError("prepare a new session before running")
     if state.get("trajectory_mode") == "original_candidate" and not empty_load:
         raise ValueError("six-parameter route is an offline comparison only; prepare an independent TCP force session")
-    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
+    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate", "taught_tcp"):
         return _run_tcp(directory, state, empty_load=empty_load,
                         capture_factory=capture_factory, execute_fn=execute_fn)
     if bool(state.get("empty_load", False)) != bool(empty_load):
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
     c = configuration(config_path)
-    if c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate"):
+    if c.get("trajectory", {}).get("mode") in ("independent_tcp", "original_candidate", "taught_tcp"):
         raise ValueError("legacy session cannot run in independent TCP mode; prepare a new session")
     blockers = _check_config_for_operation(
         state["config_path"], empty_load=empty_load
@@ -1556,10 +1595,12 @@ def repeat(source_directory, directory, *, live=False, empty_load=None,
     source_directory = Path(source_directory).resolve()
     target_directory = Path(directory).resolve()
     source_state = json.loads((source_directory / "round_status.json").read_text(encoding="utf-8"))
+    if source_state.get("trajectory_mode") == "taught_tcp" and (use_trained or evaluation or not source_state.get("empty_load")):
+        raise ValueError("taught_tcp supports exact empty-load repeats only")
     completed = {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"}
     if source_state.get("status") not in completed:
         raise ValueError("repeat source must be a completed session")
-    if source_state.get("trajectory_mode") not in ("independent_tcp", "original_candidate"):
+    if source_state.get("trajectory_mode") not in ("independent_tcp", "original_candidate", "taught_tcp"):
         raise ValueError("repeat currently requires an independent TCP source session")
     source_plan = source_state.get("tcp_plan")
     if not isinstance(source_plan, dict):
@@ -1637,15 +1678,15 @@ def complete(directory):
     """Promote a successful recording to a final, reviewable COMPLETE state."""
     directory = Path(directory).resolve()
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
-    if state.get("status") == "COMPLETE" and state.get("trajectory_mode") not in ("independent_tcp", "original_candidate"):
+    if state.get("status") == "COMPLETE" and state.get("trajectory_mode") not in ("independent_tcp", "original_candidate", "taught_tcp"):
         return state
     if state.get("status") not in {"EMPTY_LOAD_COMPLETE", "CAPTURE_COMPLETE", "ROUND_COMPLETE", "COMPLETE"}:
         raise ValueError("complete requires a successful executed or analyzed session")
     execution = state.get("execution", {})
-    if (state.get("trajectory_mode") in ("independent_tcp", "original_candidate") or execution) and (execution.get("completed") is not True or
+    if (state.get("trajectory_mode") in ("independent_tcp", "original_candidate", "taught_tcp") or execution) and (execution.get("completed") is not True or
                       execution.get("same_session_realtime_cleanup_completed") is not True):
         raise ValueError("execution completion and realtime cleanup evidence are required")
-    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate"):
+    if state.get("trajectory_mode") in ("independent_tcp", "original_candidate", "taught_tcp"):
         if not state.get("empty_load"):
             if state.get("learning_mode") == "tcp_force":
                 if state.get("trial_purpose") == "evaluation":
@@ -1702,13 +1743,13 @@ def main(argv=None):
     parser.add_argument("--live", action="store_true")
     parser.add_argument("--from-current", action="store_true", help="run from a newly captured current pose in a new session")
     parser.add_argument("--empty-load", action="store_true",
-                        help="prepare, run, or repeat a slow trajectory without dummy-leg capture")
+                        help="check, prepare, run, or repeat a slow trajectory without dummy-leg capture")
     parser.add_argument("--duration", type=float, default=10., help="observation duration in seconds")
     args = parser.parse_args(argv)
     if args.from_current and args.action != "run":
         parser.error("--from-current requires run")
-    if args.empty_load and args.action not in ("prepare", "run", "repeat"):
-        parser.error("--empty-load requires prepare or run")
+    if args.empty_load and args.action not in ("check", "prepare", "run", "repeat"):
+        parser.error("--empty-load requires check, prepare, run, or repeat")
     if args.action == "repeat" and args.source is None:
         parser.error("--source is required for repeat")
     if args.trained and args.action != "repeat":
@@ -1720,7 +1761,7 @@ def main(argv=None):
     if args.action == "complete" and args.live:
         parser.error("complete is offline and does not accept --live")
     if args.action == "check":
-        problems = check_config(args.config, require_physical_files=True)
+        problems = check_config(args.config, empty_load=args.empty_load, require_physical_files=True)
         print("\n".join(problems) if problems else "READY")
         return int(bool(problems))
     if args.session is None:
