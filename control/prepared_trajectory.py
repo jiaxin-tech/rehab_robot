@@ -18,6 +18,10 @@ def assert_frozen_trajectory(expected, path):
 
 
 def build_prepared_trajectory(plan, *, current_tcp_start_pose, rehab_frame):
+    if plan.get("mode") == "continuous_taught_tcp":
+        from control.continuous_taught_trajectory import build_continuous_taught_trajectory
+        return build_continuous_taught_trajectory(plan["tcp_settings"],
+            current_tcp_start_pose=current_tcp_start_pose, rehab_frame=rehab_frame)
     if plan.get("mode") == "taught_tcp":
         from control.taught_tcp_trajectory import build_taught_tcp_trajectory
         return build_taught_tcp_trajectory(plan["tcp_settings"],

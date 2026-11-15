@@ -6520,12 +6520,13 @@ def test_personal_archive_completed_session(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("fails", [False, True])
-@pytest.mark.parametrize("independent", [False, True, "taught"])
+@pytest.mark.parametrize("independent", [False, True, "taught", "continuous"])
 def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context, fails, independent):
     from scripts import run_rehab_experiment as runner
     c = personal_context
     if independent:
-        request = (_taught_test_request(c, tmp_path) if independent == "taught" else _tcp_test_request(c))
+        request = (_continuous_test_request(c, tmp_path) if independent == "continuous" else
+                   _taught_test_request(c, tmp_path) if independent == "taught" else _tcp_test_request(c))
         c.anchor, c.audit = request["anchor"], request["audit"]
     anchor_path = tmp_path / "anchor.json"
     c.anchor.save_json(anchor_path)
@@ -6565,7 +6566,9 @@ def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context
         motion_factory=lambda adapter: c.motion, prepare_realtime=True, wrench_hz=50,
         live_wrench_config={"connection": {"robot_ip": "192.0.2.1", "local_ip": "192.0.2.2"},
                             "budgets": {"startup_s": 1}, "allowed_operation_states": ["rtcontrolling"]})
-    if independent == "taught":
+    if independent == "continuous":
+        kwargs["continuous_taught_settings"] = request["settings"]
+    elif independent == "taught":
         kwargs["taught_tcp_settings"] = request["settings"]
     elif independent:
         kwargs["tcp_trajectory_settings"] = personal_round.configuration()["trajectory"]
@@ -6579,7 +6582,8 @@ def test_personal_execute_runner_cleanup(tmp_path, monkeypatch, personal_context
     metadata = json.loads((tmp_path / "robot/metadata.json").read_text(encoding="utf8"))
     assert metadata["logger"]["status"] == ("failed" if fails else "completed")
     if independent:
-        assert metadata["trajectory_profile"] == ("taught_tcp" if independent == "taught" else "independent_tcp")
+        assert metadata["trajectory_profile"] == ("continuous_taught_tcp" if independent == "continuous" else
+                                                  "taught_tcp" if independent == "taught" else "independent_tcp")
         commands = pd.read_csv(tmp_path / "robot/trajectory_command.csv")
         assert commands.q_hip_ref.isna().all()
         assert commands.q_knee_ref.isna().all()
@@ -7469,3 +7473,66 @@ def test_taught_prepare_run_preserves_profile_and_rejects_changed_source(tmp_pat
     with pytest.raises(ValueError,match='SHA|sha|hash|changed'):
         personal_round.run(replay,live=True,empty_load=True,execute_fn=execute)
     assert calls.count('execute')==1
+
+
+def _continuous_test_request(c, tmp_path):
+    import hashlib
+    from control.continuous_taught_trajectory import geometry_from_taught, build_continuous_taught_trajectory, TRAJECTORY_ID
+    previous=_taught_test_request(c,tmp_path)
+    geometry,_=geometry_from_taught(previous['settings'])
+    source=tmp_path/'continuous_geometry.json'
+    source.write_text(json.dumps(geometry),encoding='utf-8')
+    settings=dict(geometry_path=str(source),geometry_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
+        scale_x=1.,scale_y=1.,scale_z=1.,cycle_duration_s=90.,ramp_duration_s=5.,sample_period_s=.02)
+    anchor=replace(c.anchor,trajectory_id=TRAJECTORY_ID)
+    table,audit,_=build_continuous_taught_trajectory(settings,current_tcp_start_pose=anchor.tcp_pose_base,rehab_frame=c.frame)
+    return c.request | dict(anchor=anchor,trajectory=table,audit=audit,settings=settings)
+
+
+def test_continuous_preflight_and_runtime_bind_frame_anchor_and_exact_csv(tmp_path,personal_context):
+    request=_continuous_test_request(personal_context,tmp_path)
+    request.pop('settings')
+    preflight=evaluate_offline_execution_request(**request)
+    preflight.require_allowed()
+    assert preflight.tcp_rehab_rotation is not None and preflight.tcp_anchor_pose_base is not None
+    request['trajectory'].loc[12,'tcp_y_base']+=.001
+    executor,_=personal_executor(personal_context)
+    with pytest.raises(PermissionError,match='changed after preflight'):
+        executor.execute(request['trajectory'],preflight)
+    assert 'target' not in personal_context.events
+
+
+def test_continuous_session_prepare_repeat_dispatch_and_empty_only(tmp_path,personal_context):
+    request=_continuous_test_request(personal_context,tmp_path)
+    config=personal_round.configuration()
+    config['trajectory']=dict(mode='continuous_taught_tcp',fixed_cycle_duration_s=90.,**request['settings'])
+    config['training'].update(enabled=False,mode='disabled')
+    path=tmp_path/'continuous.json';personal_round.atomic_json(path,config)
+    calls=[]
+    def capture(**kw):
+        calls.append('capture')
+        assert kw['tcp_trajectory_id']=='drag_taught_continuous_v1'
+        request['anchor'].save_json(kw['output_path'])
+    with pytest.raises(ValueError,match='empty-load validation only'):
+        personal_round.prepare(path,tmp_path/'loaded',capture_fn=capture)
+    assert calls==[]
+    empty=tmp_path/'continuous_empty'
+    state=personal_round.prepare(path,empty,empty_load=True,capture_fn=capture)
+    assert state['status']=='PREPARED' and state['blockers']==[]
+    assert state['tcp_plan']['duration_s']==90.
+    assert state['tcp_plan']['tcp_settings']==request['settings']
+    assert state['trajectory_mode']=='continuous_taught_tcp'
+    def execute(**kw):
+        calls.append('fake_dispatch')
+        assert kw['continuous_taught_settings']==request['settings']
+        assert 'taught_tcp_settings' not in kw and 'tcp_trajectory_settings' not in kw
+        kw['dispatch_observer'](0,1,2)
+        return {'completed':True,'same_session_realtime_cleanup_completed':True}
+    assert personal_round.run(empty,live=True,empty_load=True,execute_fn=execute)['status']=='EMPTY_LOAD_COMPLETE'
+    replay=tmp_path/'continuous_repeat'
+    assert personal_round.repeat(empty,replay,capture_fn=capture)['tcp_plan']['duration_s']==90.
+    with pytest.raises(ValueError,match='exact empty-load repeats only'):
+        personal_round.repeat(empty,tmp_path/'trained',use_trained=True,capture_fn=capture)
+    with pytest.raises(ValueError,match='does not train'):
+        personal_round.train_session(empty)
+    assert calls.count('fake_dispatch')==1

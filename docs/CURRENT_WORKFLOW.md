@@ -1,12 +1,12 @@
 # 当前论文与实验工作流
 
-当前使用用户已确认的70秒空载方案，固定朝向与幅度不变：22/17/25秒加6秒保持。配置为`config/taught_tcp_70s.empty.json`，本配置空载上限0.13米/秒、0.45米/秒²，详见[70秒方案与核验](TAUGHT_70S_REVIEW.md)。原425秒作为历史基线保留，新70秒计划不会自动延长。
+当前使用90秒连续空载方案：固定朝向和已确认幅度保留，阶段接头圆顺后不停速通过；首尾各5秒加减速，中间80秒沿曲线约3.50厘米/秒匀速。配置为`config/continuous_taught_90s.empty.json`，沿用空载上限0.13米/秒、0.45米/秒²，详见[90秒设计](CONTINUOUS_90S_WORKFLOW.md)。70秒回传和425秒基线均归档，完整90秒计划不自动延长。
 
 更新日期2026年11月15日。实验室实验硬截止为2027年1月15日，每周两次、每次三至四小时，由一人完成。当前统一分支为`paper-personalized-load`，正式代码继承`cleanup/unified-dummy-leg-mainline`的机器人位姿与受力方法。来源见[整合记录](BRANCH_INTEGRATION_2026-11-14.md)。
 
 实际后续操作和数据回传统一按[实验操作总手册](NEXT_LAB_OPERATIONS.md)逐步执行；现场记录可复制[记录模板](templates/LAB_RECORD_TEMPLATE.md)。
 
-当前先按[新示教曲线空载步骤](TAUGHT_TRAJECTORY_WORKFLOW.md)验证11月15日记录的三阶段空间曲线。`taught_tcp`已接入固定朝向、当前起点平移、幅度参数和固定70秒检查；当前只允许空载，不与旧直线候选或GP账本混用。原几何处理依据见[核验报告](lab/TAUGHT_TRAJECTORY_REVIEW_2026-11-15.md)。完成新几何空载审核后，再冻结该形状下统一周期的三阶段节奏候选、测量窗口和带载协议。下文164秒候选与原两分支特征描述均是旧直线参考，不是新曲线已完成的个性化学习。
+当前先按[新示教曲线空载步骤](TAUGHT_TRAJECTORY_WORKFLOW.md)验证11月15日记录的三阶段空间曲线。`continuous_taught_tcp`已接入固定朝向、当前起点平移、幅度参数和固定90秒检查；当前只允许空载，不与旧直线候选或GP账本混用。原几何处理依据见[核验报告](lab/TAUGHT_TRAJECTORY_REVIEW_2026-11-15.md)，70秒真机记录复核见[回传报告](lab/EMPTY_70S_REVIEW_2026-11-15.md)。该轮受力质量未通过，90秒节奏改动不改变这一事实。完成新几何空载审核后，再冻结该形状下统一周期的三阶段节奏候选、测量窗口和带载协议。下文164秒候选与原两分支特征描述均是旧直线参考，不是新曲线已完成的个性化学习。
 
 ## 本篇只研究什么
 
@@ -23,7 +23,7 @@
 | 职责 | 当前入口 | 证据与限制 |
 |---|---|---|
 | 配置与现场编排 | `config/experiment.json`、`scripts/lab_session.py` | 每轮新目录，prepare后审核预览，显式run |
-| 独立TCP任务 | `control/independent_tcp_trajectory.py` | 起点、空间端点、保持、节奏与实际重定时受限；不读关节参考CSV |
+| 当前连续TCP任务 | `control/continuous_taught_trajectory.py`、`control/continuous_taught_timing.py` | 全局连续曲线、弧长匀速时钟、固定90秒与首尾渐变；不读关节参考CSV |
 | 机器人采集与执行 | `collection/`、`control/`、`hardware/` | 原始状态、六维受力、dispatch与停止清理记录 |
 | 实际任务审核 | `measurement_validation/robot_execution.py` | 检查实际TCP跟随、朝向、时序、缺口和完整周期 |
 | 直接负荷与候选决策 | `scripts/tcp_force_training.py` | `load_score`、峰值分数、已有GP/EI工具；方法收益待实测 |

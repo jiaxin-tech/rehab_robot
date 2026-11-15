@@ -35,7 +35,7 @@ def audit_robot_execution(directory, *, allow_empty=False):
     """Validate an entire executed schedule and measure each moving branch."""
     directory = Path(directory).resolve()
     state = read_json(directory / "round_status.json")
-    if state.get("trajectory_mode") not in ("independent_tcp", "original_candidate", "taught_tcp") or (state.get("empty_load") and not allow_empty):
+    if state.get("trajectory_mode") not in ("independent_tcp", "original_candidate", "taught_tcp", "continuous_taught_tcp") or (state.get("empty_load") and not allow_empty):
         raise ValueError("execution audit requires a completed passive TCP motion (or explicit empty-load audit)")
     if state["status"] not in ("CAPTURE_COMPLETE", "ROUND_COMPLETE", "EMPTY_LOAD_COMPLETE", "COMPLETE"):
         raise ValueError("execution audit requires a completed motion")
@@ -104,7 +104,11 @@ def audit_robot_execution(directory, *, allow_empty=False):
              & (query[:, 1] - query[:, 0] <= config["acquisition"]["budgets"]["query_s"]))
     moving = np.zeros(len(clock), bool)
     force, torque = np.linalg.norm(raw[:, :3], axis=1), np.linalg.norm(raw[:, 3:], axis=1)
-    if plan.get("mode") == "taught_tcp":
+    if plan.get("mode") == "continuous_taught_tcp":
+        if not state.get("empty_load"):
+            raise ValueError("continuous taught TCP supports empty-load validation only")
+        intervals = ((0., float(times[-1])),)
+    elif plan.get("mode") == "taught_tcp":
         if not state.get("empty_load"):
             raise ValueError("taught_tcp supports empty-load validation only")
         spec = plan["tcp_settings"]

@@ -62,6 +62,11 @@ SOURCES += ("config/taught_tcp_70s.review.json",) + tuple(TAUGHT_70S + "/" + nam
 APPROVED_70S = "results/manual_lab/20261115_taught_70s_approved_v1"
 SOURCES += ("config/taught_tcp_70s.empty.json",) + tuple(APPROVED_70S + "/" + name
     for name in ("geometry.json", "settings.json", "summary.json"))
+CONTINUOUS_90S = "results/manual_lab/20261115_continuous_90s_v1"
+SOURCES += ("control/continuous_taught_trajectory.py", "control/continuous_taught_timing.py",
+    "scripts/design_continuous_taught_trajectory.py", "tests/test_continuous_taught_trajectory.py",
+    "tests/test_design_continuous_taught_trajectory.py", "config/continuous_taught_90s.empty.json")
+SOURCES += tuple(CONTINUOUS_90S + "/" + name for name in ("geometry.json", "settings.json", "summary.json"))
 
 
 def historical_path(relative):
@@ -182,6 +187,21 @@ def inventory(junit=None):
     for name, expected in approved_summary["processing_source_sha256"].items():
         if sha256(ROOT / name) != expected:
             raise ValueError("approved 70s timing source changed: " + name)
+    continuous_summary = read_json(ROOT / CONTINUOUS_90S / "summary.json")
+    if sha256(ROOT / "config/continuous_taught_90s.empty.json") != continuous_summary["output_config_sha256"]:
+        raise ValueError("continuous 90s execution configuration changed")
+    for name, expected in continuous_summary["output_files_sha256"].items():
+        if Path(name).name != name or sha256(ROOT / CONTINUOUS_90S / name) != expected:
+            raise ValueError("continuous 90s artifact changed: " + name)
+    for name, expected in continuous_summary["processing_source_sha256"].items():
+        if sha256(ROOT / name) != expected:
+            raise ValueError("continuous 90s processing source changed: " + name)
+    returned_70s = ROOT / "results/manual_lab/20261115_161440/taught_empty_01"
+    from measurement_validation.robot_execution import audit_robot_execution, evidence_hashes
+    try:
+        returned_audit = dict(passed=True, result=audit_robot_execution(returned_70s, allow_empty=True))
+    except ValueError as exc:
+        returned_audit = dict(passed=False, error=str(exc))
     verification = {"kind": "OFFLINE_TESTS_ONLY", "status": "NOT_PROVIDED"}
     if junit is not None:
         tree = ET.parse(junit).getroot()
@@ -231,6 +251,19 @@ def inventory(junit=None):
             "status": approved_summary["status"], "execution_review": approved_summary["execution_review"],
             "scope": "User accepted 0.13 m/s and 0.45 m/s2 for this empty-load configuration only.",
             "shape_changed": False, "hardware_accessed": False, "ready_for_replay": False},
+        "returned_70s_execution": {
+            "session": "results/manual_lab/20261115_161440/taught_empty_01",
+            "status": read_json(returned_70s / "round_status.json")["status"],
+            "quality_audit": returned_audit, "evidence_sha256": evidence_hashes(returned_70s),
+            "interpretation": "Physical 70s run; successful motion status does not establish complete wrench data or normal wrench-process cleanup."},
+        "continuous_90s_plan": {
+            "source_summary": CONTINUOUS_90S + "/summary.json", "status": continuous_summary["status"],
+            "execution_configuration": "config/continuous_taught_90s.empty.json",
+            "execution_review": continuous_summary["execution_review"],
+            "speed_verification": continuous_summary["speed_verification"],
+            "geometry_processing": continuous_summary["geometry_processing"],
+            "preview_anchor_source_sha256": continuous_summary["preview_anchor_source_sha256"],
+            "hardware_accessed": False, "ready_for_replay": False, "loaded_learning_integrated": False},
         "verification": verification}
 
 

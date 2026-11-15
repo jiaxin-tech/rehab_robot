@@ -84,7 +84,7 @@ def review(session, output_dir):
     axes[0, 0].plot(target[:, 1]*100, target[:, 2]*100, "k--", lw=2, label="Frozen plan")
     axes[0, 0].plot(xyz[::8, 1]*100, xyz[::8, 2]*100, lw=1, label="Measured TCP")
     axes[0, 0].scatter(target[[0, peak], 1]*100, target[[0, peak], 2]*100, c=["green", "red"], zorder=4)
-    axes[0, 0].set(xlabel="Base Y (cm)", ylabel="Base Z (cm)", title="Spatial path: out and back overlap")
+    axes[0, 0].set(xlabel="Base Y (cm)", ylabel="Base Z (cm)", title="Planned and measured spatial path")
     axes[0, 0].set_aspect("equal", adjustable="datalim")
     axes[0, 0].legend()
     for axis, label in ((1, "Y"), (2, "Z")):

@@ -1,0 +1,10 @@
+{
+  "geometry_path": "results/manual_lab/20261115_continuous_90s_v1/geometry.json",
+  "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+  "scale_x": 1.0,
+  "scale_y": 1.0,
+  "scale_z": 1.0,
+  "cycle_duration_s": 90.0,
+  "ramp_duration_s": 5.0,
+  "sample_period_s": 0.02
+}

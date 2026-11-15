@@ -46,9 +46,10 @@ def run_capture(
 ) -> dict[str, Any]:
     if tcp_trajectory_id is not None:
         from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID
-        if independent_tcp or tcp_trajectory_id != TAUGHT_ID:
+        from control.continuous_taught_trajectory import TRAJECTORY_ID as CONTINUOUS_ID
+        if independent_tcp or tcp_trajectory_id not in (TAUGHT_ID, CONTINUOUS_ID):
             raise ValueError("unsupported or ambiguous TCP anchor trajectory ID")
-        trajectory_ids = [TAUGHT_ID]
+        trajectory_ids = [tcp_trajectory_id]
         first = {"q_hip_rad": 0., "q_knee_rad": 0.}
     elif independent_tcp:
         from control.independent_tcp_trajectory import TRAJECTORY_ID

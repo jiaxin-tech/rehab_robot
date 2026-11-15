@@ -116,21 +116,27 @@ def preview_trajectory(
     reference_start_tolerance_rad: float = 1e-9,
     tcp_trajectory_settings: dict[str, Any] | None = None,
     taught_tcp_settings: dict[str, Any] | None = None,
+    continuous_taught_settings: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate review artifacts without importing or touching hardware."""
     resolved_anchor = load_start_anchor(anchor) if isinstance(anchor, (str, Path)) else anchor
     if not isinstance(resolved_anchor, StartAnchor):
         raise TypeError("anchor must be a StartAnchor or JSON path")
     frame = load_rehab_frame_config(frame_config)
-    if tcp_trajectory_settings is not None and taught_tcp_settings is not None:
+    if sum(value is not None for value in (tcp_trajectory_settings, taught_tcp_settings, continuous_taught_settings)) > 1:
         raise ValueError("choose exactly one TCP profile")
-    if tcp_trajectory_settings is not None or taught_tcp_settings is not None:
-        if taught_tcp_settings is not None:
+    if any(value is not None for value in (tcp_trajectory_settings, taught_tcp_settings, continuous_taught_settings)):
+        if continuous_taught_settings is not None:
+            from control.continuous_taught_trajectory import build_continuous_taught_trajectory as builder
+            settings = continuous_taught_settings
+        elif taught_tcp_settings is not None:
             from control.taught_tcp_trajectory import build_taught_tcp_trajectory as builder
+            settings = taught_tcp_settings
         else:
             from control.independent_tcp_trajectory import build_tcp_trajectory as builder
+            settings = tcp_trajectory_settings
         trajectory, audit, metadata = builder(
-            taught_tcp_settings if taught_tcp_settings is not None else tcp_trajectory_settings,
+            settings,
             current_tcp_start_pose=resolved_anchor.tcp_pose_base,
             rehab_frame=frame)
         if audit.trajectory_id != resolved_anchor.trajectory_id:

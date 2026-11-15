@@ -165,6 +165,7 @@ def run_execute(
     joint_limits_deg: dict[str, Sequence[float]] | None = None,
     tcp_trajectory_settings: dict[str, Any] | None = None,
     taught_tcp_settings: dict[str, Any] | None = None,
+    continuous_taught_settings: dict[str, Any] | None = None,
     enable_motion: bool,
     operator_confirmation: str,
     local_ip: str | None = None,
@@ -188,9 +189,9 @@ def run_execute(
     anchor = load_start_anchor(anchor_path)
     frame = load_rehab_frame_config(frame_config_path)
     safety = load_experiment_safety_config(safety_config_path)
-    if tcp_trajectory_settings is not None and taught_tcp_settings is not None:
+    if sum(value is not None for value in (tcp_trajectory_settings, taught_tcp_settings, continuous_taught_settings)) > 1:
         raise ValueError("choose exactly one TCP profile")
-    cartesian = tcp_trajectory_settings is not None or taught_tcp_settings is not None
+    cartesian = any(value is not None for value in (tcp_trajectory_settings, taught_tcp_settings, continuous_taught_settings))
     reference_path = (
         Path(reference_path_override).resolve()
         if reference_path_override is not None
@@ -200,7 +201,12 @@ def run_execute(
     if prepare_realtime and (live_wrench_config is None or "rtcontrolling" not in live_wrench_config.get("allowed_operation_states", [])):
         raise ValueError("RT acquisition configuration required")
     transform = joint_profile_transform or {}
-    if taught_tcp_settings is not None:
+    if continuous_taught_settings is not None:
+        from control.continuous_taught_trajectory import build_continuous_taught_trajectory
+        trajectory, audit, trajectory_metadata = build_continuous_taught_trajectory(
+            continuous_taught_settings, current_tcp_start_pose=anchor.tcp_pose_base,
+            rehab_frame=frame)
+    elif taught_tcp_settings is not None:
         from control.taught_tcp_trajectory import build_taught_tcp_trajectory
         trajectory, audit, trajectory_metadata = build_taught_tcp_trajectory(
             taught_tcp_settings, current_tcp_start_pose=anchor.tcp_pose_base,
@@ -280,7 +286,7 @@ def run_execute(
             "parent_reference_id": trajectory_metadata.get(
                 "parent_reference_id"
             ),
-            "reference_version": (audit.trajectory_id if taught_tcp_settings is not None
+            "reference_version": (audit.trajectory_id if taught_tcp_settings is not None or continuous_taught_settings is not None
                                   else "independent_tcp_v1" if tcp_trajectory_settings is not None
                                   else MEASURED_ASYMMETRIC_CLOSED_REFERENCE),
             "reference_path": str(reference_path.resolve()),

@@ -142,6 +142,10 @@ def audit_execution_trajectory_content(
 
     from control.independent_tcp_trajectory import TRAJECTORY_ID, audit_tcp_trajectory
     from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID, audit_taught_tcp_trajectory
+    from control.continuous_taught_trajectory import TRAJECTORY_ID as CONTINUOUS_ID, audit_continuous_taught_trajectory
+    if expected_trajectory_id == CONTINUOUS_ID:
+        return audit_continuous_taught_trajectory(trajectory, safety,
+            expected_trajectory_id=expected_trajectory_id, frame=frame, anchor=anchor)
     if expected_trajectory_id == TAUGHT_ID:
         return audit_taught_tcp_trajectory(trajectory, safety,
             expected_trajectory_id=expected_trajectory_id, frame=frame, anchor=anchor)
@@ -459,6 +463,7 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
         rehab_z_scale=1.0, joint_limits_deg=None):
     from control.independent_tcp_trajectory import TRAJECTORY_ID, trajectory_digest
     from control.taught_tcp_trajectory import TRAJECTORY_ID as TAUGHT_ID
+    from control.continuous_taught_trajectory import TRAJECTORY_ID as CONTINUOUS_ID
     reasons = list(safety.execution_block_reasons())
     if mode != "execute" or enable_motion is not True or operator_confirmation != OPERATOR_CONFIRMATION:
         reasons.append("explicit motion confirmation required")
@@ -480,10 +485,10 @@ def evaluate_offline_execution_request(*, mode, enable_motion, operator_confirma
         maximum_tcp_speed_m_s=speed,
         maximum_tcp_acceleration_m_s2=acceleration,
         tcp_trajectory_digest=(trajectory_digest(trajectory)
-            if audit.trajectory_id in (TRAJECTORY_ID, TAUGHT_ID) else None),
+            if audit.trajectory_id in (TRAJECTORY_ID, TAUGHT_ID, CONTINUOUS_ID) else None),
         tcp_rehab_rotation=(tuple(tuple(float(v) for v in row) for row in frame.rotation_base_from_rehab)
-                            if audit.trajectory_id == TAUGHT_ID else None),
-        tcp_anchor_pose_base=(tuple(anchor.tcp_pose_base) if audit.trajectory_id == TAUGHT_ID else None),
+                            if audit.trajectory_id in (TAUGHT_ID, CONTINUOUS_ID) else None),
+        tcp_anchor_pose_base=(tuple(anchor.tcp_pose_base) if audit.trajectory_id in (TAUGHT_ID, CONTINUOUS_ID) else None),
         rehab_z_scale=float(rehab_z_scale),
         joint_limits_deg=(
             None
