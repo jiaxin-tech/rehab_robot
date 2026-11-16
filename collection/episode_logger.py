@@ -22,7 +22,7 @@ import os
 from pathlib import Path
 import tempfile
 import threading
-from typing import Any, Mapping, TextIO
+from typing import Any, Mapping, Sequence, TextIO
 
 from utils.clock import MonotonicClock, SYSTEM_CLOCK, TIMESTAMP_SOURCE
 
@@ -207,6 +207,8 @@ class EpisodeLogger:
         self._closed_event = threading.Event()
         self._pending_write_lock = threading.Lock()
         self._pending_write_threads: set[threading.Thread] = set()
+        self._batch_pending_count = 0
+        self._batch_pending_lock = threading.Lock()
         self._state = "new"
         # These slots are intentionally published without ``_lock``.  They are
         # the emergency stop-facing view used when a producer is stuck inside
@@ -409,6 +411,196 @@ class EpisodeLogger:
         self, row: Mapping[str, Any] | Any | None = None, **values: Any
     ) -> None:
         self._append("trajectory_command", _row_mapping(row, values))
+
+    def append_trajectory_commands_bounded(
+        self,
+        rows: Sequence[Mapping[str, Any]],
+        *,
+        timeout_s: float,
+    ) -> dict[str, Any]:
+        """Persist a complete command schedule in one bounded write.
+
+        Rows are copied and validated before the writer starts.  The writer
+        owns one command-stream lock for the whole batch and performs one
+        flush/fsync acknowledgement, so a realtime caller never creates one
+        thread and one flush budget for every 20 ms target.  A timeout is
+        permanently fail-closed even when the writer finishes later.
+        """
+        if (
+            isinstance(timeout_s, bool)
+            or not isinstance(timeout_s, (int, float))
+            or not math.isfinite(float(timeout_s))
+            or float(timeout_s) <= 0.0
+        ):
+            raise ValueError("timeout_s must be a finite positive number")
+        if isinstance(rows, (str, bytes, Mapping)) or not isinstance(rows, Sequence):
+            raise TypeError("rows must be a finite sequence of mappings")
+        if not rows:
+            raise ValueError("rows must not be empty")
+        if len(rows) > 200000:
+            raise ValueError("rows exceeds the command pre-recording limit")
+        allowed = set(TRAJECTORY_COMMAND_FIELDS)
+        copied: list[dict[str, Any]] = []
+        finite_fields = {
+            "host_time_s", "trajectory_time_s", "delta_x_R", "delta_y_R",
+            "delta_z_R", "tcp_target_x", "tcp_target_y", "tcp_target_z",
+            "tcp_target_rx", "tcp_target_ry", "tcp_target_rz",
+            "q_hip_ref", "q_knee_ref",
+        }
+        for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                raise TypeError(f"rows[{index}] must be a mapping")
+            snapshot = dict(row)
+            unexpected = sorted(set(snapshot) - allowed)
+            if unexpected:
+                raise ValueError(
+                    f"unexpected trajectory_command fields at row {index}: "
+                    + ", ".join(unexpected)
+                )
+            for field in finite_fields:
+                value = snapshot.get(field)
+                if value is not None:
+                    if (
+                        isinstance(value, bool)
+                        or not isinstance(value, (int, float))
+                        or not math.isfinite(float(value))
+                    ):
+                        raise ValueError(
+                            f"rows[{index}].{field} must be finite numeric or None"
+                        )
+            command_valid = snapshot.get("command_valid")
+            if command_valid is not None and type(command_valid) is not bool:
+                raise ValueError(f"rows[{index}].command_valid must be bool or None")
+            copied.append(snapshot)
+
+        started_ns = self._clock.now_ns()
+        with self._batch_pending_lock:
+            self._batch_pending_count += 1
+        done = threading.Event()
+        decision_lock = threading.Lock()
+        decision = "pending"
+        outcome: BaseException | None = None
+        receipt: dict[str, Any] = {
+            "method": "whole_schedule_before_motion",
+            "intent_kind": "pre_recorded_schedule",
+            "row_count": len(copied),
+            "writer_thread_count": 1,
+            "started_host_time_ns": started_ns,
+            "completed_host_time_ns": None,
+            "acknowledged_host_time_ns": None,
+            "wait_duration_s": None,
+            "flush_completed": False,
+            "fsync_completed": False,
+        }
+
+        def write_batch() -> None:
+            nonlocal decision, outcome
+            caught: BaseException | None = None
+            completed_ns: int | None = None
+            try:
+                if self._failure_event.is_set():
+                    raise EpisodeLoggerError(
+                        self._signaled_failure_reason or "logger failure was signaled"
+                    )
+                with self._stream_locks["trajectory_command"]:
+                    if self._failure_event.is_set() or self._state != "ready":
+                        raise EpisodeLoggerError(
+                            self._signaled_failure_reason
+                            or self._failure_reason
+                            or f"logger status is {self._state}"
+                        )
+                    writer = self._writers["trajectory_command"]
+                    handle = self._handles["trajectory_command"]
+                    for row in copied:
+                        sparse_row = {
+                            field: row[field] if field in row else None
+                            for field in TRAJECTORY_COMMAND_FIELDS
+                        }
+                        writer.writerow(sparse_row)
+                    handle.flush()
+                    receipt["flush_completed"] = True
+                    os.fsync(handle.fileno())
+                    receipt["fsync_completed"] = True
+                    self._row_counts["trajectory_command"] += len(copied)
+                    completed_ns = self._clock.now_ns()
+            except BaseException as exc:
+                caught = exc
+                self.signal_failure(
+                    f"trajectory_command_batch:{type(exc).__name__}:{exc}",
+                    stream="trajectory_command",
+                )
+            finally:
+                with decision_lock:
+                    outcome = caught
+                    if completed_ns is not None:
+                        receipt["completed_host_time_ns"] = completed_ns
+                    if decision == "pending":
+                        decision = "completed"
+                    done.set()
+                with self._batch_pending_lock:
+                    self._batch_pending_count -= 1
+                if caught is not None:
+                    # Durable metadata is reconciled by close/mark_failed; no
+                    # writer thread attempts to acquire the logger condition
+                    # while a stop-facing path may be running.
+                    pass
+
+        writer_thread = threading.Thread(
+            target=write_batch,
+            name="episode-command-pre-recording",
+            daemon=True,
+        )
+        with self._pending_write_lock:
+            self._pending_write_threads.add(writer_thread)
+        try:
+            writer_thread.start()
+        except BaseException as exc:
+            with self._pending_write_lock:
+                self._pending_write_threads.discard(writer_thread)
+            with self._batch_pending_lock:
+                self._batch_pending_count -= 1
+            self.signal_failure(
+                f"trajectory command batch writer failed to start: {type(exc).__name__}:{exc}",
+                stream="trajectory_command",
+            )
+            raise EpisodeLoggerError("trajectory command batch writer failed to start") from exc
+
+        # Remove the thread from the pending set only after the acknowledgement
+        # decision is published.  This mirrors the single-row bounded writer's
+        # nonblocking stop-facing handshake.
+        def clear_pending() -> None:
+            writer_thread.join()
+            with self._pending_write_lock:
+                self._pending_write_threads.discard(writer_thread)
+
+        cleanup_thread = threading.Thread(
+            target=clear_pending,
+            name="episode-command-pre-recording-cleanup",
+            daemon=True,
+        )
+        cleanup_thread.start()
+        if not done.wait(float(timeout_s)):
+            with decision_lock:
+                if decision == "pending":
+                    decision = "timed_out"
+                    self.signal_failure(
+                        "trajectory command batch durability deadline missed",
+                        stream="trajectory_command",
+                        write_timeout=True,
+                    )
+            raise EpisodeLoggerError(
+                "trajectory command batch acknowledgement exceeded "
+                f"{float(timeout_s):.6f}s"
+            )
+        with decision_lock:
+            if outcome is not None:
+                raise EpisodeLoggerError(
+                    f"trajectory command batch failed: {type(outcome).__name__}: {outcome}"
+                ) from outcome
+            acknowledged_ns = self._clock.now_ns()
+            receipt["acknowledged_host_time_ns"] = acknowledged_ns
+            receipt["wait_duration_s"] = (acknowledged_ns - started_ns) / 1_000_000_000
+            return dict(receipt)
 
     def append_trajectory_command_bounded(
         self,
@@ -688,6 +880,12 @@ class EpisodeLogger:
             if self._state == "starting":
                 raise EpisodeLoggerError("cannot close logger while startup is in progress")
             self._finished_ns = self._clock.now_ns()
+            with self._batch_pending_lock:
+                if self._batch_pending_count:
+                    self.signal_failure(
+                        "trajectory command batch still pending during close",
+                        stream="trajectory_command",
+                    )
             self._apply_signaled_failure_locked()
             if self._state != "failed":
                 self._state = "completed" if completed else "aborted"

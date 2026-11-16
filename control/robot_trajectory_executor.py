@@ -38,6 +38,10 @@ from hardware.safety_events import safety_event_block_reason, collision_feedback
 # bounded logging worker, then recheck every live gate immediately before the
 # hold starts.  Scheduled targets continue to use max_command_lateness_s.
 INITIAL_HOLD_INTENT_TIMEOUT_S = 0.25
+# Full command-intent preparation happens before any realtime attachment or
+# motion. It is deliberately independent from per-segment command-lateness;
+# no target can be dispatched while this bounded batch is being persisted.
+PRE_MOTION_INTENT_PREPARATION_TIMEOUT_S = 10.0
 # Blocking metadata persistence is complete before motion begins.  During that
 # bounded pause the isolated 50 Hz wrench worker can keep producing while the
 # parent has not yet admitted its newest sample.  Wait for an actually fresh,
@@ -573,24 +577,7 @@ class RokaeMotionExecutor:
         remaining_log_budget_s = latest_finish_s - self.clock.now_s()
         if remaining_log_budget_s <= 0.0:
             raise RuntimeError("command deadline exhausted before intent logging")
-        command_values = dict(
-            host_time_s=self.clock.now_s(),
-            trajectory_time_s=float(row["time_s"]),
-            trajectory_phase=row.get("trajectory_phase", None),
-            delta_x_R=row.get("delta_x_R", None),
-            delta_y_R=row.get("delta_y_R", None),
-            delta_z_R=row.get("delta_z_R", None),
-            tcp_target_x=pose[0],
-            tcp_target_y=pose[1],
-            tcp_target_z=pose[2],
-            tcp_target_rx=pose[3],
-            tcp_target_ry=pose[4],
-            tcp_target_rz=pose[5],
-            q_hip_ref=float(row["q_hip_ref"]) if "q_hip_ref" in row else None,
-            q_knee_ref=float(row["q_knee_ref"]) if "q_knee_ref" in row else None,
-            command_valid=True,
-            invalid_reason="",
-        )
+        command_values = self._command_values(row, pose)
         bounded_append = getattr(
             self.logger,
             "append_trajectory_command_bounded",
@@ -608,6 +595,28 @@ class RokaeMotionExecutor:
                 "command deadline missed after intent logging; refusing dispatch"
             )
 
+    def _command_values(self, row: Any, pose: tuple[float, ...]) -> dict[str, Any]:
+        """Build one sparse command-intent row without performing I/O."""
+
+        return dict(
+            host_time_s=self.clock.now_s(),
+            trajectory_time_s=float(row["time_s"]),
+            trajectory_phase=row.get("trajectory_phase", None),
+            delta_x_R=row.get("delta_x_R", None),
+            delta_y_R=row.get("delta_y_R", None),
+            delta_z_R=row.get("delta_z_R", None),
+            tcp_target_x=pose[0],
+            tcp_target_y=pose[1],
+            tcp_target_z=pose[2],
+            tcp_target_rx=pose[3],
+            tcp_target_ry=pose[4],
+            tcp_target_rz=pose[5],
+            q_hip_ref=float(row["q_hip_ref"]) if "q_hip_ref" in row else None,
+            q_knee_ref=float(row["q_knee_ref"]) if "q_knee_ref" in row else None,
+            command_valid=True,
+            invalid_reason="",
+        )
+
     def _require_post_attach_robot_summary(self):
         adapter = self.acquisition.adapter
         summary = adapter.get_robot_state_summary()
@@ -619,6 +628,21 @@ class RokaeMotionExecutor:
         if not self._joints_inside_reviewed_limits(summary.get("joint_position_rad"), limits):
             raise RuntimeError("joint state or controller soft limits invalid")
         return summary
+
+    def _admit_scheduled_target_checked(self, index: int) -> None:
+        """Atomically recheck live gates and stop state before admission."""
+
+        with self._stop_lock:
+            if self._stop_reason is not None or self._stop_event.is_set():
+                raise RuntimeError(
+                    f"execution stopped before schedule admission: {self._stop_reason}"
+                )
+            reasons = self._runtime_reasons()
+            if reasons:
+                raise RuntimeError(
+                    "schedule admission runtime safety gate: " + ";".join(reasons)
+                )
+            self.motion_adapter.admit_scheduled_target(index)
 
 
 
@@ -784,6 +808,8 @@ class RokaeMotionExecutor:
         scheduler_priority = _WindowsSchedulerPriority(
             self._use_windows_scheduler_priority and not callback_scheduled
         )
+        prelogged_schedule = False
+        prelog_receipt: dict[str, Any] | None = None
         callback_old_switch_interval: float | None = None
         try:
             scheduler_priority.enter()
@@ -797,6 +823,36 @@ class RokaeMotionExecutor:
             initial_reasons = self._runtime_reasons()
             if initial_reasons:
                 raise RuntimeError("runtime safety gate: " + ";".join(initial_reasons))
+            # Persist the entire callback schedule before any motion attachment.
+            # This removes per-target file/thread latency from the 20 ms realtime
+            # preparation window while keeping admission and live gates below.
+            batch_writer = getattr(
+                self.logger, "append_trajectory_commands_bounded", None
+            )
+            if callback_scheduled and callable(batch_writer):
+                prelog_rows = [
+                    self._command_values(row, pose)
+                    for (_, row), pose in zip(
+                        trajectory.iterrows(), scheduled_poses
+                    )
+                ]
+                prelog_receipt = batch_writer(
+                    prelog_rows,
+                    timeout_s=PRE_MOTION_INTENT_PREPARATION_TIMEOUT_S,
+                )
+                self.logger.update_metadata(
+                    {
+                        "command_preparation": prelog_receipt,
+                        "command_preparation_complete": True,
+                    }
+                )
+                prelog_runtime_reasons = self._runtime_reasons()
+                if prelog_runtime_reasons:
+                    raise RuntimeError(
+                        "pre-recording runtime safety gate: "
+                        + ";".join(prelog_runtime_reasons)
+                    )
+                prelogged_schedule = True
             reviewed_filter_hz = self.safety.rt_filter_hz
             if reviewed_filter_hz is None:
                 raise RuntimeError("reviewed realtime command filter is unavailable")
@@ -834,11 +890,12 @@ class RokaeMotionExecutor:
             )
             # Starting the RT hold already publishes the first TCP target.
             # Persist that first command before any callback can become active.
-            self._persist_command_intent(
-                first,
-                initial_pose,
-                latest_finish_s=initial_intent_deadline_s,
-            )
+            if not prelogged_schedule:
+                self._persist_command_intent(
+                    first,
+                    initial_pose,
+                    latest_finish_s=initial_intent_deadline_s,
+                )
             pre_start_reasons = self._runtime_reasons()
             if pre_start_reasons:
                 raise RuntimeError(
@@ -879,7 +936,7 @@ class RokaeMotionExecutor:
                 # Target zero was durably persisted above.  Admission is the
                 # only operation that makes a preloaded target visible to the
                 # realtime callback.
-                self.motion_adapter.admit_scheduled_target(0)
+                self._admit_scheduled_target_checked(0)
             with self._stop_lock:
                 if self._stop_reason is not None or self._stop_event.is_set():
                     raise RuntimeError(
@@ -925,20 +982,21 @@ class RokaeMotionExecutor:
                 # safety check, even though every later target is prepared one
                 # full interval ahead.
                 first_scheduled_row = trajectory.iloc[1]
-                self._persist_command_intent(
-                    first_scheduled_row,
-                    scheduled_poses[1],
-                    latest_finish_s=(
-                        self.clock.now_s() + INITIAL_HOLD_INTENT_TIMEOUT_S
-                    ),
-                )
+                if not prelogged_schedule:
+                    self._persist_command_intent(
+                        first_scheduled_row,
+                        scheduled_poses[1],
+                        latest_finish_s=(
+                            self.clock.now_s() + INITIAL_HOLD_INTENT_TIMEOUT_S
+                        ),
+                    )
                 first_post_log_reasons = self._runtime_reasons()
                 if first_post_log_reasons:
                     raise RuntimeError(
                         "first post-log runtime safety gate: "
                         + ";".join(first_post_log_reasons)
                     )
-                self.motion_adapter.admit_scheduled_target(1)
+                self._admit_scheduled_target_checked(1)
                 admitted_through = 1
             self._start_runtime_watchdog()
             if callback_scheduled:
@@ -973,18 +1031,19 @@ class RokaeMotionExecutor:
                         # main-thread disk I/O.
                         lookahead_row = trajectory.iloc[lookahead_index]
                         lookahead_pose = scheduled_poses[lookahead_index]
-                        self._persist_command_intent(
-                            lookahead_row,
-                            lookahead_pose,
-                            latest_finish_s=command_deadline_s,
-                        )
+                        if not prelogged_schedule:
+                            self._persist_command_intent(
+                                lookahead_row,
+                                lookahead_pose,
+                                latest_finish_s=command_deadline_s,
+                            )
                         lookahead_post_log_reasons = self._runtime_reasons()
                         if lookahead_post_log_reasons:
                             raise RuntimeError(
                                 "lookahead post-log runtime safety gate: "
                                 + ";".join(lookahead_post_log_reasons)
                             )
-                        self.motion_adapter.admit_scheduled_target(lookahead_index)
+                        self._admit_scheduled_target_checked(lookahead_index)
                         admitted_through = lookahead_index
                     # The callback owns the reviewed deadline.  Every segment
                     # endpoint is already durably logged and admitted before

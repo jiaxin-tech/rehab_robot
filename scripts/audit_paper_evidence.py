@@ -52,6 +52,7 @@ SOURCES += ("control/taught_tcp_trajectory.py", "scripts/design_taught_trajector
     "tests/test_taught_tcp_trajectory.py", "tests/test_design_taught_trajectory.py",
     "config/taught_tcp_empty.template.json", "scripts/capture_start_anchor.py",
     "scripts/run_rehab_experiment.py", "scripts/preview_rehab_trajectory.py", "tests/test_mainline.py")
+SOURCES += ("collection/episode_logger.py", "tests/test_command_prelogging.py")
 
 TAUGHT_DESIGN = "results/manual_lab/20261115_taught_design_v1"
 SOURCES += tuple(TAUGHT_DESIGN + "/" + name for name in ("geometry.json", "settings.json", "summary.json"))

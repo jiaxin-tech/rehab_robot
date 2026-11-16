@@ -6015,6 +6015,38 @@ def test_personal_executor_uses_callback_schedule_when_adapter_supports_it(
     assert len(observed) == len(trajectory)
 
 
+def test_personal_callback_pre_records_full_schedule_before_attachment(personal_context):
+    c = personal_context
+    trajectory = c.trajectory
+    batches = []
+    per_target = []
+    c.logger.append_trajectory_commands_bounded = lambda rows, timeout_s: (
+        batches.append((list(rows), timeout_s))
+        or {"method": "whole_schedule_before_motion", "row_count": len(rows),
+            "intent_kind": "pre_recorded_schedule"}
+    )
+    c.logger.append_trajectory_command = lambda **kwargs: per_target.append(kwargs)
+    admissions = []
+    schedule = {}
+    c.motion.configure_cartesian_schedule = lambda poses, times, max_lateness_s: schedule.update(
+        poses=poses, times=tuple(times), lateness=max_lateness_s)
+    c.motion.admit_scheduled_target = admissions.append
+    c.motion.scheduled_origin_s = lambda: 1.0
+    c.motion.start_scheduled_timing = lambda timeout_s: 1.0
+    c.motion.wait_scheduled_target = lambda index, timeout_s: (
+        index, int((1.0 + schedule["times"][index]) * 1e9),
+        int((1.0 + schedule["times"][index]) * 1e9) + 1000)
+    executor, _ = personal_executor(c)
+    result = executor.execute(
+        trajectory, evaluate_offline_execution_request(**c.request)
+    )
+    assert result.completed
+    assert len(batches) == 1 and len(batches[0][0]) == len(trajectory)
+    assert batches[0][1] >= .25
+    assert per_target == []
+    assert admissions == list(range(len(trajectory)))
+
+
 @pytest.mark.parametrize("source,allowed", [("controller", True), ("query", False), ("events", False)])
 def test_unknown_collision_feedback_through_preflight_and_executor(personal_context, source, allowed):
     c = personal_context
