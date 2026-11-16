@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-11-16",
+  "source_commit": "1bcb7298",
+  "review_only": true,
+  "hardware_accessed": false,
+  "original_files_modified": false,
+  "session_status": "FAILED",
+  "first_failure_reason": "command deadline missed after intent logging; refusing dispatch",
+  "source_changes_in_commit": false,
+  "planned_cycle_s": 90.0,
+  "planned_target_count": 4501,
+  "frozen_reconstruction_matches": true,
+  "trajectory_audit_reasons": [],
+  "planned_peak_speed_m_s": 0.03496977795684572,
+  "planned_peak_acceleration_m_s2": 0.2886594252562345,
+  "confirmed_observer_dispatch_rows": 120,
+  "last_confirmed_schedule_time_s": 2.38,
+  "intent_rows": 122,
+  "last_logged_intent_schedule_time_s": 2.42,
+  "intent_prefix_matches": true,
+  "dispatch_interpretation": "Observer rows confirm through 2.38 s. Ahead-of-time intents do not establish physical dispatch; callback may execute a further admitted endpoint before observer recovery.",
+  "clock_origin_method": "Historical approximation: median(dispatch_start - trajectory_time), excluding initial advance hold; no execution_result origin was persisted for failed run.",
+  "approximate_origin_host_time_s": 4478075.153647699,
+  "origin_inference_range_s": [
+    4478075.1528457,
+    4478075.1539475
+  ],
+  "partial_tracking": {
+    "schedule_interval_s": [
+      0,
+      2.38
+    ],
+    "valid_state_samples": 297,
+    "rms_error_mm": 1.3607789164513768,
+    "p95_error_mm": 1.4369167938171004,
+    "maximum_error_mm": 1.4520605264837465,
+    "not_full_cycle": true
+  },
+  "partial_wrench": {
+    "valid_samples": 119,
+    "maximum_internal_gap_ms": 31.40170034021139,
+    "peak_force_n": 59.54378603955145,
+    "peak_torque_nm": 7.352232358777504,
+    "native_query_overrun_count": 0,
+    "maximum_native_query_duration_ms": 14.5111
+  },
+  "supervisor_failure_events": [
+    {
+      "type": "FAILURE_LATCH",
+      "relative_s": 2.902304700575769,
+      "reason": "child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed"
+    },
+    {
+      "type": "FAILURE_LATCH",
+      "relative_s": 2.9024336002767086,
+      "reason": "wrench_sample_stale_or_clock_invalid"
+    },
+    {
+      "type": "FAILURE_LATCH",
+      "relative_s": 2.902650600299239,
+      "reason": "state_wrench_skew_failure"
+    }
+  ],
+  "wrench_cleanup": {
+    "NORMAL_CLEANUP": false,
+    "GRACEFUL_SDK_DISCONNECT": null,
+    "OFFLINE_DISCONNECT_COMPLETED": false,
+    "FORCED_WORKER_TERMINATION": false,
+    "CONTROLLER_SESSION_RECOVERY": null,
+    "process_exited": true,
+    "exitcode": 0,
+    "query_state": "SUCCEEDED",
+    "failure_latch": [
+      "child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed",
+      "wrench_sample_stale_or_clock_invalid",
+      "state_wrench_skew_failure"
+    ]
+  },
+  "logging_deadline_evidence": {
+    "last_intent_start_host_s": 4478077.5339196,
+    "target_time_s": 2.42,
+    "approximate_latest_preparation_s": 4478077.5536477,
+    "approximate_remaining_budget_ms": 19.728099927306175,
+    "write_completion_timestamp_available": false
+  },
+  "limitations": [
+    "Failed initial acceleration only; no cruise or phase-transition validation.",
+    "The reported stop path identifies a missed intent-preparation deadline; exact storage/thread/scheduling latency is not recorded.",
+    "Realtime cleanup success not evidenced on failed run; wrench process cleanup explicitly unconfirmed."
+  ],
+  "evidence_sha256": {
+    "round_status.json": "fb279c0428a615abc11770b9962c0a3457efa780242bf985b9cb40c9f6cde4b4",
+    "tcp_plan.json": "c0f63ebc14741ab5577853d8b58304327254407227df9352504b46e6d869fc6c",
+    "tcp_trajectory.csv": "cae30091c1aaf541f350d12645d5d35d3235e74edc554491d1cf183aab8e8498",
+    "tcp_safety.json": "e8ac3b17d5ea41005b4a4152e62197e32aaf09b1fe756e38c11ff0a8da9af59f",
+    "prepared_config.json": "40e8bf5216e8380903e86515a799fd6960e5f6342b8c8bab1a79d498d723d97e",
+    "anchor.json": "8609a1a51c64f6a0e0f8dbe2e36d45db9e6de95ae2654dd35f9363ad59536dcf",
+    "dispatch.csv": "2fb8b9ac72ec33d7b472283214562a96582f85f4a2217b5be1176f6c2b3bcf9a",
+    "robot/metadata.json": "93aae4fb7e60d521ad0ebedd6409318c74fda0514003ec06036627f8b03d6cbd",
+    "robot/trajectory_command.csv": "1413de125f574de7866d993cc7fac74466827ddf367171c997e9b5f44cd04db5",
+    "robot/robot_state.csv": "c0c3673282ea7ee8925280fdaebf5327a570458f07e6855b730b4a9236f8585e",
+    "robot/robot_wrench.csv": "6ab0d1012985e9189a9b689d279a48d2848cb2196f733922d58cc76bbeb0a83d",
+    "robot/wrench_query_events.jsonl": "64bdf7d2d6325ffeb4e18da45cb77cccb8767722bd31a61085d9968188aeb3f4"
+  }
+}
