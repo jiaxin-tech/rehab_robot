@@ -1,6 +1,6 @@
-# 10秒微幅上抬：当前准备结果与下一步
+# 10秒上抬10厘米：当前准备结果与下一步
 
-2026-11-22。目标是验证机械臂与假腿的小幅联动，尚未执行自动带腿运动。操作者最新确认：机械臂已重新刚性接上近膝的小腿，两轴已停用，3C18均读回0。这是现场声明，本次只读程序不独立核实驱动或抱闸状态。
+2026-11-22。操作者将上抬参考幅度从1毫米改为10厘米，总时间仍为10秒，目标是验证机械臂与假腿的联动，尚未执行自动带腿运动。操作者最新确认：机械臂已重新刚性接上近膝的小腿，两轴已停用，3C18均读回0。这是现场声明，本次只读程序不独立核实驱动或抱闸状态。
 
 ## 为什么先不回放空载轨迹
 
@@ -10,11 +10,13 @@
 
 ## 已准备好的离线参考
 
-文件在[10秒参考目录](../results/manual_lab/20261122_micro_lift_reference_10s_v1/summary.json)：上抬1毫米、10秒、首尾速度与加速度为0，采用五次平滑曲线。理论峰速0.1875毫米/秒，峰值加速度约0.057735毫米/秒²，共501个采样点。
+文件在[10秒10厘米参考目录](../results/manual_lab/20261122_lift_reference_10s_100mm_v1/summary.json)：上抬10厘米、10秒、首尾速度与加速度为0，采用五次平滑曲线。理论峰速18.75毫米/秒（1.875厘米/秒），峰值加速度约5.773503毫米/秒²，共501个采样点。这里的上抬定义为机器人基座坐标+Z方向，尚未转换成本次刚性连接可达的完整位姿路径。
 
 `scalar_task_reference.csv`只有时间、任务竖直位移、速度、加速度四列，**不是可执行TCP轨迹**；没有实际起点、工具朝向或关节映射，不能送入run。`ready_for_execution=false`保留。原90秒曲线、配置及保护阈值没有修改。
 
-![10秒1毫米离线任务参考](../results/manual_lab/20261122_micro_lift_reference_10s_v1/scalar_task_reference.png)
+![10秒10厘米离线任务参考](../results/manual_lab/20261122_lift_reference_10s_100mm_v1/scalar_task_reference.png)
+
+之前的[1毫米参考](../results/manual_lab/20261122_micro_lift_reference_10s_v1/summary.json)保留为历史版本；其生成器哈希对应提交`112a22c1`，不是当前100毫米生成器的哈希。此次只更新离线任务幅度，未放开刚性连接执行入口。静止采集步骤不变。
 
 ## 现在只做一次10秒静止观测
 
@@ -38,7 +40,7 @@ $probePython = Join-Path (Get-Location) '.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $probePython -PathType Leaf)) { throw '找不到原有项目Python。' }
 $probeParent = 'results/manual_lab/' + (Get-Date -Format 'yyyyMMdd_HHmmss')
 New-Item -ItemType Directory -Path $probeParent -ErrorAction Stop | Out-Null
-$probeSession = Join-Path $probeParent 'connected_static_before_micro_probe'
+$probeSession = Join-Path $probeParent 'connected_static_before_lift_10cm'
 Copy-Item -LiteralPath 'config/robot_connected_observe_only.json' -Destination (Join-Path $probeParent 'observation_config.json') -ErrorAction Stop
 ```
 
@@ -68,7 +70,7 @@ git diff --cached --stat
 确认没有无关暂存内容后：
 
 ```powershell
-git commit -m "Record connected static robot observation before micro lift"
+git commit -m "Record connected static robot observation before 10cm lift"
 if ($LASTEXITCODE -ne 0) { throw '提交失败，保留原目录。' }
 git push origin paper-personalized-load
 if ($LASTEXITCODE -ne 0) { throw '推送失败，保留本地提交，不要强推。' }

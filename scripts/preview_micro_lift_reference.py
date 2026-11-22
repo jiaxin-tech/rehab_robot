@@ -46,10 +46,10 @@ def _bounded(value, low, high, name, *, inclusive_low=True):
     return float(value)
 
 
-def preview(output_dir, *, duration_s=10., lift_mm=1.):
+def preview(output_dir, *, duration_s=10., lift_mm=100.):
     """Write a non-executable scalar task reference and its numerical checks."""
     duration_s = _bounded(duration_s, 10., 60., "duration_s")
-    lift_mm = _bounded(lift_mm, 0., 2., "lift_mm", inclusive_low=False)
+    lift_mm = _bounded(lift_mm, 0., 100., "lift_mm", inclusive_low=False)
     intervals = round(duration_s / SAMPLE_PERIOD_S)
     if not math.isclose(intervals * SAMPLE_PERIOD_S, duration_s, abs_tol=1e-10, rel_tol=0):
         raise ValueError("duration_s must be a multiple of the 0.02-second sample period")
@@ -144,7 +144,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, required=True, help="new output directory, never overwritten")
     parser.add_argument("--duration-s", type=float, default=10., help="10 to 60 s, in multiples of 0.02 s")
-    parser.add_argument("--lift-mm", type=float, default=1., help="scalar task displacement: >0 and <=2 mm")
+    parser.add_argument("--lift-mm", type=float, default=100., help="offline scalar task displacement: >0 and <=100 mm; not a robot motion limit")
     args = parser.parse_args(argv)
     result = preview(args.output_dir, duration_s=args.duration_s, lift_mm=args.lift_mm)
     print(json.dumps({key: result[key] for key in ("status", "hardware_accessed", "motion_commanded",

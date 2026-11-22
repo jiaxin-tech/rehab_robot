@@ -1,0 +1,14 @@
+{
+  "verified_utc": "2026-11-22T10:29:23.153971+00:00",
+  "hardware_accessed": false,
+  "scope": "Offline scalar reference verification only; no robot pose command generated or sent",
+  "duration_s": 10,
+  "lift_mm": 100,
+  "scalar_rows": 501,
+  "output_and_generator_hashes_verified": true,
+  "protected_files_unchanged_from_head": true,
+  "historical_1mm_reference_unchanged": true,
+  "static_observation_config_and_code_unchanged": true,
+  "static_observation_wiring_verification": "../20261122_micro_lift_reference_10s_v1/offline_verification.json",
+  "ready_for_execution": false
+}

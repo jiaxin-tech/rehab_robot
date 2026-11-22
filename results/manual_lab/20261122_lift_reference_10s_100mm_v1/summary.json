@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-22T10:28:46.884440+00:00",
+  "status": "BLOCKED_PENDING_RIGID_POSE_AND_SETUP_REVIEW",
+  "hardware_accessed": false,
+  "motion_commanded": false,
+  "ready_for_execution": false,
+  "reference_scope": "scalar_upward_task_only_not_a_robot_pose_trajectory",
+  "physical_compatibility_verified": false,
+  "duration_s": 10.0,
+  "lift_mm": 100.0,
+  "sample_period_s": 0.02,
+  "rows": 501,
+  "endpoint_inclusive": true,
+  "csv_columns": [
+    "time_s",
+    "task_delta_z_m",
+    "task_vz_m_s",
+    "task_az_m_s2"
+  ],
+  "clock_basis": "offline relative task time; no robot or sensor timestamps",
+  "profile": "quintic: h(s)=10*s^3-15*s^4+6*s^5, s=t/T",
+  "kinematics": {
+    "initial_displacement_mm": 0.0,
+    "final_displacement_mm": 100.0,
+    "endpoint_speed_mm_s": [
+      0.0,
+      0.0
+    ],
+    "endpoint_acceleration_mm_s2": [
+      0.0,
+      0.0
+    ],
+    "analytic_peak_speed_mm_s": 18.75,
+    "analytic_peak_absolute_acceleration_mm_s2": 5.773502691896257,
+    "analytic_peak_speed_time_s": 5.0,
+    "analytic_acceleration_extrema_times_s": [
+      2.1132486540518713,
+      7.886751345948127
+    ],
+    "sampled_peak_speed_mm_s": 18.75,
+    "sampled_peak_absolute_acceleration_mm_s2": 5.77345536
+  },
+  "numerical_checks": {
+    "finite": true,
+    "fixed_sample_period": true,
+    "endpoint_inclusive": true,
+    "monotonic_upward": true,
+    "exact_displacement_endpoints": true,
+    "rest_endpoints": true,
+    "sampled_extrema_within_analytic_bounds": true
+  },
+  "blockers": [
+    "Rigid shank coupling: compatible robot position and orientation are unresolved; fixed orientation cannot be assumed",
+    "Previously reported hip torque target -5 N m and one-way upward resistance remain unresolved; user now reports both drives disabled and torque targets zero",
+    "Actual leg limits, soft limits, directional resistance and stop behavior have not been validated",
+    "No actual installed robot start anchor or coupled-pose model was supplied",
+    "A scalar upward task is not proof of a kinematically feasible or safe connected-leg robot motion"
+  ],
+  "configs_unchanged": true,
+  "protected_source_sha256": {
+    "control/continuous_taught_trajectory.py": "4e9d0794282848bb708892217b348fb18fe16cda6f5d52a2638e57aaa5feef84",
+    "control/continuous_taught_timing.py": "9983d99b93383e3dc83b9b9a9bcbc5a746796e4e2c7753089705da12335f2582",
+    "control/taught_tcp_trajectory.py": "3e4b8067fd3c10ba47b576a167c15e02cfa0055842a04ad4b1a68a55909da386",
+    "config/continuous_taught_90s.empty.json": "8f922b8fde4460fd9b5dcc518c917bbfddcbe550725f908343acc9310b016adf",
+    "config/continuous_taught_90s.loaded_diagnostic.json": "093a72ccb23644ebe32be87532143cab7ec49503f91a52acb117828d70b9c68a"
+  },
+  "generator_sha256": "c52fae5e9b29042ca678770d58b50fb68dfcec84a2a25476138f47a0cd8544fc",
+  "output_files_sha256": {
+    "scalar_task_reference.csv": "6214680141197b75f6ab7827d5b5254c77fb87695810aaf98f6b25c5fd937b10",
+    "scalar_task_reference.png": "dcfff10590b646ca07092200b64e57a2835173187568c7600caad10cd810811d"
+  }
+}
