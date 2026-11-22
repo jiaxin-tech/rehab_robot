@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "reviewed_utc": "2026-11-22T10:37:09.278335+00:00",
+  "session": "D:\\rr_paper\\results\\manual_lab\\20261122_183143\\connected_static_before_lift_10cm",
+  "hardware_accessed_by_review": false,
+  "scope": "Stationary acquisition and SDK-reported pose/wrench only; no physical path or interaction-force calibration established",
+  "source_sha256": {
+    "round_status.json": "ab9e746bd1ff2d796b205ccd76bc0bbb630c6c934f5e61f3a5278d8c4a08cf38",
+    "robot\\metadata.json": "9d4ff19cc3c112655e24ac576e08e8ad146c91e3dee5c10fd07d9c8a8039e72e",
+    "robot\\robot_state.csv": "f43f3e61e78a7e62154b782ccb970b63b25defc13a4ecbda2f523fce58d08f6d",
+    "robot\\robot_wrench.csv": "e96ff94a27251bbdcf5f12e9f26aacb8ba061c8d12d8406bf8c2181963ce3eb9",
+    "robot\\aligned_snapshot.csv": "bf092fb0646f2c466ec6d165bfbbba9e82e16da29603305f980835b4d1ce6eae",
+    "robot\\trajectory_command.csv": "473bb94bb7b56c72a538424e0eccf2e7c98df4b04f1ef83531c37f30c00c00b0",
+    "robot\\wrench_query_events.jsonl": "a30f8c741d680993ef5add8f5c3db0fe2ae45aa475583a8d622f037173c07352"
+  },
+  "reviewer_sha256": "b5c159b5747a6cf88f3a6c974fb13da01a17f41468520652950ad7a7e4f5963f",
+  "observation_config_sha256": "a63a86c520189fa5069bff01989bba45a617b1332e517d0d9be117f8337ea057",
+  "reported_status": "OBSERVATION_COMPLETE",
+  "motion_commanded": false,
+  "command_rows": 0,
+  "state": {
+    "rows": 1670,
+    "valid_rows": 1670,
+    "clock": {
+      "span_s": 13.422245800495148,
+      "effective_rate_hz": 124.34580805683282,
+      "maximum_gap_ms": 24.94790032505989,
+      "gaps_over_40ms": 0
+    },
+    "mean_xyz_m": [
+      0.7361128633567564,
+      -0.06350165968703338,
+      0.27457773138223235
+    ],
+    "mean_rpy_rad": [
+      -3.1089092883034866,
+      0.12005032500445831,
+      -2.40851717524365
+    ],
+    "max_position_change_from_first_mm": 0.0028109173587931384,
+    "max_orientation_change_from_first_deg": 0.00023341470356339712
+  },
+  "wrench": {
+    "rows": 501,
+    "valid_rows": 501,
+    "frame_types": [
+      "world"
+    ],
+    "query_start_clock": {
+      "span_s": 10.013416599482298,
+      "effective_rate_hz": 49.93300688456829,
+      "maximum_gap_ms": 27.47549954801798,
+      "gaps_over_40ms": 0
+    },
+    "query_midpoint_clock": {
+      "span_s": 10.01340389996767,
+      "effective_rate_hz": 49.93307021217973,
+      "maximum_gap_ms": 29.665200039744377,
+      "gaps_over_40ms": 0
+    },
+    "publish_clock": {
+      "span_s": 10.013378400355577,
+      "effective_rate_hz": 49.93319736945573,
+      "maximum_gap_ms": 31.89019951969385,
+      "gaps_over_40ms": 0
+    },
+    "force_mean_components_n": [
+      -1.520545047242934,
+      -2.7693728530224453,
+      -12.183993051051399
+    ],
+    "force_norm_mean_n": 12.624509445317075,
+    "force_norm_max_n": 14.42925723839123,
+    "torque_mean_components_nm": [
+      1.7723492977527453,
+      0.7726983810188647,
+      0.5850084163004897
+    ],
+    "torque_norm_mean_nm": 2.048891384476466,
+    "torque_norm_max_nm": 3.7883582702776963
+  },
+  "alignment": {
+    "rows": 660,
+    "valid_rows": 501,
+    "startup_invalid_rows": 159,
+    "time_until_first_valid_s": 3.183465600013733,
+    "invalid_rows_after_first_valid": 0,
+    "valid_clock": {
+      "span_s": 9.997292200103402,
+      "effective_rate_hz": 50.0135426665661,
+      "maximum_gap_ms": 26.03510022163391,
+      "gaps_over_40ms": 0
+    }
+  },
+  "query_event_counts": {
+    "PROCESS_START": 1,
+    "PROCESS_READY": 1,
+    "QUERY_SUCCESS": 501,
+    "PROCESS_STOP_REQUEST": 1,
+    "DISCONNECT_START": 1,
+    "DISCONNECT_COMPLETE": 1,
+    "PROCESS_STOPPED": 1,
+    "PROCESS_EXIT": 1,
+    "AUDIT_WRITE_SUMMARY": 1,
+    "CLEANUP_OUTCOME": 1
+  },
+  "cleanup_outcomes": [
+    {
+      "NORMAL_CLEANUP": true,
+      "GRACEFUL_SDK_DISCONNECT": true,
+      "OFFLINE_DISCONNECT_COMPLETED": false,
+      "FORCED_WORKER_TERMINATION": false,
+      "CONTROLLER_SESSION_RECOVERY": null,
+      "process_exited": true,
+      "exitcode": 0,
+      "query_state": "SUCCEEDED",
+      "failure_latch": []
+    }
+  ],
+  "sdk_tool_payload": {
+    "active_hmi_tool_workobject_verified": false,
+    "sdk_available_tool_names": [
+      "g_tool_0",
+      "g_tool_1",
+      "g_tool_10",
+      "g_tool_11",
+      "g_tool_12",
+      "g_tool_13",
+      "g_tool_14",
+      "g_tool_15",
+      "g_tool_2",
+      "g_tool_3",
+      "g_tool_4",
+      "g_tool_5",
+      "g_tool_6",
+      "g_tool_7",
+      "g_tool_8",
+      "g_tool_9",
+      "tool0"
+    ],
+    "sdk_available_workobject_names": [
+      "g_wobj_0",
+      "g_wobj_1",
+      "g_wobj_10",
+      "g_wobj_11",
+      "g_wobj_12",
+      "g_wobj_13",
+      "g_wobj_14",
+      "g_wobj_15",
+      "g_wobj_2",
+      "g_wobj_3",
+      "g_wobj_4",
+      "g_wobj_5",
+      "g_wobj_6",
+      "g_wobj_7",
+      "g_wobj_8",
+      "g_wobj_9",
+      "wobj0"
+    ],
+    "toolset_end_rpy_rad": [
+      0.0,
+      -0.0,
+      0.0
+    ],
+    "toolset_end_translation_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "toolset_load_cog_m": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "toolset_load_inertia_kg_m2": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "toolset_load_mass_kg": 0.0,
+    "toolset_ref_rpy_rad": [
+      0.0,
+      -0.0,
+      0.0
+    ],
+    "toolset_ref_translation_m": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  "automatic_motion_authorized": false,
+  "calibrated_interaction_force_established": false,
+  "leg_state_or_brake_observed": false,
+  "interpretation": [
+    "Pose changes describe SDK-reported stationary variation, not absolute physical accuracy",
+    "Startup invalid samples must not be counted as an interruption after readiness",
+    "Raw world wrench is not independently calibrated interaction force; do not tare away this loaded baseline",
+    "Zero SDK tool/payload values do not independently identify the active HMI tool, workobject or physical fixture",
+    "No knee boundary, release state or coupled position/orientation path was validated",
+    "Logger healthy/ready can be false after normal close; assess completion, failure fields and cleanup events"
+  ],
+  "figure_sha256": "f5a6dcb03736a92c5216144aab942116e217950f1c78673a768d24b7c1743a67"
+}
