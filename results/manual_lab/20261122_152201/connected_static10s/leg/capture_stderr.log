@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\liumai\fjx\rehab_robot\collection\twincat_leg.py", line 335, in <module>
+    main()
+  File "C:\Users\liumai\fjx\rehab_robot\collection\twincat_leg.py", line 328, in main
+    capture(config, args.output, stop_event=stop, notify=notify)
+  File "C:\Users\liumai\fjx\rehab_robot\collection\twincat_leg.py", line 189, in capture
+    raise TimeoutError("input toggle stopped changing")
+TimeoutError: input toggle stopped changing

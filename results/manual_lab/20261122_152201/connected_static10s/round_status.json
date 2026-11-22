@@ -1,0 +1,63 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\continuous_taught_90s.loaded_diagnostic.json",
+  "motion_commanded": false,
+  "reason": "leg_capture_failed:TimeoutError: input toggle stopped changing",
+  "capture_cleanup_error": "capture cleanup: ADS capture failed before a completed, closed CSV was acknowledged: TimeoutError: input toggle stopped changing; partial CSV excluded",
+  "robot_timing": {
+    "available": true,
+    "samples": 168,
+    "valid_samples": 0,
+    "recorded_span_s": 3.340445199981332,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 24.24709964543581,
+    "includes_startup": true,
+    "ever_ready": false,
+    "invalid_after_ready": null,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_age_ms": {
+        "count": 168,
+        "mean": 3.2363077237581215,
+        "p50": 3.922500181943178,
+        "p95": 7.875129720196129,
+        "p99": 9.7878579515964,
+        "min": 0.1560002565383911,
+        "max": 16.886799596250057
+      },
+      "wrench_age_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      },
+      "state_wrench_skew_ms": {
+        "count": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "p99": null,
+        "min": null,
+        "max": null
+      }
+    },
+    "invalid_reasons": {
+      "state_wrench_skew_unavailable_or_exceeded": 168,
+      "wrench_not_ready": 168,
+      "wrench_process_not_ready": 168,
+      "wrench_stale_or_unavailable": 168
+    }
+  }
+}
