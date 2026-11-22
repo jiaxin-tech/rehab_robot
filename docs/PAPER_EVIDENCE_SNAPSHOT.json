@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at_utc": "2026-11-22T07:19:48.096050+00:00",
-  "git_commit": "c34823a86e7a36c1e610529608fb200fd9ef25c3",
+  "generated_at_utc": "2026-11-22T07:49:04.316101+00:00",
+  "git_commit": "498fa8bb92d745f163b41b53b348b2ee65cb3183",
   "worktree_dirty": false,
   "source_sha256": {
     "config/experiment.json": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
@@ -9,7 +9,7 @@
     "control/robot_trajectory_executor.py": "ce16575efb28cf7a4d9f1fd4f8a4a65231ab594baf1da6925a4429a5a4cbf948",
     "control/execution_preflight.py": "ca328b1ea0cd839c0227e5abbbbffe0713edcde1b9d52aafaa794d6a81793b69",
     "collection/real_robot_acquisition.py": "071d9f783660d9d2d98c221f2fdcaade18c1079bcd2fa97ff467c70885a9bac1",
-    "collection/twincat_leg.py": "42d27584892c8d83aca4edc5bfab91f026a5915b281d67e8a1e62f462af518fc",
+    "collection/twincat_leg.py": "b171121c659a8a0a9363b7434e861813686b0565ac534a80576700e54a6990c6",
     "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
     "scripts/lab_session.py": "7db39cdb3718c59b9af362ce8160ba8da87c370bc98abfb8adc37fc19c4027ce",
     "scripts/train_robot_leg_round.py": "a2c7ce9f71f96049da6882f11c723f0a9c5d6a98e256cb7d2482c603e1c0f896",
@@ -30,7 +30,7 @@
     "measurement_validation/robot_execution.py": "2df113922275b004f291c58e99343486f091b2ae389a0d3e64d49e57c79e8786",
     "measurement_validation/passive_response.py": "f6055632d0ecd121999674b9e5104cece563bbdf1be33f46f7701511d31d325b",
     "measurement_validation/robot_leg_round.py": "c1b406c17c1e26e2a72ae89210d9046d934397e7fa39d1e8e3fd31f48ad3db93",
-    "scripts/audit_paper_evidence.py": "10f5cf7f50328bc29919eff4172216c4e862153e13c7af2736a4ff242d19a815",
+    "scripts/audit_paper_evidence.py": "3d454ade8e721cb6b04aef69931d1166cad06361a2a69d9ec2b389c183ad4291",
     "tests/test_original_training_adapter.py": "5412a76bddeacb7ee65a5ce23eeaadfff1760c385c68897155dd53ab11437201",
     "scripts/tcp_force_training.py": "667c7aa8492bc721d494138be921c29d5106ed0013bdae7034a30b34bfdb3fb7",
     "tests/test_tcp_force_training.py": "5bc879ccf9e6a2e64a407e158c4b45480e2439aa5b907ae1244e8775e67bdca8",
@@ -38,7 +38,7 @@
     "measurement_validation/force_trial_ledger.py": "a135a1a63aac130a1b17205137f85e1e53746fb22e7e66b481890db615f772b5",
     "scripts/manual_leg_check.py": "53db76db8c27bc6f85d258d66b5847ad9b8b43de5966cae3a7e0e305c7c0e442",
     "config/paper_personalized_load.template.json": "2eae0a9e5ed656c4c504c5b01bc4a73b14f01fff26c72b272a4be3ee2d1c1fed",
-    "pytest-core.ini": "79e516ef865dd8a8d20431815ad762298d6d170214786e66bcc8f75e340fe734",
+    "pytest-core.ini": "5d146849f92f1a9d764145f527fa4a3e6357fdb74aee4895f8226a63bd39f793",
     "tests/test_force_trial_ledger.py": "8427137d5725ae04124e08fa498b9208ed0f16a5a4a717e41e85cbe9330f9052",
     "tests/test_manual_leg_check.py": "05983d75bf705d357763cb97bac1c3141f7ea5c07cc3c35fd9b7271285911e2a",
     "tests/test_wrench_endpoints.py": "0ff3c579afd629ceb92a25a706819bc19d4d7b514fb5db4deff211b149604cd4",
@@ -84,7 +84,7 @@
     "results/manual_lab/20261115_continuous_90s_v1/geometry.json": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
     "results/manual_lab/20261115_continuous_90s_v1/settings.json": "06e9852fed745c2c8fd0b43190d80a6e1930f9fb60aafee345fde52005c4e9d8",
     "results/manual_lab/20261115_continuous_90s_v1/summary.json": "a59a15a566757c176242024406c3d3e00a9fdc1f8a888ac5c2394d5fcf8ec949",
-    "measurement_validation/loaded_trial.py": "c15ac3b3b068cd2cd28c652f115237fe7fb813e6e7839b7390c4410b7684e95b",
+    "measurement_validation/loaded_trial.py": "f5d5c9f06972384f37f4533666417937fc74383a14a933eb19d4619bd6abee19",
     "measurement_validation/loaded_diagnostic.py": "ab9c5e00d3d5dd48bbb8985340348c35d3048c2bd147fa9b022d32c4cef060e2",
     "scripts/design_loaded_diagnostic.py": "c66d7e2775b8868e181e6180b00aa4faf15f62250c62b089b795d09e172ffd96",
     "config/continuous_taught_90s.loaded_diagnostic.json": "093a72ccb23644ebe32be87532143cab7ec49503f91a52acb117828d70b9c68a",
@@ -93,11 +93,18 @@
     "tests/test_loaded_wrench_freshness.py": "7110a5263544bfc920305d06ef6c54fbd7f32428777dd68dc8770a3498867a76",
     "tests/test_design_loaded_diagnostic.py": "6aed8d7e540ad1a6719b6fa6f9598d5d97653a385b36ced6db9b8bd62f6fd899",
     "tests/test_passive_leg_snapshot.py": "a5f2fb1de6094ee4e7a0335adb0c4c883cc421b6b7fa387e20a8a69fd71c3dc3",
-    "docs/LOADED_DIAGNOSTIC_WORKFLOW.md": "364577f7e1fb4b96e37ee33f7454b310b23643fdbef10efb2caba9a45bcc4d0c",
+    "docs/LOADED_DIAGNOSTIC_WORKFLOW.md": "fcceeebadc9daeec1edc9f155ccd339927d2c55931839d7b2e073466bf223795",
     "docs/templates/RIGID_SHANK_SETUP_RECORD.md": "44dea4e7c84f49f79e219f070987b570f23b6d6921cd9552d1afc938741a11f8",
     "docs/lab/EMPTY_90S_REVIEW_2026-11-22.md": "6554eb2d270482d7b82bc09f521bb838d24c9abe7fd1e2468e92fab729b8c48c",
     "results/manual_lab/20261122_loaded_diagnostic_v1/summary.json": "02271d759c4ddbe8a062147605c2931d63c0b89a2a5278f907261f05c0d158c2",
-    "results/manual_lab/20261122_143700/continuous_empty_01/review_20261122/review.json": "35a1ca15f4b0c1fda0a1541dba1cbb3c0463cfbefc8b6ebaa0b1aa315fef2ee2"
+    "results/manual_lab/20261122_143700/continuous_empty_01/review_20261122/review.json": "35a1ca15f4b0c1fda0a1541dba1cbb3c0463cfbefc8b6ebaa0b1aa315fef2ee2",
+    "collection/leg_capture_diagnostics.py": "71dc0387d862828a324819dadf3b2f7a6db62f3dad3913024a7c3008d31ec6ea",
+    "collection/leg_progress_publisher.py": "3be953e426e623037e45d3a43e977a7e92d60cf6f1fd8a48cba41f0edd48954d",
+    "scripts/diagnose_leg_capture.py": "55db29bc1e2b9995136494bbfe568a320d13f19be62208bce2a748abb65f6d8a",
+    "tests/test_leg_capture_diagnostics.py": "5b5350dc7e4c3ffd748d9dfe9d341c5530002dad025f9347e5f66114c8823d97",
+    "tests/test_leg_progress_publisher.py": "8be25981acf2f07a38372fab447c0185c94a611c45b1f2225af02a116d635010",
+    "tests/test_diagnose_leg_capture.py": "1c95da5f2288c83386492230fab9135caaa2b4c4d93163562621953a6b41a00f",
+    "docs/lab/LEG_CAPTURE_FAILURE_2026-11-22.md": "e516854d85336b63284585c77eec6480d17cff1c42c6403830a17f29eb6ababe"
   },
   "scope": "Current source tree, local results and selected hash-checked historical archive; no new hardware or clinical experiment.",
   "historical_evidence_archive_sha256": "eaa9f3f4c9a031c2955e983712bf1847e98c985998a76ca581a89216dc2cce29",
@@ -415,6 +422,14 @@
       "status_sha256": "a820da592e34f848a2c9ec0cb88c0536cb5ecc4ab4a98ef421f7fadce3af608f"
     },
     {
+      "session": "connected_static10s",
+      "status": "FAILED",
+      "mode": "historical",
+      "training_status": null,
+      "original_training_file_available": false,
+      "status_sha256": "4d73954ae4a2582f776235c5bffc0af0ef0cdf6544f077ec0202c475c5268595"
+    },
+    {
       "session": "observe_001",
       "status": "FAILED",
       "mode": "historical",
@@ -708,12 +723,20 @@
     "execution_blocker": "Current fixed-orientation trajectory is not a reviewed coupled rigid-leg pose path",
     "output_hashes_verified": true
   },
+  "connected_static_failure_20261122": {
+    "session": "results/manual_lab/20261122_152201/connected_static10s",
+    "status_sha256": "4d73954ae4a2582f776235c5bffc0af0ef0cdf6544f077ec0202c475c5268595",
+    "primary_reason": "leg_capture_failed:TimeoutError: input toggle stopped changing",
+    "interpretation": "219 accepted leg samples before toggle freshness timeout; drive faults not observed. Physical cause unconfirmed; no automated motion.",
+    "source_review": "docs/lab/LEG_CAPTURE_FAILURE_2026-11-22.md",
+    "new_hardware_experiment": false
+  },
   "verification": {
     "kind": "OFFLINE_TESTS_ONLY",
     "status": "REPORT_PROVIDED",
-    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-22_LOADED_DIAGNOSTIC.xml",
-    "sha256": "c13c12fea37d38699714c71a41d3296117e960b4092f862b964c55feba05b8ec",
-    "tests": 745,
+    "report": "D:\\rr_paper\\docs\\validation\\PAPER_BRANCH_TESTS_2026-11-22_LEG_CAPTURE.xml",
+    "sha256": "e90c6e3b981f8a5e1e123d70856abbf131c043a726d8795da8d58b9e3cf6a1aa",
+    "tests": 797,
     "failures": 0,
     "errors": 0,
     "skipped": 0
