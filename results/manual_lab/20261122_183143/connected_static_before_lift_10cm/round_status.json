@@ -1,0 +1,74 @@
+{
+  "status": "OBSERVATION_COMPLETE",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261122_183143\\observation_config.json",
+  "motion_commanded": false,
+  "observation": {
+    "episode_dir": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261122_183143\\connected_static_before_lift_10cm\\robot",
+    "completed": true,
+    "duration_s": 10.0,
+    "wrench_mode": "live",
+    "row_counts": {
+      "robot_state": 1670,
+      "robot_wrench": 501,
+      "trajectory_command": 0,
+      "aligned_snapshot": 660
+    },
+    "motion_commanded": false
+  },
+  "robot_timing": {
+    "available": true,
+    "samples": 660,
+    "valid_samples": 501,
+    "recorded_span_s": 13.180757800117135,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 26.03510022163391,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 0,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 501,
+        "mean": 0.7735073804379461,
+        "p50": 0.7092999294400215,
+        "p95": 1.0175993666052818,
+        "p99": 1.5447000041604042,
+        "min": 0.565200112760067,
+        "max": 5.20430039614439
+      },
+      "state_age_ms": {
+        "count": 660,
+        "mean": 4.024751367273204,
+        "p50": 4.10329969599843,
+        "p95": 8.334345603361726,
+        "p99": 8.804998127743598,
+        "min": 0.14329981058835983,
+        "max": 13.42179998755455
+      },
+      "wrench_age_ms": {
+        "count": 501,
+        "mean": 5.564390016188046,
+        "p50": 2.309500239789486,
+        "p95": 17.717650160193443,
+        "p99": 22.064649499952793,
+        "min": 0.8602496236562729,
+        "max": 27.931049466133118
+      },
+      "state_wrench_skew_ms": {
+        "count": 501,
+        "mean": 4.989726942947168,
+        "p50": 2.9683997854590416,
+        "p95": 16.28794986754656,
+        "p99": 19.661450758576393,
+        "min": 0.05304999649524689,
+        "max": 27.259149588644505
+      }
+    },
+    "invalid_reasons": {
+      "state_wrench_skew_unavailable_or_exceeded": 159,
+      "wrench_not_ready": 159,
+      "wrench_process_not_ready": 159,
+      "wrench_stale_or_unavailable": 159
+    }
+  }
+}
