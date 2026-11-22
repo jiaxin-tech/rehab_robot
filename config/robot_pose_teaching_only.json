@@ -1,0 +1,13 @@
+{
+  "purpose": "robot_state_only_reference_pose_teaching_not_motion_authorization",
+  "robot": {
+    "ip": "192.168.50.103",
+    "local_ip": "192.168.50.209",
+    "robot_class": "xMateRobot",
+    "collision_source": "controller",
+    "collision_event_max_age_s": null
+  },
+  "motion": {
+    "max_state_age_s": 0.1
+  }
+}
