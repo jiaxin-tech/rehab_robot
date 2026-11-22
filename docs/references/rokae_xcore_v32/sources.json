@@ -1,0 +1,56 @@
+{
+  "retrieved_utc": "2026-11-22T10:53:38.475054+00:00",
+  "publisher": "ROKAE official documentation",
+  "version": "xCore V3.2",
+  "purpose": "Operator reference only; manufacturer screenshots are examples, not current robot settings",
+  "pages": [
+    {
+      "name": "v32_hmi",
+      "url": "https://docs.rokae.com/docs/xCore/_versions/V3.2/06-hmi-%E7%AE%80%E4%BB%8B/",
+      "html_sha256": "e8099fd8565260220eeaef934466c7e3bda0b7fbab91e8f22835dbcda3735db9"
+    },
+    {
+      "name": "v32_tool_list",
+      "url": "https://docs.rokae.com/docs/xCore/_versions/V3.2/08-%E7%BC%96%E7%A8%8B/%E5%B7%A5%E5%85%B7%E5%88%97%E8%A1%A8/",
+      "html_sha256": "57e9f3daa1256576a0ba4996bd4b6fe4013ed4d829af798a1f324f5840753ef0"
+    },
+    {
+      "name": "v32_frames",
+      "url": "https://docs.rokae.com/docs/xCore/_versions/V3.2/09-%E8%AE%BE%E7%BD%AE/%E5%9D%90%E6%A0%87%E7%B3%BB%E6%A0%87%E5%AE%9A/",
+      "html_sha256": "c15c9bc908b2e840de3f743729082bf895242c48f85e747e9f3692e395cee9e4"
+    },
+    {
+      "name": "v32_dynamics",
+      "url": "https://docs.rokae.com/docs/xCore/_versions/V3.2/09-%E8%AE%BE%E7%BD%AE/%E5%8A%A8%E5%8A%9B%E5%AD%A6%E8%AE%BE%E7%BD%AE/",
+      "html_sha256": "06c454af13356e111bde9fd236ce3feba93788bcb71ed672e8851ff0b31aec27"
+    }
+  ],
+  "images": [
+    {
+      "file": "global_tool_list.png",
+      "url": "https://docs.rokae.com/assets/images/9.7.1.3-1-e000663dd108a72b93838925ec031ba1.PNG",
+      "source_page": "https://docs.rokae.com/docs/xCore/_versions/V3.2/09-%E8%AE%BE%E7%BD%AE/%E5%9D%90%E6%A0%87%E7%B3%BB%E6%A0%87%E5%AE%9A/",
+      "figure": "9.7.1.3 1",
+      "sha256": "b64ceaac0ddb9f1f732eea820ce0bdadd736c2767c239476ee0e8ce401e83816",
+      "bytes": 63355
+    },
+    {
+      "file": "global_tool_payload_manual.png",
+      "url": "https://docs.rokae.com/assets/images/9.7.1.3-3-c9bca020f124d7aae6813ff22f024015.PNG",
+      "source_page": "https://docs.rokae.com/docs/xCore/_versions/V3.2/09-%E8%AE%BE%E7%BD%AE/%E5%9D%90%E6%A0%87%E7%B3%BB%E6%A0%87%E5%AE%9A/",
+      "figure": "9.7.1.3 3",
+      "sha256": "cc4274a3e958cbcb83c5fe4004498237c6642d3dc4bf646c490cdc4cb26c639d",
+      "bytes": 46794
+    },
+    {
+      "file": "payload_manual_fields.png",
+      "url": "https://docs.rokae.com/assets/images/8.12.3.1-4-3997b452633fc1f13c12ddd6958057da.PNG",
+      "source_page": "https://docs.rokae.com/docs/xCore/_versions/V3.2/08-%E7%BC%96%E7%A8%8B/%E5%B7%A5%E5%85%B7%E5%88%97%E8%A1%A8/",
+      "figure": "8.12.3.1 4",
+      "sha256": "c0131be359505d2bde43d743a0f7190e8ebd849c5be7ac7e4dd313a401b258c0",
+      "bytes": 45515
+    }
+  ],
+  "hardware_accessed": false,
+  "robot_parameters_written": false
+}
