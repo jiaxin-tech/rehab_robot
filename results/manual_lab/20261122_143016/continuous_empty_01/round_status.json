@@ -1,0 +1,400 @@
+{
+  "status": "FAILED",
+  "config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\config\\continuous_taught_90s.empty.json",
+  "empty_load": true,
+  "trajectory_mode": "continuous_taught_tcp",
+  "tcp_plan": {
+    "mode": "continuous_taught_tcp",
+    "tcp_settings": {
+      "geometry_path": "results/manual_lab/20261115_continuous_90s_v1/geometry.json",
+      "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+      "scale_x": 1.0,
+      "scale_y": 1.0,
+      "scale_z": 1.0,
+      "cycle_duration_s": 90.0,
+      "ramp_duration_s": 5.0,
+      "sample_period_s": 0.02
+    },
+    "duration_s": 90.0,
+    "joint_reference_used": false,
+    "joint_tracking_required": false,
+    "base_delta_not_rotated": true,
+    "recorded_anchor_pose": [
+      0.7286046456471599,
+      -0.11646451163197384,
+      0.26122721597504217,
+      3.087215826596474,
+      -0.04868113645668192,
+      0.7539257139875373
+    ],
+    "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+    "geometry_source": {
+      "parent_geometry_path": "results/manual_lab/20261115_taught_70s_v1/geometry.json",
+      "parent_geometry_sha256": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+      "parent_settings": {
+        "geometry_path": "results/manual_lab/20261115_taught_70s_v1/geometry.json",
+        "geometry_sha256": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+        "scale_x": 1.0,
+        "scale_y": 1.0,
+        "scale_z": 1.0,
+        "lift_duration_s": 22.0,
+        "reach_duration_s": 17.0,
+        "return_duration_s": 25.0,
+        "start_hold_s": 2.0,
+        "turn_hold_s": 2.0,
+        "end_hold_s": 2.0,
+        "sample_period_s": 0.1
+      },
+      "parent_recording_source": {
+        "trajectory_id": "drag_taught_loop_v1",
+        "coordinate_system": "robot_base_delta_m",
+        "source_session": "D:\\rr_paper\\results\\manual_lab\\20261115_143705\\drag_teach_01",
+        "recording_manifest_sha256": "3a626a3c5c93dd78b9664a85a09155fe142c5aaad3d27b9341ce1cee9a656f74",
+        "verified_output_sha256": {
+          "recorded_tcp.csv": "5045dc6623cdd5a5f391c93e810b9926679255341155b490c3c4aa025e7e3a8f",
+          "recording_status.json": "5d6af17e8122871f986b2fcb82608c25a3fccad52a3d2b94443a5255d1ae23f9"
+        },
+        "recording_config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+        "recorded_source_sha256": {
+          "scripts/record_rehab_trajectory.py": "7dbd638a8af990893d182a9493362b52b9888faeafef15f7e04fd5686ff0ddca",
+          "hardware/rokae_adapter.py": "14e74cfb21781a310b8465aeb54dabae28414315a1f109dd912f24e37a2fde78",
+          "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
+          "collection/state.py": "43bebcd0ad8d36d71e8152a45d66e9487edfba1c32e7a3ecb6c980167f9ff798",
+          "hardware/safety_events.py": "665a63eb4b7cfa1a78331a7a9483d137ee2d32d208addbc18bbc05cf8c4e613b",
+          "config/settings.py": "2a0652569a4f8aa9dd99ba81ad2de787ad63d112440872d694adf09ce6da4c46",
+          "config/bundle.py": "6ef762651b2422f93f578a2f5ae2737e0c5f8d9897d46f4ca44d9ef88b8242e5"
+        },
+        "recorded_source_git": {
+          "commit": "3f84419b893c9ca494a4c1fbd00ac1c91df22127",
+          "branch": "paper-personalized-load",
+          "working_tree_status": "?? results/manual_lab/20261115_143705/"
+        },
+        "trim": {
+          "requested_start_s": 12.5,
+          "requested_end_s": 80.0,
+          "selected_start_s": 12.50555710028857,
+          "selected_end_s": 79.9946074001491,
+          "source_csv_lines": [
+            1559,
+            9990
+          ]
+        },
+        "stage_definition": {
+          "method": "explicit draft design: maximum base Z, then maximum base Y",
+          "top_time_s": 34.960773300379515,
+          "top_source_csv_line": 4366,
+          "far_time_s": 50.24071040004492,
+          "far_source_csv_line": 6272,
+          "human_shape_review_required": true
+        },
+        "filter": {
+          "method": "uniform-time interpolation then Savitzky-Golay and interpolation to source times",
+          "polynomial_order": 3,
+          "requested_window_s": 0.5,
+          "uniform_step_s": 0.007969892572019077,
+          "window_points": 63,
+          "actual_window_s": 0.5021032320372019,
+          "maximum_smoothing_displacement_m": 0.0014278565937270817,
+          "rms_smoothing_displacement_m": 0.0001810314090066529
+        },
+        "endpoint_restorations": [
+          {
+            "name": "initial_recorded_anchor",
+            "trimmed_index": 0,
+            "change_m": [
+              -3.929695068849437e-05,
+              1.0406194659376422e-05,
+              7.365588761965025e-06
+            ],
+            "norm_m": 4.1313328581865413e-05
+          },
+          {
+            "name": "source_maximum_Z",
+            "trimmed_index": 2807,
+            "change_m": [
+              -3.0948571558830906e-06,
+              7.05005074554399e-05,
+              6.441392674361168e-05
+            ],
+            "norm_m": 9.554608129495019e-05
+          },
+          {
+            "name": "source_maximum_base_Y",
+            "trimmed_index": 4713,
+            "change_m": [
+              3.98463211443989e-05,
+              4.5965143008475096e-06,
+              -9.012771784822071e-05
+            ],
+            "norm_m": 9.865020414063495e-05
+          },
+          {
+            "name": "source_trimmed_end",
+            "trimmed_index": 8431,
+            "change_m": [
+              -4.481141287704382e-06,
+              1.7125677710394527e-06,
+              4.637043033173249e-05
+            ],
+            "norm_m": 4.661791849451055e-05
+          }
+        ],
+        "closure": {
+          "raw_trimmed_end_minus_initial_anchor_m": [
+            0.013344424347614292,
+            0.004382345750389913,
+            -0.0056367827090213485
+          ],
+          "raw_closure_error_m": 0.015134461825710344,
+          "applied_only_to_phase": "return",
+          "method": "subtract closure vector times seventh-order rest-to-rest blend of normalized return arc length",
+          "maximum_intended_correction_m": 0.015134461825710344,
+          "subsequent_envelope_clamp_report": [
+            {
+              "phase": "lift",
+              "point_count": 0,
+              "maximum_change_m": 0.0,
+              "control_count": 54
+            },
+            {
+              "phase": "high_reach",
+              "point_count": 0,
+              "maximum_change_m": 0.0,
+              "control_count": 36
+            },
+            {
+              "phase": "return",
+              "point_count": 358,
+              "maximum_change_m": 0.004369607659424998,
+              "control_count": 74
+            }
+          ]
+        },
+        "control_resampling": {
+          "method": "uniform polyline arc-length control spacing",
+          "target_spacing_m": 0.02,
+          "interpolation": "clamped uniform cubic B-spline inside control convex hull"
+        },
+        "raw_envelope_delta_base_m": {
+          "min": [
+            -0.19145442866206064,
+            -0.0059409200416604,
+            -0.0056367827090213485
+          ],
+          "max": [
+            0.015072841620831556,
+            0.8925496429423121,
+            0.7510453004226585
+          ]
+        },
+        "orientation": {
+          "method": "fixed at original recorded anchor; recorded orientation changes deliberately discarded",
+          "original_maximum_change_deg": 24.172563941822638
+        },
+        "ready_for_replay": false,
+        "hardware_accessed": false,
+        "processing_source_sha256": {
+          "scripts/design_taught_trajectory.py": "ccf217f3ebc20e1e240a7897e1c9a9bc6eb5d0a1bb26846c3908da38f5980624",
+          "scripts/preview_recorded_trajectory.py": "90f94351a953b4095022dee1787edb71932042120b459c6c7306c4d0d9e12244",
+          "control/taught_tcp_trajectory.py": "3e4b8067fd3c10ba47b576a167c15e02cfa0055842a04ad4b1a68a55909da386"
+        }
+      },
+      "processing": {
+        "method": "densify each old cubic branch, resample the complete loop in arc length, then one global clamped cubic B-spline",
+        "control_spacing_m": 0.02,
+        "control_count": 153,
+        "peak_restoration_base_axis_scales": [
+          1.0,
+          1.0063105694966723,
+          1.0027058996849318
+        ],
+        "preserved_positive_excursions_yz_m": [
+          0.8925496429423121,
+          0.7510453004226585
+        ],
+        "old_to_new_maximum_nearest_distance_m": 0.009212917105338274,
+        "new_to_old_maximum_nearest_distance_m": 0.008865773156905553,
+        "old_path_length_m": 3.028708617508265,
+        "new_path_length_m": 2.9724307902973313,
+        "phase_boundary_definition": "actual global maximum Base Z, then actual global maximum Base Y",
+        "no_two_dimensional_projection": true,
+        "phase_joins_rounded": true
+      },
+      "processing_source_sha256": "4e9d0794282848bb708892217b348fb18fe16cda6f5d52a2638e57aaa5feef84",
+      "hardware_accessed": false,
+      "ready_for_replay": false,
+      "design_source_sha256": {
+        "scripts/design_continuous_taught_trajectory.py": "bc4a42126280ccaadd093333f7488c92235a4d5ea9b5181d6225b0c5773a3283",
+        "control/continuous_taught_timing.py": "9983d99b93383e3dc83b9b9a9bcbc5a746796e4e2c7753089705da12335f2582"
+      }
+    },
+    "constant_cartesian_speed_m_s": 0.034969774003498016,
+    "path_length_m": 2.9724307902973313,
+    "ramp_duration_s": 5.0,
+    "holds_s": 0.0,
+    "phase_boundaries": {
+      "lift": {
+        "start_s": 0.0,
+        "end_s": 30.147536383772625
+      },
+      "high_reach": {
+        "start_s": 30.147536383772625,
+        "end_s": 47.46703912527671
+      },
+      "return": {
+        "start_s": 47.46703912527671,
+        "end_s": 90.0
+      }
+    },
+    "actual_phase_boundaries_arc_fraction": [
+      0.3252651339267368,
+      0.5290239897091379
+    ],
+    "arc_lookup_sample_count": 153001,
+    "arc_integration_dense_coarse_difference_m": 2.928573161753434e-08,
+    "inverse_arc_speed_relative_error": 5.510556377874565e-07,
+    "sampled_midcourse_chord_speed_relative_error": 0.001130956946933881,
+    "actual_peak_tcp_z_base_m": 1.0116480077466277,
+    "geometric_extrema_delta_base_m": [
+      {
+        "minimum": -0.18840159846665766,
+        "maximum": 1.1043541161655614e-05,
+        "minimum_parameter": 0.41504114738581027,
+        "maximum_parameter": 0.9997154234963815
+      },
+      {
+        "minimum": -0.005978410630457473,
+        "maximum": 0.8925496429423121,
+        "minimum_parameter": 0.9533333346413616,
+        "maximum_parameter": 0.5330402535978207
+      },
+      {
+        "minimum": 0.0,
+        "maximum": 0.7510453004226586,
+        "minimum_parameter": 0.0,
+        "maximum_parameter": 0.32248146452768534
+      }
+    ],
+    "geometry_control_bounds_delta_base_m": {
+      "min": [
+        -0.18905819018271355,
+        -0.005978410630457472,
+        0.0
+      ],
+      "max": [
+        0.00017393394698072935,
+        0.8968930456301556,
+        0.7529456895102461
+      ]
+    },
+    "anchor": {
+      "schema_version": 2,
+      "capture_host_time_s": 5073791.3884037,
+      "tcp_pose_base": [
+        0.7490251174865776,
+        -0.04012955791909879,
+        0.2606027073239691,
+        -3.100909534529038,
+        0.05568009222298248,
+        -2.3889283041101916
+      ],
+      "tcp_position_base_m": [
+        0.7490251174865776,
+        -0.04012955791909879,
+        0.2606027073239691
+      ],
+      "tcp_orientation": {
+        "strategy": "fixed",
+        "representation": "euler_xyz_rad",
+        "values_rad": [
+          -3.100909534529038,
+          0.05568009222298248,
+          -2.3889283041101916
+        ]
+      },
+      "robot_joint_positions": [
+        0.14941532137835062,
+        0.7765266411741762,
+        -2.000210279913671,
+        -0.006840116206981317,
+        -0.2939886164207737,
+        -0.5957171246544228
+      ],
+      "trajectory_id": "drag_taught_continuous_v1",
+      "reference_start_q_hip": 0.0,
+      "reference_start_q_knee": 0.0,
+      "anchor_id": "anchor_96eb702e0129433b9f931f154cd456da",
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "controller_version": "3.2.1",
+      "tool_name": null,
+      "workpiece_name": null,
+      "created_at": "2026-11-22T06:30:48.910+00:00",
+      "reviewed": false,
+      "notes": ""
+    }
+  },
+  "reference_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261122_143016\\continuous_empty_01\\tcp_trajectory.csv",
+  "safety_config_path": "C:\\Users\\liumai\\fjx\\rehab_robot\\results\\manual_lab\\20261122_143016\\continuous_empty_01\\tcp_safety.json",
+  "blockers": [],
+  "training_status": "NOT_APPLICABLE",
+  "reason": "runtime safety gate: child:TimeoutError:ack_timeout;cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed;wrench_stale_or_unavailable;state_wrench_skew_unavailable_or_exceeded;force_magnitude_n_invalid;torque_magnitude_nm_invalid;wrench_stale;state_wrench_skew_limit_exceeded;force_limit_or_value_unavailable;torque_limit_or_value_unavailable",
+  "robot_timing": {
+    "available": true,
+    "samples": 275,
+    "valid_samples": 45,
+    "recorded_span_s": 5.666977299377322,
+    "timestamp_order_valid": true,
+    "maximum_snapshot_gap_ms": 138.1310997530818,
+    "includes_startup": true,
+    "ever_ready": true,
+    "invalid_after_ready": 54,
+    "invalid_numeric_values": 0,
+    "metrics": {
+      "query_duration_ms": {
+        "count": 99,
+        "mean": 0.7048050092175754,
+        "p50": 0.6301999092102051,
+        "p95": 0.9594900533556935,
+        "p99": 1.333450525999067,
+        "min": 0.5083996802568436,
+        "max": 1.8847007304430008
+      },
+      "state_age_ms": {
+        "count": 275,
+        "mean": 4.960311603817073,
+        "p50": 4.0870001539587975,
+        "p95": 8.303269930183887,
+        "p99": 16.11631402745842,
+        "min": 0.14640018343925476,
+        "max": 66.0823006182909
+      },
+      "wrench_age_ms": {
+        "count": 99,
+        "mean": 350.364421804746,
+        "p50": 192.83630046993494,
+        "p95": 1069.6143199689684,
+        "p99": 1147.6386120542884,
+        "min": 1.317700371146202,
+        "max": 1167.3175999894738
+      },
+      "state_wrench_skew_ms": {
+        "count": 99,
+        "mean": 346.1101754577924,
+        "p50": 175.479500554502,
+        "p95": 1064.4602901302276,
+        "p99": 1142.27348793298,
+        "min": 0.03705080598592758,
+        "max": 1165.900700725615
+      }
+    },
+    "invalid_reasons": {
+      "child:TimeoutError:ack_timeout": 53,
+      "cleanup:RuntimeError:unacknowledged_audit_mailbox_cleanup_unconfirmed": 53,
+      "state_wrench_skew_unavailable_or_exceeded": 229,
+      "wrench_not_ready": 176,
+      "wrench_process_not_ready": 176,
+      "wrench_stale_or_unavailable": 230
+    }
+  }
+}
