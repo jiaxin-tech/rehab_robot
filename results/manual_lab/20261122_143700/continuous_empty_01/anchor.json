@@ -1,0 +1,46 @@
+{
+  "anchor_id": "anchor_4a9319dfa3cd471c83698339c5e72932",
+  "capture_host_time_s": 5074309.7074353,
+  "controller_version": "3.2.1",
+  "created_at": "2026-11-22T06:39:27.229+00:00",
+  "notes": "",
+  "reference_start_q_hip": 0.0,
+  "reference_start_q_knee": 0.0,
+  "reviewed": false,
+  "robot_joint_positions": [
+    0.14941512164126886,
+    0.7765422206665532,
+    -2.000229934042516,
+    -0.006827892297577853,
+    -0.29399125295025286,
+    -0.5957142484404455
+  ],
+  "robot_model": "XMC12-R1300-W7G3B4",
+  "robot_serial_number": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+  "schema_version": 2,
+  "tcp_orientation": {
+    "representation": "euler_xyz_rad",
+    "strategy": "fixed",
+    "values_rad": [
+      -3.1009347671901404,
+      0.0556515144190236,
+      -2.388944443042241
+    ]
+  },
+  "tcp_pose_base": [
+    0.7490093964757142,
+    -0.04013163136803889,
+    0.2605866324223103,
+    -3.1009347671901404,
+    0.0556515144190236,
+    -2.388944443042241
+  ],
+  "tcp_position_base_m": [
+    0.7490093964757142,
+    -0.04013163136803889,
+    0.2605866324223103
+  ],
+  "tool_name": null,
+  "trajectory_id": "drag_taught_continuous_v1",
+  "workpiece_name": null
+}
