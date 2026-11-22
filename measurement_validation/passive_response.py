@@ -47,7 +47,7 @@ def analyze_passive_response(directory, config):
         values = result[column].to_numpy(float)
         values = values[np.isfinite(values)]
         return [float(values.min()), float(values.max())] if len(values) else None
-    summary = {"mode": "independent_tcp", "rows": len(result),
+    summary = {"mode": config.get("trajectory", {}).get("mode", "independent_tcp"), "rows": len(result),
         "duration_s": float(timestamp[-1]-timestamp[0]),
         "joint_tracking_error_applicable": False,
         "torque_offset_subtracted": False,

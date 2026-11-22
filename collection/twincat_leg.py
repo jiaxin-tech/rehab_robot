@@ -191,7 +191,9 @@ def capture(config, output, *, stop_event, notify, source_factory=AdsInputImage)
                     stream.flush()
                     notify(dict(state="recording", rows=count, last_sample_ns=previous_ns,
                         latest={key: row[key] for axis in (1, 4) for key in
-                            (f"axis{axis}_position_raw", f"axis{axis}_torque_3c1a_nm")}))
+                            (f"axis{axis}_position_raw", f"axis{axis}_torque_3c1a_nm",
+                             f"axis{axis}_fault", f"axis{axis}_error_code_hex",
+                             f"axis{axis}_operation_enabled")}))
                     last_notify = now
                 # Windows Event.wait rounded short waits beyond the 2 ms cycle
                 # in the host benchmark. Python 3.11+ sleep uses its finer timer.

@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-11-22T07:03:53.177741+00:00",
+  "status": "BLOCKED_RIGID_CONNECTION_REQUIRES_COUPLED_POSE",
+  "purpose": "passive_dummy_leg_diagnostic_geometry_comparison_only",
+  "hardware_accessed": false,
+  "ready_for_replay": false,
+  "formal_force_comparison_ready": false,
+  "interpretation": "Raw robot TCP wrench, not isolated strap tension or human comfort",
+  "trajectory_metadata": {
+    "mode": "continuous_taught_tcp",
+    "tcp_settings": {
+      "geometry_path": "results/manual_lab/20261115_continuous_90s_v1/geometry.json",
+      "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+      "scale_x": 0.03,
+      "scale_y": 0.03,
+      "scale_z": 0.03,
+      "cycle_duration_s": 90.0,
+      "ramp_duration_s": 5.0,
+      "sample_period_s": 0.02
+    },
+    "duration_s": 90.0,
+    "joint_reference_used": false,
+    "joint_tracking_required": false,
+    "base_delta_not_rotated": true,
+    "recorded_anchor_pose": [
+      0.7286046456471599,
+      -0.11646451163197384,
+      0.26122721597504217,
+      3.087215826596474,
+      -0.04868113645668192,
+      0.7539257139875373
+    ],
+    "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+    "geometry_source": {
+      "parent_geometry_path": "results/manual_lab/20261115_taught_70s_v1/geometry.json",
+      "parent_geometry_sha256": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+      "parent_settings": {
+        "geometry_path": "results/manual_lab/20261115_taught_70s_v1/geometry.json",
+        "geometry_sha256": "f565ad65aa7c4b5106bd9b5f634fd4197f31272cca2609d84cf049a8af25994a",
+        "scale_x": 1.0,
+        "scale_y": 1.0,
+        "scale_z": 1.0,
+        "lift_duration_s": 22.0,
+        "reach_duration_s": 17.0,
+        "return_duration_s": 25.0,
+        "start_hold_s": 2.0,
+        "turn_hold_s": 2.0,
+        "end_hold_s": 2.0,
+        "sample_period_s": 0.1
+      },
+      "parent_recording_source": {
+        "trajectory_id": "drag_taught_loop_v1",
+        "coordinate_system": "robot_base_delta_m",
+        "source_session": "D:\\rr_paper\\results\\manual_lab\\20261115_143705\\drag_teach_01",
+        "recording_manifest_sha256": "3a626a3c5c93dd78b9664a85a09155fe142c5aaad3d27b9341ce1cee9a656f74",
+        "verified_output_sha256": {
+          "recorded_tcp.csv": "5045dc6623cdd5a5f391c93e810b9926679255341155b490c3c4aa025e7e3a8f",
+          "recording_status.json": "5d6af17e8122871f986b2fcb82608c25a3fccad52a3d2b94443a5255d1ae23f9"
+        },
+        "recording_config_sha256": "167ebf9c1d39cfe861b4331ce54e7d6bc7791ede0f8ea22561f3cea760c9f2bd",
+        "recorded_source_sha256": {
+          "scripts/record_rehab_trajectory.py": "7dbd638a8af990893d182a9493362b52b9888faeafef15f7e04fd5686ff0ddca",
+          "hardware/rokae_adapter.py": "14e74cfb21781a310b8465aeb54dabae28414315a1f109dd912f24e37a2fde78",
+          "hardware/windows/rokae_xcore.py": "f16cf7053d38407c4c9a532d3b10cc12e9c063d7091c385a7d351e180eade065",
+          "collection/state.py": "43bebcd0ad8d36d71e8152a45d66e9487edfba1c32e7a3ecb6c980167f9ff798",
+          "hardware/safety_events.py": "665a63eb4b7cfa1a78331a7a9483d137ee2d32d208addbc18bbc05cf8c4e613b",
+          "config/settings.py": "2a0652569a4f8aa9dd99ba81ad2de787ad63d112440872d694adf09ce6da4c46",
+          "config/bundle.py": "6ef762651b2422f93f578a2f5ae2737e0c5f8d9897d46f4ca44d9ef88b8242e5"
+        },
+        "recorded_source_git": {
+          "commit": "3f84419b893c9ca494a4c1fbd00ac1c91df22127",
+          "branch": "paper-personalized-load",
+          "working_tree_status": "?? results/manual_lab/20261115_143705/"
+        },
+        "trim": {
+          "requested_start_s": 12.5,
+          "requested_end_s": 80.0,
+          "selected_start_s": 12.50555710028857,
+          "selected_end_s": 79.9946074001491,
+          "source_csv_lines": [
+            1559,
+            9990
+          ]
+        },
+        "stage_definition": {
+          "method": "explicit draft design: maximum base Z, then maximum base Y",
+          "top_time_s": 34.960773300379515,
+          "top_source_csv_line": 4366,
+          "far_time_s": 50.24071040004492,
+          "far_source_csv_line": 6272,
+          "human_shape_review_required": true
+        },
+        "filter": {
+          "method": "uniform-time interpolation then Savitzky-Golay and interpolation to source times",
+          "polynomial_order": 3,
+          "requested_window_s": 0.5,
+          "uniform_step_s": 0.007969892572019077,
+          "window_points": 63,
+          "actual_window_s": 0.5021032320372019,
+          "maximum_smoothing_displacement_m": 0.0014278565937270817,
+          "rms_smoothing_displacement_m": 0.0001810314090066529
+        },
+        "endpoint_restorations": [
+          {
+            "name": "initial_recorded_anchor",
+            "trimmed_index": 0,
+            "change_m": [
+              -3.929695068849437e-05,
+              1.0406194659376422e-05,
+              7.365588761965025e-06
+            ],
+            "norm_m": 4.1313328581865413e-05
+          },
+          {
+            "name": "source_maximum_Z",
+            "trimmed_index": 2807,
+            "change_m": [
+              -3.0948571558830906e-06,
+              7.05005074554399e-05,
+              6.441392674361168e-05
+            ],
+            "norm_m": 9.554608129495019e-05
+          },
+          {
+            "name": "source_maximum_base_Y",
+            "trimmed_index": 4713,
+            "change_m": [
+              3.98463211443989e-05,
+              4.5965143008475096e-06,
+              -9.012771784822071e-05
+            ],
+            "norm_m": 9.865020414063495e-05
+          },
+          {
+            "name": "source_trimmed_end",
+            "trimmed_index": 8431,
+            "change_m": [
+              -4.481141287704382e-06,
+              1.7125677710394527e-06,
+              4.637043033173249e-05
+            ],
+            "norm_m": 4.661791849451055e-05
+          }
+        ],
+        "closure": {
+          "raw_trimmed_end_minus_initial_anchor_m": [
+            0.013344424347614292,
+            0.004382345750389913,
+            -0.0056367827090213485
+          ],
+          "raw_closure_error_m": 0.015134461825710344,
+          "applied_only_to_phase": "return",
+          "method": "subtract closure vector times seventh-order rest-to-rest blend of normalized return arc length",
+          "maximum_intended_correction_m": 0.015134461825710344,
+          "subsequent_envelope_clamp_report": [
+            {
+              "phase": "lift",
+              "point_count": 0,
+              "maximum_change_m": 0.0,
+              "control_count": 54
+            },
+            {
+              "phase": "high_reach",
+              "point_count": 0,
+              "maximum_change_m": 0.0,
+              "control_count": 36
+            },
+            {
+              "phase": "return",
+              "point_count": 358,
+              "maximum_change_m": 0.004369607659424998,
+              "control_count": 74
+            }
+          ]
+        },
+        "control_resampling": {
+          "method": "uniform polyline arc-length control spacing",
+          "target_spacing_m": 0.02,
+          "interpolation": "clamped uniform cubic B-spline inside control convex hull"
+        },
+        "raw_envelope_delta_base_m": {
+          "min": [
+            -0.19145442866206064,
+            -0.0059409200416604,
+            -0.0056367827090213485
+          ],
+          "max": [
+            0.015072841620831556,
+            0.8925496429423121,
+            0.7510453004226585
+          ]
+        },
+        "orientation": {
+          "method": "fixed at original recorded anchor; recorded orientation changes deliberately discarded",
+          "original_maximum_change_deg": 24.172563941822638
+        },
+        "ready_for_replay": false,
+        "hardware_accessed": false,
+        "processing_source_sha256": {
+          "scripts/design_taught_trajectory.py": "ccf217f3ebc20e1e240a7897e1c9a9bc6eb5d0a1bb26846c3908da38f5980624",
+          "scripts/preview_recorded_trajectory.py": "90f94351a953b4095022dee1787edb71932042120b459c6c7306c4d0d9e12244",
+          "control/taught_tcp_trajectory.py": "3e4b8067fd3c10ba47b576a167c15e02cfa0055842a04ad4b1a68a55909da386"
+        }
+      },
+      "processing": {
+        "method": "densify each old cubic branch, resample the complete loop in arc length, then one global clamped cubic B-spline",
+        "control_spacing_m": 0.02,
+        "control_count": 153,
+        "peak_restoration_base_axis_scales": [
+          1.0,
+          1.0063105694966723,
+          1.0027058996849318
+        ],
+        "preserved_positive_excursions_yz_m": [
+          0.8925496429423121,
+          0.7510453004226585
+        ],
+        "old_to_new_maximum_nearest_distance_m": 0.009212917105338274,
+        "new_to_old_maximum_nearest_distance_m": 0.008865773156905553,
+        "old_path_length_m": 3.028708617508265,
+        "new_path_length_m": 2.9724307902973313,
+        "phase_boundary_definition": "actual global maximum Base Z, then actual global maximum Base Y",
+        "no_two_dimensional_projection": true,
+        "phase_joins_rounded": true
+      },
+      "processing_source_sha256": "4e9d0794282848bb708892217b348fb18fe16cda6f5d52a2638e57aaa5feef84",
+      "hardware_accessed": false,
+      "ready_for_replay": false,
+      "design_source_sha256": {
+        "scripts/design_continuous_taught_trajectory.py": "bc4a42126280ccaadd093333f7488c92235a4d5ea9b5181d6225b0c5773a3283",
+        "control/continuous_taught_timing.py": "9983d99b93383e3dc83b9b9a9bcbc5a746796e4e2c7753089705da12335f2582"
+      }
+    },
+    "constant_cartesian_speed_m_s": 0.0010490932201049422,
+    "path_length_m": 0.08917292370892008,
+    "ramp_duration_s": 5.0,
+    "holds_s": 0.0,
+    "phase_boundaries": {
+      "lift": {
+        "start_s": 0.0,
+        "end_s": 30.14753638377266
+      },
+      "high_reach": {
+        "start_s": 30.14753638377266,
+        "end_s": 47.46703912527707
+      },
+      "return": {
+        "start_s": 47.46703912527707,
+        "end_s": 90.0
+      }
+    },
+    "actual_phase_boundaries_arc_fraction": [
+      0.3252651339267372,
+      0.529023989709142
+    ],
+    "arc_lookup_sample_count": 153001,
+    "arc_integration_dense_coarse_difference_m": 8.785718264014974e-10,
+    "inverse_arc_speed_relative_error": 5.510560456833957e-07,
+    "sampled_midcourse_chord_speed_relative_error": 0.001130956947427153,
+    "actual_peak_tcp_z_base_m": 0.28311799143499006,
+    "geometric_extrema_delta_base_m": [
+      {
+        "minimum": -0.005652047953999729,
+        "maximum": 3.313062348496683e-07,
+        "minimum_parameter": 0.4150411473858102,
+        "maximum_parameter": 0.9997154234963815
+      },
+      {
+        "minimum": -0.00017935231891372412,
+        "maximum": 0.02677648928826936,
+        "minimum_parameter": 0.953333334668334,
+        "maximum_parameter": 0.5330402535978207
+      },
+      {
+        "minimum": 0.0,
+        "maximum": 0.02253135901267975,
+        "minimum_parameter": 0.0,
+        "maximum_parameter": 0.3224814645276853
+      }
+    ],
+    "geometry_control_bounds_delta_base_m": {
+      "min": [
+        -0.0056717457054814065,
+        -0.00017935231891372415,
+        0.0
+      ],
+      "max": [
+        5.21801840942188e-06,
+        0.026906791368904667,
+        0.022588370685307384
+      ]
+    }
+  },
+  "settings": {
+    "geometry_path": "results/manual_lab/20261115_continuous_90s_v1/geometry.json",
+    "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+    "scale_x": 0.03,
+    "scale_y": 0.03,
+    "scale_z": 0.03,
+    "cycle_duration_s": 90.0,
+    "ramp_duration_s": 5.0,
+    "sample_period_s": 0.02
+  },
+  "duration_s": 90.0,
+  "command_count": 4501,
+  "constant_speed_interval_s": [
+    5.0,
+    85.0
+  ],
+  "internal_holds_s": 0.0,
+  "positive_excursion_base_m": {
+    "x": 3.3130143184401106e-07,
+    "y": 0.026776316125423204,
+    "z": 0.022531325655233192
+  },
+  "negative_excursion_base_m": {
+    "x": -0.0056520468702584425,
+    "y": -0.00017935231887007685,
+    "z": 0.0
+  },
+  "audited_maximum_speed_m_s": 0.0010490933386974992,
+  "audited_maximum_acceleration_m_s2": 0.008659782757572105,
+  "trajectory_audit_reasons": [],
+  "preview_anchor_use": "historical empty-motion anchor for offline plotting only",
+  "preview_anchor_source": "results/manual_lab/20261122_143700/continuous_empty_01/anchor.json",
+  "preview_anchor_source_sha256": "934445756fbedf8c43583de961027cc4e27a38857d6d3c6573df4fd1d2d92603",
+  "preview_anchor_pose_base": [
+    0.7490093964757142,
+    -0.04013163136803889,
+    0.2605866324223103,
+    -3.1009347671901404,
+    0.0556515144190236,
+    -2.388944443042241
+  ],
+  "source_empty_force_quality": "not approved; source has documented wrench gaps",
+  "configured_force_caps_use": "inherited machine caps, unreviewed for this installation",
+  "source_config_sha256": "8f922b8fde4460fd9b5dcc518c917bbfddcbe550725f908343acc9310b016adf",
+  "geometry_sha256": "9f574601221e527095eeef628faa36d93a139b3dbffdf3746616bc79c44b16f4",
+  "source_code_sha256": {
+    "scripts/design_loaded_diagnostic.py": "c66d7e2775b8868e181e6180b00aa4faf15f62250c62b089b795d09e172ffd96",
+    "control/continuous_taught_trajectory.py": "4e9d0794282848bb708892217b348fb18fe16cda6f5d52a2638e57aaa5feef84"
+  },
+  "output_config": "config/continuous_taught_90s.loaded_diagnostic.json",
+  "output_config_sha256": "093a72ccb23644ebe32be87532143cab7ec49503f91a52acb117828d70b9c68a",
+  "output_files_sha256": {
+    "trajectory_preview.csv": "81e230ed3b4a346e0ac59662988675232294d094eac41bd1c7ef3a72a26b0231",
+    "trajectory_3d.png": "130a5cfdfd1382503d0c0b8cd852d2c7bfd06721a14934f908701d4fb469dccb",
+    "xyz_time.png": "91806c0c245b62678a085eeb26df273e27c68fd74076e6d363f409a4db7139cf",
+    "speed_time.png": "16e67ac6c438dd43b957a5f0be7efb15be7b7f83ec921cfceccdd20b710f189b",
+    "acceleration_time.png": "f9e3d825a41663930fdca719946132b1763cb3fbd905446e9d2e801c893596e3"
+  },
+  "blockers": [
+    "Reported rigid lower-leg fixture is incompatible with this unverified fixed-orientation TCP proposal",
+    "A coupled position/orientation trajectory requires actual leg geometry and fixture information",
+    "Reducing amplitude does not establish compatibility with a rigid leg connection",
+    "No manual small-path compatibility check has been completed",
+    "Current installation, support, tool and reviewed start anchor are missing",
+    "Raw TCP force and torque limits require installation-specific review",
+    "Source empty-run force coverage failed; no formal load comparison approval"
+  ]
+}

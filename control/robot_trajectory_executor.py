@@ -229,6 +229,7 @@ class RokaeMotionExecutor:
         dispatch_observer=None,
         use_windows_scheduler_priority: bool = False,
         trajectory_profile: str = "approved_rehab",
+        strict_wrench_freshness: bool = False,
     ) -> None:
         self.motion_adapter = motion_adapter
         self.acquisition = acquisition
@@ -237,6 +238,9 @@ class RokaeMotionExecutor:
         self.clock = clock
         self.execution_guard = execution_guard
         self.dispatch_observer = dispatch_observer
+        if type(strict_wrench_freshness) is not bool:
+            raise TypeError("strict_wrench_freshness must be bool")
+        self.strict_wrench_freshness = strict_wrench_freshness
         if trajectory_profile not in ("approved_rehab", "independent_tcp", "taught_tcp", "continuous_taught_tcp", REALTIME_LINK_PROFILE):
             raise ValueError("unsupported trajectory_profile")
         self.trajectory_profile = trajectory_profile
@@ -333,7 +337,8 @@ class RokaeMotionExecutor:
         }
         health_reasons = set(filter(None, health.invalid_reason.split(";")))
         grace_only = bool(
-            getattr(health, "wrench_stale_grace_active", False)
+            not self.strict_wrench_freshness
+            and getattr(health, "wrench_stale_grace_active", False)
             and health_reasons
             and health_reasons.issubset(tolerated_stale)
         )

@@ -40,6 +40,7 @@ from scripts.capture_start_anchor import run_capture
 from scripts.diagnose_robot import summarize_recording
 from scripts.preview_rehab_trajectory import preview_trajectory
 from scripts.run_rehab_experiment import run_execute
+from measurement_validation import loaded_trial
 
 
 def _empty_load_settings(c):
@@ -551,8 +552,13 @@ def check_config(config_path=BUNDLE_PATH, *, empty_load=False, require_physical_
     if capture_leg:
         check("calibration", calibration)
     from scripts.tcp_force_training import active as force_active, validate_config as validate_force
+    diagnostic = loaded_trial.active(c)
+    if "loaded_trial" in c:
+        check("loaded diagnostic", lambda: loaded_trial.validate_config(c))
+        if empty_load:
+            problems.append("loaded diagnostic must not use --empty-load")
     if c.get("trajectory", {}).get("mode") in ("taught_tcp", "continuous_taught_tcp"):
-        if not empty_load:
+        if not empty_load and not diagnostic:
             problems.append("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
         def taught_spec():
             if c["trajectory"]["mode"] == "continuous_taught_tcp":
@@ -596,6 +602,8 @@ def report(directory, state):
              "训练：" + state.get("training_status", "DISABLED"),
              "原因：" + state.get("reason", "无"), ""]
     lines += ["- " + x for x in state.get("blockers", [])]
+    if state.get("learning_mode") == "loaded_diagnostic":
+        lines += ["被动假腿连接诊断；不更新学习模型，不作为正式舒适度/负荷比较结果。"]
     timing = state.get("robot_timing", {})
     if timing:
         if timing.get("available"):
@@ -637,6 +645,9 @@ def observe(config_path, directory, *, duration_s=10., capture_factory=LegCaptur
     positive(duration_s, "duration_s")
     config_path = Path(config_path).resolve()
     c = configuration(config_path)
+    if "loaded_trial" in c:
+        # Observation permits an unreviewed setup, but never an invalid protocol.
+        loaded_trial.validate_config(c, require_review=False)
     capture_leg = c.get("validation", {}).get("capture_dummy_leg", True)
     if capture_leg:
         leg_config = validate_config(load_section("leg", config_path=config_path))
@@ -848,8 +859,13 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
     from control.independent_tcp_trajectory import build_tcp_trajectory, audit_tcp_trajectory
     continuous = c["trajectory"].get("mode") == "continuous_taught_tcp"
     taught = continuous or c["trajectory"].get("mode") == "taught_tcp"
+    diagnostic = loaded_trial.active(c)
+    if "loaded_trial" in c:
+        loaded_trial.validate_config(c)
+        if empty_load or parent_session is not None:
+            raise ValueError("loaded diagnostic requires a new with-leg session")
     if taught:
-        if not empty_load:
+        if not empty_load and not diagnostic:
             raise ValueError("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
         if continuous:
             from control.continuous_taught_trajectory import build_continuous_taught_trajectory as build_tcp_trajectory
@@ -906,7 +922,9 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
         state["force_training_binding"] = force.freeze_binding(directory, c, metadata, measurement=False)
         if not empty_load and parent_session is not None:
             state["pretrial_prediction"] = force.commit_prediction(parent_session, directory, state["force_training_binding"])
-    if not empty_load and not force_mode:
+    if diagnostic:
+        state.update(learning_mode="loaded_diagnostic", trial_purpose="connection_diagnostic")
+    if not empty_load and not force_mode and not diagnostic:
         from scripts.original_training_adapter import freeze_binding, commit_original_prediction
         state["original_training_binding"] = freeze_binding(directory, c, metadata)
         if parent_session is not None and state["original_training_binding"]["status"] == "BOUND":
@@ -916,6 +934,8 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
         leg_path = directory / "leg_start_origin.json"
         origin = leg_origin_capture_fn(config_path, leg_path)
         state.update(leg_start_origin_path=str(leg_path), leg_start_origin=origin)
+    if diagnostic:
+        state["loaded_trial_binding"] = loaded_trial.freeze_binding(directory, c, metadata)
     preview_trajectory(anchor=anchor, frame_config=config_path,
         output_dir=directory / "preview",
         **({"continuous_taught_settings": metadata["tcp_settings"]} if continuous else
@@ -927,8 +947,8 @@ def _prepare_tcp_artifacts(config_path, directory, c, state, empty_load,
         **({"parent_session": str(parent_session), "repeat_index": int(repeat_index)}
            if parent_session is not None else {}),
         status="PREPARED", blockers=_check_config_for_operation(config_path, empty_load=empty_load))
-    state["training_status"] = "NOT_APPLICABLE" if empty_load else "PENDING"
-    if not empty_load and not force_mode and state["original_training_binding"]["status"] != "BOUND":
+    state["training_status"] = "NOT_APPLICABLE_DIAGNOSTIC" if diagnostic else ("NOT_APPLICABLE" if empty_load else "PENDING")
+    if not empty_load and not force_mode and not diagnostic and state["original_training_binding"]["status"] != "BOUND":
         state["training_status"] = "PENDING_INPUT_BINDING"
         state["blockers"].append("original training: " + state["original_training_binding"]["reason"])
 
@@ -957,12 +977,15 @@ def _passive_leg_guard(capture, c, origin, *, before_motion=False):
 
 
 def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
-    if state.get("trajectory_mode") in ("taught_tcp", "continuous_taught_tcp") and not empty_load:
-        raise ValueError("taught_tcp supports empty-load validation only")
     if bool(state.get("empty_load")) != bool(empty_load):
         raise ValueError("prepared session mode does not match requested run mode")
     config_path = state["config_path"]
     c = configuration(config_path)
+    diagnostic = loaded_trial.active(c)
+    if "loaded_trial" in c:
+        loaded_trial.validate_config(c)
+    if state.get("trajectory_mode") in ("taught_tcp", "continuous_taught_tcp") and not empty_load and not diagnostic:
+        raise ValueError("taught_tcp supports empty-load validation only")
     if c != json.loads((directory / "prepared_config.json").read_text(encoding="utf-8")):
         raise ValueError("configuration changed; prepare a new TCP session")
     blockers = _check_config_for_operation(config_path, empty_load=empty_load)
@@ -972,7 +995,11 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
         raise ValueError("prepared trajectory blocked: " + "; ".join(state["blockers"]))
     anchor = load_start_anchor(directory / "anchor.json")
     if not empty_load:
-        if state.get("learning_mode") == "tcp_force":
+        if diagnostic:
+            if state.get("learning_mode") != "loaded_diagnostic":
+                raise ValueError("loaded diagnostic session marker changed")
+            require_binding = loaded_trial.require_binding
+        elif state.get("learning_mode") == "tcp_force":
             from scripts.tcp_force_training import require_binding
         else:
             from scripts.original_training_adapter import require_binding
@@ -1065,6 +1092,8 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
             kwargs["tcp_trajectory_settings"] = plan["tcp_settings"]
         if guard is not None:
             kwargs["execution_guard"] = guard
+        if diagnostic:
+            kwargs["strict_wrench_freshness"] = True
         result = execute_fn(**kwargs)
         if result.get("completed") is not True or not dispatches:
             raise RuntimeError("robot did not complete the TCP trajectory")
@@ -1098,7 +1127,9 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
     if not empty_load:
         analysis_error = None
         try:
-            if c.get("validation", {}).get("capture_dummy_leg", True):
+            if diagnostic:
+                _analyze_loaded_diagnostic(directory, state, c)
+            elif c.get("validation", {}).get("capture_dummy_leg", True):
                 state["quality"] = inspect_file(directory / "leg/leg.csv", expected_hz=c["leg"]["expected_hz"])
                 from measurement_validation.passive_response import analyze_passive_response
                 state["passive_response"] = analyze_passive_response(directory, c)
@@ -1110,8 +1141,8 @@ def _run_tcp(directory, state, *, empty_load, capture_factory, execute_fn):
             analysis_error = exc
         finally:
             report(directory, state)
-        # Adapt passive measurements to the existing algorithm; never substitute a learner.
-        trained = train_session(directory, training_mode="passive")
+        # Connection diagnostics have no training endpoint.
+        trained = state if diagnostic else train_session(directory, training_mode="passive")
         if analysis_error is not None:
             raise RuntimeError("passive response analysis failed: " + str(analysis_error)) from analysis_error
         return trained
@@ -1140,7 +1171,12 @@ def prepare(
         independent = c.get("trajectory", {}).get("mode") == "independent_tcp"
         continuous = c.get("trajectory", {}).get("mode") == "continuous_taught_tcp"
         taught = continuous or c.get("trajectory", {}).get("mode") == "taught_tcp"
-        if taught and not empty_load:
+        diagnostic = loaded_trial.active(c)
+        if "loaded_trial" in c:
+            loaded_trial.validate_config(c)
+            if empty_load or parent_session is not None or trajectory_settings is not None:
+                raise ValueError("loaded diagnostic requires its exact reviewed config and a new with-leg session")
+        if taught and not empty_load and not diagnostic:
             raise ValueError("taught_tcp currently supports empty-load validation only; prepare a new audited load-study catalog before loaded trials")
         if taught:
             _require_taught_fixed_cycle(c, {k: v for k, v in (trajectory_settings or c["trajectory"]).items()
@@ -1320,6 +1356,11 @@ def train_session(directory, *, training_mode="auto"):
 def analyze(directory):
     directory = Path(directory).resolve()
     state = json.loads((directory / "round_status.json").read_text(encoding="utf-8"))
+    if state.get("learning_mode") == "loaded_diagnostic":
+        _analyze_loaded_diagnostic(directory, state, configuration(directory / "prepared_config.json"))
+        state["analysis_status"] = "COMPLETE"
+        report(directory, state)
+        return state
     if state.get("trajectory_mode") in ("taught_tcp", "continuous_taught_tcp"):
         from measurement_validation.robot_execution import audit_robot_execution
         state["completion_trajectory_audit"] = audit_robot_execution(directory, allow_empty=True)
@@ -1718,6 +1759,20 @@ def repeat(source_directory, directory, *, live=False, empty_load=None,
     return json.loads((target_directory / "round_status.json").read_text(encoding="utf-8"))
 
 
+def _analyze_loaded_diagnostic(directory, state, c):
+    from measurement_validation.robot_execution import audit_robot_execution
+    from measurement_validation.loaded_diagnostic import audit_loaded_leg
+    from measurement_validation.passive_response import analyze_passive_response
+    loaded_trial.require_binding(directory, c, state)
+    robot_audit = audit_robot_execution(directory)
+    leg_audit = audit_loaded_leg(directory, c, robot_audit)
+    response = analyze_passive_response(directory, c)
+    state.update(completion_trajectory_audit=robot_audit, loaded_leg_audit=leg_audit,
+                 passive_response=response, quality=leg_audit["quality"],
+                 training_status="NOT_APPLICABLE_DIAGNOSTIC")
+    state.pop("response_analysis_error", None)
+
+
 def complete(directory):
     """Promote a successful recording to a final, reviewable COMPLETE state."""
     directory = Path(directory).resolve()
@@ -1731,6 +1786,18 @@ def complete(directory):
                       execution.get("same_session_realtime_cleanup_completed") is not True):
         raise ValueError("execution completion and realtime cleanup evidence are required")
     if state.get("trajectory_mode") in ("independent_tcp", "original_candidate", "taught_tcp", "continuous_taught_tcp"):
+        if not (directory / "prepared_config.json").is_file():
+            raise ValueError("completion evidence missing: prepared_config.json")
+        c = configuration(directory / "prepared_config.json")
+        if "loaded_trial" in c or state.get("learning_mode") == "loaded_diagnostic":
+            if not loaded_trial.active(c) or state.get("learning_mode") != "loaded_diagnostic" or state.get("empty_load"):
+                raise ValueError("loaded diagnostic completion marker changed")
+            _analyze_loaded_diagnostic(directory, state, c)
+            state.update(status="COMPLETE", analysis_status="COMPLETE")
+            state["completion"] = {"reviewed": False, "purpose": "connection_diagnostic_only",
+                "completed_at_host_time_s": time.perf_counter(), "training_authorized": False}
+            report(directory, state)
+            return state
         if not state.get("empty_load"):
             if state.get("learning_mode") == "tcp_force":
                 if state.get("trial_purpose") == "evaluation":

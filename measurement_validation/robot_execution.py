@@ -23,6 +23,8 @@ def read_json(path):
 
 def evidence_hashes(directory):
     names = EVIDENCE + (("original_candidate.csv",) if (directory / "original_candidate.csv").is_file() else ())
+    if (directory / "loaded_trial_binding.json").is_file():
+        names += ("loaded_trial_binding.json", "leg_start_origin.json", "leg/leg.csv")
     return {name: hashlib.sha256((directory / name).read_bytes()).hexdigest() for name in names}
 
 
@@ -44,6 +46,12 @@ def audit_robot_execution(directory, *, allow_empty=False):
         or execution.get("same_session_realtime_cleanup_completed") is not True):
         raise ValueError("execution audit requires completed realtime cleanup")
     config = read_json(directory / "prepared_config.json")
+    from measurement_validation import loaded_trial
+    diagnostic = loaded_trial.active(config)
+    if "loaded_trial" in config:
+        loaded_trial.require_binding(directory, config, state)
+        if state.get("empty_load") or state.get("learning_mode") != "loaded_diagnostic":
+            raise ValueError("loaded diagnostic execution marker changed")
     plan = read_json(directory / "tcp_plan.json")
     anchor = load_start_anchor(directory / "anchor.json")
     if plan != state["tcp_plan"] or plan["anchor"] != anchor.to_dict():
@@ -64,6 +72,8 @@ def audit_robot_execution(directory, *, allow_empty=False):
     if reasons:
         raise ValueError( "execution trajectory audit: " + ";".join(reasons))
     metadata = read_json(directory / "robot/metadata.json")
+    if diagnostic and metadata.get("strict_wrench_freshness") is not True:
+        raise ValueError("loaded diagnostic requires recorded strict wrench freshness")
     if metadata["logger"]["status"] != "completed" or metadata["execution_result"]["completed"] is not True:
         raise ValueError("robot recording did not close successfully")
     dispatch = pd.read_csv(directory / "dispatch.csv")
@@ -85,6 +95,8 @@ def audit_robot_execution(directory, *, allow_empty=False):
     if not np.isfinite(ends).all() or (ends < starts).any():
         raise ValueError("invalid dispatch duration")
     origin = metadata["execution_result"].get("schedule_origin_host_time_s")
+    if diagnostic and (isinstance(origin, bool) or not isinstance(origin, (int, float)) or not np.isfinite(origin)):
+        raise ValueError("loaded diagnostic requires a recorded finite schedule origin")
     origin_source = "recorded_schedule_origin"
     if origin is None:
         # Historical recordings did not retain the scheduler's origin.
@@ -105,7 +117,7 @@ def audit_robot_execution(directory, *, allow_empty=False):
     moving = np.zeros(len(clock), bool)
     force, torque = np.linalg.norm(raw[:, :3], axis=1), np.linalg.norm(raw[:, 3:], axis=1)
     if plan.get("mode") == "continuous_taught_tcp":
-        if not state.get("empty_load"):
+        if not state.get("empty_load") and not diagnostic:
             raise ValueError("continuous taught TCP supports empty-load validation only")
         intervals = ((0., float(times[-1])),)
     elif plan.get("mode") == "taught_tcp":
@@ -169,6 +181,7 @@ def audit_robot_execution(directory, *, allow_empty=False):
     if np.linalg.norm(orientation_error, axis=1).max() > safety.max_start_anchor_orientation_error_rad:
         raise ValueError("robot did not preserve planned TCP orientation")
     return {"directory": str(directory),
+        "duration_s": float(times[-1]),
         "candidate_id": plan.get("candidate_id"),
         "schedule_origin_host_time_s": origin, "schedule_origin_source": origin_source,
         "components": np.asarray(metrics).T.reshape(-1).tolist(),

@@ -146,6 +146,8 @@ def main(
         help="operator-declared SDK/HMI workpiece name; capture does not verify it is active",
     )
     parser.add_argument("--notes", default="")
+    parser.add_argument("--tcp-trajectory-id", choices=("drag_taught_loop_v1", "drag_taught_continuous_v1"),
+                        help="capture a taught TCP anchor without motion")
     args = parser.parse_args(argv)
     selected_factory = adapter_factory
     if selected_factory is None and args.local_ip:
@@ -164,6 +166,7 @@ def main(
         workpiece_name=args.workpiece_name,
         notes=args.notes,
         adapter_factory=selected_factory,
+        tcp_trajectory_id=args.tcp_trajectory_id,
     )
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

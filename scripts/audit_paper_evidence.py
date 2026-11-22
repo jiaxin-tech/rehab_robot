@@ -68,6 +68,15 @@ SOURCES += ("control/continuous_taught_trajectory.py", "control/continuous_taugh
     "scripts/design_continuous_taught_trajectory.py", "tests/test_continuous_taught_trajectory.py",
     "tests/test_design_continuous_taught_trajectory.py", "config/continuous_taught_90s.empty.json")
 SOURCES += tuple(CONTINUOUS_90S + "/" + name for name in ("geometry.json", "settings.json", "summary.json"))
+LOADED_DIAGNOSTIC = "results/manual_lab/20261122_loaded_diagnostic_v1"
+RETURNED_90S = "results/manual_lab/20261122_143700/continuous_empty_01"
+SOURCES += ("measurement_validation/loaded_trial.py", "measurement_validation/loaded_diagnostic.py",
+    "scripts/design_loaded_diagnostic.py", "config/continuous_taught_90s.loaded_diagnostic.json",
+    "tests/test_loaded_trial_protocol.py", "tests/test_loaded_diagnostic_session.py",
+    "tests/test_loaded_wrench_freshness.py", "tests/test_design_loaded_diagnostic.py",
+    "tests/test_passive_leg_snapshot.py", "docs/LOADED_DIAGNOSTIC_WORKFLOW.md",
+    "docs/templates/RIGID_SHANK_SETUP_RECORD.md", "docs/lab/EMPTY_90S_REVIEW_2026-11-22.md",
+    LOADED_DIAGNOSTIC + "/summary.json", RETURNED_90S + "/review_20261122/review.json")
 
 
 def historical_path(relative):
@@ -203,6 +212,22 @@ def inventory(junit=None):
         returned_audit = dict(passed=True, result=audit_robot_execution(returned_70s, allow_empty=True))
     except ValueError as exc:
         returned_audit = dict(passed=False, error=str(exc))
+    returned_90s = ROOT / RETURNED_90S
+    try:
+        returned_90s_audit = dict(passed=True, result=audit_robot_execution(returned_90s, allow_empty=True))
+    except (ValueError, KeyError, OSError) as exc:
+        returned_90s_audit = dict(passed=False, reason=str(exc))
+    loaded_summary = read_json(ROOT / LOADED_DIAGNOSTIC / "summary.json")
+    if sha256(ROOT / loaded_summary["output_config"]) != loaded_summary["output_config_sha256"]:
+        raise ValueError("loaded diagnostic template changed")
+    for name, expected in loaded_summary["output_files_sha256"].items():
+        if Path(name).name != name or sha256(ROOT / LOADED_DIAGNOSTIC / name) != expected:
+            raise ValueError("loaded diagnostic preview artifact changed: " + name)
+    for name, expected in loaded_summary["source_code_sha256"].items():
+        if sha256(ROOT / name) != expected:
+            raise ValueError("loaded diagnostic preview source changed: " + name)
+    from measurement_validation.loaded_trial import validate_config as validate_loaded
+    validate_loaded(configuration(ROOT / loaded_summary["output_config"]), require_review=False)
     verification = {"kind": "OFFLINE_TESTS_ONLY", "status": "NOT_PROVIDED"}
     if junit is not None:
         tree = ET.parse(junit).getroot()
@@ -265,6 +290,17 @@ def inventory(junit=None):
             "geometry_processing": continuous_summary["geometry_processing"],
             "preview_anchor_source_sha256": continuous_summary["preview_anchor_source_sha256"],
             "hardware_accessed": False, "ready_for_replay": False, "loaded_learning_integrated": False},
+        "returned_90s_execution": {"session": RETURNED_90S,
+            "status": read_json(returned_90s / "round_status.json")["status"],
+            "quality_audit": returned_90s_audit, "evidence_sha256": evidence_hashes(returned_90s),
+            "review": RETURNED_90S + "/review_20261122/review.json",
+            "interpretation": "Complete empty motion; force coverage failed. No loaded experiment proved."},
+        "loaded_diagnostic_preview": {"source_summary": LOADED_DIAGNOSTIC + "/summary.json",
+            "status": loaded_summary["status"], "configuration": loaded_summary["output_config"],
+            "hardware_accessed": False, "ready_for_replay": False, "loaded_learning_integrated": False,
+            "actual_setup": "Fixed hip base, freely rotating hip/knee, rigid TCP fixture near shank knee",
+            "execution_blocker": "Current fixed-orientation trajectory is not a reviewed coupled rigid-leg pose path",
+            "output_hashes_verified": True},
         "verification": verification}
 
 

@@ -179,8 +179,11 @@ def run_execute(
     execution_guard=None,
     dispatch_observer=None,
     prepare_realtime: bool = False,
+    strict_wrench_freshness: bool = False,
 ) -> dict[str, Any]:
     """Run one real episode only after static and live gates both pass."""
+    if type(strict_wrench_freshness) is not bool:
+        raise TypeError("strict_wrench_freshness must be bool")
     frame_config_path = resolve_config_path(frame_config_path, section="rehab_frame_config")
     safety_config_path = resolve_config_path(safety_config_path, section="experiment_safety")
     if wrench_config_path is not None:
@@ -303,6 +306,7 @@ def run_execute(
             ),
             "trajectory_generation": trajectory_metadata,
             "tcp_orientation_strategy": "fixed",
+            "strict_wrench_freshness": strict_wrench_freshness,
             "experiment_mode": "start_anchored_relative",
             "robot_execution_approved": False,
             "operator_confirmation": operator_confirmation,
@@ -439,6 +443,7 @@ def run_execute(
             # physical run. Runtime safety gates remain enforced.
             use_windows_scheduler_priority=False,
             trajectory_profile=trajectory_metadata["mode"] if cartesian else "approved_rehab",
+            strict_wrench_freshness=strict_wrench_freshness,
             **extra,
         )
         result = executor.execute(trajectory, preflight)
