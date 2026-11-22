@@ -1,0 +1,45 @@
+{
+  "purpose": "stationary_connected_setup_robot_observation_only_no_motion",
+  "robot": {
+    "ip": "192.168.50.103",
+    "local_ip": "192.168.50.209",
+    "robot_class": "xMateRobot",
+    "collision_source": "controller",
+    "collision_event_max_age_s": null
+  },
+  "acquisition": {
+    "wrench_hz": 50,
+    "expected_identity": {
+      "robot_model": "XMC12-R1300-W7G3B4",
+      "robot_serial": "0f98879e-e936-47a2-9c0d-f7b748a7eb86",
+      "controller_version": "3.2.1",
+      "sdk_version": "0.7.0"
+    },
+    "budgets": {
+      "startup_s": 5,
+      "query_s": 0.05,
+      "progress_s": 0.4,
+      "sample_age_s": 0.05,
+      "ack_s": 0.1,
+      "log_s": 0.25,
+      "shutdown_s": 1,
+      "terminate_s": 1,
+      "state_age_s": 0.1,
+      "skew_s": 0.04,
+      "runtime_stale_grace_s": 0.3
+    }
+  },
+  "validation": {
+    "capture_dummy_leg": false
+  },
+  "operator_reported_setup": {
+    "arm_rigidly_connected_to_shank": true,
+    "hip_and_knee_drives_disabled": true,
+    "hip_and_knee_torque_targets_nm": [
+      0,
+      0
+    ],
+    "independently_verified_by_this_observer": false,
+    "leg_state_and_brake_release_not_sampled": true
+  }
+}

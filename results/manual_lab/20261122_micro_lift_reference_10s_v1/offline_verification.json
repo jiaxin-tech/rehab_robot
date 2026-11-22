@@ -1,0 +1,16 @@
+{
+  "verified_utc": "2026-11-22T10:25:54.443618+00:00",
+  "hardware_accessed": false,
+  "scope": "Offline artifact verification and observe orchestration with a replacement acquisition function; no SDK connection or physical validation",
+  "scalar_rows": 501,
+  "output_and_generator_hashes_verified": true,
+  "protected_files_unchanged_from_head": true,
+  "original_acquisition_budgets_preserved": true,
+  "config_contains_no_motion_or_leg_control_settings": true,
+  "mock_observe_status": "OBSERVATION_COMPLETE",
+  "mock_motion_commanded": false,
+  "mock_leg_factory_called": false,
+  "configuration_sha256": "a63a86c520189fa5069bff01989bba45a617b1332e517d0d9be117f8337ea057",
+  "observation_source_sha256": "7db39cdb3718c59b9af362ce8160ba8da87c370bc98abfb8adc37fc19c4027ce",
+  "ready_for_execution": false
+}
