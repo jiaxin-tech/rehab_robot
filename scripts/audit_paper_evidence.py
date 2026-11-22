@@ -77,6 +77,10 @@ SOURCES += ("measurement_validation/loaded_trial.py", "measurement_validation/lo
     "tests/test_passive_leg_snapshot.py", "docs/LOADED_DIAGNOSTIC_WORKFLOW.md",
     "docs/templates/RIGID_SHANK_SETUP_RECORD.md", "docs/lab/EMPTY_90S_REVIEW_2026-11-22.md",
     LOADED_DIAGNOSTIC + "/summary.json", RETURNED_90S + "/review_20261122/review.json")
+SOURCES += ("collection/leg_capture_diagnostics.py", "collection/leg_progress_publisher.py",
+    "scripts/diagnose_leg_capture.py", "tests/test_leg_capture_diagnostics.py",
+    "tests/test_leg_progress_publisher.py", "tests/test_diagnose_leg_capture.py",
+    "docs/lab/LEG_CAPTURE_FAILURE_2026-11-22.md")
 
 
 def historical_path(relative):
@@ -301,6 +305,13 @@ def inventory(junit=None):
             "actual_setup": "Fixed hip base, freely rotating hip/knee, rigid TCP fixture near shank knee",
             "execution_blocker": "Current fixed-orientation trajectory is not a reviewed coupled rigid-leg pose path",
             "output_hashes_verified": True},
+        "connected_static_failure_20261122": {
+            "session": "results/manual_lab/20261122_152201/connected_static10s",
+            "status_sha256": sha256(ROOT / "results/manual_lab/20261122_152201/connected_static10s/round_status.json"),
+            "primary_reason": read_json(ROOT / "results/manual_lab/20261122_152201/connected_static10s/round_status.json")["reason"],
+            "interpretation": "219 accepted leg samples before toggle freshness timeout; drive faults not observed. Physical cause unconfirmed; no automated motion.",
+            "source_review": "docs/lab/LEG_CAPTURE_FAILURE_2026-11-22.md",
+            "new_hardware_experiment": False},
         "verification": verification}
 
 

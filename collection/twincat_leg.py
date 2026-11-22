@@ -155,18 +155,32 @@ def capture(config, output, *, stop_event, notify, source_factory=AdsInputImage)
     """Write complete images after toggle changes; never claim exact frame counts."""
     validate_config(config)
     output = Path(output)
-    source = source_factory(config)
+    if output.exists():
+        raise FileExistsError(output)
+    diagnostics_path = output.with_name(output.stem + "_capture_diagnostics.json")
+    if diagnostics_path.exists():
+        raise FileExistsError(diagnostics_path)
+    from collection.leg_capture_diagnostics import CaptureDiagnostics
+    diagnostics = CaptureDiagnostics(config, time.perf_counter_ns())
+    source, failure, cleanup_error, completed = None, None, None, False
     count, previous_toggle, previous_ns = 0, None, None
     origin = time.perf_counter_ns()
     last_sample = last_notify = time.perf_counter()
     try:
+        source = source_factory(config)
         with output.open("x", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=FIELDS)
             writer.writeheader()
             while not stop_event.is_set():
                 start_ns = time.perf_counter_ns()
-                image = source.read()
+                try:
+                    image = source.read()
+                except BaseException as exc:
+                    diagnostics.read_error(start_ns, time.perf_counter_ns(), exc)
+                    raise
                 end_ns = time.perf_counter_ns()
+                toggle = (image[config["toggle_byte"]] >> config["toggle_bit"]) & 1 if len(image) == config["image_bytes"] else None
+                diagnostics.read(start_ns, end_ns, image, toggle)
                 row = decode_image(image, config)
                 for axis in (1, 4):
                     guard = config["guards"][f"axis{axis}"]
@@ -183,17 +197,22 @@ def capture(config, output, *, stop_event, notify, source_factory=AdsInputImage)
                         synchronization="four_axes_same_process_image_snapshot_unverified_device_timing",
                         acquisition_method="ADS_READ_ONLY_SINGLE_INPUT_IMAGE")
                     writer.writerow(row)
+                    diagnostics.accept(end_ns)
                     previous_toggle, previous_ns, last_sample = row["input_toggle"], end_ns, now
                     count += 1
                 if now - last_sample > config["no_new_sample_timeout_s"]:
                     raise TimeoutError("input toggle stopped changing")
                 if count >= 2 and (now-last_notify >= config["heartbeat_s"] or count == 2):
                     stream.flush()
-                    notify(dict(state="recording", rows=count, last_sample_ns=previous_ns,
-                        latest={key: row[key] for axis in (1, 4) for key in
-                            (f"axis{axis}_position_raw", f"axis{axis}_torque_3c1a_nm",
-                             f"axis{axis}_fault", f"axis{axis}_error_code_hex",
-                             f"axis{axis}_operation_enabled")}))
+                    publish_start_ns = time.perf_counter_ns()
+                    try:
+                        notify(dict(state="recording", rows=count, last_sample_ns=previous_ns,
+                            latest={key: row[key] for axis in (1, 4) for key in
+                                (f"axis{axis}_position_raw", f"axis{axis}_torque_3c1a_nm",
+                                 f"axis{axis}_fault", f"axis{axis}_error_code_hex",
+                                 f"axis{axis}_operation_enabled")}))
+                    finally:
+                        diagnostics.published(publish_start_ns, time.perf_counter_ns())
                     last_notify = now
                 # Windows Event.wait rounded short waits beyond the 2 ms cycle
                 # in the host benchmark. Python 3.11+ sleep uses its finer timer.
@@ -202,10 +221,72 @@ def capture(config, output, *, stop_event, notify, source_factory=AdsInputImage)
             os.fsync(stream.fileno())
         if count < 2:
             raise ValueError("capture ended before two fresh samples")
+        completed = True
+    except BaseException as exc:
+        failure = f"{type(exc).__name__}: {exc}"
+        raise
     finally:
-        source.close()
+        try:
+            if source is not None:
+                source.close()
+        except BaseException as exc:
+            cleanup_error = f"{type(exc).__name__}: {exc}"
+            if failure is None:
+                raise
+        finally:
+            # Bounded in memory during sampling; one durable write after ADS closes.
+            payload = diagnostics.report(time.perf_counter_ns(), completed=completed and cleanup_error is None,
+                                         error=failure, cleanup_error=cleanup_error)
+            try:
+                atomic_json(diagnostics_path, payload)
+            except BaseException:
+                if failure is None and cleanup_error is None:
+                    raise
     notify(dict(state="completed", rows=count, last_sample_ns=previous_ns))
     return count
+
+
+def capture_worker(config, output, *, stop_event, notify, source_factory=AdsInputImage):
+    """Keep stdout/backpressure out of the ADS sampling loop.
+
+    Only obsolete progress messages may be superseded. CSV samples, timestamps,
+    toggle freshness, drive guards and the terminal acknowledgement are retained.
+    """
+    from collection.leg_progress_publisher import ProgressPublisher
+    progress_path = Path(output).with_name("progress_delivery_diagnostics.json")
+    if progress_path.exists():
+        raise FileExistsError(progress_path)
+    publisher = ProgressPublisher(notify)
+    primary = publication_error = None
+    try:
+        return capture(config, output, stop_event=stop_event,
+                       notify=publisher.publish, source_factory=source_factory)
+    except BaseException as exc:
+        primary = exc
+        try:
+            publisher.publish(dict(state="failed", error=f"{type(exc).__name__}: {exc}"))
+        except BaseException as delivery:
+            if hasattr(exc, "add_note"):
+                exc.add_note("failure notification: " + str(delivery))
+        raise
+    finally:
+        try:
+            # Parent shutdown remains the outer bound; leave it time to read
+            # the terminal result and observe the worker's process exit.
+            publisher.close(timeout_s=config["shutdown_timeout_s"] / 2)
+        except BaseException as exc:
+            publication_error = f"{type(exc).__name__}: {exc}"
+            if primary is not None and hasattr(primary, "add_note"):
+                primary.add_note(publication_error)
+            if primary is None:
+                raise
+        finally:
+            try:
+                atomic_json(progress_path, dict(**publisher.stats(), error=publication_error,
+                                               samples_coalesced=False))
+            except BaseException:
+                if primary is None and publication_error is None:
+                    raise
 
 
 class LegCaptureProcess:
@@ -324,11 +405,7 @@ def main(argv=None):
         stop.set()
     threading.Thread(target=commands, daemon=True).start()
     notify = lambda value: print(json.dumps(value), flush=True)
-    try:
-        capture(config, args.output, stop_event=stop, notify=notify)
-    except BaseException as exc:
-        notify(dict(state="failed", error=f"{type(exc).__name__}: {exc}"))
-        raise
+    capture_worker(config, args.output, stop_event=stop, notify=notify)
 
 
 if __name__ == "__main__":

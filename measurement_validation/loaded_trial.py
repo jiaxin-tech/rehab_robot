@@ -30,6 +30,7 @@ SOURCE_CODE = ("measurement_validation/loaded_trial.py",
                "measurement_validation/robot_execution.py",
                "measurement_validation/loaded_diagnostic.py",
                "collection/twincat_leg.py", "scripts/lab_session.py",
+               "collection/leg_capture_diagnostics.py", "collection/leg_progress_publisher.py",
                "scripts/run_rehab_experiment.py", "control/robot_trajectory_executor.py")
 
 
