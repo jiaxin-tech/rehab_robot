@@ -22,6 +22,7 @@
 3. [连接后静止数据复核](lab/CONNECTED_STATIC_REVIEW_2026-11-22.md)：了解已完成的采集质量和限制。
 4. [主动假腿带腿示教](ACTIVE_LEG_TEACHING_WORKFLOW.md)：条件确认后记录完整六维位姿；录制器只读，不替操作者控制设备。
 5. [10秒上抬10厘米参考](MICRO_LIFT_10S_WORKFLOW.md)：离线参考和当前阻断条件。
+6. [带腿参考与联合采集计划](REFERENCE_AND_COMBINED_CAPTURE_PLAN.md)：R0/R1/R2层级、假腿复测和同步试验顺序。
 
 ## 论文与算法
 
