@@ -1,8 +1,8 @@
-# 90秒连续示教轨迹
+# 历史90秒连续空载示教轨迹
 
 2026-11-22更新：新空载已完整执行90秒、4501目标，预记录约122ms，受力覆盖仍未通过，见[最新复核](lab/EMPTY_90S_REVIEW_2026-11-22.md)。固定髋基座、髋膝自由转动、近膝小腿刚性连接时，本页固定朝向曲线不能直接回放；按[当前带腿流程](LOADED_DIAGNOSTIC_WORKFLOW.md)先核对安装与记录真实六维位姿。3%缩幅也不构成刚性机构可行性证明。此前11月16日起步失败见[历史复核](lab/CONTINUOUS_90S_FAILED_REVIEW_2026-11-16.md)。
 
-用户反馈70秒版本偏快，并要求三段之间没有间隔、中途匀速、完整周期90秒。当前配置为`config/continuous_taught_90s.empty.json`，模式`continuous_taught_tcp`，轨迹ID为`drag_taught_continuous_v1`。本版本先用于空载验证，正式带载候选学习尚未迁移。
+用户反馈70秒版本偏快，并要求三段之间没有间隔、中途匀速、完整周期90秒。配置为`config/continuous_taught_90s.empty.json`，模式`continuous_taught_tcp`，轨迹ID为`drag_taught_continuous_v1`。本版本仅作为空载基线和历史参考，正式带载候选学习尚未迁移；当前刚性带腿任务请从[文档索引](INDEX.md)进入。
 
 命令准备修复使用`EpisodeLogger.append_trajectory_commands_bounded`在运动前一次性持久化全部目标意图；运行中仍按顺序逐个准入，并继续执行实时健康、停止、碰撞、状态和受力保护。11月22日已完整执行，原受力采集缺口仍需处理。
 
